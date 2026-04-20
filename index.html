@@ -23,7 +23,11 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 @media(max-width:440px){.subject-grid{grid-template-columns:1fr}}
 .subject-card{background:#fff;border-radius:var(--radius);overflow:hidden;cursor:pointer;box-shadow:var(--shadow);transition:transform .18s,box-shadow .18s;border:2px solid transparent}
 .subject-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,.12)}
-.subject-card-header{padding:18px 18px 12px;color:#fff}
+.subject-card-header{padding:18px 18px 12px;color:#fff;position:relative}
+.card-delete-btn{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.25);border:none;color:#fff;border-radius:50%;width:22px;height:22px;font-size:12px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;transition:background .15s}
+.card-delete-btn:hover{background:rgba(200,0,0,.7)}
+.deck-delete-btn{position:absolute;top:10px;right:10px;background:#f1f5f9;border:none;color:#64748b;border-radius:50%;width:22px;height:22px;font-size:12px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;transition:background .15s,color .15s}
+.deck-delete-btn:hover{background:#fee2e2;color:#dc2626}
 .subject-card-header h3{font-size:16px;font-weight:700;margin-bottom:2px}
 .subject-card-header p{font-size:11px;opacity:.8}
 .subject-card-body{padding:12px 18px 14px}
@@ -364,6 +368,41 @@ function createPublicDeckInSupa(subjectId, title, cards, callback) {
       sb.from('public_cards').insert(rows).then(function(r2){ callback(r2.error?null:r.data, r2.error); });
     });
 }
+function deletePublicSubject(id) {
+  if (!confirm('Slette dette offentlige faget og alle dets dekker?')) return;
+  sb.from('public_subjects').delete().eq('id', id).then(function(r) {
+    if (r.error) { showToast('Feil: ' + r.error.message); return; }
+    showToast('Faget er slettet.');
+    loadPublicSubjects();
+  });
+}
+function deletePublicDeck(id) {
+  if (!confirm('Slette dette offentlige decket og alle kortene?')) return;
+  sb.from('public_decks').delete().eq('id', id).then(function(r) {
+    if (r.error) { showToast('Feil: ' + r.error.message); return; }
+    showToast('Decket er slettet.');
+    renderPublicDecks();
+  });
+}
+function deletePrivateSubject(id) {
+  if (!confirm('Slette dette faget og alle dets dekker?')) return;
+  CUSTOM_DATA.subjects = (CUSTOM_DATA.subjects || []).filter(function(s) { return s.id !== id; });
+  delete CUSTOM_DATA.decks[id];
+  saveCustomData();
+  markUnsaved();
+  showToast('Faget er slettet.');
+  renderHome();
+}
+function deletePrivateDeck(subjectId, deckId) {
+  if (!confirm('Slette dette decket og alle kortene?')) return;
+  if (CUSTOM_DATA.decks[subjectId]) {
+    CUSTOM_DATA.decks[subjectId] = CUSTOM_DATA.decks[subjectId].filter(function(d) { return d.id !== deckId; });
+  }
+  saveCustomData();
+  markUnsaved();
+  showToast('Decket er slettet.');
+  renderDecks();
+}
 
 // ==================== RENDER PUBLIC DECKS ====================
 function renderPublicDecks() {
@@ -377,11 +416,13 @@ function renderPublicDecks() {
       return { id: d.id, title: d.title, cards: cards.map(function(c){return {q:c.question,a:c.answer};}) };
     });
     var stats = getStats(); var html = '';
+    var isAdmin = currentUser && currentUser.email === ADMIN_EMAIL;
     currentPublicDecks.forEach(function(deck) {
       var s = stats[deck.id]||{}; var sessions = s.sessions||[];
       var lastS = sessions.length ? sessions[sessions.length-1] : null; var pct = 0;
       if (lastS) { var rt = lastS.results; var tot = rt.right+rt.half+rt.wrong; pct = tot>0?Math.round(rt.right/tot*100):0; }
-      html += '<div class="deck-item fade-in" data-deck-id="'+deck.id+'">';
+      html += '<div class="deck-item fade-in" data-deck-id="'+deck.id+'" style="position:relative">';
+      if (isAdmin) html += '<button class="deck-delete-btn" data-delete-public-deck="'+deck.id+'" title="Slett deck">&#10005;</button>';
       html += '<h3>'+deck.title+'</h3><div class="meta"><span>'+deck.cards.length+' kort</span>';
       if (sessions.length) html += '<span>Ovd '+sessions.length+'x</span><span style="color:var(--green)">'+pct+'% riktig</span>';
       else html += '<span>Ikke startet</span>';
@@ -389,6 +430,12 @@ function renderPublicDecks() {
     });
     if (!html) html = '<p style="color:var(--muted);font-size:13px;padding:8px">'+(currentUser?'Ingen dekker enna. Klikk Importer for a legge til.':'Ingen dekker enna. Logg inn for a legge til.')+'</p>';
     el.innerHTML = html;
+    el.querySelectorAll('.deck-delete-btn[data-delete-public-deck]').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        deletePublicDeck(this.getAttribute('data-delete-public-deck'));
+      });
+    });
     el.querySelectorAll('.deck-item').forEach(function(item) {
       item.addEventListener('click', function() { startDeck(this.getAttribute('data-deck-id'),'all'); });
     });
@@ -573,9 +620,12 @@ function renderHome() {
   if (!sb) {
     html += '<div style="font-size:12px;color:var(--muted);padding:4px 2px;font-style:italic">Koble til Supabase for offentlige fag.</div>';
   } else {
+    var isAdmin = currentUser && currentUser.email === ADMIN_EMAIL;
     publicSubjectsCache.forEach(function(subj) {
       html += '<div class="subject-card fade-in" data-id="'+subj.id+'" data-src="public">';
-      html += '<div class="subject-card-header" style="background:'+(subj.color||"#2563eb")+'"><h3>'+subj.name+'</h3><p>Offentlig</p></div>';
+      html += '<div class="subject-card-header" style="background:'+(subj.color||"#2563eb")+'">';
+      if (isAdmin) html += '<button class="card-delete-btn" data-delete-subject="'+subj.id+'" data-src="public" title="Slett fag">&#10005;</button>';
+      html += '<h3>'+subj.name+'</h3><p>Offentlig</p></div>';
       html += '<div class="subject-card-body"><div class="meta"><span>Klikk for a se dekker</span></div></div></div>';
     });
   }
@@ -590,21 +640,43 @@ function renderHome() {
     var totalCards = decks.reduce(function(s,d){return s+d.cards.length;},0);
     var totalSess = decks.reduce(function(s,d){var st=stats[d.id];return s+(st&&st.sessions?st.sessions.length:0);},0);
     html += '<div class="subject-card fade-in" data-id="'+subj.id+'" data-src="private">';
-    html += '<div class="subject-card-header" style="background:'+(subj.color||"#2563eb")+'"><h3>'+subj.name+'</h3><p>'+decks.length+' dekker - '+totalCards+' kort</p></div>';
+    html += '<div class="subject-card-header" style="background:'+(subj.color||"#2563eb")+'">';
+    html += '<button class="card-delete-btn" data-delete-subject="'+subj.id+'" data-src="private" title="Slett fag">&#10005;</button>';
+    html += '<h3>'+subj.name+'</h3><p>'+decks.length+' dekker - '+totalCards+' kort</p></div>';
     html += '<div class="subject-card-body"><div class="meta"><span>'+(totalSess>0?'Ovd '+totalSess+'x':'Ikke startet')+'</span></div></div></div>';
   });
   html += '</div>';
   el.innerHTML = html;
 
+  // Delete button handlers (stop propagation so card click doesn't fire)
+  el.querySelectorAll(".card-delete-btn[data-delete-subject]").forEach(function(btn) {
+    btn.addEventListener("click", function(e) {
+      e.stopPropagation();
+      var id = this.getAttribute("data-delete-subject");
+      var src = this.getAttribute("data-src");
+      if (src === 'public') deletePublicSubject(id);
+      else deletePrivateSubject(id);
+    });
+  });
+
   el.querySelectorAll(".subject-card[data-id]").forEach(function(card) {
     card.addEventListener("click", function() {
       currentSubjectId = this.getAttribute("data-id");
       currentSubjectSource = this.getAttribute("data-src");
-      document.getElementById("headerTitle").textContent = this.querySelector("h3").textContent;
-      document.getElementById("headerBack").onclick = function() { showView("home"); };
-      showView("decks");
-      if (currentSubjectSource === 'public') { renderPublicDecks(); }
-      else { renderDecks(); }
+      var subjName = this.querySelector("h3").textContent;
+      if (currentSubjectSource === 'public') {
+        // For public subjects: show decks view manually without calling renderDecks
+        document.querySelectorAll(".view").forEach(function(v) { v.classList.remove("active"); });
+        document.getElementById("view-decks").classList.add("active");
+        document.getElementById("headerTitle").textContent = subjName;
+        document.getElementById("headerSub").textContent = "Velg et deck";
+        document.getElementById("headerBackBtn").style.display = "";
+        document.getElementById("headerBackBtn").onclick = function() { showView("home"); };
+        renderPublicDecks();
+      } else {
+        showView("decks");
+        document.getElementById("headerTitle").textContent = subjName;
+      }
     });
   });
 }
@@ -624,7 +696,8 @@ function renderDecks() {
     var lastSession = sessions.length > 0 ? sessions[sessions.length-1] : null;
     var pct = 0;
     if (lastSession) { var r = lastSession.results; var t = r.right+r.half+r.wrong; pct = t>0?Math.round(r.right/t*100):0; }
-    html += '<div class="deck-item fade-in" data-deck-id="' + deck.id + '">';
+    html += '<div class="deck-item fade-in" data-deck-id="' + deck.id + '" style="position:relative">';
+    html += '<button class="deck-delete-btn" data-delete-deck="'+deck.id+'" data-subject-id="'+currentSubjectId+'" title="Slett deck">&#10005;</button>';
     html += '<h3>' + deck.title + '</h3><div class="meta"><span>' + deck.cards.length + ' kort</span>';
     if (sessions.length > 0) html += '<span>Øvd ' + sessions.length + 'x</span><span style="color:var(--green)">' + pct + '% riktig</span>';
     else html += '<span>Ikke startet</span>';
@@ -637,6 +710,14 @@ function renderDecks() {
   statsBtn.textContent = "📊 Se statistikk";
   statsBtn.addEventListener("click", function() { showView("stats"); });
   el.appendChild(statsBtn);
+  el.querySelectorAll(".deck-delete-btn[data-delete-deck]").forEach(function(btn) {
+    btn.addEventListener("click", function(e) {
+      e.stopPropagation();
+      var deckId = this.getAttribute("data-delete-deck");
+      var subjId = this.getAttribute("data-subject-id");
+      deletePrivateDeck(subjId, deckId);
+    });
+  });
   el.querySelectorAll(".deck-item").forEach(function(item) {
     item.addEventListener("click", function() {
       var deckId = this.getAttribute("data-deck-id");
