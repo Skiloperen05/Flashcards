@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>RET14 eksamensradar</title>
+<style>
+:root {
+  --bg:#f7f7f3; --panel:#ffffff; --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb;
+  --accent:#315f72; --accent2:#8a6f3e; --soft:#edf4f6; --soft2:#f4efe5;
+  --hi:#d95f3a; --mid:#d9a441; --lo:#7aa682;
+}
+* { box-sizing:border-box }
+body { margin:0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif; color:var(--ink); background:linear-gradient(180deg,#fbfaf6 0%, var(--bg) 70%); }
+header { padding:32px 28px 16px; max-width:1280px; margin:auto; }
+h1 { margin:0 0 8px; font-size:clamp(28px,4vw,48px); letter-spacing:-.04em; }
+.subtitle { color:var(--muted); max-width:820px; line-height:1.45; font-size:16px }
+.toolbar { display:flex; flex-wrap:wrap; gap:10px; margin-top:22px; align-items:center }
+input, select, button { border:1px solid var(--line); background:white; border-radius:14px; padding:11px 13px; font:inherit; color:var(--ink); }
+input { min-width:260px; flex:1 }
+button { cursor:pointer }
+button.active { background:var(--accent); color:white; border-color:var(--accent) }
+main { max-width:1280px; margin:0 auto; padding:12px 28px 48px; }
+.grid { display:grid; grid-template-columns: repeat(12, 1fr); gap:16px; }
+.card { background:rgba(255,255,255,.92); border:1px solid var(--line); border-radius:24px; padding:18px; box-shadow: 0 10px 24px rgba(31,41,55,.05); }
+.span3 { grid-column:span 3 } .span4 { grid-column:span 4 } .span5 { grid-column:span 5 } .span7 { grid-column:span 7 } .span8 { grid-column:span 8 } .span12 { grid-column:span 12 }
+.kpi { display:flex; flex-direction:column; gap:8px; min-height:126px }
+.kpi small { color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.05em }
+.kpi b { font-size:34px; letter-spacing:-.04em }
+.kpi p { margin:0; color:var(--muted); font-size:13px; line-height:1.35 }
+.section-title { display:flex; justify-content:space-between; gap:12px; align-items:flex-end; margin:0 0 14px }
+.section-title h2 { font-size:20px; margin:0; letter-spacing:-.02em }
+.hint { color:var(--muted); font-size:13px }
+.chart-row { display:grid; grid-template-columns: 220px 1fr 52px; gap:10px; align-items:center; margin:8px 0 }
+.topic-name { font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.barwrap { height:18px; background:#f0f1f2; border-radius:999px; overflow:hidden }
+.bar { height:100%; border-radius:999px; background:linear-gradient(90deg,var(--accent),#6b9aae) }
+.badge { display:inline-flex; align-items:center; padding:4px 9px; border-radius:999px; font-size:12px; font-weight:650; border:1px solid var(--line); background:#fafafa }
+.badge.high { background:#fff0ec; color:#913b25; border-color:#f1c2b4 }
+.badge.mid { background:#fff7df; color:#7a5512; border-color:#ead18d }
+.badge.low { background:#eef6ef; color:#315d3a; border-color:#bdd9c4 }
+.matrix { overflow:auto; padding-bottom:4px }
+.heatmap { border-collapse:separate; border-spacing:4px; width:100%; min-width:920px }
+.heatmap th { font-size:11px; color:var(--muted); font-weight:700; text-align:center; position:sticky; top:0; background:white }
+.heatmap td { text-align:center; height:24px; min-width:28px; border-radius:7px; font-size:10px; color:white }
+.heatmap .label { text-align:left; max-width:260px; min-width:260px; color:var(--ink); background:white; position:sticky; left:0; z-index:2; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-right:8px }
+.hit { background:var(--accent) } .miss { background:#eceff1; color:#cbd5e1 }
+.tablewrap { overflow:auto; max-height:680px }
+table.data { width:100%; border-collapse:collapse; min-width:900px }
+.data th { position:sticky; top:0; background:#fafafa; z-index:1; text-align:left; font-size:12px; color:#4b5563; border-bottom:1px solid var(--line); padding:10px; cursor:pointer }
+.data td { border-bottom:1px solid var(--line); padding:10px; vertical-align:top; font-size:13px; line-height:1.35 }
+.data tr:hover { background:#fbfaf7 }
+.cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px }
+.exam { border:1px solid var(--line); border-radius:18px; padding:14px; background:#fff }
+.exam h3 { margin:0 0 8px; font-size:16px }
+.exam p { margin:8px 0 0; color:#4b5563; font-size:13px; line-height:1.4 }
+.pillrow { display:flex; gap:7px; flex-wrap:wrap; margin:8px 0 }
+.lawgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px }
+.law { padding:13px; background:#fbfbfa; border:1px solid var(--line); border-radius:16px }
+.law b { display:block; font-size:18px; margin-bottom:5px }
+.priority-list { counter-reset:item; display:grid; gap:10px }
+.priority-item { display:grid; grid-template-columns:42px 1fr auto; gap:12px; align-items:center; padding:12px; border:1px solid var(--line); border-radius:18px; background:#fff }
+.priority-item:before { counter-increment:item; content:counter(item); width:34px; height:34px; display:grid; place-items:center; border-radius:12px; background:var(--soft); font-weight:800; color:var(--accent)}
+.priority-item h3 { margin:0; font-size:14px } .priority-item p { margin:3px 0 0; color:var(--muted); font-size:12px }
+.toggle-note { background:var(--soft2); border:1px solid #eadcc4; padding:12px 14px; border-radius:18px; font-size:13px; color:#5b4620; line-height:1.45 }
+footer { max-width:1280px; margin:auto; padding:0 28px 32px; color:var(--muted); font-size:12px }
+@media (max-width: 900px) { .span3,.span4,.span5,.span7,.span8,.span12 { grid-column:span 12 } .chart-row { grid-template-columns: 1fr; } .priority-item { grid-template-columns:36px 1fr } .priority-item .badge { grid-column:2 } }
+</style>
+</head>
+<body>
+<header>
+  <h1>RET14 eksamensradar</h1>
+  <div class="subtitle">Visuell oversikt over tidligere eksamener/sensorveiledninger og kontrollert temamatrise. Bruk søk, filtre og sortering for å finne hva som er hyppigst, hva som trender, og hva som bør prioriteres først.</div>
+  <div class="toolbar">
+    <input id="search" placeholder="Søk i tema, lovhjemler eller vurdering …"/>
+    <select id="category"><option value="">Alle kategorier</option></select>
+    <select id="priority"><option value="">Alle prioriteter</option><option>Høy</option><option>Middels</option><option>Lav</option></select>
+    <button id="trendBtn">Vis bare 2022–2025-trend</button>
+    <button id="resetBtn">Nullstill</button>
+  </div>
+</header>
+<main>
+  <section class="grid">
+    <div class="card span3 kpi"><small>Antall kartlagte eksamener</small><b id="kpiExams">21</b><p>Vår 2012 til vår 2025, slik de er strukturert i kontrollarket.</p></div>
+    <div class="card span3 kpi"><small>Emner i analysen</small><b id="kpiTopics">31</b><p>Filtrer listen for å finne høyfrekvente og nyere temaer.</p></div>
+    <div class="card span3 kpi"><small>Høy prioritet</small><b id="kpiHigh">–</b><p>Emner som bør sitte før du bruker tid på nisjene.</p></div>
+    <div class="card span3 kpi"><small>Nyere trend</small><b id="kpiTrend">–</b><p>Temaer som fremstår ekstra relevante etter 2022.</p></div>
+
+    <div class="card span5">
+      <div class="section-title"><h2>Les dette først</h2><span class="hint">rangert etter frekvens + prioritet + trend</span></div>
+      <div id="priorityList" class="priority-list"></div>
+    </div>
+    <div class="card span7">
+      <div class="section-title"><h2>Hyppigste temaer</h2><span class="hint">klikk tabelloverskrifter under for å sortere</span></div>
+      <div id="barChart"></div>
+    </div>
+
+    <div class="card span12">
+      <div class="section-title"><h2>Heatmap: tema × eksamen</h2><span class="hint">mørk rute = tema forekommer i eksamen</span></div>
+      <div class="matrix" id="heatmap"></div>
+    </div>
+
+    <div class="card span12">
+      <div class="section-title"><h2>Interaktiv emnetabell</h2><span class="hint">sorter ved å klikke på kolonnenavn</span></div>
+      <div class="tablewrap"><table class="data" id="topicTable"></table></div>
+    </div>
+
+    <div class="card span12">
+      <div class="section-title"><h2>Eksamen-for-eksamen</h2><span class="hint">kortformat for rask repetisjon</span></div>
+      <div class="cards" id="examCards"></div>
+    </div>
+
+    <div class="card span12">
+      <div class="section-title"><h2>Lovhjemmel-kart</h2><span class="hint">de viktigste paragrafene i kontrollarket</span></div>
+      <div class="lawgrid" id="lawGrid"></div>
+    </div>
+
+    <div class="card span12 toggle-note">
+      Tips: Start med temaene som både har høy frekvens og høy prioritet. Deretter tar du “ny trend”-temaene selv om frekvensen er lavere, fordi de kan være eksamensaktuelle etter endringer i oppgaveprofilen.
+    </div>
+  </section>
+</main>
+<footer>Bygget fra RET14_eksamensanalyse_kontrollert_2026.xlsx. Tallene er en eksamensradar, ikke en garanti.</footer>
+<script>
+const TOPICS = [{"Kategori": "KJERNETEMA – ALLTID", "Tema": "Personinntekt og alminnelig inntekt – beregning", "Lovhjemler": "§ 5-1, § 12-2, § 12-10–12", "Antall funn": 21, "Andel av 21": 1.0, "Forekomst i eksamener": "V12,V13,H14,V15,H15,V16,H16,V17,H17,V18,H18,V19,H19,V20,V21,H21,V22,H22,V23,V24,V25", "Trend 2022–2025": "Ja", "Prioritet": "Høy", "Min vurdering": "Må kunne perfekt: oppsett, separasjon PI/AI, systematikk og summering.", "Kontroll mot Claude": "Bekreftet likt", "Kildegrunnlag": "Matrise + V21/V23/H22-sensorer"}, {"Kategori": "KJERNETEMA – ALLTID", "Tema": "Lønn / arbeidsinntekt", "Lovhjemler": "§ 5-10, § 12-2 a", "Antall funn": 21, "Andel av 21": 1.0, "Forekomst i eksamener": "Alle kartlagte", "Trend 2022–2025": "Ja", "Prioritet": "Høy", "Min vurdering": "Kommer som regel i persondel; husk naturalytelser og minstefradrag.", "Kontroll mot Claude": "Bekreftet likt", "Kildegrunnlag": "Matrise + sensorer"}, {"Kategori": "KJERNETEMA – ALLTID", "Tema": "Tidfesting / realisasjonsprinsippet", "Lovhjemler": "§ 14-2, § 14-5", "Antall funn": 21, "Andel av 21": 1.0, "Forekomst i eksamener": "Alle kartlagte direkte eller indirekte", "Trend 2022–2025": "Ja", "Prioritet": "Høy", "Min vurdering": "Forelesningsfavoritt; kobles ofte til fordringer, renter, utbytte, salg og valuta.", "Kontroll mot Claude": "Bekreftet, men sterkere vektlagt", "Kildegrunnlag": "Matrise + F13 + V25"}, {"Kategori": "KJERNETEMA – ALLTID", "Tema": "Fradrag – oppofrelse og tilknytning", "Lovhjemler": "§ 6-1, § 6-2", "Antall funn": 21, "Andel av 21": 1.0, "Forekomst i eksamener": "Alle kartlagte", "Trend 2022–2025": "Ja", "Prioritet": "Høy", "Min vurdering": "Svar bør alltid starte med vilkårene før spesialregel.", "Kontroll mot Claude": "Bekreftet likt", "Kildegrunnlag": "Matrise + H19/V22 sensorer"}, {"Kategori": "KJERNETEMA – ALLTID", "Tema": "Lønn, minstefradrag og reisefradrag samlet", "Lovhjemler": "§ 5-10, § 6-30–32, § 6-44", "Antall funn": 18, "Andel av 21": 0.857, "Forekomst i eksamener": "Hyppig 2018–2025", "Trend 2022–2025": "Ja", "Prioritet": "Høy", "Min vurdering": "Dette er poeng du bør hente raskt; bruk 2025-satser hvis eksamen krever det.", "Kontroll mot Claude": "Justert: slått sammen praktisk", "Kildegrunnlag": "Matrise + persondeler"}, {"Kategori": "AKSJER & UTBYTTE", "Tema": "Aksjegevinst / aksjetap", "Lovhjemler": "§ 10-31, § 10-32", "Antall funn": 15, "Andel av 21": 0.714, "Forekomst i eksamener": "V12,V13,V16,H16,H18,V19,H19,V20,V21,H21,V22,H22,V23", "Trend 2022–2025": "Delvis", "Prioritet": "Høy", "Min vurdering": "Gevinst/tap, oppjustering, skjerming og FIFU/anskaffelseskost er typisk gjenganger.", "Kontroll mot Claude": "Bekreftet likt", "Kildegrunnlag": "Matrise + V21/V23/H22"}, {"Kategori": "AKSJER & UTBYTTE", "Tema": "Utbytte – aksjonærmodellen", "Lovhjemler": "§ 10-11, § 10-12", "Antall funn": 15, "Andel av 21": 0.714, "Forekomst i eksamener": "V13,V16,H16,V17,H17,V18,H18,V19,H19,V20,V21,H21,V25", "Trend 2022–2025": "Ja", "Prioritet": "Høy", "Min vurdering": "Skjult utbytte/underpris og beslutnings-/tidfestingsspørsmål er mer avanserte varianter.", "Kontroll mot Claude": "Bekreftet likt", "Kildegrunnlag": "Matrise + V25"}, {"Kategori": "AKSJER & UTBYTTE", "Tema": "Skjerming og oppjustering", "Lovhjemler": "§ 10-12, § 10-31, § 10-33", "Antall funn": 12, "Andel av 21": 0.571, "Forekomst i eksamener": "V13,V16,H16,V18,H18,V19,H19,V20,V21,H21,V22,V25", "Trend 2022–2025": "Delvis", "Prioritet": "Høy", "Min vurdering": "Regn mekanisk, men forklar skjermingsgrunnlag og ubrukt skjerming kort.", "Kontroll mot Claude": "Bekreftet likt", "Kildegrunnlag": "Matrise"}, {"Kategori": "AKSJER & UTBYTTE", "Tema": "Fritaksmetoden, EØS/lavskattland og 3 %-regelen", "Lovhjemler": "§ 2-38", "Antall funn": 4, "Andel av 21": 0.19, "Forekomst i eksamener": "V21,V23,V25 + eldre utenlandsk utbytte", "Trend 2022–2025": "Sterk", "Prioritet": "Høy", "Min vurdering": "Nyere trend. V25 er klart signal: øv på EØS, lavskattland, USA/Monaco/Sverige, ulovlig utbytte.", "Kontroll mot Claude": "Oppjustert fra 'Tier 2' til 'ny trend'", "Kildegrunnlag": "V25 sensor + matrise"}, {"Kategori": "AKSJER & UTBYTTE", "Tema": "Aksjeopsjoner / derivater", "Lovhjemler": "§ 9-10, § 9-4", "Antall funn": 4, "Andel av 21": 0.19, "Forekomst i eksamener": "V12,H19,V22,V23", "Trend 2022–2025": "Delvis", "Prioritet": "Medium", "Min vurdering": "Nisje som har kommet flere ganger; bør kunne bortfall/salg av salgsopsjon.", "Kontroll mot Claude": "Bekreftet likt", "Kildegrunnlag": "Matrise + V23"}, {"Kategori": "AVSKRIVNINGER & DRIFTSMIDLER", "Tema": "Saldogrupper a–j, klassifisering og satser", "Lovhjemler": "§ 14-40–43", "Antall funn": 17, "Andel av 21": 0.81, "Forekomst i eksamener": "V12,V13,H14,V15,V16,H16,V17,V18,H18,V20,H21,V23,V24,V25 m.fl.", "Trend 2022–2025": "Ja", "Prioritet": "Høy", "Min vurdering": "Eksamensklassiker: bygg, tekniske installasjoner, goodwill/forretningsverdi, maskiner.", "Kontroll mot Claude": "Bekreftet likt", "Kildegrunnlag": "Matrise + V16/V23"}, {"Kategori": "AVSKRIVNINGER & DRIFTSMIDLER", "Tema": "Realisasjon av driftsmiddel – gevinst/tap", "Lovhjemler": "§ 14-44, § 14-45, § 14-53", "Antall funn": 11, "Andel av 21": 0.524, "Forekomst i eksamener": "V12,V13,H14,H16,V17,H18,V20,V21,V23,V24", "Trend 2022–2025": "Delvis", "Prioritet": "Høy", "Min vurdering": "Knytt til saldo og G/T-konto. Husk utsettelse av skatt når skattyter ønsker det.", "Kontroll mot Claude": "Bekreftet likt", "Kildegrunnlag": "Matrise"}, {"Kategori": "AVSKRIVNINGER & DRIFTSMIDLER", "Tema": "Gevinst- og tapskonto", "Lovhjemler": "§ 14-43, § 14-45", "Antall funn": 7, "Andel av 21": 0.333, "Forekomst i eksamener": "V12,V15,H16,H17,V20,H21", "Trend 2022–2025": "Delvis", "Prioritet": "Medium", "Min vurdering": "20 %-regelen dukker opp sammen med salg av bygg/forretningsverdi/tomt.", "Kontroll mot Claude": "Bekreftet likt", "Kildegrunnlag": "Matrise"}, {"Kategori": "AVSKRIVNINGER & DRIFTSMIDLER", "Tema": "Kombinerte bygg og leieverdier", "Lovhjemler": "§ 14-41 (2)", "Antall funn": 6, "Andel av 21": 0.286, "Forekomst i eksamener": "V13,V15,H16,V20,V23,V24", "Trend 2022–2025": "Delvis", "Prioritet": "Medium", "Min vurdering": "Klassisk bygg-case; vurder leieverdi, ikke bare areal.", "Kontroll mot Claude": "Bekreftet likt", "Kildegrunnlag": "Matrise"}, {"Kategori": "AKTIVERING vs FRADRAG", "Tema": "Vedlikehold vs påkostning", "Lovhjemler": "§ 6-11 vs § 14-40", "Antall funn": 9, "Andel av 21": 0.429, "Forekomst i eksamener": "V13,V15,V16,V19,V20,V21,V23,V24", "Trend 2022–2025": "Sterk", "Prioritet": "Høy", "Min vurdering": "En av de viktigste drøftelsesoppgavene: opprinnelig stand, standardheving, reparasjon, endring.", "Kontroll mot Claude": "Bekreftet likt", "Kildegrunnlag": "Matrise + V22/V23"}, {"Kategori": "AKTIVERING vs FRADRAG", "Tema": "FoU, software og aktivering vs direkte fradrag", "Lovhjemler": "§ 6-25, § 14-30", "Antall funn": 4, "Andel av 21": 0.19, "Forekomst i eksamener": "V19,V22,V24,V25", "Trend 2022–2025": "Sterk", "Prioritet": "Høy", "Min vurdering": "Ny trend. Sensor V22/V25 sier dette er grundig gjennomgått; skiller gode besvarelser.", "Kontroll mot Claude": "Oppjustert kraftig", "Kildegrunnlag": "V22/V25 sensorer"}, {"Kategori": "AKTIVERING vs FRADRAG", "Tema": "Vare vs driftsmiddel", "Lovhjemler": "§ 14-5, § 14-40", "Antall funn": 3, "Andel av 21": 0.143, "Forekomst i eksamener": "V22,V24,V25", "Trend 2022–2025": "Sterk", "Prioritet": "Høy", "Min vurdering": "Spesielt software/prototyp. Spør: utviklet for eget bruk eller salg?", "Kontroll mot Claude": "Oppjustert kraftig", "Kildegrunnlag": "V22/V25 sensorer"}, {"Kategori": "AKTIVERING vs FRADRAG", "Tema": "Indirekte/overhead-kostnader", "Lovhjemler": "§ 14-5 og forarbeider", "Antall funn": 3, "Andel av 21": 0.143, "Forekomst i eksamener": "V22,V24,V25", "Trend 2022–2025": "Sterk", "Prioritet": "Medium", "Min vurdering": "Nyere nisje; ofte sammen med FoU/tilvirkning/strøm/overhead.", "Kontroll mot Claude": "Bekreftet og oppjustert", "Kildegrunnlag": "V22/V25 sensorer"}, {"Kategori": "EIENDOM & BOLIG", "Tema": "Leieinntekter – privatbolig vs næring", "Lovhjemler": "§ 5-20, § 5-30, § 7-2", "Antall funn": 9, "Andel av 21": 0.429, "Forekomst i eksamener": "V13,V15,V19,V20,V21,V22,V23,V24", "Trend 2022–2025": "Delvis", "Prioritet": "Medium", "Min vurdering": "Husk egen bruk, fire hybler/enheter, og virksomhetsgrense.", "Kontroll mot Claude": "Bekreftet likt", "Kildegrunnlag": "Matrise + V21"}, {"Kategori": "EIENDOM & BOLIG", "Tema": "Boligfritak, eier-/botid og spekulasjon", "Lovhjemler": "§ 9-3 (2)", "Antall funn": 4, "Andel av 21": 0.19, "Forekomst i eksamener": "V20,V22,V23,V24", "Trend 2022–2025": "Sterk", "Prioritet": "Medium", "Min vurdering": "Nyere persondel-klassiker; arvet bolig/gave/underpris gir variant.", "Kontroll mot Claude": "Bekreftet likt", "Kildegrunnlag": "Matrise + V23"}, {"Kategori": "KLASSIFISERING", "Tema": "Lønn vs virksomhet vs kapital", "Lovhjemler": "§ 5-1, § 5-10, § 5-30", "Antall funn": 21, "Andel av 21": 1.0, "Forekomst i eksamener": "Alle kartlagte", "Trend 2022–2025": "Ja", "Prioritet": "Høy", "Min vurdering": "Alltid underliggende. Oppgaven kan skjule klassifisering i hobby, sponsing, arbeid, aksjonærcase.", "Kontroll mot Claude": "Bekreftet likt", "Kildegrunnlag": "Matrise + F5/F6"}, {"Kategori": "KLASSIFISERING", "Tema": "Næring vs hobby", "Lovhjemler": "§ 5-1 og virksomhetsbegrepet", "Antall funn": 6, "Andel av 21": 0.286, "Forekomst i eksamener": "V12,V16,H16,H17,V19,H22", "Trend 2022–2025": "Delvis", "Prioritet": "Medium", "Min vurdering": "Hobbydyr, foto, gambling, kunst m.m.; drøft egnethet til overskudd og varighet.", "Kontroll mot Claude": "Bekreftet likt", "Kildegrunnlag": "Matrise + F5"}, {"Kategori": "NATURALYTELSER", "Tema": "Firmabil", "Lovhjemler": "§ 5-13, FSFIN § 5-13", "Antall funn": 11, "Andel av 21": 0.524, "Forekomst i eksamener": "V13,V16,H16,V18,H19,V21,V22,V23,V24,V25", "Trend 2022–2025": "Ja", "Prioritet": "Høy", "Min vurdering": "Regneteknisk gjenganger; få med både PI og AI.", "Kontroll mot Claude": "Bekreftet likt", "Kildegrunnlag": "Matrise + V23"}, {"Kategori": "NATURALYTELSER", "Tema": "Mobil/bredbånd/elektronisk kommunikasjon", "Lovhjemler": "§ 5-12, FSFIN § 5-12-21", "Antall funn": 3, "Andel av 21": 0.143, "Forekomst i eksamener": "V21,V22,V24", "Trend 2022–2025": "Delvis", "Prioritet": "Medium", "Min vurdering": "Lav innsats, ofte sikre poeng.", "Kontroll mot Claude": "Bekreftet likt", "Kildegrunnlag": "Matrise"}, {"Kategori": "UTTAK", "Tema": "Uttak og tjenesteuttak", "Lovhjemler": "§ 5-2", "Antall funn": 7, "Andel av 21": 0.333, "Forekomst i eksamener": "V16,H16,V18,V21,V22,H22 m.fl.", "Trend 2022–2025": "Delvis", "Prioritet": "Høy", "Min vurdering": "Ikke rot med utbytte: avklar subjekt, interessefellesskap og markedsverdi.", "Kontroll mot Claude": "Justert som samlet tema", "Kildegrunnlag": "Matrise + V21/H22"}, {"Kategori": "TAP PÅ FORDRINGER", "Tema": "Tap på fordring i virksomhet", "Lovhjemler": "§ 6-2 (1) og (2)", "Antall funn": 5, "Andel av 21": 0.238, "Forekomst i eksamener": "V19,V20,V21,V25", "Trend 2022–2025": "Delvis", "Prioritet": "Høy", "Min vurdering": "Sensor H19 sier dette var grundig gjennomgått; se tilknytning til virksomhet og renter.", "Kontroll mot Claude": "Bekreftet, men mer vekt", "Kildegrunnlag": "H19/V21/V25"}, {"Kategori": "TAP PÅ FORDRINGER", "Tema": "Datterselskap-regelen / avskåret fradrag", "Lovhjemler": "§ 6-2 (3), FSFIN § 6-2-2", "Antall funn": 2, "Andel av 21": 0.095, "Forekomst i eksamener": "V21,V25", "Trend 2022–2025": "Sterk", "Prioritet": "Medium", "Min vurdering": "Nyere og viktig i selskapsdel; kombineres med fritaksmetoden/tap på aksjer.", "Kontroll mot Claude": "Bekreftet likt", "Kildegrunnlag": "Matrise + V21/V25"}, {"Kategori": "INNGANGSVERDI", "Tema": "Gave/arv – kontinuitet og brudd", "Lovhjemler": "§ 9-7, § 10-33", "Antall funn": 5, "Andel av 21": 0.238, "Forekomst i eksamener": "V20,V21,V23,V24", "Trend 2022–2025": "Sterk", "Prioritet": "Medium", "Min vurdering": "Arv/gave underpris: inngangsverdi, skattefri gave, evt. utbytte ved AS-relasjon.", "Kontroll mot Claude": "Bekreftet likt", "Kildegrunnlag": "Matrise + V23"}, {"Kategori": "FORMUESSKATT", "Tema": "Formuesskatt og verdsettelse", "Lovhjemler": "§ 4-1, § 4-10, § 4-12, § 4-13", "Antall funn": 7, "Andel av 21": 0.333, "Forekomst i eksamener": "V12,V13,V15,V16,H16,H17,V23", "Trend 2022–2025": "Delvis", "Prioritet": "Medium", "Min vurdering": "Ikke høyest sannsynlighet, men forelesningsmateriale 2026 gjør det verdt en rask repetisjon.", "Kontroll mot Claude": "Justert ned fra gammel frekvens", "Kildegrunnlag": "Matrise + F formuesskatt + V23"}, {"Kategori": "INTERNASJONALE", "Tema": "Valuta – realisert/urealisert gevinst/tap", "Lovhjemler": "§ 9-9, § 14-5 (5)", "Antall funn": 2, "Andel av 21": 0.095, "Forekomst i eksamener": "V22,V25", "Trend 2022–2025": "Sterk", "Prioritet": "Medium", "Min vurdering": "V25 sa direkte at særregelen var gjennomgått, men ikke selvstendig tungt; kan gis i oppgavetekst.", "Kontroll mot Claude": "Nyere trend", "Kildegrunnlag": "V25 sensor"}, {"Kategori": "NISJE", "Tema": "Royalty / arbeidsgiverdekning kurs / kulturpris / sponsor", "Lovhjemler": "§ 5-1, § 5-10, § 5-12", "Antall funn": 4, "Andel av 21": 0.19, "Forekomst i eksamener": "H18,H19,H22", "Trend 2022–2025": "Delvis", "Prioritet": "Lav-medium", "Min vurdering": "Kan dukke opp som småposter i persondel. Ikke bruk for mye tid, men gjenkjenn.", "Kontroll mot Claude": "Justert samlet", "Kildegrunnlag": "Matrise"}];
+const EXAMS = [{"Eksamen": "V12", "Kildetype": "Sensor/oppgave", "Hovedtema identifisert": "Aksjeopsjoner, saldogrupper b/d, gambling, boliglånsrenter, pendling", "Hva bør du passe på": "Opsjoner er nisje; ellers personinntekt/fradrag og driftsmidler", "Kilde": "Matrise + Sensorveil.vår2012"}, {"Eksamen": "V13", "Kildetype": "Sensor", "Hovedtema identifisert": "Utbytte, firmabil, leieinntekter bygård, rehabilitering, saldogruppe h/j", "Hva bør du passe på": "Vedlikehold vs påkostning; bygg og tekniske installasjoner", "Kilde": "RET14.sensorveiledning v.13"}, {"Eksamen": "H14", "Kildetype": "Sensor", "Hovedtema identifisert": "Personskatt, aksjer, driftsmidler/saldogrupper", "Hva bør du passe på": "Delvis utilgjengelig oppgavetekst; matrisen markerer sentrale tema", "Kilde": "RET14.Sensorveil.h.2014"}, {"Eksamen": "V15", "Kildetype": "Sensor", "Hovedtema identifisert": "Diskotek-AS, saldogruppe h/j, G/T-konto, forpliktelser", "Hva bør du passe på": "Krevende bygg-/saldo-case; forståelse viktigere enn små regnefeil", "Kilde": "RET14.Sensorveiledning.v.15"}, {"Eksamen": "H15", "Kildetype": "Sensor", "Hovedtema identifisert": "Personskatt + saldogrupper", "Hva bør du passe på": "Standard breddeeksamen", "Kilde": "RET14.Sensorveiledning.h.15"}, {"Eksamen": "V16", "Kildetype": "Sensor", "Hovedtema identifisert": "Næring/hobby hundeavl, firmabil, aksjegave, Downton-utbytte, forretningsbygg-salg", "Hva bør du passe på": "Fritaksmetode/EØS og uttak/aksjegave; vanskelig klassifisering", "Kilde": "Senorveiledning vår 16-2"}, {"Eksamen": "H16", "Kildetype": "Sensor", "Hovedtema identifisert": "Kunsthandel, saldogrupper a/c/d, forfalt rente, firmabil", "Hva bør du passe på": "Tidfesting renter + hobby/næring", "Kilde": "Matrise"}, {"Eksamen": "V17", "Kildetype": "Sensor", "Hovedtema identifisert": "Foretaksmodellen/ENK og beregnet personinntekt", "Hva bør du passe på": "Må kunne § 12-10–12 når ENK dukker opp", "Kilde": "Sensorveiledning vår 17"}, {"Eksamen": "H17", "Kildetype": "Sensor", "Hovedtema identifisert": "Rasekatt-avl, eiendomsutvikling, salg bil, formuesskatt", "Hva bør du passe på": "Næring vs hobby/kapital; formue", "Kilde": "Matrise"}, {"Eksamen": "V18", "Kildetype": "Sensor", "Hovedtema identifisert": "Petra Smart/Smarta AS, bil, virksomhetskjøp, forretningsverdi", "Hva bør du passe på": "Skjerming, oppjustering og immaterielle eiendeler", "Kilde": "Matrise"}, {"Eksamen": "H18", "Kildetype": "Sensor", "Hovedtema identifisert": "Sponsing, kunst, Bygg AS, tomt/lager, tjenesteuttak", "Hva bør du passe på": "§ 5-2 og realisasjon driftsmiddel", "Kilde": "RET14Sensorveiledning.h.18"}, {"Eksamen": "V19", "Kildetype": "Sensor", "Hovedtema identifisert": "Kurs, foto-næring, falleferdig bygg, tap på fordring, spansk datterselskap", "Hva bør du passe på": "Vedlikehold/påkostning + fordringstap", "Kilde": "Matrise"}, {"Eksamen": "H19", "Kildetype": "Sensor", "Hovedtema identifisert": "Aksjer, royalty, markedsføring, New York-kurs", "Hva bør du passe på": "Aktiveringsplikt markedsføring; tap på fordring/renter", "Kilde": "Sensorveiledning høst 19"}, {"Eksamen": "V20", "Kildetype": "Sensor", "Hovedtema identifisert": "Leilighetsbygg, oppussing eget hjem, Trix-aksjer, gave/kontinuitet", "Hva bør du passe på": "Privatbolig egenarbeid og kontinuitet", "Kilde": "Matrise"}, {"Eksamen": "V21", "Kildetype": "Sensor", "Hovedtema identifisert": "Smartness AS, tjenesteuttak gratisleie, tap fordring DS, barnetrygd/foreldrefradrag", "Hva bør du passe på": "Bred; mange småposter + selskapsdel", "Kilde": "Vår 2021 sensorveiledning"}, {"Eksamen": "H21", "Kildetype": "Sensor", "Hovedtema identifisert": "Underprising bolig, Tomteland AS, lån som utbytte, interessentlån-rente", "Hva bør du passe på": "Underpris/lån = utbytte; nærstående rente", "Kilde": "Matrise"}, {"Eksamen": "V22", "Kildetype": "Oppgave + sensor", "Hovedtema identifisert": "Software FoU, vare vs driftsmiddel, overhead, valuta, aksjer/utbytte, hybler", "Hva bør du passe på": "Nyere trend: software/aktivering/overhead", "Kilde": "HJEMMEEKSAMEN vår 2022 + sensor"}, {"Eksamen": "H22", "Kildetype": "Oppgave + sensor", "Hovedtema identifisert": "Peder/Marte, sponsor/kulturpris, aksjetap, eiendomsutvikling/flipping", "Hva bør du passe på": "Klassifisering av gevinst som arbeid/virksomhet kan gi ekstra uttelling", "Kilde": "RET14 H22 + sensor"}, {"Eksamen": "V23", "Kildetype": "Oppgave + sensor", "Hovedtema identifisert": "Firmabil, arvet bolig, salgsopsjon, båt, bygg/strøm, aksjer, formuesskatt", "Hva bør du passe på": "Bred skoleeksamen; både regning og kort regelbeskrivelse", "Kilde": "RET14_skoleeksamen_v23 + sensor"}, {"Eksamen": "V24", "Kildetype": "Oppgave", "Hovedtema identifisert": "Vedlikehold/påkostning, bygg, FoU/software, aksjer/fritak", "Hva bør du passe på": "Nynorsk oppgave; nyere aktiveringstrend", "Kilde": "RET14_Vår 24_Oppg_endelig"}, {"Eksamen": "V25", "Kildetype": "Oppgave + sensor", "Hovedtema identifisert": "Fritaksmetoden, lavskattland/EØS, valuta, FoU, vare/driftsmiddel, overhead", "Hva bør du passe på": "Svært viktig signal for 2026: ny trend i selskapsbeskatning", "Kilde": "Eksamen vår 2025 + sensor"}];
+const LAWS = [{"Lovhjemmel": "§ 14-2", "Innhold": "Tidfesting – ubetinget rett/forpliktelse", "Prioritet": "Tier 1", "Kommentar": "Gjennomgående, særlig renter, utbytte, fordringer og realisasjon."}, {"Lovhjemmel": "§ 6-1", "Innhold": "Fradrag – oppofrelse og tilknytning", "Prioritet": "Tier 1", "Kommentar": "Startpunkt for alle fradragsdrøftelser."}, {"Lovhjemmel": "§ 5-1", "Innhold": "Alminnelig inntekt – hovedregel", "Prioritet": "Tier 1", "Kommentar": "Alle eksamener."}, {"Lovhjemmel": "§ 5-2", "Innhold": "Uttak / tjenesteuttak", "Prioritet": "Tier 1", "Kommentar": "Må skilles fra utbytte og lønn."}, {"Lovhjemmel": "§ 14-5", "Innhold": "Tidfesting særregler, varelager, valuta", "Prioritet": "Tier 1", "Kommentar": "Nyere trend 2022–2025."}, {"Lovhjemmel": "§ 14-40–45", "Innhold": "Saldogrupper og realisasjon av driftsmidler", "Prioritet": "Tier 1", "Kommentar": "Hyppig og regnetungt."}, {"Lovhjemmel": "§ 6-11", "Innhold": "Vedlikehold", "Prioritet": "Tier 1", "Kommentar": "Klassisk drøftelse mot påkostning."}, {"Lovhjemmel": "§ 6-25", "Innhold": "FoU / aktiveringsplikt", "Prioritet": "Tier 2 – stigende", "Kommentar": "Særlig V22/V24/V25."}, {"Lovhjemmel": "§ 10-11–12", "Innhold": "Utbytte og skjerming", "Prioritet": "Tier 1", "Kommentar": "Aksjonærmodellen og skjult utbytte."}, {"Lovhjemmel": "§ 10-31–32", "Innhold": "Aksjegevinst/-tap og inngangsverdi", "Prioritet": "Tier 1", "Kommentar": "Hyppig i person- og selskapsdel."}, {"Lovhjemmel": "§ 2-38", "Innhold": "Fritaksmetoden", "Prioritet": "Tier 2 – stigende", "Kommentar": "V25 gjør den mer eksamensaktuell."}, {"Lovhjemmel": "§ 9-2–4", "Innhold": "Realisasjon/skattefri gevinst/tap", "Prioritet": "Tier 1", "Kommentar": "Bolig, private eiendeler, opsjoner."}, {"Lovhjemmel": "§ 9-7", "Innhold": "Arv/gave kontinuitet", "Prioritet": "Tier 2", "Kommentar": "Nyere persondel."}, {"Lovhjemmel": "§ 5-13", "Innhold": "Firmabil", "Prioritet": "Tier 1", "Kommentar": "Regneteknisk gjenganger."}, {"Lovhjemmel": "§ 6-2", "Innhold": "Tap, særlig fordringer", "Prioritet": "Tier 1", "Kommentar": "Tilknytning til virksomhet og datterselskap-regel."}, {"Lovhjemmel": "§ 4-12–13", "Innhold": "Formuesverdi aksjer", "Prioritet": "Tier 2", "Kommentar": "V23 og formuesskattforelesning."}];
+const examCodes = ["V12","V13","H14","V15","H15","V16","H16","V17","H17","V18","H18","V19","H19","V20","V21","H21","V22","H22","V23","V24","V25"];
+let sortKey = "score", sortDir = -1, trendOnly = false;
+
+function norm(s) { return (s||"").toString().toLowerCase(); }
+function hasTrend(t) { return norm(t["Trend 2022–2025"]).startsWith("ja"); }
+function priorityClass(p) { p=norm(p); return p.includes("høy")?"high":p.includes("middels")?"mid":"low"; }
+function occurrences(t) {
+  const f = t["Forekomst i eksamener"] || "";
+  if (norm(f).includes("alle")) return new Set(examCodes);
+  return new Set(f.split(/[,; ]+/).map(x=>x.trim()).filter(x=>examCodes.includes(x)));
+}
+function score(t) {
+  const pr = norm(t.Prioritet).includes("høy") ? 12 : norm(t.Prioritet).includes("middels") ? 6 : 2;
+  return (Number(t["Antall funn"])||0)*3 + pr + (hasTrend(t)?8:0);
+}
+TOPICS.forEach(t=>{ t.score = score(t); t.occSet = Array.from(occurrences(t)); });
+
+function filtered() {
+  const q=norm(document.getElementById("search").value);
+  const cat=document.getElementById("category").value;
+  const pri=document.getElementById("priority").value;
+  return TOPICS.filter(t => {
+    const hay = norm([t.Kategori,t.Tema,t.Lovhjemler,t["Min vurdering"],t["Kildegrunnlag"]].join(" "));
+    return (!q || hay.includes(q)) && (!cat || t.Kategori===cat) && (!pri || t.Prioritet===pri) && (!trendOnly || hasTrend(t));
+  });
+}
+
+function fillFilters() {
+  const cats=[...new Set(TOPICS.map(t=>t.Kategori).filter(Boolean))].sort();
+  const sel=document.getElementById("category");
+  cats.forEach(c=>{ const o=document.createElement("option"); o.textContent=c; o.value=c; sel.appendChild(o); });
+}
+
+function renderKPIs(data) {
+  document.getElementById("kpiExams").textContent=EXAMS.length;
+  document.getElementById("kpiTopics").textContent=TOPICS.length;
+  document.getElementById("kpiHigh").textContent=TOPICS.filter(t=>priorityClass(t.Prioritet)==="high").length;
+  document.getElementById("kpiTrend").textContent=TOPICS.filter(hasTrend).length;
+}
+
+function renderPriority(data) {
+  const box=document.getElementById("priorityList"); box.innerHTML="";
+  [...TOPICS].sort((a,b)=>b.score-a.score).slice(0,8).forEach(t=>{
+    const el=document.createElement("div"); el.className="priority-item";
+    el.innerHTML=`<div><h3>${escapeHtml(t.Tema)}</h3><p>${escapeHtml(t.Lovhjemler)} · ${t["Antall funn"]}/21 funn</p></div><span class="badge ${priorityClass(t.Prioritet)}">${escapeHtml(t.Prioritet)}${hasTrend(t)?" · trend":""}</span>`;
+    box.appendChild(el);
+  });
+}
+
+function renderBars(data) {
+  const top=[...data].sort((a,b)=>b["Antall funn"]-a["Antall funn"]).slice(0,14);
+  const box=document.getElementById("barChart"); box.innerHTML="";
+  top.forEach(t=>{
+    const pct=Math.max(3, (Number(t["Antall funn"]||0)/21)*100);
+    const row=document.createElement("div"); row.className="chart-row";
+    row.innerHTML=`<div class="topic-name" title="${escapeHtml(t.Tema)}">${escapeHtml(t.Tema)}</div><div class="barwrap"><div class="bar" style="width:${pct}%"></div></div><strong>${t["Antall funn"]}</strong>`;
+    box.appendChild(row);
+  });
+}
+
+function renderHeatmap(data) {
+  const top=[...data].sort((a,b)=>b.score-a.score).slice(0,22);
+  let s="<table class='heatmap'><thead><tr><th class='label'>Tema</th>"+examCodes.map(e=>`<th>${e}</th>`).join("")+"</tr></thead><tbody>";
+  top.forEach(t=>{
+    const set=new Set(t.occSet);
+    s+=`<tr><td class='label' title='${escapeHtml(t.Tema)}'>${escapeHtml(t.Tema)}</td>`;
+    examCodes.forEach(e=>{ s+=`<td class='${set.has(e)?"hit":"miss"}'>${set.has(e)?"✓":""}</td>`; });
+    s+="</tr>";
+  });
+  s+="</tbody></table>";
+  document.getElementById("heatmap").innerHTML=s;
+}
+
+function renderTable(data) {
+  const cols=[["Tema","Tema"],["Kategori","Kategori"],["Antall funn","Funn"],["Prioritet","Prioritet"],["Trend 2022–2025","Trend"],["Lovhjemler","Lovhjemler"],["Min vurdering","Min vurdering"]];
+  const sorted=[...data].sort((a,b)=> {
+    let av = sortKey==="score" ? a.score : a[sortKey], bv = sortKey==="score" ? b.score : b[sortKey];
+    if(!isNaN(Number(av)) && !isNaN(Number(bv))) return (Number(av)-Number(bv))*sortDir;
+    return String(av||"").localeCompare(String(bv||""), "no")*sortDir;
+  });
+  let s="<thead><tr>"+cols.map(([k,n])=>`<th data-key="${k}">${n} ${sortKey===k?(sortDir>0?"↑":"↓"):""}</th>`).join("")+"</tr></thead><tbody>";
+  sorted.forEach(t=>{
+    s+=`<tr><td><strong>${escapeHtml(t.Tema)}</strong></td><td>${escapeHtml(t.Kategori)}</td><td>${t["Antall funn"]}</td><td><span class="badge ${priorityClass(t.Prioritet)}">${escapeHtml(t.Prioritet)}</span></td><td>${hasTrend(t)?"Ja":"Nei"}</td><td>${escapeHtml(t.Lovhjemler)}</td><td>${escapeHtml(t["Min vurdering"])}</td></tr>`;
+  });
+  s+="</tbody>";
+  const table=document.getElementById("topicTable"); table.innerHTML=s;
+  table.querySelectorAll("th").forEach(th=>th.onclick=()=>{ const k=th.dataset.key; if(sortKey===k) sortDir*=-1; else {sortKey=k; sortDir = k==="Antall funn"?-1:1;} renderAll(); });
+}
+
+function renderExams() {
+  const box=document.getElementById("examCards"); box.innerHTML="";
+  EXAMS.forEach(e=>{
+    const el=document.createElement("div"); el.className="exam";
+    el.innerHTML=`<h3>${escapeHtml(e.Eksamen)}</h3><div class="pillrow"><span class="badge">${escapeHtml(e.Kildetype||"")}</span></div><p><strong>Hovedtema:</strong> ${escapeHtml(e["Hovedtema identifisert"])}</p><p><strong>Pass på:</strong> ${escapeHtml(e["Hva bør du passe på"])}</p>`;
+    box.appendChild(el);
+  });
+}
+
+function renderLaws() {
+  const box=document.getElementById("lawGrid"); box.innerHTML="";
+  LAWS.forEach(l=>{
+    const el=document.createElement("div"); el.className="law";
+    el.innerHTML=`<b>${escapeHtml(l.Lovhjemmel)}</b><div>${escapeHtml(l.Innhold)}</div><div class="pillrow"><span class="badge ${priorityClass(l.Prioritet)}">${escapeHtml(l.Prioritet)}</span></div><small>${escapeHtml(l.Kommentar)}</small>`;
+    box.appendChild(el);
+  });
+}
+
+function escapeHtml(s) { return String(s||"").replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m])); }
+
+function renderAll() {
+  const data=filtered();
+  renderKPIs(data); renderPriority(data); renderBars(data); renderHeatmap(data); renderTable(data);
+}
+document.getElementById("search").addEventListener("input", renderAll);
+document.getElementById("category").addEventListener("change", renderAll);
+document.getElementById("priority").addEventListener("change", renderAll);
+document.getElementById("trendBtn").addEventListener("click", e=>{ trendOnly=!trendOnly; e.target.classList.toggle("active", trendOnly); renderAll(); });
+document.getElementById("resetBtn").addEventListener("click", ()=>{ document.getElementById("search").value=""; document.getElementById("category").value=""; document.getElementById("priority").value=""; trendOnly=false; document.getElementById("trendBtn").classList.remove("active"); sortKey="score"; sortDir=-1; renderAll(); });
+fillFilters(); renderAll(); renderExams(); renderLaws();
+</script>
+</body>
+</html>
