@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MAT10 — StudieHub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f1f5f9; --surface: #fff; --header-bg: #0f172a;
+  --accent: #0891b2; --text: #0f172a; --text-muted: #64748b;
+  --border: #e2e8f0; --radius-lg: 20px; --transition: 0.22s cubic-bezier(.4,0,.2,1);
+}
+body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+.site-header {
+  background: var(--header-bg); padding: 0 24px; height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.site-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo-mark {
+  width: 32px; height: 32px; background: #6366f1; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+}
+.logo-text { font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+.breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+.breadcrumb a { color: #64748b; text-decoration: none; }
+.breadcrumb a:hover { color: #94a3b8; }
+.breadcrumb-sep { color: #334155; }
+.breadcrumb-current { color: #e2e8f0; font-weight: 600; }
+.hero {
+  background: var(--header-bg); padding: 44px 24px 52px; position: relative;
+}
+.hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 15%, transparent) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hero-inner { max-width: 800px; margin: 0 auto; position: relative; }
+.subject-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12);
+  color: #94a3b8; font-size: 12px; font-weight: 600;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  padding: 5px 12px; border-radius: 20px; margin-bottom: 16px;
+}
+.hero-title { font-size: clamp(28px,5vw,38px); font-weight: 700; color: #f8fafc; letter-spacing: -0.8px; margin-bottom: 8px; }
+.hero-sub { font-size: 15px; color: #94a3b8; }
+.main { max-width: 800px; margin: 0 auto; padding: 60px 20px; text-align: center; }
+.coming-card {
+  background: var(--surface); border: 1px dashed var(--border); border-radius: var(--radius-lg);
+  padding: 56px 32px; display: inline-block; max-width: 420px;
+  animation: fadeUp .4s ease .05s both;
+}
+.coming-icon { font-size: 40px; margin-bottom: 16px; }
+.coming-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.coming-text { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; }
+.back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 14px; font-weight: 600; color: #6366f1;
+  text-decoration: none; padding: 10px 20px; border-radius: 10px;
+  background: #ede9fe; transition: background var(--transition);
+}
+.back-link:hover { background: #ddd6fe; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a class="site-logo" href="/">
+    <div class="logo-mark">📚</div>
+    <span class="logo-text">StudieHub</span>
+  </a>
+  <nav class="breadcrumb">
+    <a href="/">Hjem</a>
+    <span class="breadcrumb-sep">›</span>
+    <span class="breadcrumb-current">MAT10</span>
+  </nav>
+</header>
+<section class="hero">
+  <div class="hero-inner">
+    <div class="subject-badge">Kommer snart</div>
+    <h1 class="hero-title">MAT10</h1>
+    <p class="hero-sub">Denne fagsiden er ikke satt opp ennå.</p>
+  </div>
+</section>
+<main class="main">
+  <div class="coming-card">
+    <div class="coming-icon">🚧</div>
+    <div class="coming-title">Under bygging</div>
+    <p class="coming-text">Læringsverktøy for MAT10 er ikke lagt til ennå. Kom tilbake senere, eller gå tilbake til huben for å utforske andre fag.</p>
+    <a class="back-link" href="/">← Tilbake til StudieHub</a>
+  </div>
+</main>
+</body>
+</html>
