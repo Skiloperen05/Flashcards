@@ -280,6 +280,28 @@ body {
   .tool-grid { grid-template-columns: 1fr; }
   .stats-row { gap: 8px; }
 }
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  var SB_URL="https://qnwjhheoekpqqqhevztw.supabase.co";
+  var SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFud2poaGVvZWtwcXFxaGV2enR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MTg1NTEsImV4cCI6MjA5MjI5NDU1MX0.gHBvEH-L-zyiW4UnsCxOY2q-HmeIYe5OHSvxhFt7PQ8";
+  document.documentElement.style.visibility="hidden";
+  var _sb=window.supabase.createClient(SB_URL,SB_KEY);
+  _sb.auth.getSession().then(function(r){
+    var s=r.data&&r.data.session;
+    if(s){
+      document.documentElement.style.visibility="";
+      var el=document.getElementById("userEmailLabel");
+      if(el)el.textContent=s.user.email.split("@")[0];
+      var chip=document.getElementById("userChip");
+      if(chip)chip.style.display="flex";
+      window._sb=_sb;
+    } else {
+      window.location.replace("../login.html?next="+encodeURIComponent(window.location.href));
+    }
+  });
+})();
+</script>
 </style>
 </head>
 <body>
@@ -394,8 +416,11 @@ body {
 </main>
 
 <footer style="border-top:1px solid #e2e8f0;padding:20px 24px;text-align:center;font-size:12px;color:#94a3b8;">
-  <a href="../" style="color:#6366f1;text-decoration:none;">← Tilbake til StudieHub</a>
+  <a href="../" style="color:#6366f1;text-decoration:none;">← Tilbake til StudieHub</a> &nbsp;·&nbsp; <a href="#" onclick="siteLogout()" style="color:#94a3b8;text-decoration:none;">Logg ut</a>
 </footer>
 
+<script>
+function siteLogout(){if(window._sb)window._sb.auth.signOut().then(function(){window.location.replace("../login.html");});else window.location.replace("../login.html");}
+</script>
 </body>
 </html>

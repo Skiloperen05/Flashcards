@@ -205,89 +205,17 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 .qopt-correct-btn.selected{background:#7c3aed;border-color:#7c3aed;color:#fff}
 
 /* ── Supabase Auth Overlay ── */
-#authOverlay{position:fixed;inset:0;z-index:9999;background:#0f172a;display:flex;align-items:center;justify-content:center;padding:20px}
-.auth-card{background:#fff;border-radius:24px;padding:40px 36px;width:100%;max-width:400px;box-shadow:0 25px 60px rgba(0,0,0,.35);text-align:center}
-.auth-logo{font-size:36px;margin-bottom:10px}
-.auth-title{font-size:22px;font-weight:700;color:#0f172a;margin-bottom:4px;font-family:'Segoe UI',system-ui,sans-serif}
-.auth-sub{font-size:13px;color:#64748b;margin-bottom:28px}
-.auth-tabs{display:flex;background:#f1f5f9;border-radius:10px;padding:3px;margin-bottom:24px;gap:0}
-.auth-tab{flex:1;padding:8px;border:none;background:transparent;border-radius:8px;font-size:13px;font-weight:600;color:#64748b;cursor:pointer;transition:all .2s;font-family:inherit}
-.auth-tab.active{background:#fff;color:#0f172a;box-shadow:0 1px 4px rgba(0,0,0,.12)}
-.auth-form{text-align:left}
-.auth-field{margin-bottom:16px}
-.auth-field label{display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:6px}
-.auth-field input{width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;font-family:inherit;transition:border-color .2s;background:#fff}
-.auth-field input:focus{border-color:#6366f1}
-.auth-error{font-size:12px;color:#dc2626;margin-bottom:12px;min-height:16px;line-height:1.4}
-.auth-btn{width:100%;padding:12px;background:#6366f1;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s;margin-top:4px;font-family:inherit}
-.auth-btn:hover{background:#4f46e5}
-.auth-btn:disabled{background:#a5b4fc;cursor:default}
-.auth-loading{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.verify-box{text-align:center;padding:8px 0}
-.verify-box .verify-icon{font-size:40px;margin-bottom:12px}
-.verify-box h3{font-size:17px;font-weight:700;color:#0f172a;margin-bottom:8px}
-.verify-box p{font-size:13px;color:#64748b;line-height:1.55}
 /* ── User chip in header ── */
-#userChip{display:none;align-items:center;gap:8px;margin-right:4px}
+#userChip{display:flex;align-items:center;gap:8px;margin-right:4px}
 .user-email{font-size:11px;color:rgba(255,255,255,.65);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .logout-btn{background:rgba(255,255,255,.12);border:none;color:rgba(255,255,255,.75);padding:5px 10px;border-radius:7px;cursor:pointer;font-size:11px;font-weight:600;white-space:nowrap;transition:background .15s;font-family:inherit}
 .logout-btn:hover{background:rgba(255,255,255,.22)}
-/* ── Cloud sync indicator ── */
 .cloud-status{font-size:10px;color:rgba(255,255,255,.45);margin-left:2px}
 
 </style>
 </head>
 <body>
 
-<!-- ── Auth Overlay ── -->
-<div id="authOverlay" style="display:none">
-  <div class="auth-card">
-    <div class="auth-logo">📚</div>
-    <div class="auth-title">StudieHub</div>
-    <p class="auth-sub">Logg inn for å få tilgang til dine flashcards og statistikk</p>
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="authTabLogin" onclick="switchAuthTab('login')">Logg inn</button>
-      <button class="auth-tab" id="authTabRegister" onclick="switchAuthTab('register')">Registrer deg</button>
-    </div>
-    <!-- Login form -->
-    <form id="formLogin" class="auth-form" onsubmit="handleLogin(event)">
-      <div class="auth-field">
-        <label for="loginEmail">E-post</label>
-        <input type="email" id="loginEmail" placeholder="din@epost.no" required autocomplete="email">
-      </div>
-      <div class="auth-field">
-        <label for="loginPassword">Passord</label>
-        <input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="current-password">
-      </div>
-      <div class="auth-error" id="loginError"></div>
-      <button type="submit" class="auth-btn" id="loginBtn">Logg inn</button>
-    </form>
-    <!-- Register form -->
-    <form id="formRegister" class="auth-form" style="display:none" onsubmit="handleRegister(event)">
-      <div class="auth-field">
-        <label for="regEmail">E-post</label>
-        <input type="email" id="regEmail" placeholder="din@epost.no" required autocomplete="email">
-      </div>
-      <div class="auth-field">
-        <label for="regPassword">Passord</label>
-        <input type="password" id="regPassword" placeholder="Minst 6 tegn" required minlength="6" autocomplete="new-password">
-      </div>
-      <div class="auth-field">
-        <label for="regPasswordConfirm">Bekreft passord</label>
-        <input type="password" id="regPasswordConfirm" placeholder="Gjenta passord" required autocomplete="new-password">
-      </div>
-      <div class="auth-error" id="regError"></div>
-      <button type="submit" class="auth-btn" id="regBtn">Opprett konto</button>
-    </form>
-    <!-- Email verification message -->
-    <div id="verifyMessage" style="display:none" class="verify-box">
-      <div class="verify-icon">✉️</div>
-      <h3>Sjekk e-posten din!</h3>
-      <p>Vi har sendt en bekreftelseslenke til <strong id="verifyEmailAddr"></strong>.<br>Klikk lenken i e-posten for å aktivere kontoen din.</p>
-    </div>
-  </div>
-</div>
 
 <div class="app-header" id="appHeader">
   <div style="flex:1">
@@ -1562,24 +1490,13 @@ var _cloudStatsTimer = null;
 function _initSupabase() {
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  sb.auth.onAuthStateChange(function(event, session) {
-    if (event === 'SIGNED_IN' && !currentUser) {
-      currentUser = session.user;
-      _loadCloudData().then(function() { _updateUserChip(); _launchApp(); });
-    } else if (event === 'SIGNED_OUT') {
-      currentUser = null;
-      _updateUserChip();
-      document.getElementById('authOverlay').style.display = 'flex';
-    }
-  });
-
   sb.auth.getSession().then(function(result) {
     var session = result.data && result.data.session;
     if (session) {
       currentUser = session.user;
       _loadCloudData().then(function() { _updateUserChip(); _launchApp(); });
     } else {
-      document.getElementById('authOverlay').style.display = 'flex';
+      window.location.replace('../login.html?next=' + encodeURIComponent(window.location.href));
     }
   });
 }
@@ -1651,74 +1568,11 @@ function _updateUserChip() {
   }
 }
 
-// Auth UI
-function switchAuthTab(tab) {
-  document.getElementById('formLogin').style.display = tab === 'login' ? 'block' : 'none';
-  document.getElementById('formRegister').style.display = tab === 'register' ? 'block' : 'none';
-  document.getElementById('verifyMessage').style.display = 'none';
-  document.getElementById('authTabLogin').classList.toggle('active', tab === 'login');
-  document.getElementById('authTabRegister').classList.toggle('active', tab === 'register');
-}
-
-function handleLogin(e) {
-  e.preventDefault();
-  var btn = document.getElementById('loginBtn');
-  var errEl = document.getElementById('loginError');
-  errEl.textContent = '';
-  btn.disabled = true;
-  btn.innerHTML = '<span class="auth-loading"></span>Logger inn…';
-  var email = document.getElementById('loginEmail').value;
-  var password = document.getElementById('loginPassword').value;
-  sb.auth.signInWithPassword({ email: email, password: password }).then(function(r) {
-    if (r.error) {
-      errEl.textContent = _translateAuthError(r.error.message);
-      btn.disabled = false;
-      btn.textContent = 'Logg inn';
-    }
-    // On success: onAuthStateChange handles the rest
-  });
-}
-
-function handleRegister(e) {
-  e.preventDefault();
-  var btn = document.getElementById('regBtn');
-  var errEl = document.getElementById('regError');
-  errEl.textContent = '';
-  var email = document.getElementById('regEmail').value;
-  var password = document.getElementById('regPassword').value;
-  var confirm = document.getElementById('regPasswordConfirm').value;
-  if (password !== confirm) { errEl.textContent = 'Passordene stemmer ikke overens.'; return; }
-  btn.disabled = true;
-  btn.innerHTML = '<span class="auth-loading"></span>Oppretter konto…';
-  sb.auth.signUp({ email: email, password: password, options: { emailRedirectTo: window.location.href.split('?')[0] } })
-    .then(function(r) {
-      if (r.error) {
-        errEl.textContent = _translateAuthError(r.error.message);
-        btn.disabled = false;
-        btn.textContent = 'Opprett konto';
-      } else {
-        document.getElementById('formRegister').style.display = 'none';
-        document.querySelector('.auth-tabs').style.display = 'none';
-        document.getElementById('verifyMessage').style.display = 'block';
-        document.getElementById('verifyEmailAddr').textContent = email;
-      }
-    });
-}
-
 function handleLogout() {
   if (!confirm('Er du sikker på at du vil logge ut?')) return;
-  sb.auth.signOut();
-}
-
-function _translateAuthError(msg) {
-  if (!msg) return 'En ukjent feil oppstod.';
-  if (msg.includes('Invalid login credentials')) return 'Feil e-post eller passord.';
-  if (msg.includes('Email not confirmed')) return 'E-posten er ikke bekreftet ennå. Sjekk innboksen din.';
-  if (msg.includes('User already registered')) return 'Denne e-posten er allerede registrert.';
-  if (msg.includes('Password should be at least')) return 'Passordet må være minst 6 tegn.';
-  if (msg.includes('rate limit') || msg.includes('over_email_send_rate_limit')) return 'For mange forsøk. Vent litt og prøv igjen.';
-  if (msg.includes('signup_disabled')) return 'Registrering er midlertidig deaktivert.';
-  return msg;
+  sb.auth.signOut().then(function() {
+    window.location.replace('../login.html');
+  });
 }
 
 // ==================== INIT ====================
