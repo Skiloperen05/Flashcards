@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>RET14 — StudieHub</title>
+<title>SOL 1 — StudieHub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -13,7 +13,7 @@
   --bg: #f1f5f9;
   --surface: #ffffff;
   --header-bg: #0f172a;
-  --accent: #2563eb;
+  --accent: #059669;
   --text: #0f172a;
   --text-muted: #64748b;
   --border: #e2e8f0;
@@ -90,7 +90,7 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(37,99,235,.15) 0%, transparent 60%);
+  background: linear-gradient(135deg, rgba(5,150,105,.15) 0%, transparent 60%);
   pointer-events: none;
 }
 .hero-inner {
@@ -102,9 +102,9 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(37,99,235,.2);
-  border: 1px solid rgba(37,99,235,.35);
-  color: #93c5fd;
+  background: rgba(5,150,105,.2);
+  border: 1px solid rgba(5,150,105,.35);
+  color: #6ee7b7;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.8px;
@@ -292,7 +292,7 @@ body {
   <nav class="breadcrumb">
     <a href="/">Hjem</a>
     <span class="breadcrumb-sep">›</span>
-    <span class="breadcrumb-current">RET14</span>
+    <span class="breadcrumb-current">SOL 1</span>
   </nav>
 </header>
 
@@ -300,10 +300,10 @@ body {
   <div class="hero-inner">
     <div class="subject-badge">
       <span class="subject-dot"></span>
-      Skatterett
+      Organisasjonsatferd
     </div>
-    <h1 class="hero-title">RET14</h1>
-    <p class="hero-sub">Personinntekt, aksjer og utbytte, avskrivning, fradrag, arv og eiendom.</p>
+    <h1 class="hero-title">SOL 1</h1>
+    <p class="hero-sub">Individ, gruppe, ledelse og organisasjonsdesign — fra MARS-modellen til organisasjonskultur.</p>
   </div>
 </section>
 
@@ -311,16 +311,16 @@ body {
 
   <div class="stats-row">
     <div class="stat-chip">
-      <span class="stat-value">15</span>
-      <span class="stat-label">Forelesninger</span>
+      <span class="stat-value">3</span>
+      <span class="stat-label">Kortdekker</span>
     </div>
     <div class="stat-chip">
-      <span class="stat-value">21</span>
-      <span class="stat-label">Eksamener analysert</span>
+      <span class="stat-value">78+</span>
+      <span class="stat-label">Flashcards</span>
     </div>
     <div class="stat-chip">
-      <span class="stat-value">31</span>
-      <span class="stat-label">Eksamenstemaer</span>
+      <span class="stat-value">5</span>
+      <span class="stat-label">Temaer</span>
     </div>
   </div>
 
@@ -328,37 +328,36 @@ body {
 
   <div class="tool-grid">
 
-    <a class="tool-card" href="/flashcards/?subject=ret14">
+    <a class="tool-card" href="/flashcards/?subject=subj_sol1">
       <div class="tool-icon-area">
-        <div class="tool-icon" style="background:#eff6ff;">🃏</div>
+        <div class="tool-icon" style="background:#f0fdf4;">🃏</div>
         <span class="tool-status status-active">Tilgjengelig</span>
       </div>
       <div class="tool-divider"></div>
       <div class="tool-body">
         <div class="tool-name">Flashcards</div>
-        <p class="tool-desc">Øv på pensum med kortbasert repetisjon. Gå gjennom forelesningsnotatene og rater hvert kort underveis.</p>
+        <p class="tool-desc">Øv på begreper, teorier og eksperimenter med kortbasert repetisjon. Filtrer på tema.</p>
         <div class="tool-action">
           <span class="tool-open">Åpne <span>→</span></span>
-          <span style="font-size:12px;color:var(--text-muted);">15 dekker</span>
+          <span style="font-size:12px;color:var(--text-muted);">3 dekker</span>
         </div>
       </div>
     </a>
 
-    <a class="tool-card" href="/ret14/eksamen/">
+    <div class="tool-card disabled">
       <div class="tool-icon-area">
-        <div class="tool-icon" style="background:#eff6ff;">📊</div>
-        <span class="tool-status status-active">Tilgjengelig</span>
+        <div class="tool-icon" style="background:#f8fafc;">📊</div>
+        <span class="tool-status status-soon">Kommer</span>
       </div>
       <div class="tool-divider"></div>
       <div class="tool-body">
         <div class="tool-name">Eksamensradar</div>
-        <p class="tool-desc">Visuell analyse av RET14-eksamener fra 2012–2025. Prioriteringsliste, heatmap og trendanalyse.</p>
+        <p class="tool-desc">Analyse av tidligere eksamener — hvilke temaer går igjen og hva bør prioriteres.</p>
         <div class="tool-action">
-          <span class="tool-open">Åpne <span>→</span></span>
-          <span style="font-size:12px;color:var(--text-muted);">21 eksamener</span>
+          <span style="font-size:12px;color:var(--text-muted);">Under utvikling</span>
         </div>
       </div>
-    </a>
+    </div>
 
     <div class="tool-card disabled">
       <div class="tool-icon-area">
@@ -368,7 +367,7 @@ body {
       <div class="tool-divider"></div>
       <div class="tool-body">
         <div class="tool-name">Pensumoversikt</div>
-        <p class="tool-desc">Strukturert oversikt over faglig pensum, temaer og lovhjemler organisert etter forelesning.</p>
+        <p class="tool-desc">Strukturert oversikt over pensum og temaer organisert etter forelesning og kapittel.</p>
         <div class="tool-action">
           <span style="font-size:12px;color:var(--text-muted);">Under utvikling</span>
         </div>
