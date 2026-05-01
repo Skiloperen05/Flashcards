@@ -1690,7 +1690,7 @@ function handleRegister(e) {
   if (password !== confirm) { errEl.textContent = 'Passordene stemmer ikke overens.'; return; }
   btn.disabled = true;
   btn.innerHTML = '<span class="auth-loading"></span>Oppretter konto…';
-  sb.auth.signUp({ email: email, password: password, options: { emailRedirectTo: window.location.origin + '/flashcards/' } })
+  sb.auth.signUp({ email: email, password: password, options: { emailRedirectTo: window.location.href.split('?')[0] } })
     .then(function(r) {
       if (r.error) {
         errEl.textContent = _translateAuthError(r.error.message);
