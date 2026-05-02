@@ -80,6 +80,14 @@ form { text-align: left; }
 .verify-icon { font-size: 44px; margin-bottom: 14px; }
 .verify-box h3 { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
 .verify-box p { font-size: 13px; color: #64748b; line-height: 1.6; }
+.verify-note { margin-top: 10px; font-size: 12px; color: #64748b; }
+.verify-actions { margin-top: 16px; display: grid; gap: 10px; }
+.verify-btn { width: 100%; padding: 11px; border-radius: 10px; border: 1px solid #cbd5e1; background: #fff; color: #1e293b; font-weight: 600; font-family: inherit; cursor: pointer; }
+.verify-btn:hover { background: #f8fafc; }
+.verify-btn:disabled { cursor: default; color: #94a3b8; border-color: #e2e8f0; }
+.verify-status { min-height: 18px; font-size: 12px; line-height: 1.4; color: #475569; }
+.verify-status.error { color: #dc2626; }
+.verify-status.success { color: #16a34a; }
 .verify-box strong { color: #0f172a; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -147,7 +155,12 @@ form { text-align: left; }
   <div id="verifyMsg" style="display:none" class="verify-box">
     <div class="verify-icon">✉️</div>
     <h3>Sjekk innboksen!</h3>
-    <p>Vi sendte en bekreftelseslenke til<br><strong id="verifyAddr"></strong>.<br>Klikk lenken for å aktivere kontoen.</p>
+    <p>Vi forsøkte å sende en bekreftelseslenke til<br><strong id="verifyAddr"></strong>.<br>Klikk lenken for å aktivere kontoen.</p>
+    <p class="verify-note">Finner du ikke e-posten? Sjekk spam/søppelpost, og prøv å sende på nytt.</p>
+    <div class="verify-actions">
+      <button id="resendBtn" class="verify-btn" type="button" onclick="handleResend()">Send bekreftelsesmail på nytt</button>
+      <div id="verifyStatus" class="verify-status"></div>
+    </div>
   </div>
 </div>
 
@@ -155,6 +168,9 @@ form { text-align: left; }
 var SB_URL  = 'https://qnwjhheoekpqqqhevztw.supabase.co';
 var SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFud2poaGVvZWtwcXFxaGV2enR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MTg1NTEsImV4cCI6MjA5MjI5NDU1MX0.gHBvEH-L-zyiW4UnsCxOY2q-HmeIYe5OHSvxhFt7PQ8';
 var sb = window.supabase.createClient(SB_URL, SB_KEY);
+var pendingVerificationEmail = '';
+var resendCooldownSeconds = 0;
+var resendTimer = null;
 
 function getNextUrl() {
   var p = new URLSearchParams(window.location.search).get('next');
@@ -173,6 +189,7 @@ sb.auth.onAuthStateChange(function(event, session) {
 });
 
 function switchTab(tab) {
+  resetResendState();
   document.getElementById('formLogin').style.display    = tab === 'login'    ? 'block' : 'none';
   document.getElementById('formRegister').style.display = tab === 'register' ? 'block' : 'none';
   document.getElementById('verifyMsg').style.display    = 'none';
@@ -191,8 +208,79 @@ function errMsg(msg) {
   if (msg.includes('Email not confirmed'))                 return 'E-posten er ikke bekreftet. Sjekk innboksen.';
   if (msg.includes('User already registered'))             return 'Denne e-posten er allerede registrert.';
   if (msg.includes('Password should be at least'))         return 'Passordet må være minst 6 tegn.';
-  if (msg.includes('rate limit') || msg.includes('over_email_send_rate_limit')) return 'For mange forsøk — vent litt og prøv igjen.';
+  if (msg.includes('rate limit') || msg.includes('over_email_send_rate_limit')) return 'For mange forsøk — vent litt før du prøver å sende ny e-post.';
+  if (msg.includes('Email link is invalid') || msg.includes('expired')) return 'Bekreftelseslenken er ugyldig eller utløpt. Send en ny e-post.';
+  if (msg.toLowerCase().includes('smtp') || msg.toLowerCase().includes('bounce')) return 'E-postlevering feilet hos e-postleverandøren. Prøv igjen senere.';
   return msg;
+}
+
+
+function setVerifyStatus(msg, tone) {
+  var status = document.getElementById('verifyStatus');
+  status.textContent = msg || '';
+  status.classList.remove('error', 'success');
+  if (tone) status.classList.add(tone);
+}
+
+function resetResendState() {
+  if (resendTimer) { clearInterval(resendTimer); resendTimer = null; }
+  resendCooldownSeconds = 0;
+  var btn = document.getElementById('resendBtn');
+  if (btn) { btn.disabled = false; btn.textContent = 'Send bekreftelsesmail på nytt'; }
+  setVerifyStatus('');
+}
+
+function startResendCooldown(seconds) {
+  resendCooldownSeconds = seconds;
+  var btn = document.getElementById('resendBtn');
+  if (!btn) return;
+  btn.disabled = true;
+  btn.textContent = 'Prøv igjen om ' + resendCooldownSeconds + 's';
+  resendTimer = setInterval(function() {
+    resendCooldownSeconds -= 1;
+    if (resendCooldownSeconds <= 0) {
+      clearInterval(resendTimer);
+      resendTimer = null;
+      btn.disabled = false;
+      btn.textContent = 'Send bekreftelsesmail på nytt';
+      return;
+    }
+    btn.textContent = 'Prøv igjen om ' + resendCooldownSeconds + 's';
+  }, 1000);
+}
+
+function showVerificationState(email, notice) {
+  pendingVerificationEmail = email;
+  document.getElementById('tabBar').style.display = 'none';
+  document.getElementById('formRegister').style.display = 'none';
+  document.getElementById('verifyMsg').style.display = 'block';
+  document.getElementById('verifyAddr').textContent = email;
+  setVerifyStatus(notice || 'Hvis utsending feiler, bruk knappen under for å sende ny e-post.', '');
+  startResendCooldown(30);
+}
+
+function handleResend() {
+  var email = pendingVerificationEmail || document.getElementById('regEmail').value;
+  if (!email) {
+    setVerifyStatus('Mangler e-postadresse. Gå tilbake og registrer på nytt.', 'error');
+    return;
+  }
+  setVerifyStatus('Sender ny bekreftelsesmail ...', '');
+  var btn = document.getElementById('resendBtn');
+  btn.disabled = true;
+  sb.auth.resend({
+    type: 'signup',
+    email: email,
+    options: { emailRedirectTo: window.location.origin + window.location.pathname.replace('login.html','') + 'flashcards/' }
+  }).then(function(r) {
+    if (r.error) {
+      setVerifyStatus(errMsg(r.error.message), 'error');
+      startResendCooldown(60);
+      return;
+    }
+    setVerifyStatus('Ny bekreftelsesmail er sendt. Sjekk innboks og spam.', 'success');
+    startResendCooldown(60);
+  });
 }
 
 function handleLogin(e) {
@@ -225,13 +313,20 @@ function handleRegister(e) {
     password: pwd,
     options: { emailRedirectTo: window.location.origin + window.location.pathname.replace('login.html','') + 'flashcards/' }
   }).then(function(r) {
-    if (r.error) { err.textContent = errMsg(r.error.message); setLoading(btn, false); }
-    else {
-      document.getElementById('tabBar').style.display    = 'none';
-      document.getElementById('formRegister').style.display = 'none';
-      document.getElementById('verifyMsg').style.display    = 'block';
-      document.getElementById('verifyAddr').textContent = email;
+    setLoading(btn, false);
+    if (r.error) {
+      err.textContent = errMsg(r.error.message);
+      if (r.error.message && (r.error.message.includes('over_email_send_rate_limit') || r.error.message.toLowerCase().includes('smtp'))) {
+        showVerificationState(email, 'Kontoen kan være opprettet, men vi klarte ikke å sende e-post akkurat nå. Prøv igjen med knappen under.');
+      }
+      return;
     }
+    var hasUser = !!(r.data && r.data.user);
+    if (!hasUser) {
+      err.textContent = 'Uventet respons fra server. Prøv igjen.';
+      return;
+    }
+    showVerificationState(email, 'Vi har sendt en bekreftelsesmail. Sjekk innboks og spam/søppelpost.');
   });
 }
 </script>
