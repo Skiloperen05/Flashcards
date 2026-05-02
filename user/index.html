@@ -1,6 +1,438 @@
-<!DOCTYPE html><html lang="no"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Brukerområde — StudieHub</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>
-:root{--bg:#f1f5f9;--surface:#fff;--header-bg:#0f172a;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--radius-lg:20px;--radius-md:12px;--shadow:0 4px 16px rgba(0,0,0,.08)}*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--text)}.header{background:var(--header-bg);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center}.header a{color:#cbd5e1;text-decoration:none;font-size:13px}.wrap{max-width:920px;margin:0 auto;padding:28px 18px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:18px}.k{font-size:12px;color:var(--muted);text-transform:uppercase}.v{font-size:30px;font-weight:700}.actions{display:flex;gap:10px;margin-top:14px}.btn{padding:10px 14px;border-radius:var(--radius-md);border:1px solid var(--border);text-decoration:none;color:var(--text);font-size:13px;background:#fff}
-</style></head><body><div class="header"><strong>👤 Brukerområde</strong><a href="../index.html">← Hjem</a></div><div class="wrap"><div class="grid"><div class="card"><div class="k">Totale økter</div><div class="v" id="sessions">0</div></div><div class="card"><div class="k">Kort gjennomgått</div><div class="v" id="cards">0</div></div><div class="card"><div class="k">Quiz-forsøk</div><div class="v" id="quiz">0</div></div><div class="card"><div class="k">Gjennomsnitt quiz</div><div class="v" id="avg">0%</div></div></div><div class="actions"><a class="btn" href="progress.html">Se progresjon</a><a class="btn" href="achievements.html">Se prestasjoner</a><a class="btn" href="../flashcards/index.html">Til flashcards</a></div></div><script src="auth-guard.js"></script><script>
-function getStats(){try{return JSON.parse(localStorage.getItem('fc_stats')||'{}')}catch(e){return{}}}
-window.onUserAuthorized=function(){var s=getStats(),sess=0,cards=0,q=0,qp=[];Object.values(s).forEach(function(d){(d.sessions||[]).forEach(function(x){sess++;cards+=x.total||0});(d.quizSessions||[]).forEach(function(x){q++;qp.push(x.pct||0)})});document.getElementById('sessions').textContent=sess;document.getElementById('cards').textContent=cards;document.getElementById('quiz').textContent=q;document.getElementById('avg').textContent=(qp.length?Math.round(qp.reduce((a,b)=>a+b,0)/qp.length):0)+'%';}
-</script></body></html>
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Brukerområde — StudieHub</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f1f5f9;
+  --surface: #ffffff;
+  --header-bg: #0f172a;
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --accent: #6366f1;
+  --accent-light: #ede9fe;
+  --radius-lg: 20px;
+  --radius-md: 12px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.08), 0 1px 4px rgba(0,0,0,.04);
+  --shadow-hover: 0 12px 32px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.06);
+  --transition: 0.22s cubic-bezier(.4,0,.2,1);
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+.site-header {
+  background: var(--header-bg);
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.site-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+.logo-mark {
+  width: 32px; height: 32px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.logo-text {
+  font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -0.3px;
+}
+.header-back {
+  display: flex; align-items: center; gap: 6px;
+  color: #94a3b8; font-size: 13px; font-weight: 500;
+  text-decoration: none; padding: 6px 12px;
+  border-radius: var(--radius-md);
+  transition: background var(--transition), color var(--transition);
+}
+.header-back:hover { background: rgba(255,255,255,.08); color: #e2e8f0; }
+
+/* ── Profile Hero ── */
+.profile-hero {
+  background: linear-gradient(160deg, #0f172a 0%, #1e1b4b 100%);
+  padding: 48px 24px 72px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.profile-hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; left: 50%; transform: translateX(-50%);
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(99,102,241,.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+.avatar-ring {
+  width: 96px; height: 96px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 38px; font-weight: 800; color: #fff;
+  box-shadow: 0 0 0 4px rgba(99,102,241,.3), 0 8px 32px rgba(99,102,241,.4);
+  position: relative;
+  animation: avatarPop .5s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes avatarPop {
+  from { transform: scale(0.6); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+.profile-name {
+  font-size: clamp(22px, 4vw, 30px);
+  font-weight: 700;
+  color: #f8fafc;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+  animation: fadeUp .4s .1s ease both;
+}
+.profile-email {
+  font-size: 14px;
+  color: #94a3b8;
+  animation: fadeUp .4s .15s ease both;
+}
+.profile-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  margin-top: 14px;
+  background: rgba(99,102,241,.2);
+  border: 1px solid rgba(99,102,241,.35);
+  color: #a5b4fc;
+  font-size: 12px; font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  animation: fadeUp .4s .2s ease both;
+}
+
+/* ── Stats cards ── */
+.main {
+  max-width: 860px;
+  margin: -36px auto 0;
+  padding: 0 20px 60px;
+  position: relative;
+  z-index: 1;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 20px 16px;
+  text-align: center;
+  animation: fadeUp .4s ease both;
+}
+.stat-card:nth-child(1) { animation-delay: .05s; }
+.stat-card:nth-child(2) { animation-delay: .10s; }
+.stat-card:nth-child(3) { animation-delay: .15s; }
+.stat-card:nth-child(4) { animation-delay: .20s; }
+.stat-icon {
+  font-size: 24px;
+  margin-bottom: 10px;
+  display: block;
+}
+.stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.8px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── Action cards ── */
+.section-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.action-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.action-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 22px 20px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  animation: fadeUp .4s ease both;
+}
+.action-card:nth-child(1) { animation-delay: .25s; }
+.action-card:nth-child(2) { animation-delay: .30s; }
+.action-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  border-color: #c7d2fe;
+}
+.action-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.action-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+.action-sub {
+  font-size: 12px;
+  color: var(--muted);
+}
+.action-arrow {
+  margin-left: auto;
+  font-size: 16px;
+  color: #cbd5e1;
+  transition: transform var(--transition), color var(--transition);
+}
+.action-card:hover .action-arrow { color: var(--accent); transform: translateX(3px); }
+
+/* ── Flashcards bar ── */
+.fc-bar {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-decoration: none;
+  margin-bottom: 28px;
+  box-shadow: 0 4px 20px rgba(99,102,241,.35);
+  transition: transform var(--transition), box-shadow var(--transition);
+  animation: fadeUp .4s .35s ease both;
+}
+.fc-bar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(99,102,241,.45);
+}
+.fc-bar-left { display: flex; align-items: center; gap: 14px; }
+.fc-bar-icon { font-size: 26px; }
+.fc-bar-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+.fc-bar-sub { font-size: 12px; color: rgba(255,255,255,.7); }
+.fc-bar-arrow { font-size: 20px; color: rgba(255,255,255,.7); transition: transform var(--transition); }
+.fc-bar:hover .fc-bar-arrow { transform: translateX(4px); color: #fff; }
+
+/* ── Logout ── */
+.logout-wrap {
+  text-align: center;
+  animation: fadeUp .4s .4s ease both;
+}
+.logout-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: #94a3b8;
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+.logout-btn:hover {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .action-grid { grid-template-columns: 1fr; }
+  .profile-hero { padding: 40px 20px 64px; }
+}
+@media (max-width: 380px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a class="site-logo" href="../index.html">
+    <div class="logo-mark">📚</div>
+    <span class="logo-text">StudieHub</span>
+  </a>
+  <a class="header-back" href="../index.html">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Tilbake
+  </a>
+</header>
+
+<section class="profile-hero">
+  <div class="avatar-ring" id="heroAvatar">?</div>
+  <div class="profile-name">Hei, <span id="heroName">Bruker</span>!</div>
+  <div class="profile-email" id="heroEmail"></div>
+  <div class="profile-badge">✦ Aktiv student</div>
+</section>
+
+<main class="main">
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-icon">📚</span>
+      <div class="stat-value" id="sessions">0</div>
+      <div class="stat-label">Studieøkter</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">🃏</span>
+      <div class="stat-value" id="cards">0</div>
+      <div class="stat-label">Kort lest</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">🧠</span>
+      <div class="stat-value" id="quiz">0</div>
+      <div class="stat-label">Quiz-forsøk</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">📊</span>
+      <div class="stat-value" id="avg">0%</div>
+      <div class="stat-label">Quiz-snitt</div>
+    </div>
+  </div>
+
+  <div class="section-label">Verktøy</div>
+
+  <div class="action-grid">
+    <a class="action-card" href="progress.html">
+      <div class="action-icon" style="background:#ede9fe;">📈</div>
+      <div>
+        <div class="action-title">Progresjon</div>
+        <div class="action-sub">Se fremgang per fag</div>
+      </div>
+      <span class="action-arrow">→</span>
+    </a>
+    <a class="action-card" href="achievements.html">
+      <div class="action-icon" style="background:#fef9c3;">🏆</div>
+      <div>
+        <div class="action-title">Prestasjoner</div>
+        <div class="action-sub">Badges og mål</div>
+      </div>
+      <span class="action-arrow">→</span>
+    </a>
+  </div>
+
+  <a class="fc-bar" href="../flashcards/">
+    <div class="fc-bar-left">
+      <span class="fc-bar-icon">🗂</span>
+      <div>
+        <div class="fc-bar-title">Alle flashcards</div>
+        <div class="fc-bar-sub">Start en ny studieøkt</div>
+      </div>
+    </div>
+    <span class="fc-bar-arrow">→</span>
+  </a>
+
+  <div class="logout-wrap">
+    <button class="logout-btn" onclick="handleLogout()">Logg ut</button>
+  </div>
+
+</main>
+
+<script src="auth-guard.js"></script>
+<script>
+function getStats() {
+  try { return JSON.parse(localStorage.getItem('fc_stats') || '{}'); } catch(e) { return {}; }
+}
+
+function animateCount(el, target, suffix) {
+  suffix = suffix || '';
+  var start = 0;
+  var duration = 700;
+  var startTime = null;
+  function step(ts) {
+    if (!startTime) startTime = ts;
+    var progress = Math.min((ts - startTime) / duration, 1);
+    var eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.round(eased * target) + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+window.onUserAuthorized = function(session) {
+  var email = (session && session.user && session.user.email) || '';
+  var username = email.split('@')[0];
+  var initial = username.charAt(0).toUpperCase();
+
+  document.getElementById('heroAvatar').textContent = initial;
+  document.getElementById('heroName').textContent = username;
+  document.getElementById('heroEmail').textContent = email;
+
+  var s = getStats();
+  var sess = 0, cards = 0, q = 0, qp = [];
+  Object.values(s).forEach(function(d) {
+    (d.sessions || []).forEach(function(x) { sess++; cards += x.total || 0; });
+    (d.quizSessions || []).forEach(function(x) { q++; qp.push(x.pct || 0); });
+  });
+  var avgPct = qp.length ? Math.round(qp.reduce(function(a,b){return a+b;},0) / qp.length) : 0;
+
+  animateCount(document.getElementById('sessions'), sess);
+  animateCount(document.getElementById('cards'), cards);
+  animateCount(document.getElementById('quiz'), q);
+  animateCount(document.getElementById('avg'), avgPct, '%');
+};
+
+function handleLogout() {
+  var SUPABASE_URL = 'https://qnwjhheoekpqqqhevztw.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFud2poaGVvZWtwcXFxaGV2enR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MTg1NTEsImV4cCI6MjA5MjI5NDU1MX0.gHBvEH-L-zyiW4UnsCxOY2q-HmeIYe5OHSvxhFt7PQ8';
+  var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  sb.auth.signOut().finally(function() {
+    window.location.replace('../login.html');
+  });
+}
+</script>
+</body>
+</html>

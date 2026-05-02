@@ -46,11 +46,16 @@
     });
   }
 
-  function bindUserInfo(labelId, chipId) {
+  function bindUserInfo(labelId, chipId, avatarId) {
     if (!session || !session.user) return;
+    var email = session.user.email || '';
+    var username = email.split('@')[0];
+    var initial = username.charAt(0).toUpperCase();
     var label = labelId ? document.getElementById(labelId) : null;
     var chip = chipId ? document.getElementById(chipId) : null;
-    if (label) label.textContent = (session.user.email || '').split('@')[0];
+    var avatar = avatarId ? document.getElementById(avatarId) : null;
+    if (label) label.textContent = username;
+    if (avatar) avatar.textContent = initial;
     if (chip) chip.style.display = 'flex';
   }
 
