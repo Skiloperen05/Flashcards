@@ -1516,7 +1516,6 @@ function _initSupabase() {
 }
 
 function _launchApp() {
-  document.getElementById('authOverlay').style.display = 'none';
   var params = new URLSearchParams(window.location.search);
   var subjectParam = params.get('subject');
   if (subjectParam) {
