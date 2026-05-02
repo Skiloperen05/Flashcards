@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Flashcards — StudieHub</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../shared/auth-guard.js"></script>
+<script>AuthGuard.requireAuth();</script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#f0f2f5;--card:#fff;--primary:#1a1a2e;--accent:#2563eb;--green:#059669;--yellow:#d97706;--red:#dc2626;--text:#1a1a2e;--muted:#6b7280;--border:#e5e7eb;--radius:16px;--shadow:0 2px 12px rgba(0,0,0,.08)}
@@ -1480,24 +1482,17 @@ document.getElementById("confirmAddQuestion").addEventListener("click", function
 
 
 // ==================== SUPABASE ====================
-var SUPABASE_URL = 'https://qnwjhheoekpqqqhevztw.supabase.co';
-var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFud2poaGVvZWtwcXFxaGV2enR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MTg1NTEsImV4cCI6MjA5MjI5NDU1MX0.gHBvEH-L-zyiW4UnsCxOY2q-HmeIYe5OHSvxhFt7PQ8';
 var sb = null;
 var currentUser = null;
 var _cloudSaveTimer = null;
 var _cloudStatsTimer = null;
 
 function _initSupabase() {
-  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  sb.auth.getSession().then(function(result) {
-    var session = result.data && result.data.session;
-    if (session) {
-      currentUser = session.user;
-      _loadCloudData().then(function() { _updateUserChip(); _launchApp(); });
-    } else {
-      window.location.replace('../login.html?next=' + encodeURIComponent(window.location.href));
-    }
+  AuthGuard.requireAuth().then(function(session) {
+    if (!session) return;
+    sb = AuthGuard.getClient();
+    currentUser = session.user;
+    _loadCloudData().then(function() { _updateUserChip(); _launchApp(); });
   });
 }
 
@@ -1571,7 +1566,7 @@ function _updateUserChip() {
 function handleLogout() {
   if (!confirm('Er du sikker på at du vil logge ut?')) return;
   sb.auth.signOut().then(function() {
-    window.location.replace('../login.html');
+    window.location.replace(AuthGuard.getLoginPath());
   });
 }
 
