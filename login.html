@@ -180,6 +180,15 @@ function switchTab(tab) {
   document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
 }
 
+
+function showInfoFromQuery() {
+  var msg = new URLSearchParams(window.location.search).get('msg');
+  if (msg === 'verify_email') {
+    var err = document.getElementById('loginErr');
+    if (err) err.textContent = 'Du må bekrefte e-posten før du kan bruke appen. Sjekk innboks/spam eller prøv registrering på nytt.';
+  }
+}
+
 function setLoading(btn, on) {
   btn.disabled = on;
   btn.classList.toggle('loading', on);
