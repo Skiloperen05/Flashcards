@@ -1,0 +1,94 @@
+Transkriberte oppgaver fra bilder
+Oppgavene er sortert etter oppgavenummer. Tekst som ikke var synlig i opplastede bilder er ikke tatt med.
+5.1 Når isokvant møter isokost
+Birger er ingeniør og ivrer for en mer kapitalintensiv produksjon i Conrads papirfabrikk. I dag produserer de Q = 1 ved hjelp av K = L = 1. Produktfunksjonen er gitt ved Q = K^α L^(1−α), og Birger forteller at de uten å endre produksjonen kan halvere innsatsen av arbeidskraft ved å øke kapitalinnsatsen til K = 4, og anbefaler denne løsningen.
+a. Med utgangspunkt i Birgers beregninger, hva må α være i papirfabrikkens produktfunksjon?
+b. Anta at w = 2, r = 1. Med disse faktorprisene, bør Conrad følge Birgers råd om en mer kapitalintensiv produksjon?
+5.2 Samme kvantum eller samme kostnad?
+En produsent har produktfunksjonen Q = K^0.5 L^0.5 og produserer et kvantum Q = 1. Faktorprisene er i utgangspunktet w = r = 1.
+a. Hvilken faktorinnsats vil bedriften velge, og hva blir kostnadene i produksjonen?
+b. Prisen på arbeidskraft stiger så til w = 2. Anta at bedriften ønsker å holde kvantum produsert konstant (Q = 1). Hvordan påvirker lønnsøkningen bedriftens tilpasning? Regn ut (rund av til nærmeste desimal) og illustrer.
+c. Anta at bedriften i stedet ønsker å holde kostnadene konstante. Hvordan påvirker lønnsøkningen (fra w = 1 til w = 2) bedriftens tilpasning i dette tilfellet? Regn ut (rund av til nærmeste desimal) og illustrer.
+5.3 Hvor mye sparer Conrad på å flytte produksjonen til Kina?
+Hvor mye er det å spare på å flytte produksjonen til Kina? Anta at lønnen i Norge er gitt ved w_N = 1 og i Kina ved w_K = 0.25, mens prisen på kapital er den samme begge steder, r = 1. Bedriften har bestemt seg for å produsere Q = 1 (altså én milliard ark) uansett om den flytter eller ikke. Produksjonsteknologien er gitt ved Q = K^0.5 L^0.5.
+a. Hva blir kostnadsbesparelsen av å flytte produksjonen til Kina dersom Conrad bruker nøyaktig samme faktorsammensetning der som han gjør i Norge? Regn ut og illustrer.
+b. Hva er den optimale faktorsammensetning med produksjon i Kina? Hvor mye ekstra er det å spare på å tilpasse faktorkombinasjonen til den lavere prisen på arbeidskraft i Kina? Regn ut og illustrer i samme figur som i deloppgave a.
+5.4 Leontief & Sons
+Leontief & Sons er kjent for sine herreskjorter av ypperste kvalitet. Bedriften ble etablert av den russiske innvandreren Wassily Leontief, som kom til USA tidlig på 1900-tallet. Produksjonen skjer (ikke overraskende!) ved hjelp av en Leontief produktfunksjon:
+Q = min(K/α, L/(1−α))
+Produksjonen drives av de tre sønnene i tre byer, med fabrikker etablert opp gjennom tidene og med litt ulik teknologi:
+Hver av brødrene har som mål at fabrikken skal levere et kvantum Q = 1 til lavest mulige kostnader. Lønnen i USA er gitt ved w_U = 1, og prisen på kapital er r_U = 1.
+For å holde kostnadene nede vurderer de å flytte en eller flere av fabrikkene til Kina. Lønnsnivået er lavere, w_K = 0.5, men politiske spenninger mellom landene gjør at kapitalkostnadene for amerikanske investorer er høyere (investorer krever en kompensasjon for å investere under så usikre forhold, ofte referert til som en risikopremie): r_K = 1.5.
+a. Hvilke flytteråd vil du gi til brødrene Leontief?
+b. Anta så at det politiske klimaet forbedres, slik at prisen på kapital i Kina går ned til r_K = 1.25. Hvordan påvirker dette dine råd om flytting? Regn ut og illustrer.
+5.5 Om robotisering av papirproduksjonen
+Conrad har vært på papirkonferansen i Stuttgart og blitt inspirert av alt snakket om robotisering i bransjen. I dag produserer han en gitt mengde papir Q = 1 ved hjelp av den tradisjonelle teknologien Q = K^0.5 L^0.5. Produktfunksjonen med robot-teknologi er Q = AK, hvor effektiviteten på dagens roboter er A = 0.5.
+a. Anta at w = r = 1 og at produksjonen skal være uendret på Q = 1. Vil du anbefale Conrad å velge robotisering? Regn ut og illustrer.
+b. Anta så at prisen på kapital øker til r = 4. Hvordan påvirker dette ditt svar (i forhold til det du fant i deloppgave a)?
+c. Se for deg at robotene blir mer effektive, hvor A^ny > 0.5. Hvor stor må A^ny være for at det med r = 4 skal være lønnsomt å robotisere papirproduksjonen?
+5.6 Roboter eller Kina?
+Anta at produktfunksjonen med tradisjonell teknologi er Q = K^0.5 L^0.5 og med robot-teknologi Q = AK, hvor effektiviteten til robotene er A = 0.75. Produksjonen kan skje enten i Norge eller i Kina. Lønnsnivået i Norge er w_N = 1 mens lønnsnivået i Kina er w_K = 0.5. Prisen på kapital i Norge er r_N = 1, mens politisk usikkerhet i Kina gjør at man der må betale en risikopremie slik at r_K = 2.
+Conrad produserer i dag Q = 1 ved hjelp av tradisjonell teknologi i Norge. Men han tenker både på teknologi og lokalisering av produksjonen, men uten å endre produsert mengde. Hvilke råd vil du gi?
+a. Vurder først valget av teknologi i Norge: robot eller tradisjonell?
+b. Vurder så valget mellom robot eller tradisjonell teknologi i Kina.
+c. Sammenlign det du fant i deloppgave a og b: Hvor vil du anbefale Conrad å legge produksjonen?
+6.1 Syersken i Dar es Salaam
+Du er intern for bistandsorganisasjonen Strømmestiftelsen, og er blitt sendt til Tanzania for å lage en rapport om kvinner i næringslivet. I den forbindelse møter du Grace. Hun bor i Dar es Salaam, og som så mange kvinner der driver hun en liten forretning. Fra sitt kjøkken syr hun kanga, et tradisjonelt plagg for kvinner. Grace eier to symaskiner som hun har arvet fra sin mor, den ene plasserer hun på kjøkkenbordet etter frokost, og den andre står i skapet.
+I løpet av en arbeidsdag klarer hun å produsere et plagg, og da går symaskinen omtrent i ett. Hun tjener ikke så mye penger på dette, men tenker at siden kostnadene er så lave (kjøkkenet er hennes, symaskinene har hun arvet, og hun betaler ikke lønn til noen, heller ikke til seg selv), så er det ok. Men hva er egentlig kostnadene?
+Du har tatt en runde i nærområdet, og det viser seg at symaskiner enkelt kan leies på dagsbasis, om nødvendig. Det finnes også andre syersker som ansetter folk, selv på korte oppdrag.
+a. Hvilke kostnader er relevante i Graces lille bedrift?
+b. Grace har fått tilbud om å leie noen produksjonslokaler lenger nede i gaten, og hun vurderer å heller sy klærne der. Spiller det egentlig noen rolle for (de økonomiske) kostnadene om hun blir værende på kjøkkenet eller flytter produksjonen ut av huset?
+c. Oppsummert, hvilke råd vil du gi til Grace?
+Merk: Dette er en åpen diskusjonsoppgave, og krever hverken utregninger eller figurer.
+6.2 På besøk hos Alpha Tech
+Du har fått jobb i et konsulentselskap, og ditt første oppdrag er et besøk til oppstartsbedriften Alpha Tech. De har ennå ikke begynt å ansette folk og lurer på hva arbeidsbehovet vil være for ulike produksjonsnivåer, hvor mye hver ny ansatt vil klare å produsere, og hva en slik ekspansjon vil koste. De ønsker å handle raskt, slik at perspektivet er kortsiktig, hvor vi kan anta at den installerte kapitalen ligger fast. Produktfunksjonen deres er Q = K^0.5 L^0.5 og den installerte kapitalen er K_0 = 1.
+a. Hva er arbeidsbehovet i produksjonen og grenseproduktet til arbeidskraften i bedriften? Regn ut og illustrer.
+b. Anta at prisen på innsatsfaktorene arbeidskraft og kapital er henholdsvis w = r = 1, og at bruken av vareinnsats er så liten at vi kan se bort ifra den (z = 0). Regn ut grensekostnaden og den totale gjennomsnittskostnaden i produksjonen og illustrer.
+c. Ledelsen i Alpha Tech ber deg om en tolking av kostnadsfunksjonene, og punktet hvor de krysser. Hva kan du si om dette?
+6.3 På nytt besøk hos Alpha Tech
+Det har gått et år, og Alpha Tech ber deg komme tilbake for en ny diskusjon om kostnadsfunksjoner. I mellomtiden har de investert i mer produksjonskapital, den er doblet slik at K_0 = 2. De stiller de samme spørsmålene som ved ditt første besøk, og du svarer så godt du kan.
+a. Hva er arbeidsbehovet i produksjonen og grenseproduktet til arbeidskraften i bedriften nå? Regn ut og illustrer i en figur, hvor du også sammenligner med kostnadsfunksjonene fra året før.
+b. Prisen på innsatsfaktorene arbeidskraft og kapital er fremdeles w = r = 1, og vi kan se bort ifra bruken av vareinnsats (z = 0). Regn ut grensekostnaden og den totale gjennomsnittskostnaden i produksjonen og illustrer.
+c. Forklar for ledelsen ved Alpha Tech forskjellene du finner i arbeidsbehov og kostnader som du ser nå, opp mot det du fant ved ditt første besøk.
+6.4 Grønt skifte i pappindustrien
+En pappfabrikk produserer papp Q ved hjelp av teknologien Q = K_0^0.5 L^0.5, hvor K_0 er installert kapital og L er arbeidskraft. Tradisjonelt er pappindustrien en storforbruker av elektrisitet siden den fuktige papirmassen må tørkes før den kan omdannes til papir. Anta at strømkostnadene er proporsjonale med produksjonen, Z = zQ, hvor z er enhetsprisen på strøm. Kostnadsfunksjonen til en tradisjonell («brun») pappfabrikk er derfor gitt ved:
+C_B = wL + rK_0 + zQ
+Fabrikken vurderer nå å foreta et grønt skifte. De ønsker å investere i et forbrenningsanlegg som produserer varme fra avfall og restmaterialer. Et slikt anlegg koster FC_G = 3 og for enkelhet skyld antar vi at dette betyr at bedriften slipper å kjøpe strøm, det vil si Z = 0. Kostnadsfunksjonen etter et grønt skifte blir da:
+C_G = wL + rK_0 + FC_G
+Anta at den installerte kapitalen er gitt ved K_0 = 1, at prisen på kapital er r = 1, og at lønnen er w = 1 (og at dette ikke påvirkes av et grønt skifte).
+a. Hva er grensekostnadene og de gjennomsnittlige totale kostnadene (på kort sikt, altså med den installerte kapitalen) før og etter et grønt skifte?
+b. Bedriften er interessert i å vite hvilken teknologi som gir de laveste kostnadene. For å si noe om dette, regn ut strømprisen (z) som gjør at brun og grønn teknologi har nøyaktig samme minimumsnivå på de gjennomsnittlige totale kostnadene, og diskuter så hvordan en høyere eller lavere strømpris påvirker hvilken teknologi du vil anbefale.
+6.5 Conrads to fabrikker I
+Conrad har to fabrikker, den ene ligger Sør i fylket og den andre lenger Nord. Fabrikken i Sør har totale kostnader TC_S = Q_S^2, mens den i Nord har totale kostnader TC_N = 0.6Q_N.
+a. Regn ut grensekostnadene og de gjennomsnittlige totale kostnadene for de to fabrikkene og illustrer med en figur for fabrikken i Sør og en for fabrikken i Nord.
+b. Anta at Conrad har bestemt at den samlede produksjonen fra de to fabrikkene skal være Q = 1. Illustrer kostnadsfunksjonene i en «badekar»-figur, hvor produksjonen i Sør måles fra venstre mot høyre og den i Nord fra høyre mot venstre.
+6.6 Conrads to fabrikker II
+Conrad lurer på hva som er optimal fordeling av produksjonen i de to fabrikkene, den i Sør og den i Nord, og har bedt Anne og Birger om råd. Kostnadsfunksjonene er som gitt i oppgaven ovenfor, og den samlede produksjonen skal fremdeles være Q = 1. Ta derfor utgangspunkt i «badekar»-figuren, hvor produksjonen i Sør måles fra venstre mot høyre og den i Nord fra høyre mot venstre.
+a. Birger foreslår at man bør sørge for at de gjennomsnittlige totale kostnadene i de to produksjonsanleggene blir utjevnet. Regn ut de totale kostnadene med Birgers forslag og illustrer tilpasningen og kostnadene i en figur.
+b. Conrad synes det virker mest fornuftig å dele produksjonen likt mellom de to fabrikkene. Regn ut de totale kostnadene med Conrads forslag og illustrer tilpasningen og kostnadene i en figur. Sammenlign med kostnadene du fant med Birgers forslag.
+c. Anne er uenig med begge to. Hun sier: «Det er viktig å tenke marginalt!» Hva mener hun med dette? Regn ut de totale kostnadene med Annes forslag og illustrer tilpasningen og kostnadene i en figur, hvor du også sammenligner med forslagene til Birger og Conrad.
+7.1 Profitt i den grønne pappfabrikken
+Papp-produsenten som vi møtte i oppgave 6.4 har nå lagt om til grønn produksjon. Bedriften opererer i et frikonkurransemarked. Bruk for øvrig samme antagelser som du fikk oppgitt i den oppgaven, og kostnadsfunksjonene som du fant der.
+a. Scenario a. Hvilket nivå på produksjonen maksimerer profitten dersom prisen på papp er P_1 = 4? Hva er lønnsomheten i bedriften? Regn ut og illustrer.
+b. Scenario b. Prisen på papp øker så til P_2 = 6. Noen tar til orde for at man ikke bør endre produksjonen, siden dette vil øke kostnadene. Hva blir profitten med uendret produksjon? Regn ut og illustrer.
+c. Scenario c. Hva ville du foreslått? Lag ditt eget scenario!
+7.2 Superprofitt i lakseoppdrett
+Du er utnevnt som sekretær i et utvalg som skal se på beskatning i havbruket, og har fått i oppdrag av utvalgslederen å bruke mikroøkonomisk teori til å si noe om lønnsomheten i næringen. Anta at lakseproduksjon er gitt ved produktfunksjonen Q = K^0.5 S^0.5, hvor K er «naturkapital» og S er smolt (altså laksebabyer) som oppdretterne kjøper inn og videreforedler til ferdig laks.
+Naturen er en gitt faktor, et konsesjonsområde, hvor både størrelsen på anlegget og antall anlegg i næringen er regulert av staten. Anta at størrelsen på hver konsesjon er gitt ved K_0 = 1. Tidligere ble konsesjonene delt ut gratis, mens produsentene i de siste årene har måttet betale for dem. Lakseprodusent A var tidlig ute og fikk konsesjonen gratis, r_A = 0, mens B kom til senere og måtte betale en pris r_B = 1. Prisen på smolt er lik for begge produsentene og gitt ved s = 1.
+a. Regn ut kostnadene (grensekostnader, gjennomsnittlige variable kostnader, gjennomsnittlige totale kostnader) for produsent A og B og illustrer.
+b. Sammenlign profitten for de to produsentene dersom prisen på laks er P = 2.
+7.3 Profitten går opp og ned
+Ta utgangspunkt i figur 7.1 i hovedboken. Anta en produktfunksjon Q = K_0^0.5 L^0.5, hvor K_0 = 1, r = w = 1, og råvarekostnader zQ, hvor z = 1, og la P_2 = 5. Hva er kvantum produsert som gir punktene a, b, c og d i figuren? Rund av til nærmeste to desimaler. Hva skjer med profitten når produksjonen går fra a til d?
+7.4 Mer eller mindre fornøyde kapitaleiere
+Denne oppgaven tar utgangspunkt i den forrige, men nå skal vi ha fokus på pris og lønnsomhet.
+a. Hva er profitten for en profittmaksimerende produsent dersom prisen er P_2 = 5?
+b. Hvor lav pris kan bedriften tåle før profitten blir negativ?
+7.5 Høyere gasspriser: Skal vi legge ned fabrikken?
+Yara produserer kunstgjødsel på Kontinentet, og bruker gass som energikilde. Fabrikken driver i utgangspunktet lønnsomt, med positiv profitt, men økte gasspriser truer lønnsomheten.
+Ved hjelp av figurer (dette er ikke en regneoppgave), analyser hvordan den økte gassprisen påvirker optimal tilpasning og lønnsomhet i fabrikken (du kan tenke på en økning i gass som en økning i det vi i hovedboken har kalt z). Hva skal til for at du vil anbefale å stenge ned fabrikken?
+7.6 Bedriftens etterspørsel etter arbeidskraft
+Anta at en bedrift produserer papir ved hjelp av den balanserte Cobb-Douglas-produktfunksjonen Q = K_0^0.5 L^0.5 og at arbeidskraft er den eneste variable kostnaden (det vil si, se bort ifra kostnader til vareinnsats og energi, Z = 0). Anta også at den installerte kapitalen er gitt ved K_0 = 1.
+a. Bedriften ønsker å maksimere profitten. Hva blir etterspørselen etter arbeidskraft (som funksjon av pris og lønn)?
+b. Anta at prisen er lav, P_lav = 2, la oss kalle det Scenario 1. Tegn inn etterspørselen i en figur, med lønn på den vertikale aksen og antall arbeidere på den horisontale. Hvor mange arbeidere bør bedriften ansette dersom lønnen er henholdsvis høy, w_høy = 1, og lav, w_lav = 0.5?
+c. Betrakt et Scenario 2 hvor prisen er høy, P_høy = 4. Hvordan påvirker den høyere prisen etterspørselen etter arbeidskraft? Hvor mange arbeidere bør bedriften nå ansette dersom lønnen er w_høy = 1?
+d. Til nå i denne oppgaven har vi sett på bedriftens etterspørsel etter arbeidskraft. Arbeidskraften brukes i produksjonen av papir, og i denne siste deloppgaven skal du se på bedriftens tilbudsside. Hva er grensekostnaden i produksjonen (som definerer tilbudskurven) og produsert mengde med lav og høy pris, og lav og høy lønn, som definert ovenfor? Tegn inn i en egen figur, med pris på den vertikale aksen og mengde produsert (Q) på den horisontale aksen.

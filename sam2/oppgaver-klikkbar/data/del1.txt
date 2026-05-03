@@ -1,0 +1,140 @@
+Transkriberte oppgaver – konsumentteori
+Ryddet versjon med penere formler og kompakt mellomrom
+1. Penger, priser og preferanser
+1.1 Vanskelige valg ved fruktdisken
+Du står foran fruktdisken i butikken og funderer på hva du skal kjøpe: appelsiner (A) eller bananer (B)? Anta at dine preferanser er gitt ved den balanserte Cobb-Douglas-nyttefunksjonen U = A0,5B0,5.
+a. Du har lagt fire appelsiner og én banan (A = 4, B = 1) i handlekurven, vi kaller det Handlekurv 1. Hvor stor nytte har du av denne handlekurven?
+b. Du funderer over hvilke alternative sammensetninger av A og B som ville gi deg samme nytte som Handlekurv 1. For eksempel, hvor mange appelsiner er du villig til å ta ut av kurven for å få én banan til (altså gå fra B = 1 til B = 2)? Kall dette Handlekurv 2. Og hvor mange appelsiner er du nå villig til å legge tilbake for å få nok en banan (fra B = 2 til B = 3)? Dette er Handlekurv 3. Regn ut, illustrer og diskuter din vilje til å bytte vekk appelsiner mot bananer etter hvert som du går fra Handlekurv 1 til 2 til 3.
+c. Hva er den marginale substitusjonsraten (MRS) for disse tre handlekurvene (hvor MRS er definert som hvor mange enheter av A man er villig til å gi opp for en marginal økning i B)?
+1.2 Høyere strømpriser og endrede budsjettlinjer
+Anne har en inntekt I = 1 som hun ønsker å bruke på mat (A) og å bo i et godt oppvarmet hjem (B). Prisen på mat og en varm bolig er i utgangspunktet gitt ved pA = pB = 1. Anta at Anne har bestemt seg for å bruke like mye penger på bolig som på mat, slik at pAA = pBB.
+a. Vis Annes budsjettlinje i en figur og marker hennes valg av konsum.
+b. Anta så at prisen på strøm går opp slik at pBh = 2, hvor toppskrift «h» står for høy. Hva er helningen på den nye budsjettlinjen, og hva blir Annes tilpasning?
+c. Regjeringen innfører en strømstøtte som gjør at prisen som konsumentene betaler, blir akkurat som før. Støtten per enhet konsumert er dermed sB = pBh - pBl = 1, hvor pBl er den opprinnelige, lave prisen. Hva er den samlede kostnaden SB av denne strømstøtten, hvor SB = sBB?
+d. Et alternativ til å gi prisstøtte kan være å gi en kontantstøtte til forbrukerne. Vis hvordan det å gi Anne en kontantstøtte S (som er like stor som den hun skulle fått i strømstøtte, altså S = SB) påvirker hennes budsjettlinje og tilpasning.
+1.3 Anne og venninnen tilpasser seg økte strømpriser
+I oppgave 1.2 antok vi at Anne ønsket å bruke like mye penger på hvert gode. Nå skal vi gå litt mer formelt til verks. Anne og venninnen Beate sitter på en kafé og diskuterer smak og behag. Begge har preferanser gitt ved Cobb-Douglas-nyttefunksjonen U = AαB1−α, hvor A er mat og B er en varm bolig. Anne bruker like mye penger på A og B, mens venninnen bruker tre ganger så mye på bolig som mat.
+a. Hva er nyttevekten α til Anne, og hva med Beate?
+b. Prisen på de to godene er i utgangspunktet pB = pA = 1, og de to venninnene har begge en inntekt I = 1. Hva er deres konsum av A og B? Regn ut og illustrer.
+c. Prisen på strøm øker så til pBh = 2. «Hvor mye har du skrudd ned varmen i leiligheten?» spør Anne. «Bruker du mindre penger på mat?» lurer venninnen på. Hva er svaret på disse spørsmålene?
+1.4 Prisstøtte eller kontantstøtte?
+Myndighetene diskuterer hvordan de kan hjelpe befolkningen i en tid med høye strømpriser. Anne har preferansene over mat (A) og en varm bolig (B) gitt ved U = A0,5B0,5 og hennes inntekt er I = 1. Før prisøkningen kostet strømmen pBl = 1, men den har nå steget til pBh = 2. Prisen på mat ligger fast, pA = 1.
+Forslaget fra myndighetene er å gi en prisstøtte som gjør at kundene møter akkurat samme pris som før. Du er nyansatt økonom i Finansdepartementet og argumenterer for at man heller bør gi denne støtten som en kontantstøtte. Bruk mikroøkonomisk teori, og Anne som eksempel, for å vise hvorfor du mener kontantstøtte er bedre.
+1.5 Bananer som basisgode
+Din bror er veldig glad i bananer, han ser på det som et basisgode: Før han kan begynne å glede seg over andre ting i livet, må han ha tilfredsstilt sitt grunnleggende bananbehov b. Hans nyttefunksjon over appelsiner (A) og bananer (B) kan beskrives ved U = A0,5(B − b)0,5. I det følgende, la b = 0,75.
+a. I utgangspunktet har din bror samme handlekurv som din Handlekurv 1, beskrevet i oppgave 1.1, med fire appelsiner og én banan (A = 4, B = 1). Hva er hans nytte av denne handlekurven?
+b. Han vurderer så å kjøpe en banan til. Hvor mange appelsiner er han i så fall villig å legge tilbake i fruktdisken uten at hans nytte går ned? Sammenlign med det du fant i oppgave 1.1, og kommenter.
+c. Hva er den marginale substitusjonsraten (MRS) for Handlekurv 1 og 2 (altså, på marginen, hvor mange appelsinbåter er han villig til å gi fra seg for en ekstra bit banan)? Regn ut, illustrer og kommenter det du finner, sammenlignet med det du fant i oppgave 1.1.
+1.6 Peanøtter + øl = sant
+De fleste kan vel være enige i at peanøtter og øl passer bra sammen. Men den foretrukne konsumkombinasjonen kan jo variere fra person til person. Anta at preferansene over peanøtter (A) og øl (B) kan beskrives ved U = min[A/α, B/(1 − α)]. Prisen på de to godene er pA og pB, mens inntekten er gitt ved I.
+a. Finn det optimale konsumet av de to godene som funksjon av priser, inntekt, og nyttevekten α.
+b. Birger (som vi skal bli bedre kjent med i neste kapittel) liker best øl, α = 1/3, mens Anne er mest glad i peanøtter, α = 2/3. Anta at begge har inntekt I = 1, og at prisene er pA = pB = 1. Vis Birgers og Annes tilpasning i en figur.
+c. Anta så at prisen på øl øker til pBh = 2. Regn ut og illustrer hvordan dette påvirker konsumet av øl for Birger og Anne, både i mengde og i prosent av opprinnelig forbruk.
+2. Mer om valget mellom goder
+2.1 Effekten av høyere strømpriser, i to steg
+Anne og venninnen Beate sitter fortsatt på kafeen og diskuterer den høye strømprisen. De to godene, mat (A) og en varm bolig (B), kostet i utgangspunktet pBl = pA = 1, og så dobles prisen på strøm slik at pBh = 2. De har begge en inntekt I = 1.
+Anne har en balansert Cobb-Douglas-nyttefunksjon, mens Beate legger større vekt på en god og varm bolig, med nyttefunksjonen UBeate = A0,25B0,75. Annes substitusjons- og inntektseffekt av prisøkningen finner du i matteboks 2.1, men hva med Beates? Fokuser på effekten på konsumet av gode B, og regn ut og illustrer. Sammenlign effekten av prisøkningen for de to venninnene.
+2.2 Hvordan påvirker en renteøkning etterspørselen etter bolig og andre ting?
+Du er nyutdannet siviløkonom og har fått jobb i analyseavdelingen i Norges Bank. En av dine oppgaver er å følge med på hvordan etterspørselen utvikler seg i ulike markeder. Styringsrenten er nettopp satt opp, og bankenes rente på boliglån forventes å følge etter.
+Sjefen er interessert i hvordan en endring i renten påvirker etterspørselen etter bolig og andre ting, og ber deg bruke mikroøkonomisk teori for å belyse dette spørsmålet.
+Du tar utgangspunkt i at en økning i renten gjør at prisen på boligkonsum, pB, går opp. Og så tenker du at det kan være nyttig å bruke et talleksempel for å illustrere effekten. Du antar at husholdningen har en inntekt I = 1, som kan brukes på bolig B og andre ting A; at prisene i utgangspunktet er pBl = pA = 1; og at renteøkningen så fører til at prisen på B dobles til pBh = 2.
+Bolig er et spesielt gode, man trenger tak over hodet. Du velger derfor å studere to ulike nyttefunksjoner: En balansert Cobb-Douglas-funksjon, U = A0,5B0,5, hvor A er andre ting og B er bolig, og en nyttefunksjon hvor bolig er et basisgode, U = A0,5(B − b)0,5, hvor b er minstekonsumet av gode B, og hvor du lar b = 0,2.
+Du regner ut konsumet av A og B før og etter rentehevingen og illustrerer dine funn ved hjelp av figurer. Bruk én figur for hver nyttefunksjon, og kommenter forskjellene du ser.
+2.3 Kontantstøtte for utdanning i Mexico
+Mange land har innført kontantstøtte til fattige familier. Noen ganger er det knyttet betingelser for at familien skal motta støtten, slik som at foreldrene må sende barna til skolen. Det mest kjente eksempelet på et slikt program med betinget kontantstøtte ble lansert i Mexico på 1990-tallet under navnet Progresa. I den senere tid har mange land valgt å heller gi en ubetinget kontantstøtte, siden dette gir familiene større frihet til å disponere midlene som de selv vil.
+a. Se for deg en familie i Mexico, familien Buenos, med preferanser over skolegang for barna (gode B) og andre ting (gode A) gitt ved U = AαB1−α, og hvor α = 0.5 (altså en balansert Cobb-Douglas-nyttefunksjon). Familiens inntekt er I = 1 og prisen på gode A og B er pA = pB = 1. Du kan tenke på gode B som hvor mange av barna familien sender på skolen, og hvor pB er skoleutgiftene per barn. Hva er familiens optimale valg av A og B uten kontantstøtte? Regn ut og illustrer.
+b. Myndighetene innfører så en ubetinget kontantstøtte S = 0.5, slik at familiens inntekt med støtte nå blir I’ = I + S = 1.5. Hvordan påvirker dette familiens tilpasning? Regn ut og illustrer.
+c. Noen foreslår at man heller burde gjøre kontantstøtten betinget av at familien sender alle barna i skolealder på skolen og betaler de nødvendige avgiftene. Tenk på dette som et minstekrav Bmin = 0.75. For at familien skal få støtten S = 0.5, må de derfor velge B ≥ Bmin = 0.75 (du kan tenke på B > Bmin som at familien i tillegg til å sende alle barna på skolen også bruker penger på privatundervisning, ekstra lærebøker, etc). Hvordan vil familien Buenos tilpasse seg med en slik betinget kontantstøtte? Regn ut, illustrer og kommenter det du ser, i forhold til det du fant med en ubetinget støtte i deloppgave b.
+d. Familien Aires har samme inntekt som familien Buenos, men legger i sin nyttefunksjon U = AαB1−α mindre vekt på barnas utdanning, det vil si α > 0.5. Hvordan vil familien Aires’ tilpasning påvirkes av, henholdsvis, en ubetinget og betinget kontantstøtte? Illustrer ved hjelp av figurer (dette er ikke en regneoppgave) og kommenter det du finner. Vil familien Aires alltid velge å takke ja til den betingede kontantstøtten?
+e. Det er en stor debatt om hva som er best: betinget eller ubetinget støtte. Tre vanlige påstander i denne debatten er:
+A. Det er nødvendig å gjøre støtten betinget for å oppnå myndighetenes mål om skolegang
+B. Det å gjøre støtten betinget på skolegang gjør den mindre verdifull for familiene
+C. Det spiller ingen rolle om støtten gis betinget eller ubetinget
+Hva kan du si om disse påstandene i lys av din analyse av familiene Buenos og Aires?
+2.4 Birgers valg: øl eller vin ... eller begge deler?
+Birger er glad i både øl (B) og vin (A). Preferansene hans er gitt av nyttefunksjonen U = A + b(lnB), hvor b er en parameter som sier noe om hvor glad han er i øl. Dette er en type nyttefunksjon vi ikke har jobbet med før (den kalles kvasilineær), så se tips til oppgaven under hjelper for å komme i gang. La prisen på øl være pB = 1, mens inntekten er gitt ved I. Prisen på vin er pA.
+a. Hva er Birgers grensenytten av vin, og hva er hans grensenytten av øl?
+b. For hvilket inntektsnivå vil Birger begynne å kjøpe vin? Vis ved hjelp av en figur (eller to) hvordan konsumet av øl og vin påvirkes av inntektsøkning (hint: La inntekten stå på den horisontale aksen, og konsumet av øl og vin på den vertikale aksen).
+c. Vil du si at øl er et mindreverdig gode for Birger?
+d. Hva om Birgers preferanser for øl og vin i stedet hadde vært beskrevet ved en Cobb-Douglas-nyttefunksjon? Hvordan hadde sammenhengen mellom inntekt og konsum vært da? Sammenlign med det du fant med den kvasilineære nyttefunksjonen.
+2.5 Conrads sparing
+Conrad tenker på alderdommen. Han skal snart gå av med pensjon, og har derfor bare inntekt i periode 1, I1C = 1, I2C = 0, og han må derfor spare for konsum i periode 2. Hans preferanser over konsum i de to periodene, x1 og x2, er gitt ved den balanserte Cobb-Douglas-nyttefunksjonen U = x20,5x10,5.
+a. I utgangspunktet er renten null, r = 0. Tegn inn budsjettlinjen hans. Hvor krysser budsjettlinjen aksene? Hvor mye velger han å spare?
+b. Anta så at renten stiger til r’ = 0.25. Hvordan påvirkes budsjettlinjen av renteøkningen? Hva skjer med Conrads valg av sparing?
+2.6 Annes sparing
+Anne har (som Conrad i forrige oppgave) nyttefunksjonen U = x20,5x10,5, hvor x2 er konsum i periode 2 og x1 er konsum i periode 1. I motsetning til Conrad har hun inntekt i begge perioder: I1A = 1, I2A = 0.5.
+a. Anta at renten i utgangspunktet er null, r = 0. Tegn inn budsjettlinjen hennes. Hvor krysser budsjettlinjene aksene? Hvor mye velger hun å spare?
+b. Anta så at renten stiger til r’ = 0.25. Hvordan påvirker dette budsjettlinjen og hennes sparing?
+c. Sammenlign effekten av en renteøkning for sparingen til Anne med den du fant for Conrad i oppgave 2.5. Kan du forklare forskjellen?
+3. Konsumenter i arbeid
+3.1 Audhild liker å jobbe, Bodil jobber bare for pengene
+Audhild har jobbet samme sted lenge og liker å jobbe der, mens Bodil nettopp har begynt og jobber bare for å tjene penger. Bodil har en standard, balansert Cobb-Douglas-nyttefunksjon:
+UB = M0,5F0,5
+Hvor M er konsum, F er fritid og J er jobb. Audhild, derimot, har den mer uvanlige nyttefunksjonen:
+UA = M1/3F1/3J1/3
+Den er uvanlig, siden også arbeidstiden (J) inngår i nytten: Hun liker å jobbe!
+Merk at Audhilds nyttefunksjon alternativt kan skrives:
+UA = (MFJ)1/3
+Dette gjør den mer oversiktlig og enklere å bruke. Hvor mye vil Bodil og Audhild jobbe? Begge har disponibel tid T = 18 og vi antar at w = p = 1? Regn ut og illustrer ved hjelp av figurer.
+3.2 Reservasjonslønn
+Du har en vanlig fulltidsjobb med 8 timers arbeidsdag, Ja = 8, og en timelønn wa = 2.25. Sjefen har gitt deg tilbud om en lederstilling, jobb b, som vil kreve at du jobber 12 timer hver dag, Jb = 12.
+Anta at din nytte er gitt ved U = M0,5F0,5, og at du har 16 timer i døgnet (T = 16) som du kan bruke på jobb eller fritid, og at prisen på konsumgoder er p = 1.
+a. Hva er din reservasjonslønn for å ta lederstillingen? Regn ut og illustrer i en figur, hvor du sammenligner med lønnen i deltidsjobben.
+b. Sjefen tilbyr deg din reservasjonslønn for å ta lederjobben. Takker du ja, vil du oppleve en inntektsøkning i forhold til dagens 8-timers jobb. Hvor mye av inntektsøkningen vil skyldes flere arbeidstimer og hvor mye vil skyldes den høyere timelønnen?
+3.3 Arbeidstilbud med kontantstøtte
+Anne har nytte av konsum M og fritid F gitt ved den balanserte Cobb-Douglas-funksjonen U = M0,5F0,5. Hun mottar en månedlig pengegave S fra sin bestefar, slik at hennes budsjettbetingelse er gitt ved:
+w(T − F) + S = pM
+Anta at p = 1 og T = 16, slik at budsjettbetingelsen blir:
+w(16 − F) + S = M
+a. Regn ut uttrykket for Annes arbeidstilbud som funksjon av lønn og kontantstøtten S.
+b. Hva blir arbeidstilbudet dersom w = 1 og S = 0? Hva om S = 6? Regn ut og illustrer.
+c. Finn størrelsen på kontantstøtten som gjør at Anne ikke lenger ønsker å jobbe.
+3.4 Sjefen synes Anne responderer rart på høyere lønn
+Sjefen i Lavprisbutikken har ved to tilfeller gitt Anne høyere lønn for å friste henne til å jobbe mer i noen travle uker, og responsen har ikke vært den samme, noe han synes er rart. Ta utgangspunkt i informasjonen og det du fant i oppgave 3.3, og anta at lønnen i utgangspunktet er w = 1, og at sjefen så øker den til w = 1.5.
+a. Første gang Anne fikk en lønnsøkning, så mottok hun ikke noe støtte fra bestefaren (S = 0). Sjefen ser at den høyere lønnen ikke gjør at Anne ønsker å jobbe mer, og han lurer på hvordan i all verden det kan ha seg. Regn ut, illustrer i en figur, og forklar Annes valg.
+b. Andre gang sjefen ga Anne en lønnsøkning, så mottok hun samtidig en støtte S = 6 fra bestefaren. Nå skjønner ikke sjefen noen ting, siden han ser at lønnsøkningen denne gangen faktisk gjør at Anne ønsker å jobbe mer. Regn ut, illustrer i en figur og forklar Annes valg.
+c. Hvorfor påvirker lønnsøkningen arbeidstilbudet forskjellig i de to situasjonene (altså uten og med kontantstøtte)? Prøv å gi en intuitiv forklaring.
+3.5 Trygd og arbeidstilbud
+Velferdsstaten sikrer innbyggerne et minstekonsum gjennom ulike støtteordninger til de som trenger det. Noen er bekymret for at dette vil redusere folks vilje til å jobbe. Kan det ligge noe i det?
+Se for deg to personer, Magne og Frank, som begge har nyttefunksjon U = M0,5F0,5 og hvor T = 16, w = p = 1.
+a. Hva er arbeidstilbudet til de to uten trygd?
+b. Anta så at det innføres en trygd (S) som skal sikre et minstekonsum M0 = 4. Vis at Magne og Frank er indifferente mellom å arbeide og å bare leve på trygd i dette tilfellet. Illustrer ved hjelp av en figur.
+3.6 Borgerlønn
+Denne oppgaven fortsetter der den forrige slapp. Anta at Magne velger å jobbe, mens Frank velger trygd. Myndighetene ser at trygden kan føre til redusert arbeidstilbud, og vurderer å heller innføre en borgerlønn S = 4, det vil si, en kontantstøtte som gis ubetinget og til alle.
+a. Hvordan påvirkes Franks arbeidstilbud av en overgang fra trygd til borgerlønn?
+b. Hvordan påvirkes Magnes arbeidstilbud av en overgang fra trygd til borgerlønn?
+c. Sammenlign det du fant for Frank og Magne, og kommenter forskjellen.
+4. Alternativ atferd
+4.1 Spare eller låne?
+I kapittel 2.6 i hovedboken (og oppgave 2.5 og 2.6 i denne oppgaveboken), studerte vi valg over tid, men nå skal vi ta et adferdsøkonomisk perspektiv på sparing. Anta at du har nyttefunksjonen U = x2α x11−α, men at du har en tålmodig utgave av deg selv (versjon A) med α > 0.5 og en utålmodig utgave (versjon B) med α < 0.5.
+For enkelhets skyld antar vi at du har samme inntekt i begge perioder, I1 = I2 = 0.5, og forenkler ved å sette renten lik null: r = 0. Regn ut og illustrer den optimale tilpasningen til de to versjonene av deg selv. Kommenter det du finner.
+4.2 Birger binder seg til masten
+Denne oppgaven tar utgangspunkt i figur 4.2 i hovedboken. Figuren analyserer Birgers sparevalg, og viser at det kan være i den tålmodige Birgers interesse (Birger A) å velge et spareprodukt med binding og gebyr. Nå skal vi studere dette nærmere ved hjelp av et talleksempel.
+Anta at Birger har preferanser gitt ved UA = x2α x11−α, hvor den tålmodige utgaven har α = 0.5, mens den utålmodige legger større vekt på konsumet i dag enn i fremtiden, og har α = 0.25. Anta videre at Birger bare har inntekt i periode 1, I1 = 1, og at renten er null, r = 0.
+Se først på situasjonen uten gebyr.
+a. Hvor mye ønsker den tålmodige Birger A å spare? Regn ut og illustrer.
+b. Hvor mye ønsker den utålmodige Birger B å spare? Regn ut og illustrer i samme figur.
+La oss nå se på situasjonen med gebyr. Anta at den tålmodige Birger har valgt en sparekonto hvor han må betale et gebyr g om han tar ut penger i periode 1. Anta at størrelsen på gebyret er uavhengig av hvor mye penger han tar ut.
+c. Hvordan påvirker et slikt gebyr g budsjettlinjen? Illustrer ved hjelp av en figur.
+d. Hvor stort må gebyret g være for at tålmodige Birger A skal være trygg på at utålmodige Birger B ikke bruker av sparekontoen? Regn ut og illustrer i figuren.
+4.3 Taxisjåførene i New York
+Allan og Bill kjører taxi i New York. De har tilgjengelig tid T = 16 som må fordeles mellom arbeid og fritid. De tjener w per time og prisen på konsumgoder er p = 1.
+Allan har nyttefunksjon UA = M0,5F0,5, hvor M er konsum av materielle goder, mens F er fritid. Allan bestemmer arbeidstilbudet basert på nyttemaksimering. Bill, på sin side, lar arbeidstilbudet være styrt av inntektsmålet MB = 8.
+a. Hva er arbeidstilbudet til Allan og Bill (som funksjon av lønn)?
+b. Anta at sjåførene jobber seks dager i uken, mandag til lørdag, og timelønnen avhenger av hvor travelt det er. Uken kan deles inn i tre scenarier:
+1. Tidlig i uken (mandag og tirsdag). Få kunder, lav lønn: w1 = 2/3
+2. Midt i uken (onsdag og torsdag). Flere kunder, middels lønn: w2 = 1
+3. Sent i uken (fredag og lørdag). Mange kunder, høy lønn: w3 = 4/3
+Hva blir arbeidstilbudet for de to sjåførene de ulike dagene, og hvor mye fritid velger de å ta? Regn og illustrer (gjerne med én figur for hvert scenario).
+c. Hvilken av sjåførene jobber mest, og hvem tjener mest i løpet av en uke?
+4.4 Mer om taxisjåførene i New York
+Denne oppgaven bygger videre på den forrige.
+a. Hva er den marginale substitusjonsraten (MRS = MUF/MUM) for Allan i hans optimale tilpasning på en dårlig dag (tidlig i uken), en middels dag (midt i uken) og en god dag (sent i uken)?
+b. Hva om Allan i stedet for å tilpasse seg optimalt hadde kjørt som Bill? Regn ut og illustrer ved hjelp av en figur med Allans MRS på en dårlig og god dag, og gi en intuitiv forklaring på hvorfor det ikke er optimalt for Allan å kjøre som Bill disse dagene.
+4.5 Audhilds altruisme
+Se på figur 4.6 i hovedboken som analyserer Audhilds altruisme, og hvor mye hun vil gi til sønnen, Birger, avhengig av om han jobber eller ikke. Anta at Audhild har inntekt IA = 1 og nyttefunksjonen U = A0,5B0,5, hvor A står for Audhilds konsum og B for Birgers konsum. La prisen på konsumgodet være den samme for begge to og gitt ved p = 1.
+a. Anta at Birger ikke har inntekt i det hele tatt. Hva er morens optimale tilpasning i denne situasjonen? Det vil si: Hva er punkt a i figur 4.6 i hovedboken?
+b. Anta så at Birger tjener egne penger, IB = 0.25. Hvordan påvirker det morens tilpasning (hvor mye bruker hun på Birger, hvor mye bruker hun på seg selv), og hva blir Birgers konsum?
+4.6 Gi bedre! Anne kommer med et godt råd til Audhild
+Anne har tatt en alvorsprat med Audhild. Hun sier at gavene til Birger gjør ham lat (altså at han jobber mindre). I stedet for en kontantstøtte foreslår hun at Audhild gir et lønnstilskudd (det vil si en gave som er proporsjonal med lønnen). Dette, sier Anne, vil kunne gi Birger samme konsum, men til en billigere penge (for Audhild).
+Anta at Birger har Cobb-Douglas-preferanser over fritid og konsum, og bruk det du lærte i kapittel 3 om konsumenter i arbeid for å få frem Annes poeng. Merk, dette er en tegneoppgave, ikke en regneoppgave.
