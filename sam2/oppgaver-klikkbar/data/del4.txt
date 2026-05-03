@@ -1,0 +1,127 @@
+Transkriberte oppgaver fra bildene
+Oppgaver sortert etter oppgavenummer. Formler er satt med pen matematisk typografi, og spillmatrisene er gjenskapt som fargekodede tabeller.
+Kapittel 11: Monopol
+11.1 Én monopolist, to fabrikker
+Conrad er eneste produsent av spesialpapp til industrien, og produserer i dag en mengde Q = 0.75. Produksjonen skjer i to fabrikker, Nord og Sør. Fabrikken i Nord har totale kostnader TCN = 0.25QN, mens kostnadene i Sør er TCS = 0.5QS².
+a. Hva er grensekostnaden for Conrads produksjon av spesialpapp, når produksjonen er optimalt fordelt mellom anlegget i Nord og Sør? Illustrer ved hjelp av en figur.
+b. Conrad lurer på om dagens produksjonsnivå (Q = 0.75) er det mest lønnsomme. Etterspørselen er gitt ved Q = α − P. Hvilket nivå på α gir optimal produksjon Q = 0.75?
+c. Anta at α = 0.75. Hva blir optimal produksjon, fordelt på de to fabrikkene, og hvilken pris skal han velge for spesialpappen?
+11.2 «Grønt er godt», men til hvilken pris?
+Papirbokforlaget skal gi ut en ny kokebok med vegetarmat, «Grønt er godt». Anne gir råd til Conrad om hvilken pris forlaget skal sette på boken (det er bare de som selger denne boken i Norge, Papirbokforlaget er derfor monopolist), og ser til Danmark for inspirasjon. Der finnes det en lignende bok, og det danske forlaget, som også er monopolist, har gjennomført en markedsanalyse som hun tenker det kan være nyttig å kikke på.
+a. Markedsanalysen viser at da prisen på den danske kokeboken steg med 10 prosent, så førte det til en reduksjon i etterspørselen på 5 prosent, altså en etterspørselselastisitet på ε = 0.5. Anne er ikke overbevist om at det danske forlaget har valgt en fornuftig pris. Hva tenker du?
+b. Anne legger til grunn at etterspørselen i Norge er den samme som i Danmark, og antar videre at etterspørselen er lineær Q = α − βP. Prisen på den danske kokeboken er P = 1/3 og mengden solgt er Q = 2/3, og så vet hun fra markedsundersøkelsen at ε = 0.5. Kan du hjelpe henne med å finne α og β i den lineære etterspørselsfunksjonen?
+c. Conrad forteller Anne at grensekostnaden ved å produsere boken i Norge er konstant og gitt ved MC = 0.2. Hvilken pris bør Conrad velge for å maksimere profitten?
+d. Hva er etterspørselselastisiteten i den optimale tilpasningen?
+11.3 Ut på tur, aldri sur?
+Anne er turentusiast, og går ofte opp ett av fjellene i nærheten av Den økonomiske høyskolen. På toppen av fjellet ligger en kiosk, og det er langt til neste. Hun er tørst, og kjøper seg en Solo. Og blir sur. 60 kroner for en Solo?! «Hvor mange brus klarer du å selge til en så høy pris?» spør hun mannen i kiosken, og han svarer «40 flasker per dag, faktisk». Kioskeieren sier at den høye prisen skyldes høye kostnader, det koster dem 40 kroner å kjøpe inn en flaske brus fra produsenten og frakte den opp fjellet, påstår han. Men Anne er skeptisk.
+a. Hva er Lerner-indeksen basert på informasjonen fra kioskeieren? Og hva må etterspørselselastisiteten da være dersom kiosken opptrer som en profittmaksimerende monopolist?
+b. Anne gjennomfører en rask spørreundersøkelse blant de andre turgåerne og finner at en 10 prosent økning i prisen på brus ville gitt en reduksjon i etterspørselen på 15 prosent. Hun konfronterer kioskeieren med dette funnet, og påstår at han nok har overdrevet kostnadene. Hvordan kan hun si det?
+c. Tilbake fra turen treffer hun Birger på kafé, forteller om diskusjonen med kioskeieren og prøver å overbevise sin venn om at hun har rett. Hun tar utgangspunkt i en lineær etterspørselsfunksjon Q = α − βP og tegner to figurer. Den første er basert på informasjonen fra kioskeieren, og den andre basert på hennes egen spørreundersøkelse. Finn α og β i disse to tilfellene og illustrer (hint: Du kan bruke midtpris-regelen siden det er konstante grensekostnader).
+11.4 Én monopolist, to markeder
+En monopolist selger et produkt i to ulike markeder. I det ene markedet, marked A, er etterspørselen gitt ved:
+Og i marked B:
+a. Hvilken pris og hvilket kvantum vil monopolisten velge i de to markedene når de totale kostnadene er gitt ved TC = (1/3)Q²?
+b. Hvilken pris og hvilket kvantum vil monopolisten velge i de to markedene dersom de totale kostnadene i stedet er gitt ved TC = 0.5Q². Sammenlign med det du fant i deloppgave a ovenfor.
+11.5 Effektivitetstap ved monopol
+a. Se for deg et marked med etterspørsel Q = 1 − P og en monopolist med kostnader TC = (1/3)Q. Hva er det samfunnsøkonomiske effektivitetstapet i dette markedet (sammenlignet med frikonkurranseløsningen)? Regn ut og illustrer i en figur. Kall dette Scenario A.
+b. Anta igjen et marked med etterspørsel Q = 1 − P men hvor monopolisten nå har totale kostnader TC = 0.5Q². Hva er det samfunnsøkonomiske effektivitetstapet i dette markedet (sammenlignet med frikonkurranseløsningen)? Regn ut og illustrer i en figur. Kall dette Scenario B.
+c. Kommenter forskjellen i effektivitetstapet som du fant i de to scenariene.
+11.6 Naturlig monopol og samfunnsøkonomisk overskudd
+En monopolist har grensekostnad MC = 0 og en fast kostnad FC = 10. Etterspørselen er gitt ved Q = 10 − P.
+a. Hva blir monopoltilpasningen, hva er profitten og hva er det samfunnsøkonomiske overskuddet (det vil si summen av produsent og konsumentoverskudd)?
+b. Anta at staten overtar eierskapet av bedriften med et ønske om å maksimere det samfunnsøkonomiske overskuddet. Hvilken pris vil staten velge, og hva er effektivitetsgevinsten i forhold til monopolløsningen du fant under deloppgave a ovenfor?
+c. En alternativ løsning kan være at staten overtar eierskapet og gir ledelsen beskjed om at den skal sette prisen så lav som mulig, men uten å tape penger (tenk: null profitt). Diskuter denne løsningen i forhold til det du fant i deloppgave b ovenfor.
+Kapittel 12: Oligopol
+12.1 Er fusjon lønnsomt?
+Fusjon innebærer at bedrifter går sammen og danner én beslutningsenhet. Anta at de fusjonerende partene deler profitten likt mellom seg etter fusjonen.
+a. I utgangspunktet er det to bedrifter i markedet, Bedrift A og B. De har samme konstante grensekostnader, vi forenkler ved å anta at c = 0 (inntekt og profitt blir dermed det samme). Kvantum er strategisk variabel, slik at konkurranseformen er av Cournot-typen. Etterspørselen i markedet er gitt ved Q = 1 − P. Hva er gevinsten av fusjon (altså overgangen fra duopol til monopol) for de fusjonerende partene i dette tilfellet?
+b. Anta så at det i utgangspunktet ikke er to, men tre bedrifter i dette markedet, et tripol bestående av Bedrift A, B og C. De tre bedriftene er helt like, med samme konstante grensekostnader c = 0 og med kvantum som strategisk variabel. Hva er konsekvensen i dette tilfellet for bedriftenes profitt av en fusjon mellom A og B, hvor markedsformen går fra tripol til duopol mellom den fusjonerte enheten AB og den selvstendige bedriften C?
+12.2 Utenlandsk eierskap, konkurranse og samfunnsøkonomisk lønnsomhet
+Se for deg et marked med etterspørsel Q = 1 − P. I utgangspunktet er det bare én produsent i dette markedet, en norskeid Bedrift A, med null grensekostnad, c = 0.
+a. Hva er monopolistens optimale valg av kvantum og pris? Hva blir konsument- og produsentoverskudd i dette tilfellet? Regn ut og illustrer.
+b. En utenlandsk produsent, bedrift B, etablerer seg i markedet. Denne bedriften produserer nøyaktig samme produkt som den norske, og også denne med null grensekostnad. Konkurransen er av Cournot-typen (kvantumskonkurranse). Hva blir de samfunnsøkonomiske konsekvensene av denne nyetableringen dersom produsentoverskuddet går til de utenlandske eierne, og dermed ikke er en del av det samfunnsøkonomiske overskuddet i Norge? Regn ut og illustrer.
+c. Anta så at den norske bedriften er Stackelberg-leder, og den utenlandske bedriften følger. Hva blir konsekvensene av den utenlandske etableringen i dette tilfellet? Sammenlign med det du fant i deloppgave b.
+12.3 Lavere kostnader, dyrere mat?
+Du er nyansatt økonom i Konkurransetilsynet og har fått i oppgave å studere dagligvarehandelen. Markedet består av to kjeder, A-gruppen og B-gruppen. Konkurransetilsynet har avdekket store forskjeller i kjedenes innkjøpspriser, hvor A-gruppen har klart å skaffe seg lavere priser på både ost og grønt og andre ting, og sjefen din ber deg vurdere hvordan dette kan påvirke konkurranseforholdene i markedet.
+Etterspørselen etter dagligvarer er gitt ved Q = 1 − P, og konkurransen mellom bedriftene er av Cournot-typen. Bedriftene har grensekostnader c_A og c_B som er bestemt av innkjøpsprisene.
+a. I utgangspunktet har de to produsentene helt like innkjøpspriser, cA = cB = 0.25. Hva blir reaksjonsfunksjonene og Nash-likevekten i dette tilfellet?
+b. Gjennom forhandlinger med leverandørene klarer A-gruppen å oppnå en lavere innkjøpspris slik at cAlav = 0.2, mens B-gruppen må betale en høyere innkjøpspris cBhøy = 0.6 (du kan tenke på det som at leverandørene gir med den ene hånden og tar med den andre for å ikke tape penger). Hvordan blir reaksjonsfunksjonene nå, og hva blir den nye Nash-likevekten?
+c. Drøft hvordan samlet mengde produsert og markedsprisen endres som følge av leverandørenes forskjellsbehandling mellom A-gruppen og B-gruppen.
+12.4 Ledelsen i Alpha Tech tenker ikke likevekt!
+Du har igjen blitt invitert til å gi råd til Alpha Tech, oppstartsbedriften som du besøkte i kapittel 6. De har kommet godt i gang med produksjonen, og møter konkurranse fra Beta Solutions. De to bedriftene, som ofte bare omtales som Alpha og Beta, konkurrerer på pris, det handler altså om et Bertrand-duopol. Alpha vurderer å investere i nytt produksjonsutstyr, noe som vil gi lavere grensekostnader c_A. Ledelsen i Alpha legger i sin analyse til grunn at konkurrentens pris p_B vil ligge fast. Er dette en fornuftig antagelse? Bruk figurbetraktninger for å gjennomføre din analyse.
+12.5 Reklame, kundelojalitet og profitt
+Alpha Tech og Beta Solutions er Bertrand-duopolister. Grensekostnadene er identiske, og vi forenkler ved å anta at de er null, cA = cB = 0.
+a. Etterspørselen etter Alphas og Betas produkter er gitt ved, henholdsvis, QA = 1 − 2pA + pB og QB = 1 − 2pB + pA. Hva er Bertrand-likevekten i dette tilfellet? Hva blir profitten (som i dette tilfellet er det samme som inntekten, siden kostnadene er null)? Regn ut og illustrer.
+b. Alpha setter i gang en reklamekampanje som gjør at kundene blir mer lojale. Anta at etterspørselen med reklame blir Q′A = 1 − 1.5pA + pB, hvor vi ser at Alphas kunder nå i mindre grad vil respondere negativt på en prisøkning på produkt A. Etterspørselen etter Betas produkt er som før, QB = 1 − 2pB + pA. Hva blir prisen på de to produktene i dette tilfellet, og hva blir profitten? Er Alphas reklamekampanje dårlig nytt for Beta? Regn ut og illustrer.
+12.6 Bertrand-leder
+Se igjen for deg Alpha Tech og Beta Solutions, som konkurrerer på pris. De to bedriftene er helt symmetriske (vi ser her bort fra reklame), hvor etterspørselen etter produktet til Alpha er QA = 1 − 2pA + pB, mens den for Beta er gitt ved QB = 1 − 2pB + pA. Grensekostnaden er konstant og den samme for begge bedriftene, og vi setter de for enkelhets skyld lik null, cA = cB = 0. Anta at Alpha er leder og Beta følger, det vil si at Alpha setter sin pris før Beta.
+a. Sammenlignet med prisen med simultane trekk, vil Alpha som førstetrekker sette opp eller ned prisen?
+b. Taper Beta på at Alpha er førstetrekker?
+Kapittel 13: Spillteori
+13.1 Fangens dilemma på abcd
+Betrakt spillet nedenfor, basert på tabell 13.2 i hovedboken. Anta at spillerne samlet sett får høyest nytte av om begge velger fred.
+Spillmatrise 13.1
+Første tall i hver celle tilhører radspilleren; andre tall tilhører kolonnespilleren.
+Hva må størrelsesforholdet mellom a, b, c og d være for at dette skal være et fangens dilemma-spill?
+13.2 Hjortespillet på abcd
+a. Betrakt spillet nedenfor, basert på tabell 13.3 i hovedboken. Hvilket størrelsesforhold mellom a, b, c og d gjør dette til et hjortespill?
+Spillmatrise 13.2
+Første tall i hver celle tilhører radspilleren; andre tall tilhører kolonnespilleren.
+b. I tabell 13.3 i hovedboken er a = 1, b = 2. Men hva om vi bytter om på verdiene av a og b slik at a = 2, b = 1 (og vi fortsatt har c = 0, d = 3)? Spiller dette noen rolle for utfallet? Hva mener du er den mest logiske rangeringen av a og b i dette spillet om det grønne skiftet?
+13.3 Anne og Birger på første date
+Birger har lenge hatt et godt øye til Anne (når sant skal sies, var det derfor han kom til Papirfabrikken i første omgang), og han har nå tatt mot til seg til å spørre om de skulle finne på noe sammen en kveld. Spørsmålet er hva. Papirfabrikken ligger i en nokså liten bygd, og utelivet er begrenset: Valget står mellom kino eller kafé. Det er deres første date, og begge er litt nervøse for å foreslå noe som den andre ikke liker. Så de bestemmer seg for å skrive ned på en lapp hvor de vil gå, enten kino eller kafé, og så trekke lappene og se om det blir bra.
+Birger foretrekker kino, mens Anne foretrekker kafé. Men først og fremst ønsker de å tilbringe kvelden sammen. Alternativet er at den ene går på kino og den andre på kafé, og det blir jo en ganske dårlig første date! Birger lurer på om han skal skrive kino eller kafé på lappen. Han vet at Anne helst vil på kafé, så om han skriver kafé, så blir Anne fornøyd, men hva om hun tenker på samme måte, vil gjøre Birger fornøyd og derfor skriver kino? Hva blir likevekten, eller likevektene, i et slikt spill? Sett opp spillmatrisen og finn likevekten dersom det å møtes på kino gir Birger en nytte på 2 og Anne 1, mens det å møtes på kafé gir Anne nytte 2 og Birger 1, mens det å ikke møtes gir en nytte på null.
+13.4 Fellesgodespillet
+Gruppearbeid kan være nyttig, men kan også være en kilde til konflikt. Du har sikkert erfaring med begge deler, fra skolen, studiet eller arbeidsplassen. Fellesgodespillet er et kjent eksperiment for å utforske samarbeid, og her skal vi predikere utfallet teoretisk, ved hjelp av en spillmatrise. Se for deg at du blir tilfeldig satt sammen med en annen person i klassen. Dere skal gjennomføre en oppgave sammen, spørsmålet er hvor mye innsats (i form av penger) du skal legge inn i dette fellesprosjektet. Dere gjør beslutningene helt uavhengig av hverandre, og helt anonymt, han (eller hun) vet ikke hvem du er, og du vet ikke hvem den andre er.
+Dere får 100 kroner hver og står overfor valget mellom å plassere disse pengene på egen konto eller på en felleskonto. La oss for enkelhets skyld anta at valget står mellom å bidra med alt eller ingenting. Det som plasseres på felleskontoen, vokser så med 50 % (ved hjelp av en tryllestav, tenk på det som ekstra verdien av fellesgodet), og deles deretter likt mellom deg og din partner. Hver spiller tar med seg hjem det som står på egen konto pluss halvparten av felleskontoen.
+Gi en fremstilling av spillet på matriseform. Hva blir likevekten, eller likevektene, i dette spillet?
+13.5 Flere slankebøker?
+Ta utgangspunkt i diskusjonen om kyllingspillet i hovedboken. Inntil nå har forlagene bare gitt ut én slankebok i året. Dette har vært begrenset av tilgangen på slankebokforfattere. Men nå har nye, slanke kjendiskokker meldt seg på, og det gjør det mulig for forlagene å gi ut bok i både januar og mai (og dette er nytt).
+a. Ta utgangspunkt i tabell 13.4 i hovedboken, og anta at profitten av å gi ut to bøker i året er summen av å gi ut boken i januar og mai. Legg til en rekke og en kolonne for bok i både januar og mai, slik at det blir en matrisemodell med 9 celler. Hva blir Nash-likevekten(e)?
+b. Anta nå at Papirbokforlaget har mulighet til å trekke først, for eksempel ved å tidlig annonsere utgivelsestidspunktet for den nye slankeboken. Har Papirbokforlaget en førstetrekksfordel?
+13.6 Birger og moren igjen
+Denne siste oppgaven handler om Birgers første år på Den økonomiske høyskolen. Du husker at han hadde en del utfordringer da, også økonomiske. Moren Audhild vil gjerne hjelpe ham med penger til mat, men hun synes godt han kunne skaffe seg en jobb. Birger er glad i mat (spesielt Grandiosa), men han liker ikke å jobbe.
+Audhilds valg er om hun skal gi sønnen en økonomisk støtte eller ikke, mens Birgers valg er om han skal jobbe eller ikke. Tabellen nedenfor viser nytten til mor og sønn i de ulike utfallene, hvor det første tallet i hver celle er Birgers nytte og det andre er Audhilds nytte.
+Spillmatrise 13.6
+Første tall i hver celle tilhører radspilleren; andre tall tilhører kolonnespilleren.
+Anta at Audhild og Birger spiller et sekvensielt spill hvor Birger velger om han skal jobbe eller ikke, og moren så velger om hun skal gi eller ikke.
+a. Audhild sier til sønnen: «Hvis du ikke jobber, så gir jeg deg ingenting!» Er dette en troverdig trussel?
+b. Audhild bestemmer seg for å bruke opp alle sparepengene sine, slik at om hun skal støtte sønnen, så må hun ta opp et forbrukslån med høy rente. Dette medfører at gaven får en ekstrakostnad på 0.5. Så gjentar hun: «Hvis du ikke jobber, så gir jeg deg ingenting!» Forandrer dette noe i forhold til det du fant i deloppgaven ovenfor?
+QA = 2 − 2P
+QB = 1 − P
+Konkurrenten
+Konkurrenten
+Krig
+Fred
+Conrad
+Krig
+a, a
+b, c
+Conrad
+Fred
+c, b
+d, d
+Øst
+Øst
+Brun
+Grønn
+Vest
+Brun
+a, a
+b, c
+Vest
+Grønn
+c, b
+d, d
+Audhild
+Audhild
+Gave nei
+Gave ja
+Birger
+Jobbe nei
+1, 0
+3, 0.25
+Birger
+Jobbe ja
+0, 2
+2, 3

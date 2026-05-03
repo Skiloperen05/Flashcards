@@ -1,0 +1,128 @@
+Transkriberte oppgaver fra boka
+Oppgaver sortert etter oppgavenummer (8.1–10.6)
+8.1 Krig på Kontinentet og etterspørsel etter gass for husholdninger og industri
+Gass er en viktig energikilde i Europa, både for husholdninger og for industrien. Anta at husholdningene har etterspørselsfunksjonen
+Qʰ = 5 − P
+mens industrien har
+Qⁱ = 6 − 2P
+a. Hva er skvisprisen til de to konsumentgruppene (husholdninger og industri)?
+b. Illustrer i en figur etterspørselen fra de to konsumentgruppene hver for seg og samlet.
+c. Hva skjer med etterspørselen fra husholdninger og industri om gassprisen går fra lav Pₗ = 1 til høy Pₕ = 2?
+8.2 Krig på Kontinentet og gasspriser, på kort og lang sikt
+I oppgave 8.1 så vi på den internasjonale prisen på gass som gitt. I denne oppgaven skal vi se hva som skjer med prisen på gass når det oppstår et negativt tilbudssjokk, som følge av krig på Kontinentet og redusert tilgang på gass fra Russland.
+Vi ser på to scenarier. Det første er kortsiktig, hvor forbrukerne har liten anledning til å gjøre tilpasninger i sitt energiforbruk. Det andre er mer langsiktig, hvor forbrukerne har hatt tid på seg til å investere i alternative energikilder, slik som solcellepaneler, og til energiøkonomiserende tiltak, slik som bedre isolering av hus.
+Vi slår sammen de ulike kundegruppene, og antar at etterspørselen etter gass er gitt ved:
+Qᴱ = α − βP
+På kort sikt er αₖₒᵣₜ = βₖₒᵣₜ = 1, mens på lang sikt er αₗₐₙg = 1.5 og βₗₐₙg = 2. Du kan tenke på det som en kombinasjon av en generell økning i etterspørselen etter gass over tid (høyere α) og investeringer som gjør det enklere å skifte over til andre energikilder, slik som sol eller vind, dersom prisen på gass skulle bli høy (høyere β).
+a. Tegn etterspørselskurven på kort og lang sikt. Hva er skvisprisen til konsumentene på kort og lang sikt?
+b. Tilbudet av gass er gitt ved Qᵀ = −γ + P. Anta at γ = 0 i utgangspunktet. Regn ut og illustrer markedskrysset på kort og lang sikt. Hva er etterspørselselastisiteten på kort og lang sikt i likevekt?
+c. Med invasjonen av Ukraina og bruddet i handelsforbindelsene med Russland får vi et skift i tilbudskurven, gitt ved γ′ = 0.3. Hva skjer med markedslikevekten på kort sikt? Hva så med lang sikt? Kommenter det du finner.
+8.3 Grønt skifte i strømproduksjonen
+Et grønt skifte er på gang i kraftproduksjonen. Frem til i dag har produksjonen vært basert på kullkraft, med en Leontief-teknologi
+Qᴮ = min(B, Kᴮ)
+hvor B er innsatsen av det brune kullet, Kᴮ er den installerte kapasiteten i kullkraftverkene, og prisen på kull er z.
+Men nå er det nye tider. Det har vært en massiv investering i solceller, og produksjonen av strøm fra disse er gitt ved teknologien
+Qᴳ = min(S, Kᴳ)
+hvor S er sol og Kᴳ er produksjonskapasiteten med denne grønne teknologien. Solen er gratis. Samtidig har man lagt ned flere kullkraftverk, slik at den installerte kapasiteten i kullkraftverkene nå er lavere, K′ᴮ < Kᴮ. Og til sist innebærer det grønne skiftet at man ilegger en CO₂-avgift m på hver enhet produsert med kullkraft.
+a. Hva er tilbudskurven for strøm før det grønne skiftet? Hva er tilbudskurven for strøm etter det grønne skiftet?
+b. Noen mener at prisen på strøm vil gå opp etter det grønne skiftet, andre at prisen vil gå ned. Hvem har rett?
+(Merk: Dette er en tegneoppgave, ikke en regneoppgave.)
+8.4 Hvorfor er strømmen så dyr når vannet er gratis?
+Mesteparten av produksjonen i Norge skjer med vannkraft. Hvorfor er da strømmen så dyr? Er ikke vannet gratis?
+Produksjonen av strøm i Norge er nesten utelukkende basert på vannkraft. Anta at denne er gitt ved en Leontief-teknologi
+Q = min(V, K)
+hvor V er fyllingsgraden i vannmagasinene og K er den installerte kapasiteten i vannkraftproduksjonen, bestemt av størrelsen på demningene og turbinene. Fyllingsgraden, derimot, avhenger av hvor mye det regner.
+Vi antar at kapasiteten er K = 1 og vi skal studere både et nedbørsfattig år, med V = 0.75, og et nedbørsrikt år, med V = 1.25, og to scenarier for etterspørselen, sommer og vinter. Om sommeren er etterspørselen lav og gitt ved
+Qᴱˢᵒᵐᵐᵉʳ = 0.5 − P
+mens om vinteren er etterspørselen høy,
+Qᴱᵛⁱⁿᵗᵉʳ = 1.5 − P
+a. Hva blir strømprisen sommer og vinter i det nedbørsfattige året?
+b. Hva blir strømprisen sommer og vinter i det nedbørsrike året?
+8.5 Klimaendringer og internasjonal handel i jordbruket
+Klimaendringer gjør norsk jordbruk stadig mer utsatt for skiftende vær. Se for deg tre vær-scenarier: Et normalår hvor tilbudet av norske jordbruksprodukter er gitt ved Qᵀₙₒᵣₘ = −20 + P; et dårlig år, hvor et værsjokk har redusert avlingene, slik at tilbudet er gitt ved Qᵀ_dårlig = −40 + P; og et godt år, hvor rikelig med sol og regn gjør at Qᵀ_godt = P. Etterspørselen etter jordbruksprodukter i Norge er gitt ved Qᴱ = 100 − P, og den internasjonale prisen på jordbruksprodukter er Pᵢₙₜ = 60 (vi antar at den internasjonale prisen ikke påvirkes av vær og vind i Norge).
+a. Scenario 1. Normalår. Hva blir markedsløsningen (pris og mengde) i et normalår? Se først på situasjonen i autarki og så med internasjonal handel. Regn ut og illustrer.
+b. Scenario 2. Dårlig år. Hva blir markedsløsningen i et dårlig år? Se igjen først på situasjonen i autarki og så med internasjonal handel. Regn ut og illustrer med en figur med autarki og en med internasjonal handel. Kommenter hvordan værsjokket påvirker markedsutfallet uten og med handel, og tenk over hvem som vinner på internasjonal handel (i forhold til autarki), produsentene eller konsumentene?
+c. Scenario 3. Bra år. Hva blir markedsløsningen i et bra år? Gjennomfør samme deloppgave som ovenfor.
+8.6 Anne peker på at handel kan skape nye muligheter for vekst i papirfabrikken
+Conrad er bekymret for at internasjonal handel med papir vil skape utfordringer for fabrikken. Men Anne viser at handel også kan skape muligheter for å styrke produksjonen. For å få frem poengene tydelig tar hun som utgangspunkt en situasjon hvor den internasjonale prisen er lik autarkiprisen. Anne bruker så figurbetraktninger (dette er ikke en regneoppgave) for å studere hvordan ulike sjokk påvirker markedsutfallet. I hvert tilfelle sammenligner hun utfallet under autarki med hva effekten hadde blitt med internasjonal handel, og forklarer for bestefaren hvorfor handel kan være bra for fabrikken.
+a. Sjokk 1: Et fall i hjemlandets etterspørsel, for eksempel på grunn av dårligere økonomiske tider hjemme.
+b. Sjokk 2: Et positivt skift i tilbudskurven, for eksempel på grunn av lavere råvarepriser som gir lavere grensekostnader.
+c. Sjokk 3: Høyere internasjonal pris, for eksempel på grunn av økt etterspørsel internasjonalt.
+9.1 Krig på Kontinentet, høyere strømpriser og samfunnsøkonomisk overskudd
+Conrad leser i avisen om krigen i Ukraina og at bortfallet av russisk gass har gjort at strømprisen på Kontinentet har gått opp. Han tenker at prisøkningen ikke kan være samfunnsøkonomisk effektivt.
+Se for deg en situasjon hvor etterspørselen etter strøm er gitt ved:
+Qᴱ = 1 − P
+mens tilbudet er gitt ved:
+Qᵀ = −γ + P
+Før krigen i Ukraina så var γ_fred = 0, men med stansen av gassleveransene fra Russland får vi et skift i tilbudskurven, gitt ved γ_krig = 0.2.
+a. Hva blir likevekten og det samfunnsøkonomiske overskuddet i dette markedet før krigen?
+b. Hvordan påvirker krigen likevekten og det samfunnsøkonomiske overskuddet? Er du enig med Conrad at det har oppstått et effektivitetstap?
+c. Conrad tenker at når krigen er over og vi igjen går tilbake til γ_fred = 0, så vil det samfunnsøkonomiske overskuddet øke, og med det også den samfunnsøkonomiske effektiviteten. Har han rett i det?
+9.2 Arbeidsmarkedet og minstelønn
+Markedsmodellen er fleksibel og kan brukes til å studere mange typer markeder, også arbeidsmarkedet. Se på figuren nedenfor hvor vi har lønn (w) på den vertikale aksen og antall arbeidere (L) på den horisontale. Etterspørselen etter arbeid er gitt ved E: Høyere lønn gjør det mindre lønnsomt å ansette folk (se kapittel 7).
+Tilbudet av arbeidere er for enkelhets skyld vertikalt: Det er summen av antall arbeidere som alle ønsker å jobbe et gitt antall timer (som vi så i kapittel 3 så gir en lønnsøkning både en substitusjonseffekt som trekker i retning av mer arbeid, og en inntektseffekt som trekker i retning av mindre arbeid, så en vertikal tilbudskurve er ikke helt urimelig). Markedslikevekten er hvor tilbudskurven krysser etterspørselskurven, og med antall ansatte L* og lønn w*.
+Figur til oppgave 9.2
+Figur 9.2: Arbeidsmarkedet og minstelønn (gjengitt fra kildematerialet).
+a. Hvordan vil du tolke areal A og B i denne figuren?
+b. Se for deg at myndighetene synes at markedslønnen er urimelig lav og bestemmer seg for å innføre en minstelønn w_min. Hvordan vil dette påvirke markedsutfallet?
+9.3 Komparative fortrinn
+England may be so circumstanced, that to produce the cloth may require the labour of 100 men for one year; and if she attempted to make the wine, it might require the labour of 120 men for the same time. England would therefore find it in her interest to import wine, and purchase it by the exportation of cloth.
+Dette skriver David Ricardo i sin klassiske bok The Principles of Political Economy and Taxation fra 1817. Komparative fortrinn i Ricardos fremstilling handler om England og Portugal som kjøper og selger tekstiler og vin.
+Tenk deg at konsumentene i de to landene har samme behov for tekstiler og vin, la oss si 100 skjorter og 100 flasker vin hver. Om England skulle levert dette til egne konsumenter på egen hånd (altså, i autarki), så hadde de trengt 100 årsverk for å produsere skjortene og 120 årsverk for å produsere vinen. Tenk deg videre at Portugal i autarki ville trengt 90 årsverk for skjortene og 80 årsverk for vinen. Vi ser at Portugal er mer effektive enn England i produksjonen av både tekstiler og vin, og man kan jo lure på om Portugal da har noe å vinne på å handle med England!
+a. Ricardo skriver at England vil ha interesse av å importere vin og eksportere tekstiler. Forklar hvorfor England har et komparativt fortrinn i produksjonen av tekstiler.
+b. Hva er gevinsten av internasjonal handel basert på komparative fortrinn, målt i antall sparte årsverk?
+9.4 Hvorfor skal vi betale så mye for noe vi har så mye av?
+Det er lett å tenke at prisen på bensin er så høy i et oljerikt land som Norge. Andre oljerike land har ofte veldig lave bensinpriser, hvorfor ikke også i Norge?
+a. Begynn med frihandel, og vis ved hjelp av en figur (dette er ikke en regneoppgave) det samfunnsøkonomiske overskuddet i en situasjon hvor Norge er åpent for eksport av olje og bensin (vi tenker på olje og bensin som det samme).
+b. Studer nå en «selvforsyningspolitikk» hvor vi ser for oss at vi ikke tillater eksport av olje, og at produksjon av olje og salget av bensin hjemme skjer til pris lik grensekostnaden (i praksis lik autarkiprisen). Hva skjer med prisen, og hva er konsekvensene for konsumentoverskudd, produsentoverskudd og samfunnsøkonomisk effektivitet, sammenlignet med frihandels-scenariet i deloppgave a?
+9.5 Når den usynlige hånd svikter: Dødvektstapet ved forurensning
+Se på figur 9.4 i hovedboken. Anta at etterspørselen er gitt ved Qᴱ = 5 − P og tilbudet ved Qᵀ = −1 + 2P. Det er en miljøkostnad m = 1.5 per enhet produsert.
+a. Hva er pris og mengde i markedslikevekten a og den samfunnsøkonomisk optimale løsningen b?
+b. Hvor stort er dødvektstapet (t) i markedslikevekten?
+9.6 Når markedet gir for lite innovasjon
+Se for deg en bransje hvor tilbudet er gitt ved Qᵀ = 2 + P, som på invers form kan uttrykkes som P = −2 + Qᵀ. Dette er bedriftenes grensekostnader. Anta at produksjonen kommer hele bransjen til gode, «learning by doing» som gir en form for positiv eksternalitet. La m = 2 være verdien av denne eksterne læringseffekten. Grensekostnaden for samfunnet er derfor P = 2 + Qᵀ − m, og med m = 2 forenkles til P = Qᵀ.
+La etterspørselen være gitt ved Qᴱ = 10 − P, og anta at markedet er åpent for internasjonal handel, med internasjonal pris Pᵢₙₜ = 4.
+a. Hva er markedsløsningen? Regn ut og illustrer.
+b. Hva er dødvektstapet i markedslikevekten, og hva er det samfunnsøkonomisk optimale produksjonsnivået? Regn ut, illustrer og kommenter om import er en trussel mot innovasjon og samfunnsøkonomisk lønnsomhet i dette tilfellet.
+10.1 Lavere elavgift, men må vi betale like mye for strømmen?
+Høye strømpriser har ført til et krav om å fjerne elavgiften. Man skulle kanskje tro at lavere elavgift vil gi tilsvarende reduksjon i strømprisen for kundene, men så enkelt er det ikke!
+Vi ser for oss at strømproduksjonen kommer fra vannkraft, med null grensekostnad, men en kapasitetsgrense på Qᵀ = 1. La etterspørselen etter strøm være gitt ved Qᴱ = α − Pᴷ, hvor Pᴷ er prisen som konsumentene betaler, målt i kr/kWh.
+En elavgift t vil gjøre at konsumentprisen blir høyere enn produsentprisen Pᴾ, slik at
+Pᴷ = Pᴾ + t
+Vi skal studere to scenarier: sommer, med lav etterspørsel etter strøm (på grunn av varmt vær), og vinter, med høy etterspørsel (kaldt vær).
+Scenario 1. Sommer: αₛ = 1
+a. Hva blir pris og mengde uten elavgift?
+b. Hva skjer om det innføres en elavgift, t = 0.5? Studer effekten i konsumentpris (Pᴷ) og produsentpris (Pᴾ), hvor Pᴷ = Pᴾ + t. Hvem bærer avgiften?
+c. Hva skjer om det oppstår et krav om å fjerne elavgiften? Hva blir effekten for konsument- og produsentpris?
+Scenario 2. Vinter: αᵥ = 1.5
+d. Hva blir pris og mengde uten elavgift?
+e. Hva skjer om det innføres en elavgift, t = 0.5? Studer effekten på konsument- og produsentpris. Hvem må bære avgiften nå?
+f. Hva skjer nå om myndighetene gir etter for et krav om å fjerne elavgiften?
+10.2 Skatt, prisfølsomhet og dødvektstap
+Du har fått jobb i Finansdepartementets skatteøkonomiske avdeling, og sjefen ber deg ta utgangspunkt i markedsteorien og analysere den samfunnsøkonomiske konsekvensen av skatt.
+Du antar en lineær etterspørselsfunksjon Q = α − βP og lar for enkelhets skyld grensekostnaden i produksjonen være konstant, og setter den lik null, slik at skatten er den eneste prisen som konsumentene betaler for godene.
+a. Vis markedet ved hjelp av en figur; illustrer dødvektstapet som funksjon av skatten og parametrene i etterspørselsfunksjonen (α og β). Illustrer i figuren hvordan dødvektstapet øker med økt skatt.
+b. Hvordan påvirkes dødvektstapet av endringer i parametrene i etterspørselsfunksjonen? Illustrer ved hjelp av figurer.
+10.3 Subsidier, insidens og dødvektstap
+Betrakt et marked hvor etterspørselen er Qᴱ = 100 − P og tilbudet Qᵀ = −20 + P.
+a. Hva blir likevektspris og kvantum, og konsument- og produsentoverskudd i dette markedet?
+b. Produsentpartiet er ikke fornøyd med situasjonen, og har tatt til orde for en subsidie til produsentene på s = 20 for hver enhet produsert. Dette vil skape en kile mellom konsumentpris og produsentpris, slik at Pᴷ + s = Pᴾ. Hva blir likevekten med en slik subsidie? Tror du Produsentpartiet blir fornøyd?
+c. Hva blir konsumentoverskudd, produsentoverskudd og det samfunnsøkonomiske overskuddet med subsidien? Sammenlign med det du fant i deloppgave a. Tror du Effektivitetspartiet er fornøyd med en slik politikk?
+10.4 Miljøforkjemperne
+Anta et marked med etterspørsel Qᴱ = 100 − P og hvor produksjonen forurenser med en miljøkostnad m = 10 per enhet produsert. Bedriftene tar ikke hensyn til denne kostnaden, men bare den bedriftsøkonomiske grensekostnaden, som er konstant og gitt ved MC = 50.
+a. Hva blir markedsløsningen, effektivitetstapet og det samfunnsøkonomiske overskuddet i dette tilfellet? Regn ut og illustrer.
+b. Hva blir det samfunnsøkonomiske overskuddet med en optimal miljøskatt? Regn ut og illustrer.
+c. Miljøpartiet foreslår en skatt på t = 20 på produksjonen. Hva er de samfunnsøkonomiske konsekvensene av en slik skatt? Regn ut pris og kvantum produsert, effektivitetstapet og det samfunnsøkonomiske overskuddet og illustrer. Sammenlign Miljøpartiets forslag med markedsløsningen du fant i deloppgave a, og diskuter det du ser.
+10.5 Handelspolitikk for innovasjon
+Denne oppgaven bygger videre på oppgave 9.6, om positive eksternaliteter fra produksjon. Vi så der at markedsløsningen blir for høy import og for lav innovasjon. Betyr dette at vi bør begrense import?
+Vi ser igjen på et marked hvor tilbudet er gitt ved Qᵀ = 2 + P, etterspørselen Qᴱ = 10 − P og den internasjonale prisen på produktet er Pᵢₙₜ = 4, og det er en positiv kunnskapseksternalitet m = 2 for hver enhet produsert.
+a. Noen foreslår et forbud mot import, som her betyr å innføre autarki. Hva blir markedsløsningen og det samfunnsøkonomiske overskuddet i dette tilfellet?
+b. Andre vil beholde import, men å innføre en produksjonssubsidie s = 2, like stor som kunnskapseksternaliteten m. Hva blir markedsløsningen og det samfunnsøkonomiske overskuddet?
+c. Sammenlign utfallet med de to tiltakene importforbud og produksjonssubsidie. Hvilken politikk vil du anbefale?
+10.6 Datokjøring vs. bompenger
+Du er nyansatt økonom i Bergen kommune, og er blitt bedt om å gi råd om hvordan trafikken til byen kan reduseres, ja, målet er en halvering av trafikken. Noen har foreslått datokjøring, en ordning hvor biler med skilt som ender på partall slipper inn den ene dagen, og de med oddetall den andre. Siden halvparten av bilene slutter på partall og halvparten på oddetall, vil dette automatisk halvere trafikken inn til sentrum. Men du er skeptisk til denne løsningen, og foreslår i stedet bompenger.
+Du bruker mikroøkonomisk teori for å argumentere for hvorfor bompenger er en bedre idé enn datokjøring, og begynner med å anta at betalingsviljen for å kjøre inn til byen er gitt ved P = 1 − Q. Bilistene med høyest betalingsvilje er dermed villige til å betale Pₘₐₓ = 1, mens den laveste betalingsviljen er null. Anta at det ikke er noen andre kostnader forbundet med å kjøre bilen inn til byen, slik at uten noen inngrep fra kommunen så vil alle kjøre, Q = 1 (tenk på «1» som at «100 %» kjører).
+Kommunens mål om å halvere antall biler til byen betyr dermed Qₘₐₓ = 0.5. Siden begge tiltakene skal lede til en halvering i bilbruken, vil de miljømessige gevinstene være identiske, og disse kan dermed holdes utenfor analysen.
+a. Hva blir det samfunnsøkonomiske overskuddet med datokjøring?
+b. Hva blir det samfunnsøkonomiske overskuddet med bompenger, hvor prisen (altså bompengeavgiften) settes slik at trafikken halveres?
+c. Sammenlign de to tiltakene, og forklar hvorfor du mener bompenger er best.
