@@ -1,1 +1,0 @@
-window.SAM2_TASK_TEXTS = {};
