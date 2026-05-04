@@ -4,99 +4,103 @@
 <title>SAM2 oppgaveprioritering</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#172033;--muted:#64748b;--line:#fed7aa;--accent:#d97706;--dark:#0f172a;--high:#dc2626;--mid:#d97706;--low:#16a34a}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,system-ui,sans-serif;background:#f8f7f4;color:var(--ink);line-height:1.5}
+:root{--ink:#172033;--muted:#64748b;--line:#fed7aa;--accent:#d97706;--dark:#0f172a;--bg:#fff7ed}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:radial-gradient(circle at top left,#ffedd5 0,#fff7ed 35%,#f8fafc 100%);color:var(--ink);line-height:1.5;min-height:100vh}
 
-/* ── Topbar ── */
-.top{height:64px;background:var(--dark);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:40}
+.top{height:64px;background:var(--dark);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:30}
 .brand{color:#fff;text-decoration:none;font-weight:900;display:flex;gap:10px;align-items:center}
 .mark{width:32px;height:32px;border-radius:8px;background:#6366f1;display:grid;place-items:center}
 .crumb,.crumb a{color:#94a3b8;text-decoration:none;font-size:13px}
 
-/* ── Hero ── */
-.hero{background:var(--dark);padding:40px 28px 48px;position:relative;overflow:hidden}
-.hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(217,119,6,.18) 0%,transparent 60%);pointer-events:none}
-.hero-inner{max-width:1200px;margin:auto;display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center;position:relative;z-index:1}
-.hero-left h1{font-size:clamp(13px,1.5vw,15px);color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px}
-.stats-strip{display:flex;gap:40px;flex-wrap:wrap}
-.stat-item{display:flex;flex-direction:column}
-.stat-num{font-size:clamp(44px,6vw,72px);font-weight:900;letter-spacing:-.04em;line-height:1;color:#fff}
-.stat-num.accent{color:#f59e0b}
-.stat-label{font-size:13px;color:#94a3b8;margin-top:4px;font-weight:500}
-.hero-featured{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:20px 22px;width:320px;flex-shrink:0;cursor:pointer;transition:background .15s,transform .15s;backdrop-filter:blur(4px)}
-.hero-featured:hover{background:rgba(255,255,255,.11);transform:translateY(-2px)}
-.feat-label{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#f59e0b;margin-bottom:10px}
-.feat-nr{font-size:13px;font-weight:900;color:rgba(255,255,255,.5);margin-bottom:6px}
-.feat-title{font-size:16px;font-weight:800;color:#fff;line-height:1.35;margin-bottom:10px}
-.feat-meta{font-size:12px;color:#94a3b8}
+.hero{max-width:1280px;margin:auto;padding:34px 22px 0}
+.eyebrow{display:inline-flex;padding:6px 12px;border-radius:99px;background:#ffedd5;border:1px solid #fed7aa;color:#9a3412;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
+.hero h1{font-size:clamp(28px,4vw,48px);letter-spacing:-.05em;margin:10px 0 6px}
+.hero p{color:#475569;margin:0 0 22px;max-width:680px;font-size:14px}
 
-/* ── Chapter nav ── */
-.kap-nav{background:#fff;border-bottom:1px solid #e9e4da;position:sticky;top:64px;z-index:30;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
-.kap-nav::-webkit-scrollbar{display:none}
-.kap-nav-inner{display:inline-flex;gap:4px;padding:10px 28px}
-.kap-pill{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:99px;font:inherit;font-size:12px;font-weight:700;color:var(--muted);background:none;border:1px solid transparent;cursor:pointer;transition:all .15s;text-decoration:none;white-space:nowrap}
-.kap-pill:hover{background:#fff7ed;color:var(--ink);border-color:var(--line)}
-.kap-pill.has-high{color:#991b1b}
-.kap-pill .kp-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+.tab-bar{display:flex;gap:4px;border-bottom:2px solid var(--line)}
+.tab{padding:10px 18px;border:none;background:none;font:inherit;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;border-radius:10px 10px 0 0;transition:color .15s,background .15s}
+.tab:hover{color:var(--ink);background:rgba(0,0,0,.04)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);background:#fff8f0}
 
-/* ── Main content ── */
-.content{max-width:1200px;margin:auto;padding:0 28px 80px}
+main{max-width:1280px;margin:auto;padding:24px 22px 60px}
+.tab-panel{display:none}.tab-panel.active{display:block}
 
-/* ── Del break ── */
-.del-break{display:flex;align-items:center;gap:16px;padding:48px 0 20px}
-.del-break-label{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:#fff;background:var(--accent);padding:5px 12px;border-radius:99px}
-.del-break-name{font-size:18px;font-weight:800;color:var(--ink)}
-.del-break-line{flex:1;height:1px;background:#e5ddd0}
-.del-break-sub{font-size:13px;color:var(--muted);white-space:nowrap}
+.search-bar{display:grid;grid-template-columns:1fr repeat(3,minmax(120px,160px)) auto;gap:10px;margin-bottom:18px}
+.search-bar input,.search-bar select,.search-bar button{border:1px solid var(--line);background:#fff;border-radius:14px;padding:11px 14px;font:inherit;font-size:13px;min-width:0}
+.search-bar button{font-weight:800;cursor:pointer}.search-bar button:hover{background:#fff7ed}
 
-/* ── Chapter section ── */
-.kap-section{margin-bottom:10px;position:relative}
-.kap-header{display:flex;align-items:flex-start;gap:16px;padding:22px 0 14px;border-bottom:1px solid #e9e4da;position:relative}
-.kap-bg-num{position:absolute;right:-4px;top:-18px;font-size:96px;font-weight:900;color:rgba(0,0,0,.04);line-height:1;pointer-events:none;user-select:none}
-.kap-num-badge{width:44px;height:44px;border-radius:14px;background:#fff;border:1px solid #e9e4da;display:grid;place-items:center;font-size:16px;font-weight:900;color:var(--muted);flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-.kap-info h2{font-size:16px;font-weight:800;margin-bottom:4px}
-.kap-info-meta{display:flex;gap:8px;flex-wrap:wrap}
-.kap-pill-sm{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
-.kap-pill-sm.mid{background:#fef3c7;color:#92400e;border-color:#fde68a}
-.kap-pill-sm.low{background:#dcfce7;color:#166534;border-color:#bbf7d0}
-.kap-pill-sm.neutral{background:#f1f5f9;color:#475569;border:none}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
 
-/* ── Task rows ── */
-.task-list{display:flex;flex-direction:column}
-.task-row{display:flex;align-items:center;gap:12px;padding:12px 0 12px 12px;border-bottom:1px solid #f0ece6;cursor:pointer;transition:background .1s;position:relative;border-left:3px solid transparent;margin-left:-3px;border-radius:0}
-.task-row:last-child{border-bottom:none}
-.task-row:hover{background:rgba(255,255,255,.9);border-radius:10px;border-left-color:transparent;margin-left:0;padding-left:15px}
-.task-row.prio-high{border-left-color:#dc2626}
-.task-row.prio-mid{border-left-color:#d97706}
-.task-row.prio-low{border-left-color:#16a34a}
-.task-row:hover.prio-high{border-left-color:#dc2626}
-.task-row:hover.prio-mid{border-left-color:#d97706}
-.task-row:hover.prio-low{border-left-color:#16a34a}
-.row-nr{font-size:12px;font-weight:900;color:#9a3412;background:#ffedd5;border-radius:8px;padding:3px 8px;flex-shrink:0;min-width:40px;text-align:center}
-.row-title{flex:1;font-size:14px;font-weight:600;color:var(--ink);min-width:0}
-.task-row.prio-high .row-title{font-weight:800}
-.task-row.prio-low .row-title{color:var(--muted);font-weight:500}
-.row-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.badge{border-radius:99px;padding:3px 9px;font-size:11px;font-weight:900;white-space:nowrap;border:1px solid transparent}
+/* ── Task card ── */
+.task{background:#fff;border:1px solid #fed7aa;border-left:5px solid #fed7aa;border-radius:18px;padding:15px 16px;box-shadow:0 8px 24px rgba(120,53,15,.07);cursor:pointer;text-align:left;transition:transform .15s,box-shadow .15s;width:100%;font:inherit;position:relative}
+.task:hover{transform:translateY(-3px);box-shadow:0 18px 42px rgba(120,53,15,.15)}
+.task.prio-high{border-left-color:#dc2626}.task.prio-mid{border-left-color:#d97706}.task.prio-low{border-left-color:#16a34a}
+.task-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:7px}
+.task h3{margin:0 0 5px;font-size:14px;line-height:1.35;font-weight:700}
+.task-sub{font-size:12px;color:var(--muted);margin-bottom:9px}
+.task-foot{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.nr{font-weight:900;color:#9a3412;background:#ffedd5;border:1px solid #fed7aa;border-radius:10px;padding:4px 9px;font-size:12px;white-space:nowrap;flex-shrink:0}
+.badge{border-radius:99px;padding:3px 9px;font-size:11px;font-weight:900;border:1px solid #e2e8f0;background:#f8fafc;white-space:nowrap}
 .badge.high{background:#fee2e2;color:#991b1b;border-color:#fecaca}
 .badge.mid{background:#fef3c7;color:#92400e;border-color:#fde68a}
-.badge.low{background:#f1f5f9;color:#64748b;border-color:#e2e8f0}
-.calc-dots{font-size:12px;letter-spacing:-1px}.calc-dots .on{color:#d97706}.calc-dots .off{color:#e2e8f0}
-.saved-dot{width:8px;height:8px;border-radius:50%;background:#10b981;flex-shrink:0}
-.tag-xs{font-size:10px;padding:2px 6px;border-radius:99px;background:#ede9fe;color:#5b21b6;border:1px solid #ddd6fe;white-space:nowrap}
+.badge.low{background:#dcfce7;color:#166534;border-color:#bbf7d0}
+.badge.del{background:#ffedd5;color:#9a3412;border-color:#fed7aa}
+.badge.done{background:#dcfce7;color:#166534;border-color:#bbf7d0}
+.tag-sm{font-size:11px;padding:3px 7px;border-radius:99px;background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
+.calc-dots{font-size:13px;letter-spacing:0;color:#e2e8f0}.calc-dots .on{color:#d97706}
+.saved-mark{width:9px;height:9px;border-radius:50%;background:#10b981;display:inline-block;margin-left:auto;flex-shrink:0;box-shadow:0 0 0 2px #fff}
+
+/* ── Top 10 card ── */
+.top10-card{display:flex;gap:14px;align-items:flex-start;background:#fff;border:1px solid #fed7aa;border-left:5px solid #fed7aa;border-radius:20px;padding:18px;box-shadow:0 10px 32px rgba(120,53,15,.09);cursor:pointer;text-align:left;transition:transform .15s,box-shadow .15s;width:100%;font:inherit}
+.top10-card:hover{transform:translateY(-3px);box-shadow:0 22px 50px rgba(120,53,15,.16)}
+.top10-card.prio-high{border-left-color:#dc2626}.top10-card.prio-mid{border-left-color:#d97706}
+.rank-num{font-size:28px;font-weight:900;color:#cbd5e1;line-height:1;flex-shrink:0;width:38px;text-align:right;padding-top:2px}
+.top10-body{flex:1;min-width:0}
+.top10-body h3{margin:0 0 4px;font-size:15px;font-weight:700;line-height:1.3}
+.top10-body .task-sub{margin-bottom:8px}
+.score-bar-wrap{height:5px;background:#f1f5f9;border-radius:99px;overflow:hidden;margin-bottom:9px}
+.score-bar{height:100%;border-radius:99px;background:linear-gradient(90deg,#d97706,#f59e0b)}
+
+/* ── Stats ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:26px}
+.stat-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:0 6px 18px rgba(120,53,15,.06)}
+.stat-card small{display:block;color:#9a3412;text-transform:uppercase;font-size:10px;font-weight:900;letter-spacing:.07em;margin-bottom:4px}
+.stat-card b{font-size:28px;letter-spacing:-.04em}
+.stat-card p{margin:2px 0 0;color:var(--muted);font-size:12px}
+
+/* ── Del sections ── */
+.del-section{margin-bottom:30px}
+.del-heading{display:flex;align-items:baseline;gap:14px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--line)}
+.del-heading h2{margin:0;font-size:20px}
+.del-heading span{font-size:13px;color:var(--muted)}
+
+/* ── Kapittel accordion ── */
+.kap-group{margin-bottom:10px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fff}
+.kap-head{width:100%;display:flex;justify-content:space-between;align-items:center;border:0;background:#fff;padding:14px 18px;font:inherit;font-weight:800;font-size:14px;cursor:pointer;gap:10px}
+.kap-head:hover{background:#fff8f0}
+.kap-head .chevron{transition:transform .2s;font-size:14px;color:var(--muted);flex-shrink:0}
+.kap-group.open .kap-head .chevron{transform:rotate(180deg)}
+.kap-body{display:none;padding:12px 14px 14px;border-top:1px solid var(--line);background:#fffaf5}
+.kap-group.open .kap-body{display:block}
+.kap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+
+/* ── Empty / count ── */
+.empty{text-align:center;padding:48px;color:var(--muted);font-size:14px;grid-column:1/-1}
+.result-count{font-size:13px;color:var(--muted);margin-bottom:14px}
 
 /* ── Modal ── */
-.modal{position:fixed;inset:0;background:rgba(15,23,42,.65);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}
 .modal.open{display:flex}
 .dialog{background:#fff;border-radius:24px;max-width:960px;width:100%;max-height:92vh;overflow:hidden;box-shadow:0 32px 90px rgba(15,23,42,.35);display:flex;flex-direction:column}
-.dialog-head{padding:18px 22px 14px;border-bottom:1px solid var(--line);display:flex;gap:12px;justify-content:space-between;align-items:flex-start;flex-shrink:0}
-.dialog-head-left small{color:#9a3412;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:4px}
-.dialog-head-left h2{margin:0 0 8px;font-size:18px;line-height:1.3}
+.dialog-head{padding:16px 20px 14px;border-bottom:1px solid var(--line);display:flex;gap:12px;justify-content:space-between;align-items:flex-start;flex-shrink:0}
+.dialog-head-left small{color:#9a3412;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.07em}
+.dialog-head-left h2{margin:4px 0 8px;font-size:18px;line-height:1.3}
 .mchips{display:flex;gap:6px;flex-wrap:wrap}
-.close-btn{border:0;background:#f1f5f9;border-radius:10px;width:36px;height:36px;font-size:18px;cursor:pointer;flex-shrink:0;display:grid;place-items:center}
+.close-btn{border:0;background:#f1f5f9;border-radius:10px;width:36px;height:36px;font-size:18px;cursor:pointer;flex-shrink:0;display:grid;place-items:center;line-height:1}
 .close-btn:hover{background:#e2e8f0}
-.dialog-text{padding:14px 22px;font-size:14px;line-height:1.75;color:#374151;max-height:200px;overflow-y:auto;flex-shrink:0;border-bottom:1px solid #ffedd5;white-space:pre-wrap}
+.dialog-text{padding:14px 20px;font-size:14px;line-height:1.7;color:#374151;max-height:200px;overflow-y:auto;flex-shrink:0;border-bottom:1px solid #ffedd5;white-space:pre-wrap}
 .canvas-wrap{flex:1;position:relative;overflow:hidden;background:#f9fafb;min-height:220px}
 #drawCanvas{position:absolute;top:0;left:0;touch-action:none;cursor:crosshair}
 .draw-toolbar{display:flex;gap:8px;align-items:center;padding:9px 16px;background:#fff7ed;border-top:1px solid var(--line);flex-shrink:0;flex-wrap:wrap}
@@ -108,22 +112,13 @@ body{font-family:Inter,system-ui,sans-serif;background:#f8f7f4;color:var(--ink);
 .draw-sep{width:1px;height:26px;background:#e2e8f0;flex-shrink:0}
 .save-lbl{margin-left:auto;font-size:12px;color:#10b981;font-weight:600;white-space:nowrap}
 
-@media(max-width:768px){
-  .hero-inner{grid-template-columns:1fr}.hero-featured{width:100%}.stats-strip{gap:24px}
-  .stat-num{font-size:40px}.kap-bg-num{display:none}
-  .del-break-name{font-size:15px}.row-right .badge{display:none}
-  .crumb{display:none}
-}
-@media(max-width:540px){
-  .modal{padding:0}.dialog{border-radius:0;max-height:100dvh}
-  .hero{padding:28px 18px 36px}.content{padding:0 18px 60px}
-  .kap-nav-inner{padding:8px 18px}
-}
+@media(max-width:1024px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){.grid3,.kap-grid{grid-template-columns:repeat(2,1fr)}.search-bar{grid-template-columns:1fr 1fr}.crumb{display:none}}
+@media(max-width:540px){.grid3,.grid2,.kap-grid{grid-template-columns:1fr}.search-bar{grid-template-columns:1fr}.modal{padding:0}.dialog{border-radius:0;max-height:100dvh}.stats-row{grid-template-columns:repeat(2,1fr)}.top10-card{flex-direction:column;gap:6px}.rank-num{font-size:18px;width:auto}}
 </style>
 </head>
 <body>
 
-<!-- Modal -->
 <div id="modal" class="modal" role="dialog" aria-modal="true">
   <div class="dialog">
     <div class="dialog-head">
@@ -154,42 +149,37 @@ body{font-family:Inter,system-ui,sans-serif;background:#f8f7f4;color:var(--ink);
   <div class="crumb"><a href="../../">Hjem</a> › <a href="../">SAM2</a> › Oppgaver</div>
 </header>
 
-<!-- Hero -->
 <section class="hero">
-  <div class="hero-inner">
-    <div class="hero-left">
-      <h1>SAM2 · Oppgaveprioritering</h1>
-      <div class="stats-strip">
-        <div class="stat-item">
-          <span class="stat-num" id="statTotal">–</span>
-          <span class="stat-label">Oppgaver totalt</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-num accent" id="statHigh">–</span>
-          <span class="stat-label">Høy prioritet</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-num" id="statAnswered">–</span>
-          <span class="stat-label">Besvart</span>
-        </div>
-      </div>
-    </div>
-    <button class="hero-featured" id="heroFeatured" aria-label="Åpne toppoppgaven">
-      <div class="feat-label">Prioritert akkurat nå</div>
-      <div class="feat-nr" id="featNr"></div>
-      <div class="feat-title" id="featTitle">Laster …</div>
-      <div class="feat-meta" id="featMeta"></div>
-    </button>
+  <span class="eyebrow">SAM2 øvingsfunksjon</span>
+  <h1>Oppgaveprioritering</h1>
+  <p>Klikk på en oppgave for å lese den og skrive besvarelse med penn. Grønn prikk markerer besvarte oppgaver.</p>
+  <div class="tab-bar">
+    <button class="tab active" data-tab="top10">⭐ Topp 10</button>
+    <button class="tab" data-tab="del">Per del</button>
+    <button class="tab" data-tab="kap">Per kapittel</button>
+    <button class="tab" data-tab="alle">Alle oppgaver</button>
   </div>
 </section>
 
-<!-- Chapter nav -->
-<nav class="kap-nav" aria-label="Kapittelnavigasjon">
-  <div class="kap-nav-inner" id="kapNav"></div>
-</nav>
-
-<!-- Content -->
-<div class="content" id="mainContent"></div>
+<main>
+  <div id="tab-top10" class="tab-panel active">
+    <div class="stats-row" id="statsRow"></div>
+    <div class="grid2" id="top10Grid"></div>
+  </div>
+  <div id="tab-del" class="tab-panel"><div id="delContent"></div></div>
+  <div id="tab-kap" class="tab-panel"><div id="kapContent"></div></div>
+  <div id="tab-alle" class="tab-panel">
+    <div class="search-bar">
+      <input id="search" placeholder="Søk oppgavenummer, tittel eller tekst …">
+      <select id="delFilter"><option value="">Alle deler</option><option>Del 1</option><option>Del 2</option><option>Del 3</option><option>Del 4</option></select>
+      <select id="kapFilter"><option value="">Alle kapitler</option></select>
+      <select id="prioFilter"><option value="">Alle prioriteter</option><option value="Høy">Høy prioritet</option><option value="Middels">Middels</option><option value="Lav">Lav</option></select>
+      <button id="resetBtn">Nullstill</button>
+    </div>
+    <div class="result-count" id="allCount"></div>
+    <div class="grid3" id="alleGrid"></div>
+  </div>
+</main>
 
 <script>
 const META={
@@ -220,25 +210,12 @@ const META={
   '13.1':{s:38,p:'Middels',c:1,f:0},'13.2':{s:30,p:'Lav',c:1,f:0},'13.3':{s:47,p:'Middels',c:1,f:1},
   '13.4':{s:63,p:'Middels',c:1,f:1},'13.5':{s:57,p:'Middels',c:2,f:1},'13.6':{s:83,p:'Høy',c:1,f:1},
 };
-const KAP_TITLE={
-  1:'Penger, priser og preferanser',2:'Mer om valget mellom goder',3:'Konsumenter i arbeid',
-  4:'Alternativ atferd',5:'Produksjon med to faktorer',6:'Kostnader',7:'Tilbud og profitt',
-  8:'Tilbud og etterspørsel',9:'Handel og eksternaliteter',10:'Skatter og subsidier',
-  11:'Monopol',12:'Oligopol',13:'Spillteori'
-};
-const DEL_INFO={
-  'Del 1':{label:'Del 1',name:'Konsumentteori',sub:'Kapittel 1–4'},
-  'Del 2':{label:'Del 2',name:'Produsentteori',sub:'Kapittel 5–7'},
-  'Del 3':{label:'Del 3',name:'Marked og politikk',sub:'Kapittel 8–10'},
-  'Del 4':{label:'Del 4',name:'Ufullkommen konkurranse',sub:'Kapittel 11–13'},
-};
+const KAP_TITLE={1:'Penger, priser og preferanser',2:'Mer om valget mellom goder',3:'Konsumenter i arbeid',4:'Alternativ atferd',5:'Produksjon med to faktorer',6:'Kostnader',7:'Tilbud og profitt',8:'Tilbud og etterspørsel',9:'Handel og eksternaliteter',10:'Skatter og subsidier',11:'Monopol',12:'Oligopol',13:'Spillteori'};
 const SOURCES=['data/del1.txt','data/del2.txt','data/del3.txt','data/del4.txt'];
 let TASKS=[];
 
 function partFor(n){const c=+n.split('.')[0];return c<=4?'Del 1':c<=7?'Del 2':c<=10?'Del 3':'Del 4'}
 function hasSaved(id){try{return!!localStorage.getItem('sam2_draw_'+id)}catch(e){return false}}
-function pc(p){return p==='Høy'?'high':p==='Middels'?'mid':'low'}
-function dots(n){return`<span class="calc-dots">${[0,1,2].map(i=>`<span class="${i<n?'on':'off'}">●</span>`).join('')}</span>`}
 
 function parseTasks(txt){
   const re=/^((?:[1-9]|1[0-3])\.[1-6])\s+(.+)$/gm;
@@ -253,79 +230,82 @@ function parseTasks(txt){
   });
 }
 
-function renderHero(){
-  const top=TASKS.slice().sort((a,b)=>b.score-a.score)[0];
-  if(!top)return;
-  document.getElementById('statTotal').textContent=TASKS.length;
-  document.getElementById('statHigh').textContent=TASKS.filter(t=>t.prio==='Høy').length;
-  document.getElementById('statAnswered').textContent=TASKS.filter(t=>hasSaved(t.id)).length;
-  document.getElementById('featNr').textContent=top.id;
-  document.getElementById('featTitle').textContent=top.title;
-  document.getElementById('featMeta').textContent=`${top.del} · ${top.kap} · Score ${top.score}`;
-  document.getElementById('heroFeatured').onclick=()=>openTask(top.id);
+function pc(p){return p==='Høy'?'high':p==='Middels'?'mid':'low'}
+
+function dots(n){return`<span class="calc-dots">${[0,1,2].map(i=>`<span class="${i<n?'on':''}">●</span>`).join('')}</span>`}
+
+function taskCard(t){
+  return`<button class="task prio-${pc(t.prio)}" data-id="${t.id}">
+    <div class="task-top"><span class="nr">${t.id}</span><span class="badge ${pc(t.prio)}">${t.prio}</span></div>
+    <h3>${t.title}</h3>
+    <div class="task-sub">${t.del} · ${t.kap}</div>
+    <div class="task-foot">${dots(t.calc)}${t.full?'<span class="tag-sm">Full metode</span>':''}${hasSaved(t.id)?'<span class="saved-mark" title="Besvart"></span>':''}</div>
+  </button>`;
 }
 
-function renderNav(){
-  const chaps=[...new Set(TASKS.map(t=>t.chap))].sort((a,b)=>a-b);
-  document.getElementById('kapNav').innerHTML=chaps.map(c=>{
-    const hasHigh=TASKS.some(t=>t.chap===c&&t.prio==='Høy');
-    return`<a href="#kap${c}" class="kap-pill${hasHigh?' has-high':''}">${hasHigh?'<span class="kp-dot"></span>':''} ${c}</a>`;
+function top10Card(t,rank){
+  return`<button class="top10-card prio-${pc(t.prio)}" data-id="${t.id}">
+    <div class="rank-num">#${rank}</div>
+    <div class="top10-body">
+      <div class="task-top"><span class="nr">${t.id}</span><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="badge ${pc(t.prio)}">${t.prio}</span>${t.full?'<span class="tag-sm">Full metode</span>':''}${hasSaved(t.id)?'<span class="saved-mark"></span>':''}</div></div>
+      <h3>${t.title}</h3>
+      <div class="task-sub">${t.del} · ${t.kap}</div>
+      <div class="score-bar-wrap"><div class="score-bar" style="width:${t.score}%"></div></div>
+      <div class="task-foot">${dots(t.calc)}<span style="font-size:11px;color:var(--muted);margin-left:4px">Regntyngde ${t.calc}/3 · Score ${t.score}</span></div>
+    </div>
+  </button>`;
+}
+
+function renderStats(){
+  const answered=TASKS.filter(t=>hasSaved(t.id)).length;
+  document.getElementById('statsRow').innerHTML=`
+    <div class="stat-card"><small>Totalt</small><b>${TASKS.length}</b><p>Oppgaver kap. 1–13</p></div>
+    <div class="stat-card"><small>Høy prioritet</small><b>${TASKS.filter(t=>t.prio==='Høy').length}</b><p>Kritiske oppgaver</p></div>
+    <div class="stat-card"><small>Regntunge</small><b>${TASKS.filter(t=>t.calc>=3).length}</b><p>Krev. algebra 3/3</p></div>
+    <div class="stat-card"><small>Besvart</small><b>${answered}</b><p>Med tegnebesvarelse</p></div>`;
+}
+
+function renderTop10(){
+  document.getElementById('top10Grid').innerHTML=
+    TASKS.slice().sort((a,b)=>b.score-a.score).slice(0,10).map((t,i)=>top10Card(t,i+1)).join('');
+}
+
+function renderDel(){
+  const delDesc={'Del 1':'Kap. 1–4 · Konsumentteori','Del 2':'Kap. 5–7 · Produsentteori','Del 3':'Kap. 8–10 · Marked og politikk','Del 4':'Kap. 11–13 · Ufullkommen konkurranse'};
+  document.getElementById('delContent').innerHTML=['Del 1','Del 2','Del 3','Del 4'].map(d=>{
+    const tasks=TASKS.filter(t=>t.del===d).sort((a,b)=>b.score-a.score);
+    const rest=tasks.slice(6);
+    return`<div class="del-section">
+      <div class="del-heading"><h2>${d}</h2><span>${delDesc[d]} · ${tasks.length} oppgaver</span></div>
+      <div class="grid3">${tasks.slice(0,6).map(taskCard).join('')}</div>
+      ${rest.length?`<details style="margin-top:10px"><summary style="cursor:pointer;font-size:13px;color:var(--muted);padding:6px 2px;user-select:none">Vis ${rest.length} til i ${d} ▾</summary><div class="grid3" style="margin-top:10px">${rest.map(taskCard).join('')}</div></details>`:''}
+    </div>`;
   }).join('');
 }
 
-function renderContent(){
-  const dels=['Del 1','Del 2','Del 3','Del 4'];
-  let html='';
-  dels.forEach(del=>{
-    const info=DEL_INFO[del];
-    html+=`<div class="del-break">
-      <span class="del-break-label">${info.label}</span>
-      <span class="del-break-name">${info.name}</span>
-      <div class="del-break-line"></div>
-      <span class="del-break-sub">${info.sub}</span>
+function renderKap(){
+  const chaps=[...new Set(TASKS.map(t=>t.chap))].sort((a,b)=>a-b);
+  document.getElementById('kapContent').innerHTML=chaps.map(c=>{
+    const tasks=TASKS.filter(t=>t.chap===c).sort((a,b)=>b.score-a.score);
+    const high=tasks.filter(t=>t.prio==='Høy').length;
+    return`<div class="kap-group" id="kg${c}">
+      <button class="kap-head"><span><b>Kap. ${c}</b> — ${KAP_TITLE[c]||''}</span>
+      <span style="display:flex;align-items:center;gap:8px">${high?`<span class="badge high">${high} høy</span>`:''}<span style="font-size:12px;color:var(--muted)">${tasks.length} oppg.</span><span class="chevron">▾</span></span></button>
+      <div class="kap-body"><div class="kap-grid">${tasks.map(taskCard).join('')}</div></div>
     </div>`;
+  }).join('');
+  document.querySelectorAll('.kap-head').forEach(h=>h.addEventListener('click',()=>h.closest('.kap-group').classList.toggle('open')));
+  document.getElementById('kg10')?.classList.add('open');
+}
 
-    const delTasks=TASKS.filter(t=>t.del===del);
-    const chaps=[...new Set(delTasks.map(t=>t.chap))].sort((a,b)=>a-b);
-
-    chaps.forEach(c=>{
-      const tasks=delTasks.filter(t=>t.chap===c).sort((a,b)=>b.score-a.score);
-      const highN=tasks.filter(t=>t.prio==='Høy').length;
-      const midN=tasks.filter(t=>t.prio==='Middels').length;
-      const lowN=tasks.filter(t=>t.prio==='Lav').length;
-
-      html+=`<section class="kap-section" id="kap${c}">
-        <div class="kap-header">
-          <div class="kap-bg-num">${c}</div>
-          <div class="kap-num-badge">${c}</div>
-          <div class="kap-info">
-            <h2>${KAP_TITLE[c]||'Kap. '+c}</h2>
-            <div class="kap-info-meta">
-              ${highN?`<span class="kap-pill-sm">${highN} høy</span>`:''}
-              ${midN?`<span class="kap-pill-sm mid">${midN} middels</span>`:''}
-              ${lowN?`<span class="kap-pill-sm low">${lowN} lav</span>`:''}
-              <span class="kap-pill-sm neutral">${tasks.length} oppgaver</span>
-            </div>
-          </div>
-        </div>
-        <div class="task-list">
-          ${tasks.map(t=>`
-            <div class="task-row prio-${pc(t.prio)}" data-id="${t.id}">
-              <span class="row-nr">${t.id}</span>
-              <span class="row-title">${t.title}</span>
-              <div class="row-right">
-                <span class="badge ${pc(t.prio)}">${t.prio}</span>
-                ${dots(t.calc)}
-                ${t.full?'<span class="tag-xs">Full</span>':''}
-                ${hasSaved(t.id)?'<span class="saved-dot" title="Besvart"></span>':''}
-              </div>
-            </div>`).join('')}
-        </div>
-      </section>`;
-    });
-  });
-  document.getElementById('mainContent').innerHTML=html;
-  document.querySelectorAll('.task-row').forEach(r=>r.addEventListener('click',()=>openTask(r.dataset.id)));
+function renderAlle(){
+  const q=document.getElementById('search').value.toLowerCase().trim();
+  const d=document.getElementById('delFilter').value;
+  const k=document.getElementById('kapFilter').value;
+  const p=document.getElementById('prioFilter').value;
+  const rows=TASKS.filter(t=>(!d||t.del===d)&&(!k||t.kap===k)&&(!p||t.prio===p)&&(!q||(t.id+' '+t.title+' '+t.text).toLowerCase().includes(q))).sort((a,b)=>b.score-a.score);
+  document.getElementById('allCount').textContent=`${rows.length} av ${TASKS.length} oppgaver`;
+  document.getElementById('alleGrid').innerHTML=rows.length?rows.map(taskCard).join(''):'<div class="empty">Ingen oppgaver matcher søket.</div>';
 }
 
 /* ── Canvas / Modal ── */
@@ -339,23 +319,24 @@ function openTask(id){
   document.getElementById('mTitle').textContent=t.title;
   document.getElementById('mChips').innerHTML=
     `<span class="badge ${pc(t.prio)}">${t.prio} prioritet</span>`+
-    `<span class="badge low">Score ${t.score}</span>`+
-    `<span class="badge low">Regn ${t.calc}/3</span>`+
-    (t.full?'<span class="badge low">Full metode</span>':'')+
-    (hasSaved(id)?'<span class="badge" style="background:#dcfce7;color:#166534;border-color:#bbf7d0">Besvart ●</span>':'');
+    `<span class="badge del">Score ${t.score}</span>`+
+    `<span class="badge del">Regn ${t.calc}/3</span>`+
+    (t.full?'<span class="badge del">Full metode</span>':'')+
+    (hasSaved(id)?'<span class="badge done">Besvart ●</span>':'');
   document.getElementById('mText').textContent=t.text;
-  modal.classList.add('open');document.body.style.overflow='hidden';
+  modal.classList.add('open');
+  document.body.style.overflow='hidden';
   requestAnimationFrame(()=>{sizeCanvas();loadCanvas(id);});
 }
 
 function closeTask(){
   modal.classList.remove('open');document.body.style.overflow='';drawing=false;activeId=null;
-  renderHero();renderContent();
+  refreshAll();
 }
 
 function sizeCanvas(){
-  const w=document.getElementById('canvasWrap');
-  canvas.width=w.clientWidth;canvas.height=w.clientHeight;
+  const wrap=document.getElementById('canvasWrap');
+  canvas.width=wrap.clientWidth;canvas.height=wrap.clientHeight;
   ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
 }
 
@@ -387,13 +368,38 @@ document.getElementById('closeBtn').onclick=closeTask;
 modal.addEventListener('click',e=>{if(e.target===modal)closeTask();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))closeTask();});
 
+/* ── Tabs ── */
+document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById('tab-'+tab.dataset.tab).classList.add('active');
+  bindCards();
+}));
+
+function bindCards(){document.querySelectorAll('.task,.top10-card').forEach(b=>b.onclick=()=>openTask(b.dataset.id));}
+
+['search','delFilter','kapFilter','prioFilter'].forEach(id=>document.getElementById(id)?.addEventListener('input',()=>{renderAlle();bindCards();}));
+document.getElementById('resetBtn').onclick=()=>{['search','delFilter','kapFilter','prioFilter'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});renderAlle();bindCards();};
+
+function refreshAll(){
+  const activeTab=document.querySelector('.tab.active')?.dataset.tab;
+  if(activeTab==='top10'){renderStats();renderTop10();}
+  else if(activeTab==='del')renderDel();
+  else if(activeTab==='kap')renderKap();
+  else renderAlle();
+  bindCards();
+}
+
 async function init(){
   try{
     const texts=await Promise.all(SOURCES.map(s=>fetch(s).then(r=>{if(!r.ok)throw new Error(s);return r.text();})));
     TASKS=parseTasks(texts.join('\n'));
-    renderHero();renderNav();renderContent();
+    const chaps=[...new Set(TASKS.map(t=>t.kap))].sort((a,b)=>parseInt(a.replace(/\D/g,''))-parseInt(b.replace(/\D/g,'')));
+    document.getElementById('kapFilter').innerHTML='<option value="">Alle kapitler</option>'+chaps.map(c=>`<option>${c}</option>`).join('');
+    renderStats();renderTop10();renderDel();renderKap();renderAlle();bindCards();
   }catch(e){
-    document.getElementById('mainContent').innerHTML='<p style="padding:40px;color:#64748b">Kunne ikke laste oppgavetekster. Sjekk at <code>data/del1.txt</code> o.l. finnes.</p>';
+    document.getElementById('top10Grid').innerHTML='<div class="empty" style="grid-column:1/-1">Kunne ikke laste oppgavetekster. Sjekk at <code>data/del1.txt</code> o.l. finnes.</div>';
   }
 }
 init();
