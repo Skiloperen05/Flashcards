@@ -1,31 +1,407 @@
-<!doctype html>
-<html lang="no">
-<head>
+<!doctype html><html lang="no"><head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>SAM2 oppgaveprioritering</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#fff7ed;--ink:#172033;--muted:#64748b;--line:#fed7aa;--accent:#d97706;--dark:#0f172a}*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,sans-serif;background:radial-gradient(circle at top left,#ffedd5 0,#fff7ed 35%,#f8fafc 100%);color:var(--ink);line-height:1.5}.top{height:64px;background:var(--dark);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:20}.brand{color:#fff;text-decoration:none;font-weight:900;display:flex;gap:10px;align-items:center}.mark{width:32px;height:32px;border-radius:8px;background:#6366f1;display:grid;place-items:center}.crumb,.crumb a{color:#94a3b8;text-decoration:none;font-size:13px}.hero,main{max-width:1280px;margin:auto;padding:34px 22px 12px}.eyebrow{display:inline-flex;padding:6px 12px;border-radius:99px;background:#ffedd5;border:1px solid #fed7aa;color:#9a3412;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}.hero h1{font-size:clamp(30px,5vw,50px);letter-spacing:-.055em;margin:12px 0 8px}.hero p{max-width:980px;color:#475569;margin:0}.toolbar{display:grid;grid-template-columns:minmax(220px,1fr) 170px 160px 130px auto;gap:10px;margin-top:22px}.toolbar input,.toolbar select,.toolbar button{border:1px solid var(--line);background:#fff;border-radius:14px;padding:11px 13px;font:inherit;min-width:0}.toolbar button{font-weight:800;cursor:pointer}.meta{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px}.chip{background:#fff;border:1px solid #fed7aa;border-radius:999px;padding:7px 11px;color:#9a3412;font-size:12px;font-weight:800}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.task{background:#fff;border:1px solid #fed7aa;border-radius:20px;padding:16px;box-shadow:0 14px 35px rgba(120,53,15,.08);cursor:pointer;text-align:left;transition:transform .15s,box-shadow .15s}.task:hover{transform:translateY(-2px);box-shadow:0 20px 45px rgba(120,53,15,.13)}.task-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}.nr{font-weight:900;color:#9a3412;background:#ffedd5;border:1px solid #fed7aa;border-radius:12px;padding:5px 9px}.badge{border-radius:99px;padding:4px 9px;font-size:12px;font-weight:900;background:#f8fafc;border:1px solid #e2e8f0;color:#475569}.high{background:#fee2e2;color:#991b1b;border-color:#fecaca}.mid{background:#fef3c7;color:#92400e;border-color:#fde68a}.low{background:#dcfce7;color:#166534;border-color:#bbf7d0}.task h3{margin:0;font-size:15px}.task p{margin:8px 0 0;color:#64748b;font-size:13px}.modal{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:50}.modal.open{display:flex}.dialog{background:#fff;border-radius:24px;max-width:940px;width:100%;max-height:88vh;overflow:hidden;box-shadow:0 30px 90px rgba(15,23,42,.35);border:1px solid #fed7aa;display:flex;flex-direction:column}.dialog-head{padding:18px 20px;border-bottom:1px solid #ffedd5;display:flex;gap:12px;justify-content:space-between;align-items:flex-start}.dialog-title h2{margin:0;font-size:22px}.dialog-title p{margin:4px 0 0;color:#64748b;font-size:13px}.close{border:0;background:#0f172a;color:#fff;border-radius:12px;padding:9px 12px;font-weight:900;cursor:pointer}.dialog-body{padding:20px;overflow:auto}.oppgave{white-space:pre-wrap;font-size:15px;line-height:1.65}.empty{background:#fff;border:1px solid #fed7aa;border-radius:18px;padding:18px;color:#7c2d12}@media(max-width:980px){.grid{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr}.crumb{display:none}}
+:root{--ink:#172033;--muted:#64748b;--line:#fed7aa;--accent:#d97706;--dark:#0f172a;--bg:#fff7ed}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:radial-gradient(circle at top left,#ffedd5 0,#fff7ed 35%,#f8fafc 100%);color:var(--ink);line-height:1.5;min-height:100vh}
+
+.top{height:64px;background:var(--dark);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:30}
+.brand{color:#fff;text-decoration:none;font-weight:900;display:flex;gap:10px;align-items:center}
+.mark{width:32px;height:32px;border-radius:8px;background:#6366f1;display:grid;place-items:center}
+.crumb,.crumb a{color:#94a3b8;text-decoration:none;font-size:13px}
+
+.hero{max-width:1280px;margin:auto;padding:34px 22px 0}
+.eyebrow{display:inline-flex;padding:6px 12px;border-radius:99px;background:#ffedd5;border:1px solid #fed7aa;color:#9a3412;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
+.hero h1{font-size:clamp(28px,4vw,48px);letter-spacing:-.05em;margin:10px 0 6px}
+.hero p{color:#475569;margin:0 0 22px;max-width:680px;font-size:14px}
+
+.tab-bar{display:flex;gap:4px;border-bottom:2px solid var(--line)}
+.tab{padding:10px 18px;border:none;background:none;font:inherit;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;border-radius:10px 10px 0 0;transition:color .15s,background .15s}
+.tab:hover{color:var(--ink);background:rgba(0,0,0,.04)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);background:#fff8f0}
+
+main{max-width:1280px;margin:auto;padding:24px 22px 60px}
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+.search-bar{display:grid;grid-template-columns:1fr repeat(3,minmax(120px,160px)) auto;gap:10px;margin-bottom:18px}
+.search-bar input,.search-bar select,.search-bar button{border:1px solid var(--line);background:#fff;border-radius:14px;padding:11px 14px;font:inherit;font-size:13px;min-width:0}
+.search-bar button{font-weight:800;cursor:pointer}.search-bar button:hover{background:#fff7ed}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+
+/* ── Task card ── */
+.task{background:#fff;border:1px solid #fed7aa;border-left:5px solid #fed7aa;border-radius:18px;padding:15px 16px;box-shadow:0 8px 24px rgba(120,53,15,.07);cursor:pointer;text-align:left;transition:transform .15s,box-shadow .15s;width:100%;font:inherit;position:relative}
+.task:hover{transform:translateY(-3px);box-shadow:0 18px 42px rgba(120,53,15,.15)}
+.task.prio-high{border-left-color:#dc2626}.task.prio-mid{border-left-color:#d97706}.task.prio-low{border-left-color:#16a34a}
+.task-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:7px}
+.task h3{margin:0 0 5px;font-size:14px;line-height:1.35;font-weight:700}
+.task-sub{font-size:12px;color:var(--muted);margin-bottom:9px}
+.task-foot{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.nr{font-weight:900;color:#9a3412;background:#ffedd5;border:1px solid #fed7aa;border-radius:10px;padding:4px 9px;font-size:12px;white-space:nowrap;flex-shrink:0}
+.badge{border-radius:99px;padding:3px 9px;font-size:11px;font-weight:900;border:1px solid #e2e8f0;background:#f8fafc;white-space:nowrap}
+.badge.high{background:#fee2e2;color:#991b1b;border-color:#fecaca}
+.badge.mid{background:#fef3c7;color:#92400e;border-color:#fde68a}
+.badge.low{background:#dcfce7;color:#166534;border-color:#bbf7d0}
+.badge.del{background:#ffedd5;color:#9a3412;border-color:#fed7aa}
+.badge.done{background:#dcfce7;color:#166534;border-color:#bbf7d0}
+.tag-sm{font-size:11px;padding:3px 7px;border-radius:99px;background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
+.calc-dots{font-size:13px;letter-spacing:0;color:#e2e8f0}.calc-dots .on{color:#d97706}
+.saved-mark{width:9px;height:9px;border-radius:50%;background:#10b981;display:inline-block;margin-left:auto;flex-shrink:0;box-shadow:0 0 0 2px #fff}
+
+/* ── Top 10 card ── */
+.top10-card{display:flex;gap:14px;align-items:flex-start;background:#fff;border:1px solid #fed7aa;border-left:5px solid #fed7aa;border-radius:20px;padding:18px;box-shadow:0 10px 32px rgba(120,53,15,.09);cursor:pointer;text-align:left;transition:transform .15s,box-shadow .15s;width:100%;font:inherit}
+.top10-card:hover{transform:translateY(-3px);box-shadow:0 22px 50px rgba(120,53,15,.16)}
+.top10-card.prio-high{border-left-color:#dc2626}.top10-card.prio-mid{border-left-color:#d97706}
+.rank-num{font-size:28px;font-weight:900;color:#cbd5e1;line-height:1;flex-shrink:0;width:38px;text-align:right;padding-top:2px}
+.top10-body{flex:1;min-width:0}
+.top10-body h3{margin:0 0 4px;font-size:15px;font-weight:700;line-height:1.3}
+.top10-body .task-sub{margin-bottom:8px}
+.score-bar-wrap{height:5px;background:#f1f5f9;border-radius:99px;overflow:hidden;margin-bottom:9px}
+.score-bar{height:100%;border-radius:99px;background:linear-gradient(90deg,#d97706,#f59e0b)}
+
+/* ── Stats ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:26px}
+.stat-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:0 6px 18px rgba(120,53,15,.06)}
+.stat-card small{display:block;color:#9a3412;text-transform:uppercase;font-size:10px;font-weight:900;letter-spacing:.07em;margin-bottom:4px}
+.stat-card b{font-size:28px;letter-spacing:-.04em}
+.stat-card p{margin:2px 0 0;color:var(--muted);font-size:12px}
+
+/* ── Del sections ── */
+.del-section{margin-bottom:30px}
+.del-heading{display:flex;align-items:baseline;gap:14px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--line)}
+.del-heading h2{margin:0;font-size:20px}
+.del-heading span{font-size:13px;color:var(--muted)}
+
+/* ── Kapittel accordion ── */
+.kap-group{margin-bottom:10px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fff}
+.kap-head{width:100%;display:flex;justify-content:space-between;align-items:center;border:0;background:#fff;padding:14px 18px;font:inherit;font-weight:800;font-size:14px;cursor:pointer;gap:10px}
+.kap-head:hover{background:#fff8f0}
+.kap-head .chevron{transition:transform .2s;font-size:14px;color:var(--muted);flex-shrink:0}
+.kap-group.open .kap-head .chevron{transform:rotate(180deg)}
+.kap-body{display:none;padding:12px 14px 14px;border-top:1px solid var(--line);background:#fffaf5}
+.kap-group.open .kap-body{display:block}
+.kap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+
+/* ── Empty / count ── */
+.empty{text-align:center;padding:48px;color:var(--muted);font-size:14px;grid-column:1/-1}
+.result-count{font-size:13px;color:var(--muted);margin-bottom:14px}
+
+/* ── Modal ── */
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}
+.modal.open{display:flex}
+.dialog{background:#fff;border-radius:24px;max-width:960px;width:100%;max-height:92vh;overflow:hidden;box-shadow:0 32px 90px rgba(15,23,42,.35);display:flex;flex-direction:column}
+.dialog-head{padding:16px 20px 14px;border-bottom:1px solid var(--line);display:flex;gap:12px;justify-content:space-between;align-items:flex-start;flex-shrink:0}
+.dialog-head-left small{color:#9a3412;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.07em}
+.dialog-head-left h2{margin:4px 0 8px;font-size:18px;line-height:1.3}
+.mchips{display:flex;gap:6px;flex-wrap:wrap}
+.close-btn{border:0;background:#f1f5f9;border-radius:10px;width:36px;height:36px;font-size:18px;cursor:pointer;flex-shrink:0;display:grid;place-items:center;line-height:1}
+.close-btn:hover{background:#e2e8f0}
+.dialog-text{padding:14px 20px;font-size:14px;line-height:1.7;color:#374151;max-height:200px;overflow-y:auto;flex-shrink:0;border-bottom:1px solid #ffedd5;white-space:pre-wrap}
+.canvas-wrap{flex:1;position:relative;overflow:hidden;background:#f9fafb;min-height:220px}
+#drawCanvas{position:absolute;top:0;left:0;touch-action:none;cursor:crosshair}
+.draw-toolbar{display:flex;gap:8px;align-items:center;padding:9px 16px;background:#fff7ed;border-top:1px solid var(--line);flex-shrink:0;flex-wrap:wrap}
+.tool-btn{padding:7px 13px;border:1px solid #e2e8f0;border-radius:10px;background:#fff;cursor:pointer;font:inherit;font-size:12px;font-weight:700;white-space:nowrap}
+.tool-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.tool-btn.red{border-color:#fecaca;color:#991b1b}.tool-btn.red:hover{background:#fee2e2}
+#strokeWidth{width:72px;accent-color:var(--accent);cursor:pointer}
+#colorPicker{width:34px;height:34px;border:2px solid #e2e8f0;border-radius:8px;cursor:pointer;padding:2px;background:none}
+.draw-sep{width:1px;height:26px;background:#e2e8f0;flex-shrink:0}
+.save-lbl{margin-left:auto;font-size:12px;color:#10b981;font-weight:600;white-space:nowrap}
+
+@media(max-width:1024px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){.grid3,.kap-grid{grid-template-columns:repeat(2,1fr)}.search-bar{grid-template-columns:1fr 1fr}.crumb{display:none}}
+@media(max-width:540px){.grid3,.grid2,.kap-grid{grid-template-columns:1fr}.search-bar{grid-template-columns:1fr}.modal{padding:0}.dialog{border-radius:0;max-height:100dvh}.stats-row{grid-template-columns:repeat(2,1fr)}.top10-card{flex-direction:column;gap:6px}.rank-num{font-size:18px;width:auto}}
 </style>
 </head>
 <body>
-<header class="top"><a class="brand" href="../../"><span class="mark">📚</span><span>StudieHub</span></a><div class="crumb"><a href="../../">Hjem</a> › <a href="../">SAM2</a> › Oppgaver</div></header>
-<section class="hero"><span class="eyebrow">SAM2 øvingsfunksjon</span><h1>Oppgaveprioritering</h1><p>Klikk på en oppgave for å åpne kun den oppgaven. Fulltekstene hentes fra de fire oppgavefilene og deles automatisk opp på oppgavenummer.</p><div class="toolbar"><input id="search" placeholder="Søk oppgavenummer, tittel eller tekst"><select id="del"><option value="">Alle deler</option><option>Del 1</option><option>Del 2</option><option>Del 3</option><option>Del 4</option></select><select id="kap"><option value="">Alle kapitler</option></select><select id="sort"><option value="priority">Prioritert</option><option value="number">Oppgavenummer</option></select><button id="reset">Nullstill</button></div></section>
-<main><div class="meta"><span class="chip" id="count">Laster oppgaver …</span><span class="chip">Klikk på kort for full oppgavetekst</span></div><div id="grid" class="grid"></div></main>
-<div id="modal" class="modal" role="dialog" aria-modal="true"><div class="dialog"><div class="dialog-head"><div class="dialog-title"><h2 id="modalTitle"></h2><p id="modalMeta"></p></div><button class="close" id="close">Lukk</button></div><div class="dialog-body"><div id="modalText" class="oppgave"></div></div></div></div>
+
+<div id="modal" class="modal" role="dialog" aria-modal="true">
+  <div class="dialog">
+    <div class="dialog-head">
+      <div class="dialog-head-left">
+        <small id="mId"></small>
+        <h2 id="mTitle"></h2>
+        <div class="mchips" id="mChips"></div>
+      </div>
+      <button class="close-btn" id="closeBtn" title="Lukk (Esc)">✕</button>
+    </div>
+    <div class="dialog-text" id="mText"></div>
+    <div class="canvas-wrap" id="canvasWrap"><canvas id="drawCanvas"></canvas></div>
+    <div class="draw-toolbar">
+      <button class="tool-btn active" id="toolPen">✏️ Penn</button>
+      <button class="tool-btn" id="toolEraser">◻ Viskelær</button>
+      <div class="draw-sep"></div>
+      <input type="color" id="colorPicker" value="#172033" title="Farge">
+      <input type="range" id="strokeWidth" min="1" max="20" value="3" title="Tykkelse">
+      <div class="draw-sep"></div>
+      <button class="tool-btn red" id="clearCanvas">Tøm ark</button>
+      <span class="save-lbl" id="saveLbl"></span>
+    </div>
+  </div>
+</div>
+
+<header class="top">
+  <a class="brand" href="../../"><span class="mark">📚</span><span>StudieHub</span></a>
+  <div class="crumb"><a href="../../">Hjem</a> › <a href="../">SAM2</a> › Oppgaver</div>
+</header>
+
+<section class="hero">
+  <span class="eyebrow">SAM2 øvingsfunksjon</span>
+  <h1>Oppgaveprioritering</h1>
+  <p>Klikk på en oppgave for å lese den og skrive besvarelse med penn. Grønn prikk markerer besvarte oppgaver.</p>
+  <div class="tab-bar">
+    <button class="tab active" data-tab="top10">⭐ Topp 10</button>
+    <button class="tab" data-tab="del">Per del</button>
+    <button class="tab" data-tab="kap">Per kapittel</button>
+    <button class="tab" data-tab="alle">Alle oppgaver</button>
+  </div>
+</section>
+
+<main>
+  <div id="tab-top10" class="tab-panel active">
+    <div class="stats-row" id="statsRow"></div>
+    <div class="grid2" id="top10Grid"></div>
+  </div>
+  <div id="tab-del" class="tab-panel"><div id="delContent"></div></div>
+  <div id="tab-kap" class="tab-panel"><div id="kapContent"></div></div>
+  <div id="tab-alle" class="tab-panel">
+    <div class="search-bar">
+      <input id="search" placeholder="Søk oppgavenummer, tittel eller tekst …">
+      <select id="delFilter"><option value="">Alle deler</option><option>Del 1</option><option>Del 2</option><option>Del 3</option><option>Del 4</option></select>
+      <select id="kapFilter"><option value="">Alle kapitler</option></select>
+      <select id="prioFilter"><option value="">Alle prioriteter</option><option value="Høy">Høy prioritet</option><option value="Middels">Middels</option><option value="Lav">Lav</option></select>
+      <button id="resetBtn">Nullstill</button>
+    </div>
+    <div class="result-count" id="allCount"></div>
+    <div class="grid3" id="alleGrid"></div>
+  </div>
+</main>
+
 <script>
+const META={
+  '1.1':{s:24,p:'Lav',c:1,f:0},'1.2':{s:41,p:'Middels',c:2,f:1},'1.3':{s:55,p:'Middels',c:3,f:1},
+  '1.4':{s:95,p:'Høy',c:2,f:1},'1.5':{s:26,p:'Lav',c:2,f:0},'1.6':{s:29,p:'Lav',c:2,f:1},
+  '2.1':{s:77,p:'Høy',c:3,f:1},'2.2':{s:64,p:'Middels',c:3,f:1},'2.3':{s:94,p:'Høy',c:2,f:1},
+  '2.4':{s:35,p:'Lav',c:2,f:0},'2.5':{s:81,p:'Høy',c:3,f:1},'2.6':{s:48,p:'Middels',c:3,f:1},
+  '3.2':{s:82,p:'Høy',c:3,f:1},'3.3':{s:89,p:'Høy',c:3,f:1},'3.4':{s:59,p:'Middels',c:3,f:1},
+  '3.5':{s:67,p:'Middels',c:2,f:1},'3.6':{s:43,p:'Middels',c:2,f:1},
+  '4.1':{s:25,p:'Lav',c:2,f:0},'4.2':{s:52,p:'Middels',c:2,f:1},'4.3':{s:71,p:'Middels',c:3,f:1},
+  '4.4':{s:23,p:'Lav',c:2,f:0},'4.5':{s:40,p:'Middels',c:2,f:1},'4.6':{s:32,p:'Lav',c:1,f:0},
+  '5.1':{s:37,p:'Middels',c:2,f:1},'5.2':{s:96,p:'Høy',c:3,f:1},'5.3':{s:46,p:'Middels',c:3,f:1},
+  '5.4':{s:62,p:'Middels',c:3,f:1},'5.5':{s:91,p:'Høy',c:3,f:1},'5.6':{s:74,p:'Høy',c:3,f:1},
+  '6.1':{s:28,p:'Lav',c:0,f:0},'6.2':{s:65,p:'Middels',c:3,f:1},'6.3':{s:49,p:'Middels',c:3,f:1},
+  '6.4':{s:79,p:'Høy',c:3,f:1},'6.5':{s:54,p:'Middels',c:2,f:1},'6.6':{s:84,p:'Høy',c:3,f:1},
+  '7.1':{s:87,p:'Høy',c:3,f:1},'7.2':{s:58,p:'Middels',c:3,f:1},'7.3':{s:36,p:'Middels',c:3,f:0},
+  '7.4':{s:42,p:'Middels',c:3,f:1},'7.5':{s:31,p:'Lav',c:1,f:0},'7.6':{s:76,p:'Høy',c:3,f:1},
+  '8.1':{s:51,p:'Middels',c:2,f:0},'8.2':{s:80,p:'Høy',c:3,f:1},'8.3':{s:39,p:'Middels',c:1,f:0},
+  '8.4':{s:70,p:'Middels',c:2,f:1},'8.5':{s:88,p:'Høy',c:3,f:1},'8.6':{s:61,p:'Middels',c:1,f:1},
+  '9.1':{s:56,p:'Middels',c:3,f:1},'9.2':{s:27,p:'Lav',c:1,f:0},'9.3':{s:34,p:'Lav',c:1,f:0},
+  '9.4':{s:45,p:'Middels',c:1,f:1},'9.5':{s:69,p:'Middels',c:3,f:1},'9.6':{s:72,p:'Middels',c:3,f:1},
+  '10.1':{s:85,p:'Høy',c:2,f:1},'10.2':{s:50,p:'Middels',c:2,f:1},'10.3':{s:99,p:'Høy',c:3,f:1},
+  '10.4':{s:93,p:'Høy',c:3,f:1},'10.5':{s:66,p:'Middels',c:3,f:1},'10.6':{s:75,p:'Høy',c:2,f:1},
+  '11.1':{s:86,p:'Høy',c:3,f:1},'11.2':{s:90,p:'Høy',c:3,f:1},'11.3':{s:73,p:'Middels',c:3,f:1},
+  '11.4':{s:44,p:'Middels',c:3,f:1},'11.5':{s:98,p:'Høy',c:3,f:1},'11.6':{s:60,p:'Middels',c:2,f:1},
+  '12.1':{s:68,p:'Middels',c:3,f:1},'12.2':{s:97,p:'Høy',c:3,f:1},'12.3':{s:92,p:'Høy',c:3,f:1},
+  '12.4':{s:33,p:'Lav',c:1,f:0},'12.5':{s:78,p:'Høy',c:3,f:1},'12.6':{s:53,p:'Middels',c:3,f:1},
+  '13.1':{s:38,p:'Middels',c:1,f:0},'13.2':{s:30,p:'Lav',c:1,f:0},'13.3':{s:47,p:'Middels',c:1,f:1},
+  '13.4':{s:63,p:'Middels',c:1,f:1},'13.5':{s:57,p:'Middels',c:2,f:1},'13.6':{s:83,p:'Høy',c:1,f:1},
+};
+const KAP_TITLE={1:'Penger, priser og preferanser',2:'Mer om valget mellom goder',3:'Konsumenter i arbeid',4:'Alternativ atferd',5:'Produksjon med to faktorer',6:'Kostnader',7:'Tilbud og profitt',8:'Tilbud og etterspørsel',9:'Handel og eksternaliteter',10:'Skatter og subsidier',11:'Monopol',12:'Oligopol',13:'Spillteori'};
 const SOURCES=['data/del1.txt','data/del2.txt','data/del3.txt','data/del4.txt'];
-const PRIORITY=['10.3','11.5','12.2','5.2','1.4','2.3','10.4','12.3','5.5','11.2','3.3','8.5','7.1','11.1','10.1','6.6','13.6','3.2','2.5','8.2','6.4','12.5','2.1','7.6','10.6','5.6','11.3','9.6','4.3','8.4','9.5','12.1','3.5','10.5','6.2','2.2','13.4','5.4','8.6','11.6','3.4','7.2','13.5','9.1','1.3','6.5','12.6','4.2','8.1','10.2','6.3','2.6','13.3','5.3','9.4','11.4','3.6','7.4','1.2','4.5','8.3','13.1','5.1','7.3','2.4','9.3','12.4','4.6','7.5','13.2','1.6','6.1','9.2','1.1','1.5','3.1','4.1','4.4'];
-const byId=x=>document.getElementById(x); let TASKS=[];
-function partFor(n){const c=+n.split('.')[0]; return c<=4?'Del 1':c<=7?'Del 2':c<=10?'Del 3':'Del 4'}
-function prioFor(id){const i=PRIORITY.indexOf(id); return i<0?0:100-i}
-function badgeClass(score){return score>=75?'high':score>=40?'mid':'low'}
-function parseTasks(allText){const re=/^((?:[1-9]|1[0-3])\.[1-6])\s+(.+)$/gm; const hits=[]; let m; while((m=re.exec(allText))){hits.push({id:m[1],title:m[2].trim(),start:m.index});} return hits.map((h,i)=>{const end=i+1<hits.length?hits[i+1].start:allText.length; const text=allText.slice(h.start,end).trim(); const chap=+h.id.split('.')[0]; return {id:h.id,title:h.title,text,chapter:chap,kap:'Kap. '+chap,del:partFor(h.id),score:prioFor(h.id)};});}
-function numericCmp(a,b){const [ac,an]=a.id.split('.').map(Number),[bc,bn]=b.id.split('.').map(Number); return ac-bc||an-bn}
-function render(){const q=byId('search').value.toLowerCase().trim(), d=byId('del').value, k=byId('kap').value, s=byId('sort').value; let rows=TASKS.filter(t=>(!d||t.del===d)&&(!k||t.kap===k)&&(!q||(t.id+' '+t.title+' '+t.text).toLowerCase().includes(q))); rows.sort(s==='number'?numericCmp:(a,b)=>b.score-a.score||numericCmp(a,b)); byId('count').textContent=rows.length+' av '+TASKS.length+' oppgaver'; byId('grid').innerHTML=rows.length?rows.map(t=>`<button class="task" data-id="${t.id}"><div class="task-top"><span class="nr">${t.id}</span><span class="badge ${badgeClass(t.score)}">${t.score?('Prioritet '+t.score):'Oppgave'}</span></div><h3>${t.title}</h3><p>${t.del} · ${t.kap}. Klikk for oppgavetekst.</p></button>`).join(''):'<div class="empty">Ingen oppgaver matcher filtrene.</div>';}
-function openTask(id){const t=TASKS.find(x=>x.id===id); if(!t)return; byId('modalTitle').textContent=t.id+' '+t.title; byId('modalMeta').textContent=t.del+' · '+t.kap+(t.score?' · prioritet '+t.score:''); byId('modalText').textContent=t.text; byId('modal').classList.add('open');}
-async function init(){try{const texts=await Promise.all(SOURCES.map(s=>fetch(s).then(r=>{if(!r.ok)throw new Error(s); return r.text();}))); TASKS=parseTasks(texts.join('\n')); const chapters=[...new Set(TASKS.map(t=>t.kap))].sort((a,b)=>parseInt(a.replace(/\D/g,''))-parseInt(b.replace(/\D/g,''))); byId('kap').innerHTML='<option value="">Alle kapitler</option>'+chapters.map(c=>`<option>${c}</option>`).join(''); render();}catch(e){byId('count').textContent='Kunne ikke laste oppgaver'; byId('grid').innerHTML='<div class="empty">Oppgavetekstene kunne ikke lastes. Sjekk at datafilene ligger i <code>sam2/oppgaver-klikkbar/data/</code>.</div>';}}
-byId('grid').addEventListener('click',e=>{const b=e.target.closest('.task'); if(b)openTask(b.dataset.id);}); ['search','del','kap','sort'].forEach(id=>byId(id).addEventListener('input',render)); byId('reset').onclick=()=>{byId('search').value='';byId('del').value='';byId('kap').value='';byId('sort').value='priority';render();}; byId('close').onclick=()=>byId('modal').classList.remove('open'); byId('modal').addEventListener('click',e=>{if(e.target.id==='modal')e.currentTarget.classList.remove('open')}); document.addEventListener('keydown',e=>{if(e.key==='Escape')byId('modal').classList.remove('open')}); init();
+let TASKS=[];
+
+function partFor(n){const c=+n.split('.')[0];return c<=4?'Del 1':c<=7?'Del 2':c<=10?'Del 3':'Del 4'}
+function hasSaved(id){try{return!!localStorage.getItem('sam2_draw_'+id)}catch(e){return false}}
+
+function parseTasks(txt){
+  const re=/^((?:[1-9]|1[0-3])\.[1-6])\s+(.+)$/gm;
+  const hits=[];let m;
+  while((m=re.exec(txt)))hits.push({id:m[1],title:m[2].trim(),start:m.index});
+  return hits.map((h,i)=>{
+    const end=i+1<hits.length?hits[i+1].start:txt.length;
+    const text=txt.slice(h.start,end).trim();
+    const chap=+h.id.split('.')[0];
+    const meta=META[h.id]||{s:0,p:'Lav',c:0,f:0};
+    return{id:h.id,title:h.title,text,chap,kap:'Kap. '+chap,del:partFor(h.id),score:meta.s,prio:meta.p,calc:meta.c,full:meta.f};
+  });
+}
+
+function pc(p){return p==='Høy'?'high':p==='Middels'?'mid':'low'}
+
+function dots(n){return`<span class="calc-dots">${[0,1,2].map(i=>`<span class="${i<n?'on':''}">●</span>`).join('')}</span>`}
+
+function taskCard(t){
+  return`<button class="task prio-${pc(t.prio)}" data-id="${t.id}">
+    <div class="task-top"><span class="nr">${t.id}</span><span class="badge ${pc(t.prio)}">${t.prio}</span></div>
+    <h3>${t.title}</h3>
+    <div class="task-sub">${t.del} · ${t.kap}</div>
+    <div class="task-foot">${dots(t.calc)}${t.full?'<span class="tag-sm">Full metode</span>':''}${hasSaved(t.id)?'<span class="saved-mark" title="Besvart"></span>':''}</div>
+  </button>`;
+}
+
+function top10Card(t,rank){
+  return`<button class="top10-card prio-${pc(t.prio)}" data-id="${t.id}">
+    <div class="rank-num">#${rank}</div>
+    <div class="top10-body">
+      <div class="task-top"><span class="nr">${t.id}</span><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="badge ${pc(t.prio)}">${t.prio}</span>${t.full?'<span class="tag-sm">Full metode</span>':''}${hasSaved(t.id)?'<span class="saved-mark"></span>':''}</div></div>
+      <h3>${t.title}</h3>
+      <div class="task-sub">${t.del} · ${t.kap}</div>
+      <div class="score-bar-wrap"><div class="score-bar" style="width:${t.score}%"></div></div>
+      <div class="task-foot">${dots(t.calc)}<span style="font-size:11px;color:var(--muted);margin-left:4px">Regntyngde ${t.calc}/3 · Score ${t.score}</span></div>
+    </div>
+  </button>`;
+}
+
+function renderStats(){
+  const answered=TASKS.filter(t=>hasSaved(t.id)).length;
+  document.getElementById('statsRow').innerHTML=`
+    <div class="stat-card"><small>Totalt</small><b>${TASKS.length}</b><p>Oppgaver kap. 1–13</p></div>
+    <div class="stat-card"><small>Høy prioritet</small><b>${TASKS.filter(t=>t.prio==='Høy').length}</b><p>Kritiske oppgaver</p></div>
+    <div class="stat-card"><small>Regntunge</small><b>${TASKS.filter(t=>t.calc>=3).length}</b><p>Krev. algebra 3/3</p></div>
+    <div class="stat-card"><small>Besvart</small><b>${answered}</b><p>Med tegnebesvarelse</p></div>`;
+}
+
+function renderTop10(){
+  document.getElementById('top10Grid').innerHTML=
+    TASKS.slice().sort((a,b)=>b.score-a.score).slice(0,10).map((t,i)=>top10Card(t,i+1)).join('');
+}
+
+function renderDel(){
+  const delDesc={'Del 1':'Kap. 1–4 · Konsumentteori','Del 2':'Kap. 5–7 · Produsentteori','Del 3':'Kap. 8–10 · Marked og politikk','Del 4':'Kap. 11–13 · Ufullkommen konkurranse'};
+  document.getElementById('delContent').innerHTML=['Del 1','Del 2','Del 3','Del 4'].map(d=>{
+    const tasks=TASKS.filter(t=>t.del===d).sort((a,b)=>b.score-a.score);
+    const rest=tasks.slice(6);
+    return`<div class="del-section">
+      <div class="del-heading"><h2>${d}</h2><span>${delDesc[d]} · ${tasks.length} oppgaver</span></div>
+      <div class="grid3">${tasks.slice(0,6).map(taskCard).join('')}</div>
+      ${rest.length?`<details style="margin-top:10px"><summary style="cursor:pointer;font-size:13px;color:var(--muted);padding:6px 2px;user-select:none">Vis ${rest.length} til i ${d} ▾</summary><div class="grid3" style="margin-top:10px">${rest.map(taskCard).join('')}</div></details>`:''}
+    </div>`;
+  }).join('');
+}
+
+function renderKap(){
+  const chaps=[...new Set(TASKS.map(t=>t.chap))].sort((a,b)=>a-b);
+  document.getElementById('kapContent').innerHTML=chaps.map(c=>{
+    const tasks=TASKS.filter(t=>t.chap===c).sort((a,b)=>b.score-a.score);
+    const high=tasks.filter(t=>t.prio==='Høy').length;
+    return`<div class="kap-group" id="kg${c}">
+      <button class="kap-head"><span><b>Kap. ${c}</b> — ${KAP_TITLE[c]||''}</span>
+      <span style="display:flex;align-items:center;gap:8px">${high?`<span class="badge high">${high} høy</span>`:''}<span style="font-size:12px;color:var(--muted)">${tasks.length} oppg.</span><span class="chevron">▾</span></span></button>
+      <div class="kap-body"><div class="kap-grid">${tasks.map(taskCard).join('')}</div></div>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('.kap-head').forEach(h=>h.addEventListener('click',()=>h.closest('.kap-group').classList.toggle('open')));
+  document.getElementById('kg10')?.classList.add('open');
+}
+
+function renderAlle(){
+  const q=document.getElementById('search').value.toLowerCase().trim();
+  const d=document.getElementById('delFilter').value;
+  const k=document.getElementById('kapFilter').value;
+  const p=document.getElementById('prioFilter').value;
+  const rows=TASKS.filter(t=>(!d||t.del===d)&&(!k||t.kap===k)&&(!p||t.prio===p)&&(!q||(t.id+' '+t.title+' '+t.text).toLowerCase().includes(q))).sort((a,b)=>b.score-a.score);
+  document.getElementById('allCount').textContent=`${rows.length} av ${TASKS.length} oppgaver`;
+  document.getElementById('alleGrid').innerHTML=rows.length?rows.map(taskCard).join(''):'<div class="empty">Ingen oppgaver matcher søket.</div>';
+}
+
+/* ── Canvas / Modal ── */
+const modal=document.getElementById('modal'),canvas=document.getElementById('drawCanvas'),ctx=canvas.getContext('2d');
+let activeId=null,drawing=false,tool='pen',penColor='#172033',penWidth=3;
+
+function openTask(id){
+  const t=TASKS.find(x=>x.id===id);if(!t)return;
+  activeId=id;
+  document.getElementById('mId').textContent=t.id+' · '+t.del+' · '+t.kap;
+  document.getElementById('mTitle').textContent=t.title;
+  document.getElementById('mChips').innerHTML=
+    `<span class="badge ${pc(t.prio)}">${t.prio} prioritet</span>`+
+    `<span class="badge del">Score ${t.score}</span>`+
+    `<span class="badge del">Regn ${t.calc}/3</span>`+
+    (t.full?'<span class="badge del">Full metode</span>':'')+
+    (hasSaved(id)?'<span class="badge done">Besvart ●</span>':'');
+  document.getElementById('mText').textContent=t.text;
+  modal.classList.add('open');
+  document.body.style.overflow='hidden';
+  requestAnimationFrame(()=>{sizeCanvas();loadCanvas(id);});
+}
+
+function closeTask(){
+  modal.classList.remove('open');document.body.style.overflow='';drawing=false;activeId=null;
+  refreshAll();
+}
+
+function sizeCanvas(){
+  const wrap=document.getElementById('canvasWrap');
+  canvas.width=wrap.clientWidth;canvas.height=wrap.clientHeight;
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+}
+
+function loadCanvas(id){
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+  try{const s=localStorage.getItem('sam2_draw_'+id);if(s){const i=new Image();i.onload=()=>ctx.drawImage(i,0,0);i.src=s;}}catch(e){}
+}
+
+function saveCanvas(){
+  if(!activeId)return;
+  try{localStorage.setItem('sam2_draw_'+activeId,canvas.toDataURL());}catch(e){}
+  const lbl=document.getElementById('saveLbl');lbl.textContent='Lagret ✓';clearTimeout(lbl._t);lbl._t=setTimeout(()=>lbl.textContent='',2500);
+}
+
+function getXY(e){const r=canvas.getBoundingClientRect();return[(e.clientX-r.left)*(canvas.width/r.width),(e.clientY-r.top)*(canvas.height/r.height)];}
+
+canvas.addEventListener('pointerdown',e=>{e.preventDefault();canvas.setPointerCapture(e.pointerId);drawing=true;const[x,y]=getXY(e);ctx.beginPath();ctx.moveTo(x,y);});
+canvas.addEventListener('pointermove',e=>{e.preventDefault();if(!drawing)return;const[x,y]=getXY(e);ctx.globalCompositeOperation='source-over';if(tool==='eraser'){ctx.strokeStyle='#fff';ctx.lineWidth=penWidth*6;}else{ctx.strokeStyle=penColor;let lw=penWidth;if(e.pressure>0&&e.pointerType==='pen')lw=Math.max(.5,lw*e.pressure*2.5);ctx.lineWidth=lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.lineTo(x,y);ctx.stroke();ctx.beginPath();ctx.moveTo(x,y);});
+canvas.addEventListener('pointerup',e=>{if(!drawing)return;drawing=false;ctx.beginPath();saveCanvas();});
+canvas.addEventListener('pointercancel',()=>{drawing=false;ctx.beginPath();});
+
+function setTool(t){tool=t;document.getElementById('toolPen').classList.toggle('active',t==='pen');document.getElementById('toolEraser').classList.toggle('active',t==='eraser');}
+document.getElementById('toolPen').onclick=()=>setTool('pen');
+document.getElementById('toolEraser').onclick=()=>setTool('eraser');
+document.getElementById('strokeWidth').oninput=e=>penWidth=+e.target.value;
+document.getElementById('colorPicker').oninput=e=>{penColor=e.target.value;setTool('pen');};
+document.getElementById('clearCanvas').onclick=()=>{if(confirm('Tøm tegneflaten for oppgave '+activeId+'?')){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);saveCanvas();}};
+document.getElementById('closeBtn').onclick=closeTask;
+modal.addEventListener('click',e=>{if(e.target===modal)closeTask();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))closeTask();});
+
+/* ── Tabs ── */
+document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById('tab-'+tab.dataset.tab).classList.add('active');
+  bindCards();
+}));
+
+function bindCards(){document.querySelectorAll('.task,.top10-card').forEach(b=>b.onclick=()=>openTask(b.dataset.id));}
+
+['search','delFilter','kapFilter','prioFilter'].forEach(id=>document.getElementById(id)?.addEventListener('input',()=>{renderAlle();bindCards();}));
+document.getElementById('resetBtn').onclick=()=>{['search','delFilter','kapFilter','prioFilter'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});renderAlle();bindCards();};
+
+function refreshAll(){
+  const activeTab=document.querySelector('.tab.active')?.dataset.tab;
+  if(activeTab==='top10'){renderStats();renderTop10();}
+  else if(activeTab==='del')renderDel();
+  else if(activeTab==='kap')renderKap();
+  else renderAlle();
+  bindCards();
+}
+
+async function init(){
+  try{
+    const texts=await Promise.all(SOURCES.map(s=>fetch(s).then(r=>{if(!r.ok)throw new Error(s);return r.text();})));
+    TASKS=parseTasks(texts.join('\n'));
+    const chaps=[...new Set(TASKS.map(t=>t.kap))].sort((a,b)=>parseInt(a.replace(/\D/g,''))-parseInt(b.replace(/\D/g,'')));
+    document.getElementById('kapFilter').innerHTML='<option value="">Alle kapitler</option>'+chaps.map(c=>`<option>${c}</option>`).join('');
+    renderStats();renderTop10();renderDel();renderKap();renderAlle();bindCards();
+  }catch(e){
+    document.getElementById('top10Grid').innerHTML='<div class="empty" style="grid-column:1/-1">Kunne ikke laste oppgavetekster. Sjekk at <code>data/del1.txt</code> o.l. finnes.</div>';
+  }
+}
+init();
 </script>
 </body></html>
