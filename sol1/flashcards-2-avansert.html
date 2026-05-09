@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SOL 1 — Flashcards 2.0 (avansert)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../shared/auth-guard.js"></script>
+<script>AuthGuard.requireAuth().then(function(session){if(!session)return;AuthGuard.bindUserInfo&&AuthGuard.bindUserInfo('userEmailLabel','userChip','userAvatar');});</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f1f5f9;--surface:#fff;--header:#0f172a;--accent:#7c3aed;--accent-soft:#ede9fe;--accent-strong:#5b21b6;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--good:#16a34a;--mid:#d97706;--bad:#dc2626;--shadow:0 10px 30px rgba(15,23,42,.08);--radius-lg:20px;--radius-md:12px;--transition:.22s cubic-bezier(.4,0,.2,1)}
+body{font-family:Inter,system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
+.top{background:var(--header);color:#fff;padding:18px 20px 48px}
+.nav{max-width:920px;margin:0 auto 28px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.nav a{color:#cbd5e1;text-decoration:none;font-size:13px;font-weight:700}
+.nav a:hover{color:#fff}
+.hero{max-width:920px;margin:0 auto}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;background:rgba(124,58,237,.18);border:1px solid rgba(124,58,237,.4);color:#c4b5fd;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;margin-bottom:14px}
+.dot{width:7px;height:7px;background:var(--accent);border-radius:50%}
+h1{font-size:clamp(26px,5vw,40px);letter-spacing:-.8px;margin-bottom:10px}
+.sub{color:#94a3b8;font-size:15px;max-width:640px;line-height:1.6}
+.wrap{max-width:920px;margin:-28px auto 60px;padding:0 18px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow);padding:22px}
+/* Hub */
+.hub-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.hub-stats{display:flex;gap:8px;flex-wrap:wrap}
+.stat{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:12px;font-weight:700;color:var(--muted)}
+.stat b{color:var(--text);font-weight:800}
+.search{flex:1;min-width:200px;max-width:280px;display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:8px 12px}
+.search input{flex:1;border:0;outline:0;background:transparent;font-family:inherit;font-size:13px;color:var(--text)}
+.deck-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.deck{background:#fff;border:1px solid var(--border);border-radius:16px;padding:18px;cursor:pointer;display:flex;flex-direction:column;gap:8px;transition:transform var(--transition),box-shadow var(--transition);text-align:left;font-family:inherit;color:inherit}
+.deck:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:#c4b5fd}
+.deck.empty{opacity:.62;cursor:not-allowed}
+.deck.empty:hover{transform:none;box-shadow:none;border-color:var(--border)}
+.deck-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.deck-num{font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--accent)}
+.deck-pill{font-size:10px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:#f1f5f9;color:#94a3b8}
+.deck-pill.ready{background:var(--accent-soft);color:var(--accent-strong)}
+.deck-pill.hard{background:#fef3c7;color:#92400e}
+.deck-title{font-size:15px;font-weight:800;letter-spacing:-.2px;line-height:1.35}
+.deck-desc{font-size:12.5px;color:var(--muted);line-height:1.5;flex:1}
+.deck-foot{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);font-weight:700}
+.deck-cards{color:var(--text)}
+/* Study */
+.study{display:none}
+.study.active{display:block}
+.hub.hidden{display:none}
+.study-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.back-btn{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-weight:800;font-size:12px;color:var(--text);cursor:pointer;font-family:inherit}
+.back-btn:hover{background:#f1f5f9}
+.study-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.count{font-size:12px;font-weight:800;color:var(--muted)}
+.progress{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin-bottom:18px}
+.bar{height:100%;width:0;background:var(--accent);transition:width .25s}
+.card{min-height:330px;border:1px solid var(--border);border-radius:20px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:28px;cursor:pointer;background:linear-gradient(180deg,#fff,#f8fafc)}
+.tag{font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.label{font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:1px;background:var(--accent-soft);color:var(--accent-strong);border-radius:8px;padding:5px 9px;margin-bottom:16px}
+.front{font-size:24px;font-weight:800;line-height:1.3}
+.back{font-size:16px;line-height:1.65;text-align:left;max-width:680px}
+.back b{color:var(--accent-strong)}
+.hint{font-size:12px;color:var(--muted);margin-top:18px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.btn{border:none;border-radius:14px;padding:13px 16px;font-weight:900;cursor:pointer;font-family:inherit}
+.btn.secondary{background:#f8fafc;color:#475569;border:1px solid var(--border)}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.primary:hover{background:var(--accent-strong)}
+.rating{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.rate{border-radius:12px;padding:11px 8px;font-size:12px;font-weight:900;border:2px solid;cursor:pointer;background:#fff;font-family:inherit}
+.bad{color:var(--bad);border-color:#fecaca}
+.mid{color:var(--mid);border-color:#fde68a}
+.good{color:var(--good);border-color:#bbf7d0}
+.empty-state{padding:40px 20px;text-align:center;color:var(--muted)}
+.empty-state h3{font-size:16px;color:var(--text);margin-bottom:6px}
+.empty-state p{font-size:13px;line-height:1.6;max-width:420px;margin:0 auto}
+@media(max-width:560px){.actions,.rating{grid-template-columns:1fr}.card{min-height:360px;padding:22px}.front{font-size:21px}.back{font-size:15px}.deck-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="top">
+  <nav class="nav">
+    <a href="./">← SOL 1</a>
+    <a href="../flashcards/?subject=subj_sol1">Alle SOL1-flashcards</a>
+  </nav>
+  <section class="hero">
+    <div class="eyebrow"><span class="dot"></span>SOL 1 · Flashcards 2.0</div>
+    <h1>Avanserte flashcards</h1>
+    <p class="sub">Vanskeligere kort med fokus på dybde, anvendelse og eksamensnivå. Ett dekk per forelesning — velg ønsket tema for å starte øktet.</p>
+  </section>
+</header>
+
+<main class="wrap">
+
+  <!-- HUB / DEKKVALG -->
+  <section class="panel hub" id="hub">
+    <div class="hub-toolbar">
+      <div class="hub-stats">
+        <span class="stat"><b id="stat-decks">0</b> dekker</span>
+        <span class="stat"><b id="stat-cards">0</b> kort totalt</span>
+        <span class="stat"><b id="stat-ready">0</b> klare</span>
+      </div>
+      <label class="search">
+        <span aria-hidden="true">🔎</span>
+        <input id="search" type="search" placeholder="Søk i dekker…">
+      </label>
+    </div>
+    <div class="deck-grid" id="deck-grid"></div>
+  </section>
+
+  <!-- STUDIEVISNING -->
+  <section class="panel study" id="study">
+    <div class="study-head">
+      <button class="back-btn" id="back-to-hub">← Alle dekker</button>
+      <div class="study-meta">
+        <span class="deck-pill hard" id="study-pill">Avansert</span>
+        <span class="count" id="counter"></span>
+      </div>
+    </div>
+    <h2 id="study-title" style="font-size:18px;letter-spacing:-.3px;margin-bottom:12px;"></h2>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div class="card" id="card" title="Klikk for å snu kortet">
+      <div class="tag" id="tag"></div>
+      <div class="label" id="card-label"></div>
+      <div class="front" id="front"></div>
+      <div class="back" id="back" style="display:none"></div>
+      <div class="hint" id="hint"></div>
+    </div>
+    <div class="actions">
+      <button class="btn secondary" id="prev">← Forrige</button>
+      <button class="btn primary" id="next">Neste →</button>
+    </div>
+    <div class="rating">
+      <button class="rate bad">Kunne ikke</button>
+      <button class="rate mid">Halvveis</button>
+      <button class="rate good">Kunne det</button>
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* =========================================================================
+   FLASHCARDS 2.0 — DEKK-KONFIGURASJON
+   --------------------------------------------------------------------------
+   Hvert dekk representerer én forelesning eller ett tema. For å legge til
+   eller redigere kort: oppdater bare `cards`-listen i ønsket dekk under.
+   Hvert kort har formen:
+       { q: 'Spørsmål her', a: 'Svar/forklaring (HTML er lov, f.eks. <b>…</b>)', tag: 'Valgfri etikett' }
+   Etikettforslag (tag): "Anvendelse", "Dybde", "Case", "Begrep", "Modell".
+   Et tomt dekk (cards: []) vises som låst placeholder i hub-en.
+   ========================================================================= */
+const decks = [
+  {
+    id: 'f1',
+    num: 'Forelesning 1',
+    title: 'Introduksjon til SOL 1',
+    desc: 'Fagets perspektiv, sentrale begreper og hvorfor organisasjonsatferd er relevant.',
+    difficulty: 'Avansert',
+    cards: []
+  },
+  {
+    id: 'f2',
+    num: 'Forelesning 2',
+    title: 'Individet i organisasjonen',
+    desc: 'Personlighet, verdier, holdninger og selvkonsept — anvendt på arbeidsplassen.',
+    difficulty: 'Avansert',
+    cards: []
+  },
+  {
+    id: 'f3',
+    num: 'Forelesning 3',
+    title: 'Persepsjon og beslutninger',
+    desc: 'Hvordan vi tolker, vurderer og avgjør — bias, heuristikker og to-prosess-tenkning.',
+    difficulty: 'Avansert',
+    cards: []
+  },
+  {
+    id: 'f4',
+    num: 'Forelesning 4',
+    title: 'Motivasjon',
+    desc: 'Behovs-, prosess- og jobbdesignteorier brukt på reelle motivasjonsutfordringer.',
+    difficulty: 'Avansert',
+    cards: []
+  },
+  {
+    id: 'f5',
+    num: 'Forelesning 5',
+    title: 'Følelser, stress og velvære',
+    desc: 'Affekt på jobb, jobbkrav-kontroll, utbrenthet og hvordan man designer for velvære.',
+    difficulty: 'Avansert',
+    cards: []
+  },
+  {
+    id: 'f6',
+    num: 'Forelesning 6',
+    title: 'Grupper og team',
+    desc: 'Teamprosesser, normer, sosial loffing, gruppetenkning og psykologisk trygghet.',
+    difficulty: 'Avansert',
+    cards: []
+  },
+  {
+    id: 'f7',
+    num: 'Forelesning 7',
+    title: 'Kommunikasjon og konflikt',
+    desc: 'Kanaler, støy, konflikttyper og konflikthåndteringsstiler i praksis.',
+    difficulty: 'Avansert',
+    cards: []
+  },
+  {
+    id: 'f8',
+    num: 'Forelesning 8',
+    title: 'Makt, politikk og påvirkning',
+    desc: 'Maktbaser, taktikker, organisasjonspolitikk og etiske dilemmaer.',
+    difficulty: 'Avansert',
+    cards: []
+  },
+  {
+    id: 'f9',
+    num: 'Forelesning 9',
+    title: 'Ledelse',
+    desc: 'Trekk-, atferds-, situasjons-, transformasjons- og transaksjonsledelse.',
+    difficulty: 'Avansert',
+    cards: []
+  },
+  {
+    id: 'f10',
+    num: 'Forelesning 10',
+    title: 'Organisasjonsdesign og struktur',
+    desc: 'Differensiering, integrasjon, koordinering og passende struktur for kontekst.',
+    difficulty: 'Avansert',
+    cards: []
+  },
+  {
+    id: 'f11',
+    num: 'Forelesning 11',
+    title: 'Organisasjonskultur',
+    desc: 'Schein-nivåer, sterke vs. svake kulturer og kulturendring i praksis.',
+    difficulty: 'Avansert',
+    cards: []
+  },
+  {
+    id: 'f12',
+    num: 'Forelesning 12',
+    title: 'Endring og læring',
+    desc: 'Lewins modell, motstand, læringssløyfer og hvordan endring forankres.',
+    difficulty: 'Avansert',
+    cards: []
+  },
+  {
+    id: 'teorier-modeller-begreper',
+    num: 'Tema',
+    title: 'Teorier, modeller og begreper',
+    desc: 'Klassisk eksamensdekk: SDT, MARS, System 1/2, gruppetenkning, heuristikker, jobbanalyse, teamkontrakt m.fl.',
+    difficulty: 'Eksamen',
+    cards: [
+      {tag:'Teori',q:'Forklar selvbestemmelsesteorien.',a:'<b>Kjerne:</b> Motivasjon blir sterkere og mer varig når tre psykologiske behov dekkes: autonomi, kompetanse og tilhørighet. <b>Eksamen:</b> Bruk teorien til å forklare indre motivasjon, trivsel og prestasjon. <b>Eksempel:</b> En ansatt får frihet i metodevalg, mestrer oppgaven og føler seg inkludert i teamet.'},
+      {tag:'Teori',q:'Forklar forventningsteori.',a:'<b>Kjerne:</b> Motivasjon avhenger av om personen tror innsats gir prestasjon, prestasjon gir belønning, og belønningen er verdifull. Ofte uttrykt som forventning × instrumentality × valens. <b>Eksamen:</b> Lav motivasjon kan skyldes brudd i ett av leddene. <b>Eksempel:</b> Bonus motiverer lite hvis ansatte ikke tror innsatsen faktisk påvirker bonusen.'},
+      {tag:'Teori',q:'Forklar sosial identitetsteori.',a:'<b>Kjerne:</b> Mennesker definerer deler av seg selv gjennom gruppetilhørighet, som kan skape inngrupper, utgrupper og favorisering av egen gruppe. <b>Eksamen:</b> Brukes til å forklare samarbeid, konflikt, kultur og organisasjonstilhørighet. <b>Eksempel:</b> Avdelinger konkurrerer fordi de identifiserer seg mer med egen enhet enn med hele organisasjonen.'},
+      {tag:'Teori',q:'Forklar attribusjonsteori.',a:'<b>Kjerne:</b> Handler om hvordan vi forklarer andres og egen atferd, enten med interne årsaker som personlighet/evne eller eksterne årsaker som situasjon/rammer. <b>Eksamen:</b> Knytt til vurderingsfeil, ledelse og konflikter. <b>Eksempel:</b> En leder tolker sen levering som lav innsats, selv om årsaken egentlig var uklare instrukser.'},
+      {tag:'Teori',q:'Forklar transformasjonsledelse.',a:'<b>Kjerne:</b> Ledelse som inspirerer, utvikler og endrer medarbeidere gjennom visjon, idealisert innflytelse, individuell omtanke og intellektuell stimulering. <b>Eksamen:</b> Passer ved endring, engasjement og høyere mål enn kortsiktig belønning. <b>Eksempel:</b> En leder får teamet til å se meningen med en omstilling og bidra aktivt.'},
+      {tag:'Teori',q:'Forklar transaksjonsledelse.',a:'<b>Kjerne:</b> Ledelse basert på bytteforhold: klare mål, belønning ved ønsket prestasjon og korrigering ved avvik. <b>Eksamen:</b> Kontraster mot transformasjonsledelse. <b>Eksempel:</b> Selgere får bonus for måloppnåelse og tett oppfølging ved avvik.'},
+      {tag:'Teori',q:'Forklar begrenset rasjonalitet.',a:'<b>Kjerne:</b> Beslutningstakere prøver å være rasjonelle, men begrenses av tid, informasjon, kognitiv kapasitet og usikkerhet. Derfor velger man ofte tilfredsstillende løsninger heller enn optimale. <b>Eksamen:</b> Brukes til å forklare hvorfor reelle beslutninger avviker fra idealmodeller.'},
+      {tag:'Teori',q:'Forklar to-prosess-teori / System 1 og System 2.',a:'<b>Kjerne:</b> System 1 er raskt, intuitivt og automatisk. System 2 er tregere, analytisk og krevende. <b>Eksamen:</b> Brukes til å forklare heuristikker, bias og beslutningsfeller. <b>Eksempel:</b> Førsteinntrykk av en kandidat er System 1; strukturert vurdering av kompetanse er System 2.'},
+      {tag:'Teori',q:'Forklar Maslows behovshierarki.',a:'<b>Kjerne:</b> Menneskelige behov kan forstås som et hierarki fra fysiologiske behov og trygghet til sosiale behov, anerkjennelse og selvrealisering. <b>Eksamen:</b> Brukes som klassisk motivasjonsteori, men bør gjerne nyanseres: behov opptrer ikke alltid strengt trinnvis.'},
+      {tag:'Teori',q:'Forklar selvoppfyllende profeti.',a:'<b>Kjerne:</b> Forventninger til en person kan påvirke hvordan vi behandler personen, som igjen gjør at personen begynner å opptre i tråd med forventningen. <b>Eksamen:</b> Knytt til ledelse, prestasjon og Pygmalion-effekten. <b>Eksempel:</b> En leder som tror en ansatt er talentfull gir mer støtte, og den ansatte presterer bedre.'},
+      {tag:'Teori',q:'Forklar Lewins endringsteori / kraftfeltteori.',a:'<b>Kjerne:</b> Endring påvirkes av drivkrefter som presser for endring og motkrefter som holder organisasjonen tilbake. Endring lykkes ved å styrke drivkrefter eller redusere motkrefter. <b>Eksamen:</b> Brukes til å analysere motstand, støtte og endringsstrategi.'},
+      {tag:'Modell',q:'Forklar MARS-modellen.',a:'<b>Kjerne:</b> Atferd og prestasjon påvirkes av motivasjon, evner/ability, rolleforståelse og situasjonsfaktorer. <b>Eksamen:</b> God analysemodell for hvorfor en ansatt ikke presterer. <b>Eksempel:</b> Lav prestasjon kan skyldes uklare roller selv om motivasjonen er høy.'},
+      {tag:'Modell',q:'Forklar jobbkrav-kontroll-modellen.',a:'<b>Kjerne:</b> Belastning og læring avhenger av kombinasjonen mellom jobbkrav og kontroll/autonomi. Høye krav med lav kontroll gir stress. Høye krav med høy kontroll kan gi aktiv læring. <b>Eksamen:</b> Bruk modellen til å analysere stress, trivsel og arbeidsdesign.'},
+      {tag:'Modell',q:'Forklar selvkonsept-modellen.',a:'<b>Kjerne:</b> Selvkonsept handler om hvordan vi oppfatter oss selv, inkludert selvbilde, selvfølelse, mestringstro og sosial identitet. <b>Eksamen:</b> Forklar hvordan identitet og selvvurdering påvirker motivasjon, valg og reaksjoner på tilbakemeldinger.'},
+      {tag:'Modell',q:'Forklar Lewins trestegsmodell.',a:'<b>Kjerne:</b> Endring skjer gjennom opptining, endring og nedfrysing. Først skapes beredskap for endring, deretter innføres ny praksis, og til slutt stabiliseres den nye atferden. <b>Eksamen:</b> Passer til å strukturere endringsprosesser.'},
+      {tag:'Modell',q:'Forklar rasjonell beslutningsmodell.',a:'<b>Kjerne:</b> En idealmodell der man definerer problem, identifiserer alternativer, vurderer konsekvenser, velger beste løsning og evaluerer resultat. <b>Eksamen:</b> Kontraster med begrenset rasjonalitet og beslutningsfeller.'},
+      {tag:'Modell',q:'Forklar team effectiveness-modeller / teamdynamikkmodeller.',a:'<b>Kjerne:</b> Slike modeller forklarer teameffektivitet gjennom input, prosesser/mediatorer og output. Viktige faktorer er mål, roller, normer, tillit, kommunikasjon, konflikt og psykologisk trygghet. <b>Eksamen:</b> Bruk til å analysere hvorfor et team fungerer eller ikke.'},
+      {tag:'Begrep',q:'Forklar gruppetenkning.',a:'<b>Kjerne:</b> Gruppemedlemmer søker enighet så sterkt at kritisk vurdering, motforestillinger og realistisk alternativvurdering svekkes. <b>Eksamen:</b> Knytt til beslutningskvalitet. <b>Tegn:</b> selvsensur, illusjon om enstemmighet, press mot avvikere og undervurdering av risiko.'},
+      {tag:'Begrep',q:'Forklar sosial loffing.',a:'<b>Kjerne:</b> Individers innsats reduseres når de jobber i gruppe og eget bidrag er mindre synlig. <b>Eksamen:</b> Løsninger er tydelige individuelle bidrag, ansvarliggjøring, meningsfulle oppgaver og mindre team. <b>Eksempel:</b> Noen bidrar lite i gruppearbeid fordi andre dekker opp.'},
+      {tag:'Begrep',q:'Forklar psykologisk trygghet.',a:'<b>Kjerne:</b> Opplevelsen av at man kan si fra, stille spørsmål, innrømme feil og komme med ideer uten å bli straffet eller ydmyket. <b>Eksamen:</b> Viktig for læring, innovasjon og teamkvalitet. <b>Ikke det samme som:</b> alltid enighet eller lav standard.'},
+      {tag:'Begrep',q:'Forklar tillit.',a:'<b>Kjerne:</b> Villighet til å være sårbar overfor andre basert på forventning om kompetanse, integritet og velvilje. <b>Eksamen:</b> Tillit reduserer kontrollbehov, øker samarbeid og gjør kommunikasjon mer effektiv. <b>Eksempel:</b> Man deler usikkerhet fordi man tror teamet vil hjelpe.'},
+      {tag:'Begrep',q:'Forklar beslutningsfeller.',a:'<b>Kjerne:</b> Systematiske feil i vurdering og beslutning som gjør at vi avviker fra gode beslutningsprosesser. <b>Eksamen:</b> Eksempler er ankerfellen, bekreftelsesfellen, tilgjengelighetsheuristikk og overkonfidens. <b>Tiltak:</b> struktur, data, motargumenter og flere vurderere.'},
+      {tag:'Begrep',q:'Forklar heuristikker.',a:'<b>Kjerne:</b> Mentale tommelfingerregler som forenkler beslutninger. De sparer tid, men kan gi skjevheter når situasjonen krever grundigere analyse. <b>Eksamen:</b> Knytt heuristikker til System 1. <b>Eksempel:</b> Å vurdere sannsynlighet ut fra det som er lettest å huske.'},
+      {tag:'Begrep',q:'Forklar overkonfidens.',a:'<b>Kjerne:</b> Tendens til å overvurdere egne kunnskaper, vurderinger eller kontroll over utfallet. <b>Eksamen:</b> Kan gi dårlig risikovurdering, for raske beslutninger og lite læring. <b>Tiltak:</b> kalibrering, sannsynlighetsvurdering og aktiv søking etter motbevis.'},
+      {tag:'Begrep',q:'Forklar bekreftelsesfellen.',a:'<b>Kjerne:</b> Tendens til å søke, tolke og huske informasjon som bekrefter det vi allerede tror, og nedtone informasjon som utfordrer oss. <b>Eksamen:</b> Relevant i rekruttering, strategi og konflikter. <b>Tiltak:</b> bevisst lete etter motargumenter og bruke strukturerte kriterier.'},
+      {tag:'Begrep',q:'Forklar ankerfellen.',a:'<b>Kjerne:</b> Første tall, inntrykk eller informasjon fungerer som et anker som påvirker senere vurderinger for mye. <b>Eksamen:</b> Typisk i lønn, pris, prognoser og intervjuer. <b>Tiltak:</b> vurder uavhengig før diskusjon og bruk flere referansepunkter.'},
+      {tag:'Begrep',q:'Forklar tilgjengelighetsheuristikk.',a:'<b>Kjerne:</b> Vi vurderer sannsynlighet eller viktighet ut fra hvor lett eksempler dukker opp i hukommelsen. <b>Eksamen:</b> Kan gi feil risikovurdering etter nylige eller dramatiske hendelser. <b>Eksempel:</b> En leder overvurderer sykefraværsproblemet etter én svært synlig sak.'},
+      {tag:'Begrep',q:'Forklar strukturert intervju.',a:'<b>Kjerne:</b> Intervjuform der alle kandidater får samme jobbrelevante spørsmål, vurderes etter forhåndsdefinerte kriterier og scores systematisk. <b>Eksamen:</b> Øker reliabilitet og validitet, og reduserer bias sammenlignet med ustrukturert intervju.'},
+      {tag:'Begrep',q:'Forklar jobbanalyse.',a:'<b>Kjerne:</b> Systematisk kartlegging av arbeidsoppgaver, ansvar, kontekst og krav til kunnskap, ferdigheter, evner og egenskaper. <b>Eksamen:</b> Grunnlag for rekruttering, seleksjon, opplæring og prestasjonsvurdering. <b>Eksempel:</b> Før intervju defineres hvilke kompetanser jobben faktisk krever.'},
+      {tag:'Begrep',q:'Forklar teamkontrakt.',a:'<b>Kjerne:</b> En avtale i teamet om mål, roller, normer, kommunikasjonsregler, møteform, beslutningsregler og håndtering av konflikt. <b>Eksamen:</b> Forebygger koordinasjonsproblemer og sosial loffing. <b>Eksempel:</b> Teamet avtaler frister, kvalitet og hva som skjer ved manglende bidrag.'}
+    ]
+  }
+];
+
+/* === STATE === */
+const state = { deckId: null, i: 0, flipped: false, query: '' };
+const $ = id => document.getElementById(id);
+
+/* === HUB === */
+function renderHub(){
+  const totalDecks = decks.length;
+  const ready = decks.filter(d => d.cards.length > 0).length;
+  const totalCards = decks.reduce((n,d) => n + d.cards.length, 0);
+  $('stat-decks').textContent = totalDecks;
+  $('stat-cards').textContent = totalCards;
+  $('stat-ready').textContent = ready;
+
+  const q = state.query.trim().toLowerCase();
+  const list = decks.filter(d => !q || (d.title+' '+d.desc+' '+d.num).toLowerCase().includes(q));
+
+  $('deck-grid').innerHTML = list.map(d => {
+    const empty = d.cards.length === 0;
+    const pillClass = empty ? '' : (d.difficulty === 'Eksamen' ? 'ready' : 'hard');
+    const pillText = empty ? 'Kommer' : d.difficulty;
+    return `<button class="deck${empty?' empty':''}" data-id="${d.id}" ${empty?'disabled':''} aria-label="${d.num}: ${d.title}">
+      <div class="deck-head">
+        <span class="deck-num">${d.num}</span>
+        <span class="deck-pill ${pillClass}">${pillText}</span>
+      </div>
+      <div class="deck-title">${d.title}</div>
+      <div class="deck-desc">${d.desc}</div>
+      <div class="deck-foot">
+        <span class="deck-cards">${d.cards.length} kort</span>
+        <span>${empty?'Ingen kort enda':'Start →'}</span>
+      </div>
+    </button>`;
+  }).join('') || `<div class="empty-state"><h3>Ingen treff</h3><p>Prøv et annet søk.</p></div>`;
+
+  $('deck-grid').querySelectorAll('.deck:not(.empty)').forEach(el => {
+    el.addEventListener('click', () => openDeck(el.dataset.id));
+  });
+}
+
+/* === STUDY === */
+function openDeck(id){
+  const d = decks.find(x => x.id === id);
+  if(!d || d.cards.length === 0) return;
+  state.deckId = id;
+  state.i = 0;
+  state.flipped = false;
+  $('hub').classList.add('hidden');
+  $('study').classList.add('active');
+  $('study-title').textContent = `${d.num} — ${d.title}`;
+  $('study-pill').textContent = d.difficulty;
+  renderCard();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function closeDeck(){
+  state.deckId = null;
+  $('hub').classList.remove('hidden');
+  $('study').classList.remove('active');
+}
+
+function currentDeck(){ return decks.find(d => d.id === state.deckId); }
+
+function renderCard(){
+  const d = currentDeck(); if(!d) return;
+  const c = d.cards[state.i];
+  $('tag').textContent = c.tag || '';
+  $('card-label').textContent = state.flipped ? 'Svar' : 'Spørsmål';
+  $('front').style.display = state.flipped ? 'none' : 'block';
+  $('back').style.display = state.flipped ? 'block' : 'none';
+  $('front').textContent = c.q;
+  $('back').innerHTML = c.a;
+  $('hint').textContent = state.flipped ? 'Klikk for å se spørsmålet igjen' : 'Klikk for å se forklaring';
+  $('counter').textContent = (state.i+1) + ' / ' + d.cards.length;
+  $('bar').style.width = ((state.i+1)/d.cards.length*100) + '%';
+}
+
+function next(){ const d = currentDeck(); if(!d) return; state.i = (state.i+1) % d.cards.length; state.flipped = false; renderCard(); }
+function prev(){ const d = currentDeck(); if(!d) return; state.i = (state.i-1+d.cards.length) % d.cards.length; state.flipped = false; renderCard(); }
+
+/* === EVENTS === */
+$('search').addEventListener('input', e => { state.query = e.target.value; renderHub(); });
+$('back-to-hub').addEventListener('click', closeDeck);
+$('card').addEventListener('click', () => { state.flipped = !state.flipped; renderCard(); });
+$('next').addEventListener('click', next);
+$('prev').addEventListener('click', prev);
+document.querySelectorAll('.rate').forEach(b => b.addEventListener('click', next));
+document.addEventListener('keydown', e => {
+  if(!state.deckId) return;
+  if(e.key === 'ArrowRight') next();
+  if(e.key === 'ArrowLeft') prev();
+  if(e.key === ' '){ e.preventDefault(); state.flipped = !state.flipped; renderCard(); }
+  if(e.key === 'Escape') closeDeck();
+});
+
+renderHub();
+</script>
+</body>
+</html>
