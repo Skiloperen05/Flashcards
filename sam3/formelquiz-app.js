@@ -7,6 +7,7 @@ function renderDecks(){
   deckList.innerHTML=decks.map(d=>`<button class="deckbtn ${deck===d.id?'active':''}" data-id="${d.id}"><b>${d.title}</b><span>${d.desc}</span></button>`).join('');
   document.querySelectorAll('.deckbtn').forEach(b=>b.onclick=()=>{
     deck=b.dataset.id;idx=0;answered=false;
+    document.querySelectorAll('.deckbtn').forEach(x=>x.classList.toggle('active',x.dataset.id===deck));
     feedback.className='feedback';feedback.innerHTML='';
     summary.className='summary';
     render();
