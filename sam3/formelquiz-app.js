@@ -1,5 +1,5 @@
 const $=id=>document.getElementById(id);
-let deck='all',idx=0,answered=false,currentFocus=null,round=[],symbolOpen=false;
+let deck='all',idx=0,answered=false,currentFocus=null,round=[],symbolOpen=false,symbolStats={};
 const norm=s=>(s||'').toString().trim().replace(/\s+/g,'').replace(/−/g,'-').replace(/ᵉ/g,'e').replace(/\*/g,'').replace(/-/g,'').toLowerCase();
 const filtered=()=>deck==='all'?cards:cards.filter(c=>c.deck===deck);
 
@@ -98,11 +98,36 @@ function renderStats(){
   statPct.textContent=attempts?Math.round(100*right/attempts)+'%':'0%';
 }
 
+function renderSymbolStatsBlock(){
+  const weak=[],strong=[];
+  Object.keys(symbolStats).forEach(fid=>{
+    Object.keys(symbolStats[fid]).forEach(sym=>{
+      const s=symbolStats[fid][sym];
+      const entry={fid,sym,right:s.right,wrong:s.wrong,total:s.right+s.wrong};
+      if(s.wrong>0)weak.push(entry);
+      else if(s.right>0)strong.push(entry);
+    });
+  });
+  if(!weak.length&&!strong.length)return '';
+  weak.sort((a,b)=>(b.wrong/b.total)-(a.wrong/a.total)||b.wrong-a.wrong);
+  const weakHtml=weak.length?`<h4>Bør øves mer</h4><div class="symbolStatsGrid">${weak.map(w=>`<span class="symbolStatChip bad" title="${w.fid}">${w.sym}<small>${w.wrong}✗ / ${w.total}</small></span>`).join('')}</div>`:'';
+  const strongHtml=strong.length?`<h4>Sitter godt</h4><div class="symbolStatsGrid">${strong.map(w=>`<span class="symbolStatChip good" title="${w.fid}">${w.sym}<small>${w.right}✓</small></span>`).join('')}</div>`:'';
+  const totalRight=weak.reduce((a,b)=>a+b.right,0)+strong.reduce((a,b)=>a+b.right,0);
+  const totalAtt=weak.reduce((a,b)=>a+b.total,0)+strong.reduce((a,b)=>a+b.total,0);
+  return `<div class="symbolStats"><h3>Symbolquiz-resultater</h3><p class="sub">${totalRight} av ${totalAtt} symbolforsøk riktige i denne runden.</p>${weakHtml}${strongHtml}</div>`;
+}
+
+function startNewRound(){
+  round=[];symbolStats={};
+  summary.className='summary';
+  renderStats();
+}
+
 function finishRound(){
   const attempts=round.length,right=round.filter(r=>r.ok).length,shown=round.filter(r=>r.shown).length,wrong=attempts-right-shown;
   const weak=[...new Set(round.filter(r=>!r.ok).map(r=>r.topic))];
   summary.className='summary show';
-  summary.innerHTML=`<div class="summaryCard"><h2>Oppsummering av runden</h2><div class="summaryGrid"><div class="summaryStat"><b>${attempts}</b><span>Besvart</span></div><div class="summaryStat"><b>${right}</b><span>Riktig</span></div><div class="summaryStat"><b>${wrong}</b><span>Feil</span></div><div class="summaryStat"><b>${shown}</b><span>Vist fasit</span></div></div><p style="font-size:13px;color:#64748b;margin-top:4px">Jobb mer med: ${weak.length?weak.join(', '):'ingen tydelige svake områder i denne runden'}.</p><div class="summaryList">${round.map(r=>`<div class="summaryItem ${r.ok?'good':r.shown?'shown':'bad'}"><b>${r.ok?'✅':r.shown?'👁️':'❌'} ${r.q}</b><p>${r.answer}</p></div>`).join('')}</div><button class="btn primary" style="margin-top:14px" onclick="round=[];summary.className='summary';renderStats()">Start ny runde</button></div>`;
+  summary.innerHTML=`<div class="summaryCard"><h2>Oppsummering av runden</h2><div class="summaryGrid"><div class="summaryStat"><b>${attempts}</b><span>Besvart</span></div><div class="summaryStat"><b>${right}</b><span>Riktig</span></div><div class="summaryStat"><b>${wrong}</b><span>Feil</span></div><div class="summaryStat"><b>${shown}</b><span>Vist fasit</span></div></div><p style="font-size:13px;color:#64748b;margin-top:4px">Jobb mer med: ${weak.length?weak.join(', '):'ingen tydelige svake områder i denne runden'}.</p><div class="summaryList">${round.map(r=>`<div class="summaryItem ${r.ok?'good':r.shown?'shown':'bad'}"><b>${r.ok?'✅':r.shown?'👁️':'❌'} ${r.q}</b><p>${r.answer}</p></div>`).join('')}</div>${renderSymbolStatsBlock()}<button class="btn primary" style="margin-top:14px" onclick="startNewRound()">Start ny runde</button></div>`;
   summary.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
@@ -138,12 +163,17 @@ function checkSymbolQuiz(id){
   const q=symbolQuiz[id];if(!q)return;
   const root=symbolScope(id);if(!root)return;
   let ok=0;
+  if(!symbolStats[id])symbolStats[id]={};
   root.querySelectorAll('.symbolRow').forEach((row,i)=>{
     const inp=row.querySelector('input');
-    const good=q.items[i][1].some(a=>norm(inp.value).includes(norm(a))||norm(a).includes(norm(inp.value)));
+    const v=norm(inp.value);
+    const good=v.length>0&&q.items[i][1].some(a=>norm(a)===v);
     row.classList.toggle('ok',good);
     row.classList.toggle('bad',!good);
     if(good)ok++;
+    const sym=q.items[i][0];
+    if(!symbolStats[id][sym])symbolStats[id][sym]={right:0,wrong:0};
+    if(good)symbolStats[id][sym].right++;else symbolStats[id][sym].wrong++;
   });
   const fb=root.querySelector('.symbolFeedback');
   fb.className='symbolFeedback show';
@@ -175,8 +205,27 @@ function toggleSymbolPanel(){
   symbolPanel.innerHTML=symbolQuizHtml(c.id,true);
   symbolOpen=true;
   symbolBtn.classList.add('active');
+  attachSymbolKeys(symbolPanel,c.id);
   setTimeout(()=>symbolPanel.querySelector('.symbolRow input')?.focus(),120);
   symbolPanel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function attachSymbolKeys(root,id){
+  const inputs=[...root.querySelectorAll('.symbolRow input')];
+  inputs.forEach((inp,i)=>{
+    inp.onkeydown=e=>{
+      if(e.key==='ArrowRight'||e.key==='ArrowDown'){
+        e.preventDefault();(inputs[i+1]||inputs[0]).focus();
+      }else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){
+        e.preventDefault();(inputs[i-1]||inputs[inputs.length-1]).focus();
+      }else if(e.key==='Enter'){
+        e.preventDefault();
+        const checked=root.querySelector('.symbolFeedback.show');
+        if(checked)next();
+        else checkSymbolQuiz(id);
+      }
+    };
+  });
 }
 
 function closeSymbolPanel(){
