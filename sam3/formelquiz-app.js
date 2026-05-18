@@ -99,36 +99,134 @@ function renderStats(){
   statPct.textContent=attempts?Math.round(100*right/attempts)+'%':'0%';
 }
 
-function renderSymbolStatsBlock(){
+function donutSvg(pct,color){
+  const s=112,r=44,c=2*Math.PI*r,p=Math.max(0,Math.min(100,pct||0)),off=c*(1-p/100);
+  return `<svg class="donut" viewBox="0 0 ${s} ${s}" width="${s}" height="${s}" aria-hidden="true"><circle cx="${s/2}" cy="${s/2}" r="${r}" class="donut-track"/><circle cx="${s/2}" cy="${s/2}" r="${r}" class="donut-value" style="stroke:${color};stroke-dasharray:${c.toFixed(2)};stroke-dashoffset:${off.toFixed(2)}"/><text x="${s/2}" y="${s/2+1}" text-anchor="middle" dominant-baseline="central" class="donut-pct">${Math.round(p)}%</text></svg>`;
+}
+
+function symbolStatsData(){
   const weak=[],strong=[];
+  let totalRight=0,totalAtt=0;
   Object.keys(symbolStats).forEach(fid=>{
+    const card=cards.find(c=>c.id===fid);
+    const topic=card?card.topic:fid;
     Object.keys(symbolStats[fid]).forEach(sym=>{
       const s=symbolStats[fid][sym];
-      const entry={fid,sym,right:s.right,wrong:s.wrong,total:s.right+s.wrong};
-      if(s.wrong>0)weak.push(entry);
-      else if(s.right>0)strong.push(entry);
+      const total=s.right+s.wrong;
+      const e={fid,sym,topic,right:s.right,wrong:s.wrong,total,pct:total?Math.round(100*s.right/total):0};
+      totalRight+=s.right;totalAtt+=total;
+      if(s.wrong>0)weak.push(e);else if(s.right>0)strong.push(e);
     });
   });
-  if(!weak.length&&!strong.length)return '';
-  weak.sort((a,b)=>(b.wrong/b.total)-(a.wrong/a.total)||b.wrong-a.wrong);
-  const weakHtml=weak.length?`<h4>Bør øves mer</h4><div class="symbolStatsGrid">${weak.map(w=>`<span class="symbolStatChip bad" title="${w.fid}">${w.sym}<small>${w.wrong}✗ / ${w.total}</small></span>`).join('')}</div>`:'';
-  const strongHtml=strong.length?`<h4>Sitter godt</h4><div class="symbolStatsGrid">${strong.map(w=>`<span class="symbolStatChip good" title="${w.fid}">${w.sym}<small>${w.right}✓</small></span>`).join('')}</div>`:'';
-  const totalRight=weak.reduce((a,b)=>a+b.right,0)+strong.reduce((a,b)=>a+b.right,0);
-  const totalAtt=weak.reduce((a,b)=>a+b.total,0)+strong.reduce((a,b)=>a+b.total,0);
-  return `<div class="symbolStats"><h3>Symbolquiz-resultater</h3><p class="sub">${totalRight} av ${totalAtt} symbolforsøk riktige i denne runden.</p>${weakHtml}${strongHtml}</div>`;
+  weak.sort((a,b)=>(b.wrong/b.total-a.wrong/a.total)||b.wrong-a.wrong);
+  return {weak,strong,totalRight,totalAtt};
+}
+
+function tagline(formPct,symPct,hasSymbols){
+  const c=hasSymbols?(formPct+symPct)/2:formPct;
+  if(c>=90)return 'Imponerende — du sitter trygt med stoffet.';
+  if(c>=75)return 'Solid runde. Gå over de siste detaljene og du er der.';
+  if(c>=50)return 'God start. Ta en runde til og bruk «Vis figur» der det glipper.';
+  if(c>0)return 'Ikke gi opp — figurene gir god intuisjon når formelen ikke sitter.';
+  return 'Klar for en ny runde?';
+}
+
+function jumpToDeck(deckId){
+  deck=deckId;idx=0;answered=false;round=[];symbolStats={};
+  document.querySelectorAll('.deckbtn').forEach(x=>x.classList.toggle('active',x.dataset.id===deck));
+  summary.className='summary';
+  feedback.className='feedback';feedback.innerHTML='';
+  render();
+  document.querySelector('.quiz')?.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 function startNewRound(){
   round=[];symbolStats={};
   summary.className='summary';
   renderStats();
+  render();
 }
 
 function finishRound(){
   const attempts=round.length,right=round.filter(r=>r.ok).length,shown=round.filter(r=>r.shown).length,wrong=attempts-right-shown;
-  const weak=[...new Set(round.filter(r=>!r.ok).map(r=>r.topic))];
+  const formulaPct=attempts?Math.round(100*right/attempts):0;
+  const sym=symbolStatsData();
+  const hasSym=sym.totalAtt>0;
+  const symbolPct=hasSym?Math.round(100*sym.totalRight/sym.totalAtt):0;
+
+  const weakTopics=[...new Set(round.filter(r=>!r.ok).map(r=>r.topic))];
+  const weakDeckIds=[...new Set(round.filter(r=>!r.ok).map(r=>cards.find(c=>c.id===r.id)?.deck).filter(Boolean))];
+  const suggestDecks=deck==='all'?weakDeckIds.slice(0,2):[];
+
+  const heroTitle=attempts?`${right} av ${attempts} formler riktig`:'Ingen formler besvart enda';
+  const heroSub=tagline(formulaPct,symbolPct,hasSym);
+
+  const scoreCards=`<div class="scoreCards${hasSym?'':' single'}">
+    <div class="scoreCard">
+      <span class="scoreCard-label">Formler</span>
+      ${donutSvg(formulaPct,'#dc2626')}
+      <div class="scoreCard-meta"><b>${right}<span class="of">/ ${attempts}</span></b><span>riktige</span></div>
+      <div class="scoreCard-foot">${wrong} feil${shown?` · ${shown} med fasit`:''}</div>
+    </div>
+    ${hasSym?`<div class="scoreCard">
+      <span class="scoreCard-label">Symboler</span>
+      ${donutSvg(symbolPct,'#15803d')}
+      <div class="scoreCard-meta"><b>${sym.totalRight}<span class="of">/ ${sym.totalAtt}</span></b><span>riktige forsøk</span></div>
+      <div class="scoreCard-foot">${sym.weak.length?`${sym.weak.length} symbol${sym.weak.length===1?'':'er'} å øve mer på`:'Alle symboler sitter'}</div>
+    </div>`:`<div class="scoreCard ghost">
+      <span class="scoreCard-label">Symboler</span>
+      <div class="scoreCard-empty"><span class="scoreCard-emptyIcon">∑</span><p>Ikke øvd på symboler denne runden</p><small>Trykk «Øv på symboler» under en formel for å teste hva hvert symbol betyr.</small></div>
+    </div>`}
+  </div>`;
+
+  const weakTopicsHtml=weakTopics.length?`<div class="summarySection">
+    <h3>Temaer å gå over</h3>
+    <div class="topicChips">${weakTopics.map(t=>`<span class="topicChip">${t}</span>`).join('')}</div>
+  </div>`:'';
+
+  const weakSymbolsHtml=sym.weak.length?`<div class="summarySection">
+    <h3>Symboler å øve mer på</h3>
+    <div class="weakSymbolList">${sym.weak.slice(0,10).map(w=>`<div class="weakSymbolRow">
+      <span class="weakSymbolSym">${w.sym}</span>
+      <div class="weakSymbolInfo"><b>${w.topic}</b><div class="weakBar"><div class="weakBar-fill" style="width:${w.pct}%"></div></div></div>
+      <span class="weakSymbolCount">${w.right}<small>/${w.total}</small></span>
+    </div>`).join('')}</div>
+  </div>`:'';
+
+  const strongSymbolsHtml=sym.strong.length?`<div class="summarySection compact">
+    <h3>Symboler du har på plass</h3>
+    <div class="topicChips good">${sym.strong.map(s=>`<span class="topicChip good">${s.sym}</span>`).join('')}</div>
+  </div>`:'';
+
+  const perQuestion=attempts?`<details class="summaryDetails">
+    <summary>Alle spørsmål i runden (${attempts})</summary>
+    <div class="summaryList">${round.map(r=>`<div class="summaryItem ${r.ok?'good':r.shown?'shown':'bad'}"><b>${r.ok?'✅':r.shown?'👁️':'❌'} ${r.q}</b><p>${r.answer}</p></div>`).join('')}</div>
+  </details>`:'';
+
+  const deckBtns=suggestDecks.map(did=>{
+    const d=decks.find(x=>x.id===did);
+    return d?`<button class="btn secondary" onclick="jumpToDeck('${d.id}')">Øv på ${d.title} →</button>`:'';
+  }).join('');
+
+  const actions=`<div class="summaryActions">
+    <button class="btn primary" onclick="startNewRound()">Start ny runde</button>
+    ${deckBtns}
+  </div>`;
+
   summary.className='summary show';
-  summary.innerHTML=`<div class="summaryCard"><h2>Oppsummering av runden</h2><div class="summaryGrid"><div class="summaryStat"><b>${attempts}</b><span>Besvart</span></div><div class="summaryStat"><b>${right}</b><span>Riktig</span></div><div class="summaryStat"><b>${wrong}</b><span>Feil</span></div><div class="summaryStat"><b>${shown}</b><span>Vist fasit</span></div></div><p style="font-size:13px;color:#64748b;margin-top:4px">Jobb mer med: ${weak.length?weak.join(', '):'ingen tydelige svake områder i denne runden'}.</p><div class="summaryList">${round.map(r=>`<div class="summaryItem ${r.ok?'good':r.shown?'shown':'bad'}"><b>${r.ok?'✅':r.shown?'👁️':'❌'} ${r.q}</b><p>${r.answer}</p></div>`).join('')}</div>${renderSymbolStatsBlock()}<button class="btn primary" style="margin-top:14px" onclick="startNewRound()">Start ny runde</button></div>`;
+  summary.innerHTML=`<div class="summaryCard">
+    <header class="summaryHero">
+      <span class="summaryEyebrow">Runde fullført</span>
+      <h2>${heroTitle}</h2>
+      <p class="summaryTagline">${heroSub}</p>
+    </header>
+    ${scoreCards}
+    ${weakTopicsHtml}
+    ${weakSymbolsHtml}
+    ${strongSymbolsHtml}
+    ${perQuestion}
+    ${actions}
+  </div>`;
   summary.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
