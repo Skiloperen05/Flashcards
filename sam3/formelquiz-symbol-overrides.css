@@ -1,1 +1,158 @@
-.symbolQuiz{padding:14px 16px}.symbolQuizHead{margin-bottom:10px}.symbolFormula{font-size:21px;padding:6px 10px}.symbolRows{grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px}.symbolRow{padding:7px 9px;grid-template-columns:54px minmax(0,1fr);gap:8px;border-radius:12px}.symbolRow span{font-size:18px;white-space:nowrap}.symbolRow input{padding:7px 9px;font-size:15px;border-width:2px;border-radius:9px;min-width:0}.symbolActions{margin-top:10px}.symbolFeedback{margin-top:10px;padding:10px}@media(min-width:900px){.symbolRows{grid-template-columns:repeat(2,minmax(260px,1fr))}.symbolRow{max-width:100%}}@media(min-width:1200px){.symbolRows{grid-template-columns:repeat(3,minmax(230px,1fr))}}@media(max-width:560px){.symbolQuiz{padding:12px}.symbolRows{grid-template-columns:1fr}.symbolRow{grid-template-columns:48px 1fr}.symbolRow input{font-size:14px}}
+/* Felles styling for symbolquiz både inline og i modal */
+.symbolQuiz{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px 16px;
+  margin-top:0;
+  box-shadow:var(--shadow-sm);
+  animation:panelIn .22s ease;
+}
+@keyframes panelIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+.symbolQuizHead{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+.symbolQuizHead > div:first-child{flex:1;min-width:160px}
+.symbolQuiz h3{
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:-.2px;
+  color:var(--ink);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.symbolQuiz h3:before{
+  content:'';
+  width:18px;height:18px;
+  background:#dcfce7;
+  border:1px solid #bbf7d0;
+  border-radius:6px;
+  display:inline-block;
+}
+.symbolQuiz p{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.45}
+.symbolFormula{
+  font-family:Georgia,'Times New Roman',serif;
+  font-weight:800;
+  font-size:18px;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:6px 12px;
+  color:var(--ink);
+}
+
+.symbolClose{
+  border:1px solid var(--border);
+  background:#fff;
+  border-radius:8px;
+  width:26px;height:26px;
+  font-size:13px;
+  cursor:pointer;
+  color:var(--muted);
+  display:grid;place-items:center;
+  font-weight:700;
+}
+.symbolClose:hover{background:var(--surface-2);color:var(--ink);border-color:#cbd5e1}
+
+.symbolRows{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:8px;
+}
+.symbolRow{
+  border:1px solid var(--border);
+  border-radius:11px;
+  padding:8px 10px;
+  background:var(--surface-2);
+  display:grid;
+  grid-template-columns:60px minmax(0,1fr);
+  gap:10px;
+  align-items:center;
+  transition:border-color .12s,background .12s;
+}
+.symbolRow span{
+  font-family:Georgia,'Times New Roman',serif;
+  font-weight:800;
+  font-size:17px;
+  white-space:nowrap;
+  color:var(--ink);
+}
+.symbolRow input{
+  border:1.5px solid #cbd5e1;
+  border-radius:9px;
+  padding:8px 10px;
+  font:inherit;
+  font-size:13.5px;
+  background:#fff;
+  outline:none;
+  min-width:0;
+  color:var(--ink);
+  transition:border-color .12s,box-shadow .12s;
+}
+.symbolRow input:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(37,99,235,.1);
+}
+.symbolRow input::placeholder{color:#94a3b8}
+.symbolRow.ok{border-color:#bbf7d0;background:#f0fdf4}
+.symbolRow.bad{border-color:#fecaca;background:#fff7f7}
+.symbolRow.ok input{border-color:#10b981}
+.symbolRow.bad input{border-color:var(--red)}
+
+.symbolActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+.symbolFeedback{
+  display:none;
+  margin-top:12px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:11px 13px;
+  background:var(--surface-2);
+}
+.symbolFeedback.show{display:block}
+.symbolFeedback b{
+  display:block;
+  margin-bottom:4px;
+  font-size:13px;
+  font-weight:800;
+  color:var(--ink);
+}
+.symbolFeedback p{font-size:12.5px;color:var(--muted);margin:0;line-height:1.5}
+
+.symbolAnswerGrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:6px;
+  margin-top:8px;
+}
+.symbolAnswerGrid div{
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:8px 10px;
+  background:#fff;
+}
+.symbolAnswerGrid span{
+  font-family:Georgia,'Times New Roman',serif;
+  font-weight:800;
+  font-size:15px;
+  color:var(--ink);
+}
+.symbolAnswerGrid p{margin:4px 0 0;color:#334155;font-size:12px;line-height:1.4}
+
+/* Tre kolonner på desktop, to på mellomstørrelser */
+@media(min-width:1100px){.symbolRows{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:780px) and (max-width:1099px){.symbolRows{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){
+  .symbolQuiz{padding:12px}
+  .symbolRows{grid-template-columns:1fr}
+  .symbolRow{grid-template-columns:46px 1fr;padding:7px 9px}
+  .symbolRow input{font-size:13px}
+  .symbolFormula{font-size:16px}
+}
