@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SAM3 — Formelark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../shared/auth-guard.js"></script>
+<script>try{AuthGuard.requireAuth().then(s=>{if(!s)return;if(AuthGuard.bindUserInfo)AuthGuard.bindUserInfo('userEmailLabel','userChip','userAvatar');});}catch(e){console.warn(e);}</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:#f4f6fa;color:#0f172a;-webkit-font-smoothing:antialiased}
+.topbar{height:60px;background:#0f172a;display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:50}
+.topbar.no-print{}
+.logo{display:flex;gap:10px;align-items:center;color:#fff;text-decoration:none;font-weight:800;font-size:15px}
+.logo span:first-child{width:30px;height:30px;border-radius:8px;background:#6366f1;display:grid;place-items:center}
+.crumb{display:flex;gap:8px;font-size:13px;align-items:center;color:#94a3b8}
+.crumb a{color:#94a3b8;text-decoration:none}
+.crumb b{color:#e2e8f0}
+.toolbar{max-width:880px;margin:18px auto;padding:0 20px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+.toolbar input{font:inherit;font-size:14px;padding:9px 12px;border:1px solid #e5e9f0;border-radius:11px;background:#fff;color:#0f172a;outline:none;min-width:200px}
+.toolbar input:focus{border-color:#dc2626;box-shadow:0 0 0 3px rgba(220,38,38,.08)}
+.btn{font:inherit;font-weight:800;font-size:13.5px;padding:10px 14px;border-radius:11px;border:1px solid transparent;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:#dc2626;color:#fff;border-color:#dc2626}
+.btn.primary:hover{background:#b91c1c}
+.btn.ghost{background:#fff;border-color:#e5e9f0;color:#334155}
+.btn.ghost:hover{background:#f8fafc;border-color:#cbd5e1}
+.paper{max-width:880px;margin:0 auto 60px;background:#fff;border:1px solid #e5e9f0;border-radius:14px;padding:36px 40px;box-shadow:0 1px 3px rgba(15,23,42,.08)}
+.hdr{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;border-bottom:2px solid #0f172a;padding-bottom:14px;margin-bottom:20px}
+.hdr h1{font-size:22px;font-weight:900;letter-spacing:-.8px;line-height:1.05}
+.hdr .meta{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.6px;font-weight:800;text-align:right}
+.hdr .meta input{font:inherit;font-size:11px;border:0;background:transparent;outline:none;border-bottom:1px dashed #94a3b8;width:140px;text-transform:none;letter-spacing:0;color:#0f172a;padding:1px 2px;text-align:right;font-weight:700}
+.deck-title{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:#dc2626;border-top:1px solid #e5e9f0;padding-top:14px;margin:18px 0 10px;display:flex;justify-content:space-between;align-items:baseline}
+.deck-title:first-of-type{border-top:0;padding-top:0;margin-top:0}
+.deck-title span{font-size:10px;color:#64748b;font-weight:700;letter-spacing:.4px;text-transform:none}
+.formula{display:grid;grid-template-columns:140px 1fr;gap:14px;padding:8px 0;border-bottom:1px solid #f1f5f9;page-break-inside:avoid}
+.formula:last-of-type{border-bottom:0}
+.formula .name{font-size:11px;font-weight:800;color:#0f172a;text-transform:uppercase;letter-spacing:.4px;line-height:1.4}
+.formula .name small{display:block;color:#64748b;font-weight:600;text-transform:none;letter-spacing:0;margin-top:2px;font-size:11px}
+.formula .body{font-size:13.5px;line-height:1.55;color:#0f172a}
+.formula .eq{font-family:Georgia,'Times New Roman',serif;font-weight:800;font-size:16px;margin-bottom:5px;color:#0f172a}
+.formula .ex{font-size:12px;color:#475569;line-height:1.55}
+.formula .der{font-size:11.5px;color:#64748b;margin-top:5px;line-height:1.55}
+.symbols{margin-top:20px;border-top:2px solid #0f172a;padding-top:14px}
+.symbols h2{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:#0f172a;margin-bottom:10px}
+.symtbl{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px 14px;font-size:11px}
+.symtbl span{font-family:Georgia,serif;font-weight:800;color:#0f172a;display:inline-block;min-width:38px}
+.symtbl small{color:#64748b}
+.foot{max-width:880px;margin:20px auto;padding:0 20px;color:#94a3b8;font-size:11px;text-align:center}
+.foot a{color:#6366f1;text-decoration:none}
+
+@media print{
+  @page{size:A4;margin:1.5cm}
+  body{background:#fff}
+  .no-print{display:none !important}
+  .toolbar{display:none}
+  .paper{margin:0;border:0;border-radius:0;box-shadow:none;padding:0;max-width:none}
+  .deck-title{page-break-after:avoid}
+  .formula{page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<header class="topbar no-print"><a class="logo" href="../"><span>📚</span><span>StudieHub</span></a><nav class="crumb"><a href="./">SAM3</a><span style="color:#475569">›</span><b>Formelark</b></nav></header>
+<div class="toolbar no-print">
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    <label style="font-size:12px;color:#64748b;font-weight:700">Navn <input id="userName" placeholder="(valgfritt)"></label>
+    <label style="font-size:12px;color:#64748b;font-weight:700">Dato <input id="userDate" type="date"></label>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <a class="btn ghost" href="./">← SAM3</a>
+    <button class="btn primary" onclick="window.print()">🖨️ Skriv ut / lagre PDF</button>
+  </div>
+</div>
+<main class="paper" id="paper">
+  <div class="hdr"><h1>SAM3 — Formelark</h1><div class="meta"><div>Navn: <span id="hdrName">&nbsp;</span></div><div>Dato: <span id="hdrDate">&nbsp;</span></div></div></div>
+  <div id="content"></div>
+  <div class="symbols">
+    <h2>Symbolfasit</h2>
+    <div class="symtbl" id="symtbl"></div>
+  </div>
+</main>
+<footer class="foot no-print"><a href="./">← Tilbake til SAM3-hub</a></footer>
+<script src="formelquiz-data.js?v=p4-1"></script>
+<script src="formelquiz-extra.js?v=p4-1"></script>
+<script>
+(function(){
+  // Build content grouped by deck
+  var decksById={};decks.forEach(function(d){decksById[d.id]={...d,cards:[]};});
+  cards.forEach(function(c){if(c.deck&&decksById[c.deck])decksById[c.deck].cards.push(c);});
+  var content=document.getElementById('content');
+  Object.values(decksById).forEach(function(d){
+    if(!d.cards.length||d.id==='all')return;
+    var h=document.createElement('div');h.className='deck-title';
+    h.innerHTML=d.title+' <span>'+d.cards.length+' formler · '+d.desc+'</span>';
+    content.appendChild(h);
+    d.cards.forEach(function(c){
+      var row=document.createElement('div');row.className='formula';
+      var der=(c.derive&&c.derive.length)?'<div class="der"><b>Utledning:</b> '+c.derive.join(' → ')+'</div>':'';
+      row.innerHTML='<div class="name">'+c.topic+'<small>'+c.q+'</small></div>'+
+                    '<div class="body"><div class="eq">'+c.answer+'</div><div class="ex">'+c.explain+'</div>'+der+'</div>';
+      content.appendChild(row);
+    });
+  });
+  // Symbol fasit
+  var symtbl=document.getElementById('symtbl');
+  if(typeof symbolQuiz!=='undefined'){
+    var seen={};
+    Object.keys(symbolQuiz).forEach(function(fid){
+      var q=symbolQuiz[fid];
+      q.items.forEach(function(it){
+        var sym=it[0];
+        if(seen[sym])return;seen[sym]=1;
+        var d=document.createElement('div');
+        d.innerHTML='<span>'+sym+'</span><small>= '+it[1][0]+'</small>';
+        symtbl.appendChild(d);
+      });
+    });
+  }
+  // Optional name/date
+  var n=document.getElementById('userName'),dt=document.getElementById('userDate');
+  var hN=document.getElementById('hdrName'),hD=document.getElementById('hdrDate');
+  n.oninput=function(){hN.textContent=n.value||' ';};
+  dt.value=new Date().toISOString().slice(0,10);
+  hD.textContent=dt.value;
+  dt.oninput=function(){hD.textContent=dt.value;};
+})();
+</script>
+</body>
+</html>
