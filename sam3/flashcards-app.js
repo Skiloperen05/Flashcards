@@ -152,6 +152,10 @@ function show(){
   $('label-back').textContent='Svar';
   $('front-text').innerHTML=c.q;
   $('back-text').innerHTML=c.a;
+  if(window.SAM3Math){
+    window.SAM3Math.prettifyInElement($('front-text'));
+    window.SAM3Math.prettifyInElement($('back-text'));
+  }
   $('hint-front').textContent='Klikk for å se svar  ·  mellomrom = snu';
   $('hint-back').textContent='Klikk for å gå tilbake  ·  1 = vanskelig  ·  2 = halvveis  ·  3 = kunne det';
   $('counter').textContent=(idx+1)+' / '+visibleCards.length;

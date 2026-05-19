@@ -137,6 +137,8 @@ h1{font-size:clamp(28px,4.6vw,44px);letter-spacing:-1.2px;color:#f8fafc;font-wei
 .feedback h3{font-size:14px;margin-bottom:6px;font-weight:800;letter-spacing:-.2px}
 .feedback p{font-size:13px;line-height:1.55}
 .answer{font-family:Georgia,'Times New Roman',serif;font-weight:800;font-size:19px;background:#fff;border:1px solid var(--border);border-radius:11px;padding:8px 12px;display:inline-block;margin:9px 0 4px;color:var(--ink)}
+.answer sub,.symbolFormula sub,.symbolAnswerGrid span sub{font-size:.7em;line-height:0;vertical-align:-.32em;font-style:italic;color:#475569;font-weight:700;padding:0 .5px}
+.answer sup,.symbolFormula sup,.symbolAnswerGrid span sup{font-size:.7em;line-height:0;vertical-align:.62em;font-style:italic;color:#475569;font-weight:700;padding:0 .5px}
 .enterHint{font-size:12px;font-weight:700;margin-top:10px;opacity:.78;display:inline-flex;align-items:center;gap:6px}
 .enterHint kbd{font-family:inherit;background:#fff;border:1px solid currentColor;border-radius:6px;padding:2px 6px;font-size:11px;font-weight:800;opacity:.7}
 .deriveBox{margin-top:10px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px 13px;color:#334155}

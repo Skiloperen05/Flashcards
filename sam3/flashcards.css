@@ -102,6 +102,9 @@ h1{font-size:clamp(28px,4.6vw,44px);letter-spacing:-1.2px;color:#f8fafc;font-wei
 .back-text b{color:#991b1b}
 .formula{display:block;text-align:center;font-weight:800;background:#fff;border:1px solid var(--border-2);border-radius:12px;padding:10px 14px;margin:12px auto;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:#0f172a;max-width:560px}
 .inline-formula{font-family:Georgia,'Times New Roman',serif;font-weight:700;background:#fff;border:1px solid var(--border);border-radius:6px;padding:1px 6px;color:var(--ink)}
+.formula sub,.inline-formula sub,.answer sub,.symbolFormula sub,.front-text sub,.back-text sub{font-size:.7em;line-height:0;vertical-align:-.32em;font-style:italic;color:#475569;font-weight:700;padding:0 .5px}
+.formula sup,.inline-formula sup,.answer sup,.symbolFormula sup,.front-text sup,.back-text sup{font-size:.7em;line-height:0;vertical-align:.62em;font-style:italic;color:#475569;font-weight:700;padding:0 .5px}
+b sub,b sup,strong sub,strong sup{font-style:italic;color:inherit;opacity:.85}
 .hint{font-size:12px;color:var(--muted);margin-top:18px;align-self:center;font-weight:600}
 .face.back .hint{align-self:flex-start;color:#9a3412}
 
