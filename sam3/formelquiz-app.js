@@ -208,9 +208,17 @@ function finishRound(){
     return d?`<button class="btn secondary" onclick="jumpToDeck('${d.id}')">Øv på ${d.title} →</button>`:'';
   }).join('');
 
+  // Kryss-kobling: tilhørende flashcard-dekk via topic-mapping
+  let flashCta='';
+  if(deck!=='all'&&window.SAM3_LINKS&&window.SAM3_LINKS.topicByQuizDeck){
+    const t=window.SAM3_LINKS.topicByQuizDeck(deck);
+    if(t&&t.flashDeck)flashCta=`<a class="btn secondary" href="${window.SAM3_LINKS.flashUrl(t.flashDeck)}">Test deg på flashcards →</a>`;
+  }
+
   const actions=`<div class="summaryActions">
     <button class="btn primary" onclick="startNewRound()">Start ny runde</button>
     ${deckBtns}
+    ${flashCta}
   </div>`;
 
   summary.className='summary show';
@@ -343,6 +351,10 @@ symbolBtn.onclick=toggleSymbolPanel;
 closeFig.onclick=closeFigure;
 figureOverlay.onclick=e=>{if(e.target===figureOverlay)closeFigure();};
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeFigure();});
+
+// URL-param ?deck=<id> — sett deck før første render
+const paramDeck=new URLSearchParams(location.search).get('deck');
+if(paramDeck&&decks.find(d=>d.id===paramDeck))deck=paramDeck;
 
 renderDecks();
 renderPad();
