@@ -49,5 +49,8 @@ fisher:{formula:'i ≈ r + πᵉ',items:[['i',['nominell rente']],['r',['realren
 phillips:{formula:'π = πᵉ + κỸ',items:[['π',['inflasjon']],['πᵉ',['forventet inflasjon']],['κ',['følsomhet','respons']],['Ỹ',['produksjonsgap']]]},
 'mp-rule':{formula:'i = r* + π + φπ(π−π*) + φYỸ',items:[['i',['styringsrente','nominell rente']],['r*',['nøytral realrente']],['π',['inflasjon']],['π*',['inflasjonsmål']],['φπ',['respons på inflasjon']],['φY',['respons på produksjonsgap']],['Ỹ',['produksjonsgap']]]},
 realkurs:{formula:'ε = eP*/P',items:[['ε',['realvalutakurs','realkurs']],['e',['nominell valutakurs']],['P*',['utenlandsk prisnivå']],['P',['innenlandsk prisnivå','norsk prisnivå']]]},
-uip:{formula:'i = i* + forventet depresiering',items:[['i',['innenlandsk rente','norsk rente']],['i*',['utenlandsk rente']],['Δeᵉ',['forventet depresiering','forventet svekkelse']]]}
+uip:{formula:'i = i* + forventet depresiering',items:[['i',['innenlandsk rente','norsk rente']],['i*',['utenlandsk rente']],['Δeᵉ',['forventet depresiering','forventet svekkelse']]]},
+'is-curve':{formula:'Ỹ = −α(r − r*)',items:[['Ỹ',['produksjonsgap']],['α',['rentefølsomhet','rentesensitivitet','følsomhet']],['r',['realrente']],['r*',['nøytral realrente','naturlig realrente']]]},
+'ad-curve':{formula:'Ỹ = −γ(π − π*)',items:[['Ỹ',['produksjonsgap']],['γ',['følsomhet','respons']],['π',['inflasjon']],['π*',['inflasjonsmål']]]},
+'romer-ideas':{formula:'gA = θ · Lₐ',items:[['gA',['teknologivekst','vekst i teknologi','vekstrate teknologi']],['θ',['forskningsproduktivitet','produktivitet','idéproduktivitet']],['Lₐ',['forskere','arbeidskraft i forskning','arbeid i fou','antall forskere']]]}
 };
