@@ -11,9 +11,10 @@
 <script>AuthGuard.requireAuth().then(function(session){if(!session)return;AuthGuard.bindUserInfo&&AuthGuard.bindUserInfo('userEmailLabel','userChip','userAvatar');});</script>
 <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
 <script src="sam3-flashcards-data.js"></script>
-<script src="formelquiz-data.js?v=p3-1"></script>
-<script src="sam3-topics.js?v=p3-1"></script>
-<script src="sam3-search.js?v=p3-1"></script>
+<script src="formelquiz-data.js?v=p4-1"></script>
+<script src="sam3-topics.js?v=p4-1"></script>
+<script src="sam3-search.js?v=p4-1"></script>
+<script src="sam3-progress.js?v=p4-1"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#f4f6fa;--surface:#fff;--header-bg:#0f172a;--accent:#dc2626;--text:#0f172a;--muted:#64748b;--border:#e5e9f0;--radius-lg:18px;--radius-md:12px;--shadow-sm:0 1px 2px rgba(15,23,42,.05);--shadow:0 1px 3px rgba(15,23,42,.06),0 1px 2px rgba(15,23,42,.04);--shadow-hover:0 12px 32px rgba(15,23,42,.12),0 2px 8px rgba(15,23,42,.06);--transition:.22s cubic-bezier(.4,0,.2,1)}
@@ -82,6 +83,18 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--tex
 .search-item b{display:block;font-weight:700;line-height:1.3}
 .search-item span{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
 .search-empty{padding:14px;text-align:center;color:var(--muted);font-size:12.5px}
+.streak{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;box-shadow:var(--shadow-sm)}
+.streak-num{font-size:32px;font-weight:900;color:var(--accent);letter-spacing:-1.2px;line-height:1;display:flex;align-items:baseline;gap:6px}
+.streak-num small{font-size:11px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.7px}
+.streak-info{flex:1;min-width:180px}
+.streak-info b{display:block;font-size:13px;font-weight:800;color:var(--text)}
+.streak-info p{font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.4}
+.streak-strip{display:flex;gap:3px}
+.streak-day{width:14px;height:14px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border)}
+.streak-day.had{background:linear-gradient(135deg,#dc2626,#f97316);border-color:transparent}
+.streak-day.today{outline:2px solid var(--accent);outline-offset:1px}
+.streak-totals{display:flex;gap:14px;font-size:11.5px;color:var(--muted);flex-wrap:wrap}
+.streak-totals span b{color:var(--text);font-weight:800;font-size:13px;margin-right:3px}
 
 .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
 .tool-card{background:var(--surface);border-radius:var(--radius-lg);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column;transition:transform var(--transition),box-shadow var(--transition)}
@@ -116,6 +129,12 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--tex
   <div class="stat-chip"><span class="stat-value" id="stat-topics">–</span><span class="stat-label">Temaer i radar</span></div>
 </div>
 
+<div class="streak" id="streakWidget" style="display:none">
+  <div class="streak-num"><span id="streakNum">0</span><small>dager på rad</small></div>
+  <div class="streak-info"><b id="streakLabel">Start streaken i dag</b><p id="streakSub">Hver dag du øver med SAM3 teller.</p></div>
+  <div class="streak-strip" id="streakStrip" title="Siste 14 dager"></div>
+  <div class="streak-totals" id="streakTotals"></div>
+</div>
 <div class="search-wrap"><input type="search" class="search-input" id="sam3Search" placeholder="Søk i alle SAM3-ressurser — formler, flashcards, radar-temaer…" autocomplete="off"><div class="search-results" id="sam3SearchResults"></div></div>
 
 <p class="section-title">Anbefalt sti</p>
@@ -137,6 +156,7 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--tex
   <a class="tool-card" href="formelquiz.html"><div class="tool-icon-area"><div class="tool-icon" style="background:#eef2ff">∑</div><span class="tool-status status-active">Tilgjengelig</span></div><div class="tool-divider"></div><div class="tool-body"><div class="tool-name">Formelquiz</div><p class="tool-desc">Fyll inn manglende deler av sentrale SAM3-formler. Symbolquiz og figur per formel.</p><div class="tool-action"><span class="tool-open">Start quiz <span>→</span></span><span id="toolToFormulas">22 formler</span></div></div></a>
   <a class="tool-card" href="multiple-choice.html"><div class="tool-icon-area"><div class="tool-icon" style="background:#fef3c7">🧠</div><span class="tool-status status-new">Ny</span></div><div class="tool-divider"></div><div class="tool-body"><div class="tool-name">Multiple choice</div><p class="tool-desc">Quizmodus med 4 alternativer per formel. Bra for rask gjenkjenning før eksamen.</p><div class="tool-action"><span class="tool-open">Start <span>→</span></span><span>Velg dekk</span></div></div></a>
   <a class="tool-card" href="mock-eksamen.html"><div class="tool-icon-area"><div class="tool-icon" style="background:#f3e8ff">⏱️</div><span class="tool-status status-new">Ny</span></div><div class="tool-divider"></div><div class="tool-body"><div class="tool-name">Mock-eksamen</div><p class="tool-desc">Tidssatt simulering — tilfeldig blanding fra alle dekk med full per-tema-rapport.</p><div class="tool-action"><span class="tool-open">Simuler <span>→</span></span><span>15–30 min</span></div></div></a>
+  <a class="tool-card" href="formelark.html"><div class="tool-icon-area"><div class="tool-icon" style="background:#ecfdf5">📄</div><span class="tool-status status-new">Ny</span></div><div class="tool-divider"></div><div class="tool-body"><div class="tool-name">Formelark</div><p class="tool-desc">Komplett oversikt over alle SAM3-formler med utledning og symbolfasit — klar til print eller PDF.</p><div class="tool-action"><span class="tool-open">Åpne <span>→</span></span><span>A4-print</span></div></div></a>
 </div>
 </main>
 <footer class="footer"><a href="../">← Tilbake til StudieHub</a></footer>
@@ -176,6 +196,30 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--tex
   }else if(typeof cards!=='undefined'&&cards.length){
     document.getElementById('stat-formulas').textContent=cards.length;
     document.getElementById('toolToFormulas').textContent=cards.length+' formler';
+  }
+
+  // Streak-widget
+  if(window.SAM3Progress){
+    var s=window.SAM3Progress.getStreak();
+    var t=window.SAM3Progress.getTotals();
+    document.getElementById('streakWidget').style.display='flex';
+    document.getElementById('streakNum').textContent=s.current||1;
+    var label=s.current>=2?'🔥 '+s.current+' dager på rad':s.current===1?'Streaken er i gang':'Start streaken i dag';
+    document.getElementById('streakLabel').textContent=label;
+    document.getElementById('streakSub').textContent=s.longest>s.current?'Lengste tidligere: '+s.longest+' dager.':'Kom tilbake i morgen for å holde flammen brennende.';
+    var stripEl=document.getElementById('streakStrip');
+    s.recent.forEach(function(r,i){
+      var d=document.createElement('div');
+      d.className='streak-day'+(r.had?' had':'')+(i===s.recent.length-1?' today':'');
+      d.title=r.d;
+      stripEl.appendChild(d);
+    });
+    var totalsEl=document.getElementById('streakTotals');
+    var parts=[];
+    if(t.flashRated)parts.push('<span><b>'+t.flashRated+'</b>flashcards ratet</span>');
+    if(t.formulaTotal)parts.push('<span><b>'+Math.round(100*t.formulaRight/Math.max(1,t.formulaTotal))+'%</b>formelnøyaktighet</span>');
+    if(t.symbolTotal)parts.push('<span><b>'+t.symbolRight+'/'+t.symbolTotal+'</b>symboltreff</span>');
+    totalsEl.innerHTML=parts.join('');
   }
 
   // Søk
