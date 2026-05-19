@@ -2,12 +2,15 @@
 // Brukes av flashcards, formelquiz, multiple-choice, mock-eksamen og formelark.
 (function(){
 const TAB=String.fromCharCode(9);
-const CHAR_CLS='[A-Za-z0-9*À-ɏͰ-ϿḀ-ỿ]';
+// «Identifikator»: bokstaver/greske bokstaver, gjerne med påfølgende tall.
+// Eksempler: t, e, priv, off, yt, t1. Stjerne og enkelt-spesialtegn håndteres separat.
+const IDENT='[A-Za-zÀ-ɏͰ-ϿḀ-ỿ][A-Za-z0-9À-ɏͰ-ϿḀ-ỿ]*';
+const SPECIAL='[*\'+−-]'; // tegn som kan stå alene i sub/sup (k^*, r^*, π^+)
 const subBrace=/_\{([^{}]+)\}/g;
 const supBrace=/\^\{([^{}]+)\}/g;
 const supParen=/\^\(([^()]+)\)/g;
-const subSingle=new RegExp('_('+CHAR_CLS+')','g');
-const supSingle=new RegExp('\\^('+CHAR_CLS+')','g');
+const subIdent=new RegExp('_('+IDENT+'|'+SPECIAL+'|[0-9]+)','g');
+const supIdent=new RegExp('\\^('+IDENT+'|'+SPECIAL+'|[0-9]+)','g');
 
 function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
@@ -42,14 +45,14 @@ function prettifyMath(raw){
   s=s.replace(/\\omega\b/g,'ω');
   s=s.replace(/\\phi\b/g,'φ');
   s=s.replace(/\\psi\b/g,'ψ');
-  // Multi-char braces (sub/sup)
+  // Multi-tegns klammer (sub/sup): {t+1}, {1-α}
   s=s.replace(subBrace,'<sub>$1</sub>');
   s=s.replace(supBrace,'<sup>$1</sup>');
   // ^(...) for formelquiz-svar som "L^(1−α)"
   s=s.replace(supParen,'<sup>$1</sup>');
-  // Single-char sub/sup
-  s=s.replace(subSingle,'<sub>$1</sub>');
-  s=s.replace(supSingle,'<sup>$1</sup>');
+  // Identifikator-versjon: _priv, _yt, ^α, _t, ^*
+  s=s.replace(subIdent,'<sub>$1</sub>');
+  s=s.replace(supIdent,'<sup>$1</sup>');
   return s;
 }
 
