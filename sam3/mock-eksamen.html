@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SAM3 — Mock-eksamen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../shared/auth-guard.js"></script>
+<script>try{AuthGuard.requireAuth().then(s=>{if(!s)return;if(AuthGuard.bindUserInfo)AuthGuard.bindUserInfo('userEmailLabel','userChip','userAvatar');});}catch(e){console.warn(e);}</script>
+<link rel="stylesheet" href="formelquiz.css?v=p3-1">
+<style>
+.mcAlts{display:grid;gap:8px;margin-top:16px}
+.mcAlt{font:inherit;text-align:left;background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;cursor:pointer;display:flex;gap:12px;align-items:center;transition:border-color .12s,background .12s,transform .05s;font-family:Georgia,'Times New Roman',serif;font-size:17px;color:var(--ink)}
+.mcAlt:hover:not(:disabled){border-color:#cbd5e1;background:var(--surface-2)}
+.mcAlt:disabled{cursor:default}
+.mcAlt .mcLetter{font-family:Inter,sans-serif;font-weight:800;font-size:13px;color:var(--muted);background:var(--surface-2);border:1px solid var(--border);width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex-shrink:0}
+.mcAlt.correct{border-color:#10b981;background:#ecfdf5;color:#065f46}
+.mcAlt.correct .mcLetter{background:#10b981;color:#fff;border-color:#10b981}
+.mcAlt.wrong{border-color:var(--red);background:#fef2f2;color:#991b1b}
+.mcAlt.wrong .mcLetter{background:var(--red);color:#fff;border-color:var(--red)}
+.mcAlt.dim{opacity:.45}
+.mockConfig{display:grid;gap:14px;max-width:520px;margin:0 auto}
+.mockConfig label{display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.mockConfig select{font:inherit;font-size:14px;padding:11px 13px;border:1px solid var(--border);border-radius:11px;background:#fff;color:var(--ink)}
+.timer{font-variant-numeric:tabular-nums;font-weight:800;font-size:14px;color:var(--ink);background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:5px 12px;letter-spacing:-.2px}
+.timer.warn{color:var(--red);background:#fef2f2;border-color:#fecaca;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.75}}
+.topicBreakdown{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.topicRow{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:10px 13px;background:#fff;border:1px solid var(--border);border-radius:11px;font-size:13px}
+.topicRow b{font-weight:700;color:var(--ink)}
+.topicRow .score{font-weight:800;font-size:14px;color:var(--ink);letter-spacing:-.2px;min-width:46px;text-align:right}
+.topicRow .pctbar{width:80px;height:6px;background:var(--surface-2);border-radius:999px;overflow:hidden}
+.topicRow .pctbar > div{height:100%;background:linear-gradient(90deg,#dc2626,#f97316);border-radius:999px}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="logo" href="../"><span>📚</span><span>StudieHub</span></a><nav class="crumb"><a href="./">SAM3</a><span style="color:#475569">›</span><b>Mock-eksamen</b></nav></header>
+<section class="hero"><div class="hero-inner"><div class="badge">SAM3 · eksamenssimulering</div><h1>Mock-eksamen</h1><p>Tilfeldig blanding av formler fra alle dekk under tidspress. Få full rapport med per-tema-treff på slutten.</p></div></section>
+<main class="main">
+<section class="panel quiz">
+  <div class="quiz-head"><h2 id="quizTitle">Velg innstillinger</h2><div id="topRight"></div></div>
+  <div class="progress"><div id="bar"></div></div>
+  <div id="configPanel">
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">Klokken starter når du trykker «Start». Eksamen avsluttes automatisk ved tidsavløp.</p>
+    <div class="mockConfig">
+      <label>Antall spørsmål<select id="countSel"><option value="10">10</option><option value="15" selected>15</option><option value="20">20</option><option value="0">Alle (22+)</option></select></label>
+      <label>Tid<select id="timeSel"><option value="900">15 minutter</option><option value="1200" selected>20 minutter</option><option value="1800">30 minutter</option><option value="0">Uten klokke</option></select></label>
+      <button class="btn primary" id="startBtn">Start mock-eksamen →</button>
+    </div>
+  </div>
+  <div id="quizPanel" style="display:none">
+    <div class="card">
+      <span class="topic" id="topic"></span>
+      <div class="question" id="question"></div>
+      <div class="hint" id="hint"></div>
+      <div class="mcAlts" id="mcAlts"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="actions" style="margin-top:16px">
+        <div class="actions-primary">
+          <button class="btn primary" id="nextBtn">Neste →</button>
+          <button class="btn finish" id="finishBtn">Avslutt nå</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="summary" id="summary"></div>
+</section>
+</main>
+<footer class="footer">StudieHub · SAM3 mock-eksamen</footer>
+<script src="formelquiz-data.js?v=p3-1"></script>
+<script src="sam3-topics.js?v=p3-1"></script>
+<script src="mock-eksamen-app.js?v=p3-1"></script>
+</body>
+</html>
