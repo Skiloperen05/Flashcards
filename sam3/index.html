@@ -11,8 +11,9 @@
 <script>AuthGuard.requireAuth().then(function(session){if(!session)return;AuthGuard.bindUserInfo&&AuthGuard.bindUserInfo('userEmailLabel','userChip','userAvatar');});</script>
 <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
 <script src="sam3-flashcards-data.js"></script>
-<script src="formelquiz-data.js?v=p1-1"></script>
-<script src="sam3-topics.js?v=p1-1"></script>
+<script src="formelquiz-data.js?v=p3-1"></script>
+<script src="sam3-topics.js?v=p3-1"></script>
+<script src="sam3-search.js?v=p3-1"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#f4f6fa;--surface:#fff;--header-bg:#0f172a;--accent:#dc2626;--text:#0f172a;--muted:#64748b;--border:#e5e9f0;--radius-lg:18px;--radius-md:12px;--shadow-sm:0 1px 2px rgba(15,23,42,.05);--shadow:0 1px 3px rgba(15,23,42,.06),0 1px 2px rgba(15,23,42,.04);--shadow-hover:0 12px 32px rgba(15,23,42,.12),0 2px 8px rgba(15,23,42,.06);--transition:.22s cubic-bezier(.4,0,.2,1)}
@@ -67,6 +68,20 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--tex
 .priority-cta a.quiz:hover{background:#eef2ff}
 .priority-cta a.flash{background:#fff;border-color:#bbf7d0;color:#166534}
 .priority-cta a.flash:hover{background:#f0fdf4}
+.search-wrap{position:relative;margin-bottom:28px}
+.search-input{width:100%;padding:14px 16px 14px 44px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);font:inherit;font-size:14px;color:var(--ink);outline:none;box-shadow:var(--shadow-sm);transition:border-color .15s,box-shadow .15s}
+.search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(220,38,38,.08)}
+.search-wrap::before{content:'🔎';position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;opacity:.5}
+.search-results{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-hover);max-height:420px;overflow-y:auto;display:none;z-index:50}
+.search-results.show{display:block}
+.search-group{padding:8px 0}
+.search-group:not(:last-child){border-bottom:1px solid var(--border)}
+.search-group h4{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);padding:4px 14px 6px}
+.search-item{display:block;padding:8px 14px;text-decoration:none;color:var(--ink);font-size:13px}
+.search-item:hover{background:var(--surface-2)}
+.search-item b{display:block;font-weight:700;line-height:1.3}
+.search-item span{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+.search-empty{padding:14px;text-align:center;color:var(--muted);font-size:12.5px}
 
 .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
 .tool-card{background:var(--surface);border-radius:var(--radius-lg);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column;transition:transform var(--transition),box-shadow var(--transition)}
@@ -101,6 +116,8 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--tex
   <div class="stat-chip"><span class="stat-value" id="stat-topics">–</span><span class="stat-label">Temaer i radar</span></div>
 </div>
 
+<div class="search-wrap"><input type="search" class="search-input" id="sam3Search" placeholder="Søk i alle SAM3-ressurser — formler, flashcards, radar-temaer…" autocomplete="off"><div class="search-results" id="sam3SearchResults"></div></div>
+
 <p class="section-title">Anbefalt sti</p>
 <nav class="flow">
   <a class="flow-step" href="eksamensradar-v3.html"><span class="flow-num">1</span><div class="flow-body"><b>Eksamensradar</b><p>Finn ut hva som er viktigst å lese akkurat nå.</p></div></a>
@@ -118,7 +135,8 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--tex
   <a class="tool-card" href="eksamensradar-v3.html"><div class="tool-icon-area"><div class="tool-icon" style="background:#fff7ed">📊</div><span class="tool-status status-active">Tilgjengelig</span></div><div class="tool-divider"></div><div class="tool-body"><div class="tool-name">Eksamensradar</div><p class="tool-desc">Prioriteringskart basert på tidligere SAM3-eksamener og 2026-kontekst.</p><div class="tool-action"><span class="tool-open">Åpne radar <span>→</span></span><span id="toolToTopics">8 temaer</span></div></div></a>
   <a class="tool-card" href="flashcards.html"><div class="tool-icon-area"><div class="tool-icon" style="background:#fef2f2">🃏</div><span class="tool-status status-active">Tilgjengelig</span></div><div class="tool-divider"></div><div class="tool-body"><div class="tool-name">SAM3 Flashcards</div><p class="tool-desc">Eksamensrettede kort med rating og «øv på de svake»-modus.</p><div class="tool-action"><span class="tool-open">Åpne <span>→</span></span><span id="toolToDecks">13 dekker</span></div></div></a>
   <a class="tool-card" href="formelquiz.html"><div class="tool-icon-area"><div class="tool-icon" style="background:#eef2ff">∑</div><span class="tool-status status-active">Tilgjengelig</span></div><div class="tool-divider"></div><div class="tool-body"><div class="tool-name">Formelquiz</div><p class="tool-desc">Fyll inn manglende deler av sentrale SAM3-formler. Symbolquiz og figur per formel.</p><div class="tool-action"><span class="tool-open">Start quiz <span>→</span></span><span id="toolToFormulas">22 formler</span></div></div></a>
-  <div class="tool-card disabled"><div class="tool-icon-area"><div class="tool-icon" style="background:#f8fafc">🧠</div><span class="tool-status status-soon">Kommer</span></div><div class="tool-divider"></div><div class="tool-body"><div class="tool-name">Multiple choice</div><p class="tool-desc">Quizmodus med 4 alternativer per formel.</p><div class="tool-action"><span>Under utvikling</span></div></div></div>
+  <a class="tool-card" href="multiple-choice.html"><div class="tool-icon-area"><div class="tool-icon" style="background:#fef3c7">🧠</div><span class="tool-status status-new">Ny</span></div><div class="tool-divider"></div><div class="tool-body"><div class="tool-name">Multiple choice</div><p class="tool-desc">Quizmodus med 4 alternativer per formel. Bra for rask gjenkjenning før eksamen.</p><div class="tool-action"><span class="tool-open">Start <span>→</span></span><span>Velg dekk</span></div></div></a>
+  <a class="tool-card" href="mock-eksamen.html"><div class="tool-icon-area"><div class="tool-icon" style="background:#f3e8ff">⏱️</div><span class="tool-status status-new">Ny</span></div><div class="tool-divider"></div><div class="tool-body"><div class="tool-name">Mock-eksamen</div><p class="tool-desc">Tidssatt simulering — tilfeldig blanding fra alle dekk med full per-tema-rapport.</p><div class="tool-action"><span class="tool-open">Simuler <span>→</span></span><span>15–30 min</span></div></div></a>
 </div>
 </main>
 <footer class="footer"><a href="../">← Tilbake til StudieHub</a></footer>
@@ -158,6 +176,38 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--tex
   }else if(typeof cards!=='undefined'&&cards.length){
     document.getElementById('stat-formulas').textContent=cards.length;
     document.getElementById('toolToFormulas').textContent=cards.length+' formler';
+  }
+
+  // Søk
+  if(window.SAM3Search){
+    window.SAM3Search.init();
+    var inp=document.getElementById('sam3Search');
+    var results=document.getElementById('sam3SearchResults');
+    function render(items){
+      if(!items.length){results.innerHTML='<div class="search-empty">Ingen treff. Prøv «kronekurs», «Solow», «Phillips» osv.</div>';results.classList.add('show');return;}
+      var groups={radar:[],formel:[],flashcard:[]};
+      items.forEach(function(it){groups[it.type].push(it);});
+      var labels={radar:'Radar-temaer',formel:'Formler',flashcard:'Flashcards'};
+      var html='';
+      Object.keys(groups).forEach(function(k){
+        if(!groups[k].length)return;
+        html+='<div class="search-group"><h4>'+labels[k]+'</h4>';
+        groups[k].forEach(function(it){
+          html+='<a class="search-item" href="'+it.url+'"><b>'+it.label.replace(/</g,'&lt;')+'</b><span>'+(it.sub||'').replace(/</g,'&lt;')+'</span></a>';
+        });
+        html+='</div>';
+      });
+      results.innerHTML=html;
+      results.classList.add('show');
+    }
+    inp.addEventListener('input',function(){
+      var v=inp.value.trim();
+      if(v.length<2){results.classList.remove('show');results.innerHTML='';return;}
+      render(window.SAM3Search.search(v));
+    });
+    inp.addEventListener('focus',function(){if(inp.value.trim().length>=2)render(window.SAM3Search.search(inp.value));});
+    document.addEventListener('click',function(e){if(!e.target.closest('.search-wrap'))results.classList.remove('show');});
+    document.addEventListener('keydown',function(e){if(e.key==='Escape'){results.classList.remove('show');inp.blur();}});
   }
 })();
 </script>
