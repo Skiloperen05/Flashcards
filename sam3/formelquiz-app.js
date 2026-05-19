@@ -71,6 +71,7 @@ function check(){
   });
   answered=true;
   round.push({id:c.id,q:c.q,answer:c.answer,ok,shown:false,topic:c.topic});
+  if(window.SAM3Progress)window.SAM3Progress.recordFormula(c.id,ok,false);
   feedback.className='feedback '+(ok?'good':'bad');
   feedback.innerHTML=`<h3>${ok?'Riktig':'Ikke helt riktig'}</h3><p>${c.explain}</p><div class="answer">${c.answer}</div>${derive(c)}<div class="enterHint">Trykk <kbd>⏎</kbd> for neste spørsmål</div>`;
   renderStats();
@@ -84,6 +85,7 @@ function showAnswer(){
   const c=filtered()[idx];
   answered=true;
   round.push({id:c.id,q:c.q,answer:c.answer,ok:false,shown:true,topic:c.topic});
+  if(window.SAM3Progress)window.SAM3Progress.recordFormula(c.id,false,true);
   feedback.className='feedback bad';
   feedback.innerHTML=`<h3>Riktig svar</h3><p>${c.explain}</p><div class="answer">${c.answer}</div>${derive(c)}<div class="enterHint">Trykk <kbd>⏎</kbd> for neste spørsmål</div>`;
   renderStats();
@@ -281,6 +283,7 @@ function checkSymbolQuiz(id){
     const sym=q.items[i][0];
     if(!symbolStats[id][sym])symbolStats[id][sym]={right:0,wrong:0};
     if(good)symbolStats[id][sym].right++;else symbolStats[id][sym].wrong++;
+    if(window.SAM3Progress)window.SAM3Progress.recordSymbol(id,sym,good);
   });
   const fb=root.querySelector('.symbolFeedback');
   fb.className='symbolFeedback show';

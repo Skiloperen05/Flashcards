@@ -1,10 +1,11 @@
 // SAM3 Flashcards — interaktiv læringsmodus
-// Visuell refresh + localStorage-rating + "Øv på svake"-modus + avslutningsside.
+// localStorage-rating, Leitner spaced repetition, "Anbefalt i dag"-modus, avslutningsside.
 (function(){
 const $=id=>document.getElementById(id);
 const STORE_KEY='sam3_flash_v1';
 const TOPICS=window.SAM3_TOPICS||[];
 const LINKS=window.SAM3_LINKS||{};
+const PROGRESS=window.SAM3Progress||null;
 
 // ===== Datadekomprimering =====
 function unzipSAM3(s){
@@ -27,8 +28,13 @@ function saveStore(s){
 }
 let store=loadStore();
 function cardKey(deckId,idx){return deckId+':'+idx;}
-function getRating(deckId,idx){return store[cardKey(deckId,idx)]?.lastRating||null;}
+function getRating(deckId,idx){
+  if(PROGRESS){const e=PROGRESS.getFlashcardState(deckId,idx);return e?e.lastRating:null;}
+  return store[cardKey(deckId,idx)]?.lastRating||null;
+}
 function setRating(deckId,idx,rating){
+  if(PROGRESS){PROGRESS.recordFlashcard(deckId,idx,rating);return;}
+  // Fallback hvis progress-modulen ikke er lastet
   const k=cardKey(deckId,idx);
   const e=store[k]||{counts:{bad:0,mid:0,good:0}};
   e.lastRating=rating;
@@ -40,12 +46,14 @@ function setRating(deckId,idx,rating){
 }
 function deckProgress(deck){
   const total=deck.cards.length;
-  let rated=0,bad=0,mid=0,good=0;
+  let rated=0,bad=0,mid=0,good=0,due=0;
   for(let i=0;i<total;i++){
     const r=getRating(deck.id,i);
     if(r){rated++;if(r==='bad')bad++;else if(r==='mid')mid++;else if(r==='good')good++;}
   }
-  return {total,rated,bad,mid,good,weak:bad+mid};
+  if(PROGRESS)due=PROGRESS.countDueInDeck(deck.id,total);
+  else due=total-good;
+  return {total,rated,bad,mid,good,weak:bad+mid,due};
 }
 
 // ===== State =====
@@ -105,6 +113,12 @@ function refreshVisibleCards(){
       const r=getRating(current.id,x.i);
       return r==='bad'||r==='mid';
     });
+  }else if(mode==='due'&&PROGRESS){
+    const today=new Date().toISOString().slice(0,10);
+    visibleCards=current.cards.map((c,i)=>({c,i})).filter(x=>{
+      const e=PROGRESS.getFlashcardState(current.id,x.i);
+      return !e||!e.nextReview||e.nextReview<=today;
+    });
   }else{
     visibleCards=current.cards.map((c,i)=>({c,i}));
   }
@@ -112,11 +126,16 @@ function refreshVisibleCards(){
 
 function updateModeSwitch(){
   const p=deckProgress(current);
-  const allBtn=$('mode-all'),weakBtn=$('mode-weak');
+  const allBtn=$('mode-all'),weakBtn=$('mode-weak'),dueBtn=$('mode-due');
   allBtn.classList.toggle('active',mode==='all');
   weakBtn.classList.toggle('active',mode==='weak');
   weakBtn.textContent=`Bare svake (${p.weak})`;
   weakBtn.disabled=p.weak===0;
+  if(dueBtn){
+    dueBtn.classList.toggle('active',mode==='due');
+    dueBtn.textContent=`Anbefalt i dag (${p.due})`;
+    dueBtn.disabled=p.due===0;
+  }
 }
 
 function show(){
@@ -269,6 +288,7 @@ document.getElementById('card').onclick=flip;
 document.getElementById('back-to-hub').onclick=backToHub;
 document.getElementById('mode-all').onclick=()=>switchMode('all');
 document.getElementById('mode-weak').onclick=()=>switchMode('weak');
+const dueBtn=document.getElementById('mode-due');if(dueBtn)dueBtn.onclick=()=>switchMode('due');
 document.getElementById('prev').onclick=prev;
 document.getElementById('next').onclick=next;
 document.querySelectorAll('.rate').forEach(b=>{
