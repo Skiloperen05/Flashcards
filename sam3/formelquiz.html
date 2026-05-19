@@ -6,8 +6,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../shared/auth-guard.js"></script>
 <script>try{AuthGuard.requireAuth().then(s=>{if(!s)return;if(AuthGuard.bindUserInfo)AuthGuard.bindUserInfo('userEmailLabel','userChip','userAvatar');});}catch(e){console.warn(e);}</script>
-<link rel="stylesheet" href="formelquiz.css?v=p5-2">
-<link rel="stylesheet" href="formelquiz-symbol-overrides.css?v=p5-2">
+<link rel="stylesheet" href="formelquiz.css?v=p5-3">
+<link rel="stylesheet" href="formelquiz-symbol-overrides.css?v=p5-3">
 </head>
 <body>
 <header class="topbar"><a class="logo" href="../"><span>📚</span><span>StudieHub</span></a><nav class="crumb"><a href="./">SAM3</a><span class="crumb-sep">›</span><b>Formelquiz</b></nav></header>
@@ -41,13 +41,14 @@
 <section class="panel" style="margin-top:16px"><h2>Hva bør du kunne utenat?</h2><div class="list"><div class="miniCard"><b>1. Identiteten</b><p>Du bør kunne gjenkjenne hva hvert symbol betyr, ikke bare pugge uttrykket.</p></div><div class="miniCard"><b>2. Utledningen</b><p>På eksamen er det ofte nok å vise logikken: definisjon → omorganisering → tolkning.</p></div><div class="miniCard"><b>3. Figuren</b><p>Figurene og symbolquizen viser hva formelen betyr økonomisk.</p></div></div></section></main>
 <div class="figureOverlay" id="figureOverlay" role="dialog" aria-modal="true"><div class="figureModal"><div class="figureTop"><div><h2 id="figureTitle">Figur</h2><p id="figureSub">Pedagogisk forklaring</p></div><button class="closeFig" id="closeFig" aria-label="Lukk">✕</button></div><div class="figureStage"><div class="fig" id="figureStage"></div></div></div></div>
 <footer class="footer">StudieHub · SAM3 formelquiz</footer>
-<script src="sam3-topics.js?v=p5-2"></script>
-<script src="sam3-progress.js?v=p5-2"></script>
-<script src="sam3-math.js?v=p5-2"></script>
-<script src="formelquiz-data.js?v=p5-2"></script>
-<script src="formelquiz-figures.js?v=p5-2"></script>
-<script src="formelquiz-extra.js?v=p5-2"></script>
-<script src="formelquiz-formelark-2026.js?v=p5-2"></script>
-<script src="formelquiz-app.js?v=p5-2"></script>
+<script src="sam3-topics.js?v=p5-3"></script>
+<script src="sam3-progress.js?v=p5-3"></script>
+<script src="sam3-math.js?v=p5-3"></script>
+<script src="formelquiz-data.js?v=p5-3"></script>
+<script src="formelquiz-figures.js?v=p5-3"></script>
+<script src="formelquiz-extra.js?v=p5-3"></script>
+<script src="formelquiz-formelark-2026.js?v=p5-3"></script>
+<script src="formelquiz-dedupe-2026.js?v=p5-3"></script>
+<script src="formelquiz-app.js?v=p5-3"></script>
 </body>
 </html>
