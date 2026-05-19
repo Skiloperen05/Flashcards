@@ -50,8 +50,9 @@ function show(){
   $('hint').textContent=q.card.hint||'';
   $('feedback').className='feedback';
   $('feedback').innerHTML='';
-  const altsHtml=q.alts.map((alt,i)=>`<button class="mcAlt" data-i="${i}"><span class="mcLetter">${String.fromCharCode(65+i)}</span><span>${alt}</span></button>`).join('');
+  const altsHtml=q.alts.map((alt,i)=>`<button class="mcAlt" data-i="${i}"><span class="mcLetter">${String.fromCharCode(65+i)}</span><span class="answer" style="background:transparent;border:0;padding:0;margin:0;display:inline">${alt}</span></button>`).join('');
   $('mcAlts').innerHTML=altsHtml;
+  if(window.SAM3Math)window.SAM3Math.prettifyInElement($('mcAlts'));
   document.querySelectorAll('.mcAlt').forEach(b=>b.onclick=()=>pick(parseInt(b.dataset.i,10)));
 }
 
@@ -69,6 +70,7 @@ function pick(i){
   round.push({id:q.card.id,q:q.card.q,answer:q.card.answer,ok,topic:q.card.topic});
   $('feedback').className='feedback '+(ok?'good':'bad');
   $('feedback').innerHTML=`<h3>${ok?'Riktig':'Ikke helt riktig'}</h3><p>${q.card.explain}</p><div class="answer">${q.card.answer}</div><div class="enterHint">Trykk <kbd>⏎</kbd> for neste</div>`;
+  if(window.SAM3Math)window.SAM3Math.prettifyInElement($('feedback'));
 }
 
 function next(){
@@ -123,6 +125,7 @@ function finish(){
     </div>
   </div>`;
   $('mcRestart').onclick=()=>{$('summary').className='summary';$('startPanel').style.display='block';};
+  if(window.SAM3Math)window.SAM3Math.prettifyInElement($('summary'));
   $('summary').scrollIntoView({behavior:'smooth',block:'start'});
 }
 

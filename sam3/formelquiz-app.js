@@ -74,6 +74,7 @@ function check(){
   if(window.SAM3Progress)window.SAM3Progress.recordFormula(c.id,ok,false);
   feedback.className='feedback '+(ok?'good':'bad');
   feedback.innerHTML=`<h3>${ok?'Riktig':'Ikke helt riktig'}</h3><p>${c.explain}</p><div class="answer">${c.answer}</div>${derive(c)}<div class="enterHint">Trykk <kbd>⏎</kbd> for neste spørsmål</div>`;
+  if(window.SAM3Math)window.SAM3Math.prettifyInElement(feedback);
   renderStats();
 }
 
@@ -88,6 +89,7 @@ function showAnswer(){
   if(window.SAM3Progress)window.SAM3Progress.recordFormula(c.id,false,true);
   feedback.className='feedback bad';
   feedback.innerHTML=`<h3>Riktig svar</h3><p>${c.explain}</p><div class="answer">${c.answer}</div>${derive(c)}<div class="enterHint">Trykk <kbd>⏎</kbd> for neste spørsmål</div>`;
+  if(window.SAM3Math)window.SAM3Math.prettifyInElement(feedback);
   renderStats();
 }
 
@@ -237,6 +239,7 @@ function finishRound(){
     ${perQuestion}
     ${actions}
   </div>`;
+  if(window.SAM3Math)window.SAM3Math.prettifyInElement(summary);
   summary.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
@@ -313,6 +316,7 @@ function toggleSymbolPanel(){
   if(!c||!symbolQuiz[c.id])return;
   if(symbolOpen){closeSymbolPanel();return;}
   symbolPanel.innerHTML=symbolQuizHtml(c.id,true);
+  if(window.SAM3Math)window.SAM3Math.prettifyInElement(symbolPanel);
   symbolOpen=true;
   symbolBtn.classList.add('active');
   attachSymbolKeys(symbolPanel,c.id);

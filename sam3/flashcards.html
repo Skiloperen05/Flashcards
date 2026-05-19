@@ -9,11 +9,12 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../shared/auth-guard.js"></script>
 <script>try{AuthGuard.requireAuth().then(s=>{if(!s)return;if(AuthGuard.bindUserInfo)AuthGuard.bindUserInfo('userEmailLabel','userChip','userAvatar');});}catch(e){console.warn(e);}</script>
-<link rel="stylesheet" href="flashcards.css?v=p4-1">
+<link rel="stylesheet" href="flashcards.css?v=p5-1">
 <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
 <script src="sam3-flashcards-data.js"></script>
-<script src="sam3-topics.js?v=p4-1"></script>
-<script src="sam3-progress.js?v=p4-1"></script>
+<script src="sam3-topics.js?v=p5-1"></script>
+<script src="sam3-progress.js?v=p5-1"></script>
+<script src="sam3-math.js?v=p5-1"></script>
 </head>
 <body>
 <header class="topbar"><a class="logo" href="../"><span>📚</span><span>StudieHub</span></a><nav class="crumb"><a href="./">SAM3</a><span class="crumb-sep">›</span><b>Flashcards</b></nav></header>
@@ -72,6 +73,6 @@
 <div class="summary" id="summary"></div>
 </main>
 <footer class="footer">StudieHub · SAM3 flashcards</footer>
-<script src="flashcards-app.js?v=p4-1"></script>
+<script src="flashcards-app.js?v=p5-1"></script>
 </body>
 </html>
