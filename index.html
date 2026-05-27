@@ -11,210 +11,120 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{
-      --navy:#06152d;
-      --navy-2:#0a2142;
-      --navy-3:#102b54;
-      --blue:#2f62ff;
-      --blue-2:#5a82ff;
-      --gold:#e8bd65;
-      --gold-2:#f7d995;
-      --ink:#071329;
-      --muted:#62708a;
-      --line:#dce4ef;
-      --soft:#f4f7fb;
-      --surface:#fff;
-      --radius-xl:30px;
-      --radius-lg:22px;
-      --radius-md:14px;
-      --shadow:0 24px 70px rgba(7,19,41,.14);
-      --shadow-soft:0 14px 34px rgba(7,19,41,.10);
-      --container:1160px;
-    }
+    :root{--bg:#04142e;--bg2:#061b3c;--panel:#071d42;--panel2:#0b2a61;--blue:#2f62ff;--blue2:#5d86ff;--gold:#e8bc68;--gold2:#ffd98f;--white:#fff;--muted:#91a4c4;--soft:#cbd8ef;--ink:#071329;--text:#17233d;--text2:#65738d;--line:rgba(255,255,255,.1);--border:#e1e9f4;--shadow:0 30px 80px rgba(0,0,0,.34);--shadow2:0 18px 44px rgba(7,19,41,.12);--container:1220px}
     html{scroll-behavior:smooth}
-    body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#fff;color:var(--ink);line-height:1.55;min-height:100vh;overflow-x:hidden}
-    a{color:inherit;text-decoration:none}
-    .page{background:linear-gradient(180deg,#06152d 0,#071a35 47%,#f7f9fd 47%,#fff 100%)}
-    .shell{width:min(var(--container),calc(100% - 48px));margin:0 auto}
-    .topbar{height:80px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.08);position:relative;z-index:20}
-    .brand{display:flex;align-items:center;gap:14px;color:#fff}
-    .brand-mark{width:46px;height:46px;border-radius:13px;background:url('assets/haugnes-logo-mark.svg') center/cover no-repeat;box-shadow:0 13px 30px rgba(0,0,0,.32),0 0 0 1px rgba(255,255,255,.16)}
-    .brand-name{font-size:20px;font-weight:800;letter-spacing:.32em;line-height:1;text-transform:uppercase}
-    .brand-sub{font-size:10px;font-weight:800;letter-spacing:.52em;color:var(--gold);text-transform:uppercase;margin-top:6px}
-    .nav{display:flex;align-items:center;gap:30px;color:rgba(255,255,255,.84);font-size:14px;font-weight:650}
-    .nav a{transition:color .18s ease,transform .18s ease}.nav a:hover{color:#fff;transform:translateY(-1px)}
-    .login-btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:11px 18px;border-radius:12px;background:linear-gradient(135deg,#3f6dff,#244eea);color:#fff!important;box-shadow:0 16px 34px rgba(47,98,255,.34);font-weight:800}.login-btn:hover{transform:translateY(-2px)!important}
-    .hero{position:relative;padding:68px 0 54px;min-height:600px;isolation:isolate}
-    .hero::before{content:"";position:absolute;inset:-120px -10vw auto auto;width:620px;height:620px;background:radial-gradient(circle,rgba(47,98,255,.28),transparent 66%);filter:blur(2px);z-index:-1}
-    .hero::after{content:"";position:absolute;left:-18vw;top:90px;width:520px;height:520px;background:radial-gradient(circle,rgba(232,189,101,.16),transparent 68%);z-index:-1}
-    .hero-grid{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(420px,.98fr);gap:56px;align-items:center}
-    .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border:1px solid rgba(90,130,255,.36);border-radius:999px;background:rgba(47,98,255,.16);color:#9bb5ff;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;margin-bottom:20px}
-    .eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 16px rgba(232,189,101,.9)}
-    h1{font-size:clamp(48px,6.3vw,78px);line-height:.96;letter-spacing:-.065em;color:#fff;font-weight:900;margin-bottom:24px;max-width:720px}
-    h1 span{display:block;color:var(--gold);letter-spacing:-.055em;text-shadow:0 18px 48px rgba(232,189,101,.14)}
-    .lead{font-size:18px;color:#cbd8ee;max-width:560px;margin-bottom:32px}
-    .hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:42px}
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:11px;border-radius:14px;padding:15px 24px;font-size:15px;font-weight:900;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease}
-    .btn-primary{background:linear-gradient(135deg,#3f6dff,#244eea);color:#fff;box-shadow:0 18px 38px rgba(47,98,255,.36)}
-    .btn-secondary{border:1px solid rgba(255,255,255,.24);color:#fff;background:rgba(255,255,255,.04);backdrop-filter:blur(10px)}
-    .btn:hover{transform:translateY(-2px)}.btn-secondary:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.38)}
-    .trust-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;max-width:660px}
-    .trust-item{display:flex;gap:12px;align-items:flex-start;color:#d8e2f5}.trust-icon{width:30px;height:30px;flex:0 0 30px;border:1px solid rgba(232,189,101,.45);border-radius:10px;display:grid;place-items:center;color:var(--gold);font-weight:900;background:rgba(232,189,101,.08)}
-    .trust-title{font-size:13px;font-weight:900;color:#fff}.trust-text{font-size:12px;color:#aebdd3;line-height:1.45;margin-top:2px}
-    .hero-visual{position:relative;height:470px;display:grid;place-items:center}
-    .visual-glow{position:absolute;width:440px;height:440px;border-radius:50%;background:radial-gradient(circle,rgba(232,189,101,.20),rgba(47,98,255,.10) 42%,transparent 68%);filter:blur(4px)}
-    .orb-ring{position:absolute;width:396px;height:396px;border-radius:50%;border:2px solid rgba(232,189,101,.74);box-shadow:0 0 48px rgba(232,189,101,.20),inset 0 0 36px rgba(232,189,101,.09);animation:ringPulse 5s ease-in-out infinite}.orb-ring::before,.orb-ring::after{content:"";position:absolute;border-radius:50%;background:var(--gold);box-shadow:0 0 20px rgba(232,189,101,.88)}.orb-ring::before{width:8px;height:8px;left:32px;top:80px}.orb-ring::after{width:5px;height:5px;right:56px;bottom:88px}
-    .stage{position:relative;width:360px;height:360px;display:grid;place-items:center;animation:floatHero 5.6s ease-in-out infinite}
-    .card-stack{position:relative;width:220px;height:255px;transform:rotate(-4deg);filter:drop-shadow(0 28px 42px rgba(0,0,0,.38))}
-    .flash-card{position:absolute;inset:0;border-radius:22px;background:linear-gradient(145deg,#fff,#f2f4f8);border:1px solid rgba(255,255,255,.88);box-shadow:inset 0 0 0 1px rgba(7,19,41,.05)}
-    .flash-card.back-2{transform:translate(44px,-20px) rotate(10deg);background:linear-gradient(145deg,#245082,#17345e);opacity:.78}.flash-card.back-1{transform:translate(24px,-10px) rotate(6deg);background:linear-gradient(145deg,#3b6ca9,#173b6a);opacity:.92}
-    .flash-card.front{display:grid;place-items:center;overflow:hidden}.flash-card.front::after{content:"";position:absolute;right:-36px;bottom:-36px;width:100px;height:100px;border-radius:24px;background:linear-gradient(145deg,#e7edf6,#fff);transform:rotate(20deg);box-shadow:0 -8px 26px rgba(7,19,41,.13)}
-    .front img{width:108px;height:108px;object-fit:contain;position:relative;z-index:2;filter:drop-shadow(0 12px 18px rgba(7,19,41,.16))}
-    .pedestal{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:330px;height:88px;border-radius:50%;background:linear-gradient(180deg,#153465,#071a34);box-shadow:0 28px 44px rgba(0,0,0,.42),inset 0 12px 24px rgba(255,255,255,.10)}.pedestal::after{content:"";position:absolute;left:36px;right:36px;top:17px;height:24px;border-radius:50%;background:rgba(255,255,255,.08)}
-    .floating{position:absolute;z-index:4;display:grid;place-items:center;filter:drop-shadow(0 18px 28px rgba(0,0,0,.26));animation:floatIcon 4.8s ease-in-out infinite}.bulb{top:6px;left:50%;transform:translateX(-50%);font-size:48px;color:#ffd978;text-shadow:0 0 26px rgba(232,189,101,.82)}.target{right:2px;top:142px;width:78px;height:78px;border-radius:50%;background:radial-gradient(circle at center,#071329 0 22%,#fff 23% 38%,#071329 39% 55%,#e8bd65 56% 100%);border:6px solid #d6a64d}.target::after{content:"↗";font-size:38px;color:#e8bd65;transform:translate(12px,-12px);font-weight:900}.bars{left:2px;top:162px;width:64px;height:58px;align-items:end;grid-template-columns:repeat(3,12px);gap:7px}.bars span{display:block;width:12px;border-radius:4px 4px 1px 1px;background:linear-gradient(180deg,#f7d995,#d99b36)}.bars span:nth-child(1){height:22px}.bars span:nth-child(2){height:38px}.bars span:nth-child(3){height:52px}.book{bottom:42px;left:50%;transform:translateX(-50%);font-size:42px;color:var(--gold)}
-    @keyframes floatHero{0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}@keyframes floatIcon{0%,100%{margin-top:0}50%{margin-top:-9px}}@keyframes ringPulse{0%,100%{opacity:.86;transform:scale(1)}50%{opacity:1;transform:scale(1.025)}}
-    .feature-ribbon{position:relative;margin-top:-8px;z-index:10;background:linear-gradient(135deg,rgba(12,37,75,.97),rgba(7,24,49,.97));border:1px solid rgba(255,255,255,.10);border-radius:22px;box-shadow:0 28px 70px rgba(0,0,0,.28);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));overflow:hidden}.feature{padding:28px 28px;display:grid;grid-template-columns:46px 1fr;gap:16px;align-items:start;color:#dbe7fa;border-right:1px solid rgba(255,255,255,.09)}.feature:last-child{border-right:0}.feature-icon{width:46px;height:46px;border-radius:15px;border:1px solid rgba(90,130,255,.4);display:grid;place-items:center;color:#5f8cff;background:rgba(47,98,255,.11);font-size:22px}.feature h3{font-size:15px;color:#fff;margin-bottom:5px}.feature p{font-size:13px;color:#b3c1d7;line-height:1.55}
-    .section{padding:74px 0}.section-light{background:#fff}.section-head{display:flex;justify-content:space-between;align-items:end;gap:30px;margin-bottom:28px}.section-kicker{font-size:12px;font-weight:900;color:#405170;text-transform:uppercase;letter-spacing:.12em;margin-bottom:9px}.section-title{font-size:clamp(28px,3.5vw,44px);line-height:1.06;letter-spacing:-.045em;color:#071329;font-weight:900;max-width:550px}.section-copy{font-size:16px;color:var(--muted);max-width:430px}.subject-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.subject-card{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow-soft);padding:22px;min-height:218px;position:relative;overflow:hidden;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}.subject-card::before{content:"";position:absolute;inset:0 0 auto;height:5px;background:var(--accent)}.subject-card:hover{transform:translateY(-5px);box-shadow:0 22px 46px rgba(7,19,41,.15);border-color:#cbd7e8}.subject-top{display:flex;justify-content:space-between;align-items:start;margin:8px 0 14px}.subject-icon{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font-weight:900;font-size:18px;box-shadow:0 12px 24px color-mix(in srgb,var(--accent),transparent 72%)}.subject-tools{font-size:12px;font-weight:900;padding:5px 10px;border-radius:999px;background:#eef2ff;color:#3448b5}.subject-code{font-size:18px;font-weight:900;letter-spacing:-.02em;color:#071329}.subject-name{font-size:12px;font-weight:800;color:#66748b;margin-bottom:12px}.subject-desc{font-size:13px;color:#60708a;line-height:1.55;min-height:64px}.subject-foot{display:flex;justify-content:space-between;align-items:center;margin-top:18px}.dots{display:flex;gap:6px}.dots i{width:7px;height:7px;border-radius:50%;background:var(--accent);display:block}.arrow{color:#9aa8bd;font-size:20px;transition:transform .18s ease,color .18s ease}.subject-card:hover .arrow{transform:translateX(4px);color:var(--accent)}
-    .result-card{display:grid;grid-template-columns:1fr 1.08fr;gap:0;background:linear-gradient(135deg,#f5f8fd,#fff);border:1px solid #e5edf8;border-radius:26px;box-shadow:var(--shadow-soft);overflow:hidden}.study-illustration{min-height:330px;background:radial-gradient(circle at 24% 20%,rgba(232,189,101,.26),transparent 28%),linear-gradient(140deg,#0b2447,#132f59);position:relative;overflow:hidden}.desk-card{position:absolute;left:52px;right:52px;bottom:48px;height:170px;border-radius:24px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.16);box-shadow:0 24px 44px rgba(0,0,0,.24);backdrop-filter:blur(8px)}.laptop{position:absolute;left:80px;bottom:80px;width:210px;height:128px;border-radius:13px;background:linear-gradient(180deg,#f8fbff,#e2e9f3);box-shadow:0 22px 38px rgba(0,0,0,.28)}.laptop::before{content:"";position:absolute;left:18px;right:18px;top:20px;height:54px;border-radius:9px;background:linear-gradient(135deg,#e9f0fb,#fff)}.chart-line{position:absolute;left:118px;bottom:134px;width:115px;height:48px;border-left:2px solid #9bb5ff;border-bottom:2px solid #9bb5ff}.chart-line::after{content:"";position:absolute;left:10px;top:20px;width:90px;height:28px;border-top:4px solid #2f62ff;border-radius:50%;transform:rotate(-8deg)}.book-stack{position:absolute;right:82px;bottom:78px;width:118px;height:58px}.book-stack span{display:block;height:16px;border-radius:5px;margin-bottom:4px;background:#e8bd65;box-shadow:0 6px 12px rgba(0,0,0,.18)}.book-stack span:nth-child(2){background:#2f62ff}.book-stack span:nth-child(3){background:#fff}.result-content{padding:48px 52px}.result-content h2{font-size:34px;line-height:1.08;letter-spacing:-.04em;margin:8px 0 28px}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.metric{border-left:1px solid #d9e2ef;padding-left:20px}.metric-icon{font-size:28px;color:#2f62ff;margin-bottom:10px}.metric-value{font-size:28px;font-weight:900;color:#1f4fe0;letter-spacing:-.04em}.metric-label{font-size:13px;color:#5f6f86;margin-top:4px;line-height:1.45}.cta-band{margin:72px 0 0;border-radius:24px;background:linear-gradient(135deg,#06152d,#0b2549 58%,#071329);color:#fff;overflow:hidden;position:relative;box-shadow:0 28px 70px rgba(7,19,41,.28);display:grid;grid-template-columns:1fr auto;align-items:center;gap:30px;padding:34px 40px}.cta-band::before{content:"🚀";position:absolute;left:42px;top:50%;transform:translateY(-50%) rotate(-12deg);font-size:82px;opacity:.28;filter:drop-shadow(0 12px 20px rgba(232,189,101,.26))}.cta-text{position:relative;padding-left:122px}.cta-kicker{font-size:12px;font-weight:900;color:#9bb5ff;text-transform:uppercase;letter-spacing:.13em;margin-bottom:7px}.cta-title{font-size:30px;font-weight:900;letter-spacing:-.04em}.cta-sub{color:#b9c8de;font-size:14px;margin-top:5px}.site-footer{padding:34px 0 44px;color:#6d7a91;font-size:13px}.footer-row{display:flex;align-items:center;justify-content:space-between;gap:20px;border-top:1px solid #e6edf7;padding-top:26px}.footer-brand{display:flex;align-items:center;gap:10px;font-weight:900;color:#23324a}.footer-mark{width:32px;height:32px;border-radius:9px;background:url('assets/haugnes-logo-mark.svg') center/cover no-repeat;box-shadow:0 0 0 1px #e0e7f2}
-    @media(max-width:980px){.shell{width:min(var(--container),calc(100% - 32px))}.nav{gap:16px}.nav a:not(.login-btn){display:none}.hero{padding-top:44px}.hero-grid{grid-template-columns:1fr;gap:22px}.hero-visual{height:420px;order:-1}.trust-row{grid-template-columns:1fr}.feature-ribbon,.subject-grid,.metrics{grid-template-columns:1fr 1fr}.result-card{grid-template-columns:1fr}.cta-band{grid-template-columns:1fr}.cta-text{padding-left:0}.cta-band::before{right:28px;left:auto;top:22px;transform:none;font-size:62px}}
-    @media(max-width:640px){.topbar{height:72px}.brand-mark{width:38px;height:38px}.brand-name{font-size:16px;letter-spacing:.22em}.brand-sub{font-size:9px;letter-spacing:.36em}.login-btn{padding:10px 13px}.hero{min-height:auto;padding-bottom:34px}h1{font-size:46px}.lead{font-size:16px}.hero-actions{display:grid}.btn{width:100%}.hero-visual{height:350px;transform:scale(.82);margin:-34px -28px -24px}.feature-ribbon{grid-template-columns:1fr}.feature{border-right:0;border-bottom:1px solid rgba(255,255,255,.09)}.subject-grid,.metrics{grid-template-columns:1fr}.section{padding:52px 0}.section-head{display:block}.section-copy{margin-top:12px}.result-content{padding:34px 24px}.study-illustration{min-height:260px}.footer-row{display:block}.footer-brand{margin-bottom:12px}.cta-band{padding:30px 24px}.cta-title{font-size:25px}}
+    body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#fff;color:var(--text);overflow-x:hidden;line-height:1.55}
+    a{text-decoration:none;color:inherit}.container{width:min(var(--container),calc(100% - 40px));margin:0 auto;position:relative;z-index:2}
+    .landing-hero{position:relative;overflow:hidden;color:#fff;background:radial-gradient(circle at 20% 20%,rgba(232,188,104,.16),transparent 22%),radial-gradient(circle at 78% 18%,rgba(47,98,255,.24),transparent 22%),linear-gradient(180deg,#04142e 0%,#061938 58%,#071d40 100%)}
+    .landing-hero::before{content:"";position:absolute;right:-260px;top:-220px;width:760px;height:760px;border-radius:50%;background:radial-gradient(circle,rgba(47,98,255,.30),transparent 63%);filter:blur(8px);opacity:.75}
+    .landing-hero::after{content:"";position:absolute;left:-230px;bottom:-210px;width:620px;height:620px;border-radius:50%;background:radial-gradient(circle,rgba(232,188,104,.18),transparent 65%);filter:blur(12px)}
+    .stars{position:absolute;inset:0;opacity:.34;pointer-events:none;background-image:radial-gradient(circle,rgba(255,255,255,.8) 1px,transparent 1px);background-size:118px 118px}
+    .topbar{height:84px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.08)}
+    .brand{display:flex;align-items:center;gap:14px;color:#fff}.brand-mark{width:48px;height:48px;border-radius:14px;background:#0b244e url('assets/haugnes-logo-mark.svg') center/78% no-repeat;border:1px solid rgba(255,255,255,.14);box-shadow:0 14px 32px rgba(0,0,0,.28)}
+    .brand-title{display:block;font-size:23px;font-weight:850;letter-spacing:.23em;text-transform:uppercase;line-height:1}.brand-sub{display:block;margin-top:5px;font-size:10px;font-weight:900;letter-spacing:.46em;text-transform:uppercase;color:var(--gold)}
+    .nav{display:flex;align-items:center;gap:28px;font-size:14px;font-weight:700;color:#d6e1f4}.nav a{transition:color .18s ease,transform .18s ease}.nav a:hover{color:#fff;transform:translateY(-1px)}.nav-login{padding:11px 18px;border-radius:14px;background:linear-gradient(135deg,#244fe0,#3f74ff);box-shadow:0 18px 36px rgba(47,98,255,.32);color:#fff!important;font-weight:850}
+    .hero{padding:58px 0 38px}.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(440px,560px);gap:48px;align-items:center}.eyebrow{display:inline-flex;align-items:center;gap:9px;padding:8px 13px;border-radius:999px;border:1px solid rgba(93,134,255,.34);background:rgba(47,98,255,.15);color:#adc1ff;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;margin-bottom:22px}.eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 18px rgba(232,188,104,.9)}
+    h1{font-size:clamp(50px,6.2vw,82px);line-height:.95;letter-spacing:-.067em;font-weight:900;max-width:780px}h1 span{display:block;color:var(--gold);text-shadow:0 18px 42px rgba(232,188,104,.15)}.lead{margin:24px 0 32px;max-width:570px;color:#c6d2e7;font-size:18px;line-height:1.65}.hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:34px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:15px 24px;border-radius:15px;font-size:15px;font-weight:850;transition:transform .18s ease,box-shadow .18s ease,background .18s ease,border-color .18s ease}.btn:hover{transform:translateY(-2px)}.btn-primary{color:#fff;background:linear-gradient(135deg,#2b58ea,#4375ff);box-shadow:0 20px 42px rgba(47,98,255,.34)}.btn-secondary{color:#fff;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.045)}.btn-secondary:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.34)}
+    .trust-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.trust{display:flex;gap:10px;align-items:flex-start;padding:14px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(8px)}.trust-icon{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;flex:0 0 36px;color:var(--gold);background:rgba(232,188,104,.12);border:1px solid rgba(232,188,104,.25)}.trust strong{display:block;color:#fff;font-size:13px;margin-bottom:2px}.trust span{display:block;color:#9eb0cc;font-size:12px;line-height:1.45}
+    .hero-visual{position:relative;min-height:560px;padding:26px;border-radius:34px;overflow:hidden;background:linear-gradient(180deg,rgba(14,43,96,.68),rgba(6,19,43,.92));border:1px solid rgba(255,255,255,.1);box-shadow:var(--shadow)}.hero-visual::before{content:"";position:absolute;left:50%;bottom:88px;transform:translateX(-50%);width:420px;height:420px;border-radius:50%;border:2px solid rgba(232,188,104,.66);box-shadow:0 0 50px rgba(232,188,104,.16),inset 0 0 38px rgba(232,188,104,.08)}.hero-visual::after{content:"";position:absolute;left:50%;bottom:36px;transform:translateX(-50%);width:330px;height:88px;border-radius:50%;background:linear-gradient(180deg,#163769,#071a37);box-shadow:0 24px 46px rgba(0,0,0,.38),inset 0 10px 20px rgba(255,255,255,.09)}
+    .chip{position:absolute;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:rgba(5,18,41,.82);border:1px solid rgba(255,255,255,.09);box-shadow:0 18px 36px rgba(0,0,0,.25);font-size:13px;font-weight:700;color:#dbe5f6}.chip b{display:block;color:#fff;font-size:16px}.chip-icon{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:rgba(47,98,255,.18);color:#9bb3ff}.chip-1{left:24px;top:24px}.chip-2{right:24px;top:24px}.chip-3{right:24px;bottom:28px;z-index:5}
+    .card-stack{position:absolute;left:50%;bottom:108px;transform:translateX(-50%) rotate(-3deg);width:210px;height:250px;border-radius:24px;background:linear-gradient(160deg,#fff,#f2f5fa);border:1px solid rgba(255,255,255,.9);display:grid;place-items:center;z-index:4;box-shadow:0 30px 50px rgba(0,0,0,.36)}.card-stack::before,.card-stack::after{content:"";position:absolute;inset:0;border-radius:24px}.card-stack::before{transform:translate(22px,-12px) rotate(8deg);background:linear-gradient(165deg,#28528e,#18365f);z-index:-2}.card-stack::after{transform:translate(42px,-22px) rotate(12deg);background:linear-gradient(165deg,#1a3864,#0d2449);z-index:-3;opacity:.8}.card-stack img{width:120px;height:120px;object-fit:contain;position:relative;z-index:2;filter:drop-shadow(0 12px 18px rgba(7,19,41,.18))}.fold{position:absolute;right:-4px;bottom:-4px;width:88px;height:88px;border-radius:22px;background:linear-gradient(145deg,#e7edf5,#fff);transform:rotate(22deg)}
+    .glow{position:absolute;left:50%;bottom:128px;transform:translateX(-50%);width:310px;height:310px;border-radius:50%;background:radial-gradient(circle,rgba(232,188,104,.20),transparent 67%);filter:blur(3px)}.float{position:absolute;color:var(--gold);text-shadow:0 0 20px rgba(232,188,104,.9);animation:float 5.2s ease-in-out infinite;z-index:5}.bulb{top:72px;left:50%;font-size:42px;transform:translateX(-50%)}.bars{left:64px;top:226px;font-size:38px;animation-delay:.4s}.target{right:58px;top:220px;font-size:42px;animation-delay:.8s}.book{left:50%;bottom:110px;transform:translateX(-50%);font-size:36px}@keyframes float{0%,100%{translate:0 0}50%{translate:0 -10px}}
+    .subject-wrap{padding:18px 0 72px}.subjects{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}.subject{padding:18px;border-radius:20px;background:linear-gradient(180deg,rgba(10,30,66,.96),rgba(7,22,48,.96));border:1px solid rgba(255,255,255,.08);box-shadow:0 18px 40px rgba(0,0,0,.24);color:#fff;transition:transform .18s ease,border-color .18s ease}.subject:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.18)}.subject-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.subject-icon{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:var(--accent);font-weight:900}.pill{font-size:12px;font-weight:850;color:#cfd8eb;background:rgba(255,255,255,.06);padding:6px 10px;border-radius:999px}.code{font-size:20px;font-weight:900;letter-spacing:-.03em}.name{font-size:12px;font-weight:700;color:#8fa2c2}.meta{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-top:16px;color:#91a3bf;font-size:12px}.meta b{color:#e5edf9}.subject.all{display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(180deg,#132d62,#092048)}.subject.all .subject-icon{background:rgba(255,255,255,.1)}
+    .section{padding:78px 0;background:#fff}.section-head{display:flex;justify-content:space-between;align-items:end;gap:28px;margin-bottom:28px}.kicker{font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:#4d6382;margin-bottom:10px}h2{font-size:clamp(30px,4vw,46px);line-height:1.05;letter-spacing:-.05em;font-weight:900;color:#08172f;max-width:570px}.section-copy{max-width:460px;color:#697892;font-size:16px;line-height:1.68}
+    .benefits{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.benefit{padding:24px;border-radius:24px;background:linear-gradient(180deg,#fff,#f6f9ff);border:1px solid #e2e9f4;box-shadow:var(--shadow2)}.benefit-icon{width:54px;height:54px;border-radius:18px;margin-bottom:18px;display:grid;place-items:center;color:var(--accent);font-size:24px;font-weight:900;background:color-mix(in srgb,var(--accent),white 86%)}.benefit h3{font-size:19px;letter-spacing:-.03em;color:#0f2140;margin-bottom:10px}.benefit p{font-size:14px;color:#6b7891;line-height:1.65}
+    .showcase{margin-top:58px;display:grid;grid-template-columns:1fr 1fr;gap:24px}.show-card{border-radius:28px;overflow:hidden;background:linear-gradient(180deg,#f8fbff,#f1f6fd);border:1px solid #e3ebf6;box-shadow:var(--shadow2)}.show-visual{min-height:290px;position:relative;background:radial-gradient(circle at 25% 18%,rgba(232,188,104,.16),transparent 23%),linear-gradient(160deg,#0a2146,#102b58);overflow:hidden}.mock{position:absolute;left:42px;right:42px;top:42px;bottom:42px;border-radius:24px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);box-shadow:0 22px 42px rgba(0,0,0,.22);backdrop-filter:blur(8px);padding:24px;color:#fff}.mock-title{font-size:15px;font-weight:850;margin-bottom:20px}.mock-row{display:flex;gap:12px;margin-bottom:14px}.mock-kpi{flex:1;padding:14px;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.08)}.mock-kpi b{display:block;font-size:22px}.mock-kpi span{font-size:12px;color:#c9d6eb}.mock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.mock-mini{padding:14px;border-radius:16px;background:rgba(5,18,41,.58);border:1px solid rgba(255,255,255,.08)}.mock-mini strong{display:block;font-size:14px}.mock-mini span{font-size:12px;color:#9bb0cc}.show-body{padding:28px}.show-body h3{font-size:24px;line-height:1.12;letter-spacing:-.04em;color:#101f38;margin-bottom:10px}.show-body p{font-size:15px;line-height:1.7;color:#6b7891}
+    .cta{padding:40px;border-radius:28px;background:linear-gradient(135deg,#071a38,#0a254d 58%,#051126);color:#fff;display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center;box-shadow:0 22px 54px rgba(7,19,41,.24);margin-top:60px;position:relative;overflow:hidden}.cta::before{content:"";position:absolute;left:-80px;top:-80px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(232,188,104,.18),transparent 65%)}.cta-title{font-size:32px;line-height:1.06;letter-spacing:-.04em;font-weight:900;margin-bottom:8px}.cta p{max-width:580px;color:#becbdf;font-size:15px;line-height:1.7}.footer{padding:34px 0 46px;background:#fff}.footer-row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-top:26px;border-top:1px solid #e3eaf3;color:#687891;font-size:13px}.footer-brand{display:flex;align-items:center;gap:10px;font-weight:850;color:#23324c}.footer-brand span{width:34px;height:34px;border-radius:10px;background:#f1f5fb url('assets/haugnes-logo-mark.svg') center/72% no-repeat;border:1px solid #dbe4f0}
+    @media(max-width:1120px){.hero-grid{grid-template-columns:1fr}.hero-visual{min-height:500px}.trust-grid,.subjects,.benefits{grid-template-columns:repeat(2,minmax(0,1fr))}.showcase{grid-template-columns:1fr}.cta{grid-template-columns:1fr}}
+    @media(max-width:760px){.container{width:min(var(--container),calc(100% - 28px))}.topbar{height:76px}.nav a:not(.nav-login){display:none}.brand-title{font-size:18px;letter-spacing:.16em}.brand-sub{letter-spacing:.32em}.hero{padding-top:34px}h1{font-size:48px}.lead{font-size:16px}.hero-actions{display:grid}.btn{width:100%}.trust-grid,.subjects,.benefits{grid-template-columns:1fr}.hero-visual{min-height:430px;padding:18px}.hero-visual::before{width:300px;height:300px;bottom:100px}.card-stack{width:180px;height:214px;bottom:104px}.chip{position:static;margin-bottom:10px}.chip-3{margin-top:auto}.bars,.target,.book{display:none}.section{padding:58px 0}.section-head,.footer-row{display:block}.section-copy{margin-top:12px}.mock{left:18px;right:18px;top:18px;bottom:18px;padding:18px}.mock-grid{grid-template-columns:1fr}.cta{padding:28px}.cta-title{font-size:26px}}
   </style>
 </head>
 <body>
-  <div class="page">
-    <header class="shell topbar">
+  <div class="landing-hero">
+    <div class="stars"></div>
+    <header class="container topbar">
       <a class="brand" href="." aria-label="Haugnes Flashcards">
         <span class="brand-mark" aria-hidden="true"></span>
-        <span><span class="brand-name">Haugnes</span><span class="brand-sub">Flashcards</span></span>
+        <span><span class="brand-title">Haugnes</span><span class="brand-sub">Flashcards</span></span>
       </a>
       <nav class="nav" aria-label="Hovedmeny">
         <a href="login.html" data-login-next="flashcards/">Alle flashcards</a>
         <a href="#fag">Fag</a>
         <a href="#hvordan">Hvordan det virker</a>
+        <a href="#resultater">Om oss</a>
         <a href="#start">Priser</a>
-        <a class="login-btn" href="login.html" data-login-next="user/index.html">Logg inn →</a>
+        <a class="nav-login" href="login.html" data-login-next="user/index.html">Logg inn</a>
       </nav>
     </header>
 
     <main>
-      <section class="shell hero">
+      <section class="container hero">
         <div class="hero-grid">
           <div>
             <div class="eyebrow">Studieapp for NHH-studenter</div>
             <h1>Lær smartere.<span>Øv det som teller.</span></h1>
-            <p class="lead">Flashcards, eksamensanalyse og læringsverktøy samlet på ett sted. Mestre fagene, spar tid og få bedre kontroll før eksamen.</p>
+            <p class="lead">Flashcards, eksamensanalyse og læringsverktøy samlet på ett sted. Mestre de viktigste fagene, spar tid og få bedre kontroll før eksamen.</p>
             <div class="hero-actions">
               <a class="btn btn-primary" href="login.html" data-login-next="user/index.html">Kom i gang gratis <span>→</span></a>
               <a class="btn btn-secondary" href="#fag">Se alle fag</a>
             </div>
-            <div class="trust-row" aria-label="Fordeler">
-              <div class="trust-item"><div class="trust-icon">◎</div><div><div class="trust-title">Eksamensfokusert</div><div class="trust-text">Relevante kort basert på tidligere eksamener.</div></div></div>
-              <div class="trust-item"><div class="trust-icon">▥</div><div><div class="trust-title">Bevist effektivt</div><div class="trust-text">Spaced repetition som gir varig læring.</div></div></div>
-              <div class="trust-item"><div class="trust-icon">◇</div><div><div class="trust-title">Kvalitetssikret</div><div class="trust-text">Laget av studenter og fageksperter.</div></div></div>
+            <div class="trust-grid">
+              <div class="trust"><div class="trust-icon">🛡</div><div><strong>For NHH-studenter</strong><span>Utviklet for studentene appen faktisk er laget for.</span></div></div>
+              <div class="trust"><div class="trust-icon">🎯</div><div><strong>Fokus på eksamen</strong><span>Tidligere oppgaver og mønstre hjelper deg å prioritere.</span></div></div>
+              <div class="trust"><div class="trust-icon">📈</div><div><strong>Effektiv læring</strong><span>Økter som gjør det enklere å repetere jevnt.</span></div></div>
+              <div class="trust"><div class="trust-icon">🔒</div><div><strong>Trygt og ryddig</strong><span>Alt samlet i én oversiktlig plattform.</span></div></div>
             </div>
           </div>
 
           <div class="hero-visual" aria-hidden="true">
-            <div class="visual-glow"></div>
-            <div class="orb-ring"></div>
-            <div class="floating bulb">💡</div>
-            <div class="floating target"></div>
-            <div class="floating bars"><span></span><span></span><span></span></div>
-            <div class="floating book">📖</div>
-            <div class="stage">
-              <div class="card-stack">
-                <div class="flash-card back-2"></div>
-                <div class="flash-card back-1"></div>
-                <div class="flash-card front"><img src="assets/haugnes-logo-mark.svg" alt=""></div>
-              </div>
-              <div class="pedestal"></div>
-            </div>
+            <div class="chip chip-1"><span class="chip-icon">📚</span><div><b>4 fag</b><span>aktive nå</span></div></div>
+            <div class="chip chip-2"><span class="chip-icon">🔥</span><div><b>12 dager</b><span>streak</span></div></div>
+            <div class="glow"></div>
+            <div class="float bulb">💡</div><div class="float bars">▥</div><div class="float target">◎</div><div class="float book">📖</div>
+            <div class="card-stack"><img src="assets/haugnes-logo-mark.svg" alt=""><span class="fold"></span></div>
+            <div class="chip chip-3"><span class="chip-icon">🏁</span><div><b>RET14</b><span>anbefalt fokus akkurat nå</span></div></div>
           </div>
         </div>
       </section>
 
-      <section class="shell feature-ribbon" id="hvordan" aria-label="Funksjoner">
-        <article class="feature"><div class="feature-icon">▱</div><div><h3>Flashcards</h3><p>Enkle kort som hjelper deg å huske det viktigste.</p></div></article>
-        <article class="feature"><div class="feature-icon">⌂</div><div><h3>Eksamensanalyse</h3><p>Se hva som ofte går igjen, og prioriter riktig.</p></div></article>
-        <article class="feature"><div class="feature-icon">◷</div><div><h3>Spaced repetition</h3><p>Øv med intervaller som bygger langtidshukommelse.</p></div></article>
-        <article class="feature"><div class="feature-icon">↗</div><div><h3>Fremgang & statistikk</h3><p>Følg progresjonen og se hva du mestrer.</p></div></article>
+      <section class="container subject-wrap" id="fag">
+        <div class="subjects">
+          <a class="subject" style="--accent:#2f62ff" href="login.html" data-login-next="ret14/"><div class="subject-top"><span class="subject-icon">%</span><span class="pill">4 verktøy</span></div><div class="code">RET14</div><div class="name">Skatterett</div><div class="meta"><span>85% relevans</span><b>Se fag →</b></div></a>
+          <a class="subject" style="--accent:#19a972" href="login.html" data-login-next="sol1/"><div class="subject-top"><span class="subject-icon">◎</span><span class="pill">5 verktøy</span></div><div class="code">SOL1</div><div class="name">Organisasjonsrett</div><div class="meta"><span>72% relevans</span><b>Se fag →</b></div></a>
+          <a class="subject" style="--accent:#e6911b" href="login.html" data-login-next="sam2/"><div class="subject-top"><span class="subject-icon">◔</span><span class="pill">2 verktøy</span></div><div class="code">SAM2</div><div class="name">Mikroøkonomi</div><div class="meta"><span>65% relevans</span><b>Se fag →</b></div></a>
+          <a class="subject" style="--accent:#dd3e3e" href="login.html" data-login-next="sam3/"><div class="subject-top"><span class="subject-icon">↗</span><span class="pill">2 verktøy</span></div><div class="code">SAM3</div><div class="name">Makroøkonomi</div><div class="meta"><span>59% relevans</span><b>Se fag →</b></div></a>
+          <a class="subject all" href="login.html" data-login-next="flashcards/"><div><div class="subject-top"><span class="subject-icon">+</span></div><div class="code">Se alle fag</div><div class="name">Over 20 fag tilgjengelig</div></div><div class="meta"><span>Finn riktig fag raskt</span><b>Åpne →</b></div></a>
+        </div>
       </section>
     </main>
   </div>
 
-  <section class="section section-light" id="fag">
-    <div class="shell">
+  <section class="section" id="hvordan">
+    <div class="container">
       <div class="section-head">
-        <div>
-          <div class="section-kicker">Aktive fag</div>
-          <h2 class="section-title">Øv med de mest populære fagene.</h2>
-        </div>
-        <p class="section-copy">Start med et fag, få oversikt over verktøyene og gå rett til øvingen når du er klar.</p>
+        <div><div class="kicker">Første steg i redesignen</div><h2>Ny landing page med tydeligere produktfølelse.</h2></div>
+        <p class="section-copy">Inngangssiden har fått mørkere premium-profil, tydeligere hero, penere fagkort og en struktur som matcher retningen i designmockupen.</p>
       </div>
-      <div class="subject-grid">
-        <a class="subject-card" style="--accent:#2f62ff" href="login.html" data-login-next="ret14/">
-          <div class="subject-top"><div class="subject-icon">%</div><span class="subject-tools">4 verktøy</span></div>
-          <div class="subject-code">RET14</div><div class="subject-name">Skatterett</div>
-          <p class="subject-desc">Personinntekt, aksjer, avskrivning, fradrag og eiendom.</p>
-          <div class="subject-foot"><div class="dots"><i></i><i></i><i></i><i></i></div><span class="arrow">→</span></div>
-        </a>
-        <a class="subject-card" style="--accent:#14976d" href="login.html" data-login-next="sol1/">
-          <div class="subject-top"><div class="subject-icon">♚</div><span class="subject-tools">5 verktøy</span></div>
-          <div class="subject-code">SOL 1</div><div class="subject-name">Organisasjonsrett</div>
-          <p class="subject-desc">Individ, gruppe, ledelse og organisasjonsdesign.</p>
-          <div class="subject-foot"><div class="dots"><i></i><i></i><i></i><i></i></div><span class="arrow">→</span></div>
-        </a>
-        <a class="subject-card" style="--accent:#e68112" href="login.html" data-login-next="sam2/">
-          <div class="subject-top"><div class="subject-icon">◔</div><span class="subject-tools">2 verktøy</span></div>
-          <div class="subject-code">SAM2</div><div class="subject-name">Mikroøkonomi</div>
-          <p class="subject-desc">Eksamensradar og rangert oppgaveprioritering for kapittel 1–13.</p>
-          <div class="subject-foot"><div class="dots"><i></i><i></i><i></i></div><span class="arrow">→</span></div>
-        </a>
-        <a class="subject-card" style="--accent:#dc3333" href="login.html" data-login-next="sam3/">
-          <div class="subject-top"><div class="subject-icon">↗</div><span class="subject-tools">2 verktøy</span></div>
-          <div class="subject-code">SAM3</div><div class="subject-name">Makroøkonomi</div>
-          <p class="subject-desc">Flashcards og eksamensradar for vekst, inflasjon og åpen økonomi.</p>
-          <div class="subject-foot"><div class="dots"><i></i><i></i><i></i></div><span class="arrow">→</span></div>
-        </a>
+      <div class="benefits">
+        <article class="benefit" style="--accent:#2f62ff"><div class="benefit-icon">▱</div><h3>Flashcards</h3><p>Øv på det viktigste i korte økter med tydelig progresjon og enkel repetisjon.</p></article>
+        <article class="benefit" style="--accent:#13a46f"><div class="benefit-icon">⌘</div><h3>Eksamensanalyse</h3><p>Bruk tidligere eksamener og mønstre til å prioritere riktig før prøver og eksamen.</p></article>
+        <article class="benefit" style="--accent:#e6911b"><div class="benefit-icon">◷</div><h3>Spaced repetition</h3><p>Bygg varig læring med faste intervaller og tydelige anbefalinger for neste økt.</p></article>
+        <article class="benefit" style="--accent:#dd3e3e"><div class="benefit-icon">↗</div><h3>Fremgang</h3><p>Se hvilke fag og temaer som går fremover, og hvor du bør legge innsatsen neste gang.</p></article>
       </div>
 
-      <div class="result-card" style="margin-top:58px">
-        <div class="study-illustration" aria-hidden="true">
-          <div class="desk-card"></div><div class="laptop"></div><div class="chart-line"></div><div class="book-stack"><span></span><span></span><span></span></div>
-        </div>
-        <div class="result-content">
-          <div class="section-kicker">Dokumenterte arbeidsmåter</div>
-          <h2>Bygget for bedre oversikt og smartere repetisjon.</h2>
-          <div class="metrics">
-            <div class="metric"><div class="metric-icon">↗</div><div class="metric-value">Fokus</div><div class="metric-label">Øv på temaene som faktisk betyr mest.</div></div>
-            <div class="metric"><div class="metric-icon">◷</div><div class="metric-value">Flyt</div><div class="metric-label">Kort og tydelige økter du kan gjennomføre ofte.</div></div>
-            <div class="metric"><div class="metric-icon">🏆</div><div class="metric-value">Kontroll</div><div class="metric-label">Se hva du mestrer før du går videre.</div></div>
-          </div>
-        </div>
+      <div class="showcase" id="resultater">
+        <article class="show-card"><div class="show-visual"><div class="mock"><div class="mock-title">Slik kan hovedsiden etter innlogging føles</div><div class="mock-row"><div class="mock-kpi"><b>48</b><span>Kort å repetere</span></div><div class="mock-kpi"><b>35 min</b><span>Planlagt økt</span></div></div><div class="mock-grid"><div class="mock-mini"><strong>RET14</strong><span>Start øving</span></div><div class="mock-mini"><strong>SOL1</strong><span>Fortsett</span></div><div class="mock-mini"><strong>SAM2</strong><span>Anbefalt</span></div></div></div></div><div class="show-body"><h3>Tydelig skille mellom inngangsside og selve appen.</h3><p>Landing page skal selge ideen og gi trygghet. Etter innlogging kan dashboardet bygges rundt dagens økt, mine fag og anbefalt neste steg.</p></div></article>
+        <article class="show-card"><div class="show-visual"><div class="mock"><div class="mock-title">Det som kommer i neste steg</div><div class="mock-row"><div class="mock-kpi"><b>Mine fag</b><span>Egen oversiktsside</span></div><div class="mock-kpi"><b>Statistikk</b><span>Vis det som betyr noe</span></div></div><div class="mock-grid"><div class="mock-mini"><strong>Fagside</strong><span>RET14 oversikt</span></div><div class="mock-mini"><strong>Økt</strong><span>Flashcard-skjerm</span></div><div class="mock-mini"><strong>Plan</strong><span>Studieplan senere</span></div></div></div></div><div class="show-body"><h3>Redesignen bygges trinnvis.</h3><p>Neste naturlige steg er dashboardet, deretter Mine fag, fagside og selve flashcard-økten.</p></div></article>
       </div>
 
-      <div class="cta-band" id="start">
-        <div class="cta-text"><div class="cta-kicker">Klar for å ta studiene til neste nivå?</div><div class="cta-title">Start å lære smartere i dag.</div><div class="cta-sub">Logg inn og fortsett med fagene dine på et mer ryddig og visuelt sted.</div></div>
-        <a class="btn btn-primary" href="login.html" data-login-next="user/index.html">Kom i gang gratis <span>→</span></a>
-      </div>
+      <div class="cta" id="start"><div><div class="kicker" style="color:#8ea3c2">Klar for neste steg?</div><div class="cta-title">Første steg er landing page. Neste steg er dashboardet.</div><p>Hvis denne retningen sitter, kan resten av appen få samme visuelle språk uten at vi bygger alt på én gang.</p></div><a class="btn btn-primary" href="login.html" data-login-next="user/index.html">Kom i gang gratis <span>→</span></a></div>
     </div>
   </section>
 
-  <footer class="site-footer">
-    <div class="shell footer-row">
-      <div class="footer-brand"><span class="footer-mark" aria-hidden="true"></span>Haugnes Flashcards</div>
-      <div>Trygt, ryddig og laget for effektiv eksamensforberedelse.</div>
-    </div>
-  </footer>
+  <footer class="footer"><div class="container footer-row"><div class="footer-brand"><span aria-hidden="true"></span>Haugnes Flashcards</div><div>Redesignet for en mer moderne og oversiktlig studieplattform.</div></div></footer>
 
   <script>
-    (function(){
-      var origin = window.location.href;
-      document.querySelectorAll('[data-login-next]').forEach(function(link){
-        var next = new URL(link.getAttribute('data-login-next'), origin).href;
-        link.href = 'login.html?next=' + encodeURIComponent(next);
-      });
-    })();
+    (function(){var origin=window.location.href;document.querySelectorAll('[data-login-next]').forEach(function(link){var next=new URL(link.getAttribute('data-login-next'),origin).href;link.href='login.html?next='+encodeURIComponent(next);});})();
   </script>
 </body>
 </html>
