@@ -1,45 +1,62 @@
-(function(){
-  var SUPABASE_URL = 'https://qnwjhheoekpqqqhevztw.supabase.co';
-  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJxfud2poaGVvZWtwcXFxaGV2enR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MTg1NTEsImV4cCI6MjA5MjI5NDU1MX0.gHBvEH-L-zyiW4UnsCxOY2q-HmeIYe5OHSvxhFt7PQ8'.replace('xfud2','nwjh');
+(function (window, document) {
+  var SHARED_SCRIPT = '../shared/auth-guard.js';
 
-  function ensureLink(rel, href) {
-    var el = document.querySelector('link[rel="' + rel + '"][href="' + href + '"]') || document.querySelector('link[rel="' + rel + '"]');
-    if (!el) {
-      el = document.createElement('link');
-      el.rel = rel;
-      document.head.appendChild(el);
-    }
-    el.href = href;
-  }
+  function loadSharedAuthGuard() {
+    return new Promise(function (resolve, reject) {
+      if (window.AuthGuard) {
+        resolve(window.AuthGuard);
+        return;
+      }
 
-  function applyBranding() {
-    ensureLink('stylesheet', '../shared/ui-upgrades.css');
-    ensureLink('icon', '../assets/haugnes-logo-mark.svg');
-    ensureLink('apple-touch-icon', '../assets/haugnes-logo-mark.svg');
-    document.querySelectorAll('.logo-mark').forEach(function(mark){
-      mark.textContent = '';
-      mark.setAttribute('aria-hidden','true');
+      var existing = Array.prototype.slice.call(document.scripts).filter(function (script) {
+        return /shared\/auth-guard\.js(?:\?|$)/.test(script.src || '');
+      })[0];
+
+      if (existing) {
+        existing.addEventListener('load', function () { resolve(window.AuthGuard); });
+        existing.addEventListener('error', reject);
+        return;
+      }
+
+      var script = document.createElement('script');
+      script.src = SHARED_SCRIPT;
+      script.onload = function () { resolve(window.AuthGuard); };
+      script.onerror = reject;
+      document.head.appendChild(script);
     });
   }
 
-  applyBranding();
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyBranding);
-
-  if (!window.supabase) {
-    window.location.href = '../login.html';
-    return;
+  function applyDashboardBranding() {
+    var logoPath = '../assets/haugnes-logo-mark.svg';
+    document.querySelectorAll('.logo-mark').forEach(function (mark) {
+      mark.textContent = '';
+      mark.setAttribute('aria-hidden', 'true');
+      mark.style.background = "#0b244e url('" + logoPath + "') center/78% no-repeat";
+      mark.style.border = '1px solid rgba(255,255,255,.14)';
+      mark.style.boxShadow = '0 14px 30px rgba(0,0,0,.28)';
+      mark.style.overflow = 'hidden';
+    });
   }
-  var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  sb.auth.getSession().then(function(res){
-    var session = res && res.data && res.data.session;
-    if (!session) {
-      window.location.href = '../login.html';
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applyDashboardBranding);
+  } else {
+    applyDashboardBranding();
+  }
+
+  loadSharedAuthGuard().then(function (AuthGuard) {
+    if (!AuthGuard || typeof AuthGuard.requireAuth !== 'function') {
+      window.location.replace('../login.html');
       return;
     }
-    window.__userSession = session;
-    applyBranding();
-    if (typeof window.onUserAuthorized === 'function') window.onUserAuthorized(session);
-  }).catch(function(){
-    window.location.href = '../login.html';
+
+    AuthGuard.requireAuth().then(function (session) {
+      if (!session) return;
+      window.__userSession = session;
+      applyDashboardBranding();
+      if (typeof window.onUserAuthorized === 'function') window.onUserAuthorized(session);
+    });
+  }).catch(function () {
+    window.location.replace('../login.html');
   });
-})();
+})(window, document);
