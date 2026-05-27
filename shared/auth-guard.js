@@ -9,16 +9,27 @@
   var sb = null;
   var session = null;
 
-  function getDepth() {
-    var path = window.location.pathname.replace(/\/$/, '');
-    var segments = path.split('/').filter(Boolean);
-    var last = segments[segments.length - 1] || '';
-    if (/\.html?$/i.test(last)) segments.pop();
-    return Math.max(segments.length - 1, 0);
+  function getRootPath() {
+    var script = document.currentScript || Array.prototype.slice.call(document.scripts).filter(function (s) {
+      return /shared\/auth-guard\.js(?:\?|$)/.test(s.src || '');
+    }).pop();
+
+    if (script && script.src) {
+      var scriptUrl = new URL(script.src, window.location.href);
+      return new URL('../', scriptUrl).pathname;
+    }
+
+    var path = window.location.pathname;
+    var match = path.match(/^(.*?)(?:ret14|sol1|sam2|sam3|mat10|met2|flashcards|user)\//);
+    return match ? match[1] : path.replace(/[^/]*$/, '');
+  }
+
+  function rootRelative(filePath) {
+    return getRootPath().replace(/\/$/, '/') + filePath.replace(/^\//, '');
   }
 
   function getAssetPath(fileName) {
-    return '../'.repeat(getDepth()) + 'assets/' + fileName;
+    return rootRelative('assets/' + fileName);
   }
 
   function addIconLink(rel, href) {
@@ -54,7 +65,7 @@
   else applyBranding();
 
   function getLoginPath() {
-    return '../'.repeat(getDepth()) + 'login.html';
+    return rootRelative('login.html');
   }
 
   function getLoginUrlWithNext() {
@@ -62,6 +73,7 @@
   }
 
   function getClient() {
+    if (!window.supabase) throw new Error('Supabase client is not loaded');
     if (!sb) sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     return sb;
   }
@@ -72,25 +84,30 @@
 
   function requireAuth() {
     document.documentElement.style.visibility = 'hidden';
-    return getClient().auth.getSession().then(function (result) {
-      session = result.data && result.data.session;
-      if (!session) {
+    try {
+      return getClient().auth.getSession().then(function (result) {
+        session = result.data && result.data.session;
+        if (!session) {
+          window.location.replace(getLoginUrlWithNext());
+          return null;
+        }
+        reveal();
+        applyBranding();
+        return session;
+      }).catch(function () {
         window.location.replace(getLoginUrlWithNext());
         return null;
-      }
-      reveal();
-      applyBranding();
-      return session;
-    }).catch(function () {
+      });
+    } catch (e) {
       window.location.replace(getLoginUrlWithNext());
-      return null;
-    });
+      return Promise.resolve(null);
+    }
   }
 
   function bindUserInfo(labelId, chipId, avatarId) {
     if (!session || !session.user) return;
     var email = session.user.email || '';
-    var username = email.split('@')[0];
+    var username = email.split('@')[0] || 'student';
     var initial = username.charAt(0).toUpperCase();
     var label = labelId ? document.getElementById(labelId) : null;
     var chip = chipId ? document.getElementById(chipId) : null;
@@ -115,6 +132,7 @@
     getSession: function () { return session; },
     getLoginPath: getLoginPath,
     getAssetPath: getAssetPath,
+    getRootPath: getRootPath,
     applyBranding: applyBranding
   };
 })(window, document);
