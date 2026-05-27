@@ -51,12 +51,21 @@
     document.head.appendChild(link);
   }
 
-  function addScript(id, src) {
-    if (document.getElementById(id)) return;
+  function addScript(id, src, onload) {
+    var existing = document.getElementById(id);
+    if (existing) {
+      if (onload) {
+        if (id === 'haugnes-subject-meta-js' && window.HaugnesSubjects) onload();
+        else existing.addEventListener('load', onload, { once: true });
+      }
+      return;
+    }
     var script = document.createElement('script');
     script.id = id;
     script.src = src;
     script.defer = true;
+    if (onload) script.onload = onload;
+    if (onload) script.onerror = onload;
     document.head.appendChild(script);
   }
 
@@ -111,7 +120,9 @@
     if (!isFlashcardsPage()) return;
     normalizeFlashcardsRoute();
     addStylesheet('haugnes-flashcards-css', rootRelative('shared/haugnes-flashcards.css'));
-    addScript('haugnes-flashcards-structure-js', rootRelative('shared/haugnes-flashcards-structure.js'));
+    addScript('haugnes-subject-meta-js', rootRelative('shared/subject-meta.js'), function () {
+      addScript('haugnes-flashcards-structure-js', rootRelative('shared/haugnes-flashcards-structure.js'));
+    });
     document.title = 'Flashcards — Haugnes';
   }
 
