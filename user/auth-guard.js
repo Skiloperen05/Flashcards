@@ -38,6 +38,13 @@
     });
   }
 
+  function installSharedLogout(AuthGuard) {
+    if (!AuthGuard || typeof AuthGuard.logout !== 'function') return;
+    window.handleLogout = function () {
+      return AuthGuard.logout();
+    };
+  }
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', applyDashboardBranding);
   } else {
@@ -54,6 +61,8 @@
       if (!session) return;
       window.__userSession = session;
       applyDashboardBranding();
+      installSharedLogout(AuthGuard);
+      window.setTimeout(function () { installSharedLogout(AuthGuard); }, 0);
       if (typeof window.onUserAuthorized === 'function') window.onUserAuthorized(session);
     });
   }).catch(function () {
