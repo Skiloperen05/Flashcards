@@ -46,38 +46,37 @@
   <div class="subjects-grid" id="subjectsGrid"></div>
   <div class="empty-note" id="emptyNote">Fant ingen fag som matcher søket.</div>
 </main>
+<script src="../shared/subject-meta.js"></script>
 <script src="auth-guard.js"></script>
 <script>
-var SUBJECTS = [
-  {code:'RET14',name:'Skatterett',icon:'⚖️',accent:'#2f62ff',status:'active',statusText:'Aktiv',progress:86,decks:'15+',cards:'1450',tools:'4',path:'../ret14/',flashcards:'../flashcards/?subject=ret14',desc:'Skatt, fradrag, aksjer, personinntekt, arv og eksamensanalyse.'},
-  {code:'SOL1',name:'Organisasjonsatferd',icon:'🧠',accent:'#20b97a',status:'active',statusText:'Aktiv',progress:72,decks:'13+',cards:'438',tools:'4',path:'../sol1/',flashcards:'../flashcards/?subject=subj_sol1',desc:'Begreper, teorier, modeller, caseforståelse og teoriskriving.'},
-  {code:'SAM2',name:'Mikroøkonomi',icon:'📈',accent:'#f09828',status:'exam',statusText:'Eksamen',progress:65,decks:'24',cards:'66',tools:'3',path:'../sam2/',flashcards:'../sam2/oppgaver-klikkbar/',desc:'Oppgaveprioritering, eksamensradar, figurer og modellvalg.'},
-  {code:'SAM3',name:'Makroøkonomi',icon:'🌍',accent:'#ef4444',status:'active',statusText:'Aktiv',progress:59,decks:'12+',cards:'—',tools:'6',path:'../sam3/',flashcards:'../sam3/flashcards.html',desc:'Makromodeller, formler, quiz, eksamensradar og mock-eksamen.'},
-  {code:'MET2',name:'Metode',icon:'Σ',accent:'#7c3aed',status:'build',statusText:'Under bygging',progress:20,decks:'—',cards:'—',tools:'Plan',path:'#',flashcards:'#',desc:'Planlagt område for metode, statistikk og analyseoppgaver.'},
-  {code:'MAT10',name:'Matematikk',icon:'∫',accent:'#0891b2',status:'build',statusText:'Under bygging',progress:15,decks:'—',cards:'—',tools:'Plan',path:'#',flashcards:'#',desc:'Planlagt område for matematikk, formler og regnetrening.'}
-];
+var SUBJECTS = window.HaugnesSubjects ? window.HaugnesSubjects.getAll() : [];
 var currentFilter = 'all';
+
 function cardHtml(s){
   var isDisabled = s.path === '#';
-  return '<article class="subject-card" data-status="'+s.status+'" data-search="'+(s.code+' '+s.name+' '+s.desc).toLowerCase()+'" style="--accent:'+s.accent+';--p:'+s.progress+'%">'
+  var description = s.description || s.desc || '';
+  return '<article class="subject-card" data-status="'+s.status+'" data-search="'+(s.code+' '+s.name+' '+description).toLowerCase()+'" style="--accent:'+s.accent+';--p:'+s.progress+'%">'
     + '<div class="subject-top"><div class="subject-icon">'+s.icon+'</div><span class="status '+(s.status==='active'?'active':'')+'">'+s.statusText+'</span></div>'
     + '<div class="subject-code">'+s.code+'</div><div class="subject-name">'+s.name+'</div>'
-    + '<p class="subject-desc">'+s.desc+'</p>'
+    + '<p class="subject-desc">'+description+'</p>'
     + '<div class="metrics"><div class="metric"><b>'+s.decks+'</b><span>Deck</span></div><div class="metric"><b>'+s.cards+'</b><span>Innhold</span></div><div class="metric"><b>'+s.tools+'</b><span>Verktøy</span></div></div>'
     + '<div class="progress-labels"><span>Progresjon</span><b>'+s.progress+'%</b></div><div class="bar"><i></i></div>'
     + '<div class="card-actions"><a class="card-btn primary" href="'+s.path+'">'+(isDisabled?'Kommer senere':'Åpne fag')+'</a><a class="card-btn secondary" href="'+s.flashcards+'">Start øving</a></div>'
     + '</article>';
 }
+
 function renderSubjects(){
   var q = (document.getElementById('subjectSearch').value || '').toLowerCase().trim();
   var filtered = SUBJECTS.filter(function(s){
+    var description = s.description || s.desc || '';
     var matchesFilter = currentFilter === 'all' || s.status === currentFilter;
-    var matchesSearch = !q || (s.code+' '+s.name+' '+s.desc).toLowerCase().indexOf(q) !== -1;
+    var matchesSearch = !q || (s.code+' '+s.name+' '+description).toLowerCase().indexOf(q) !== -1;
     return matchesFilter && matchesSearch;
   });
   document.getElementById('subjectsGrid').innerHTML = filtered.map(cardHtml).join('');
   document.getElementById('emptyNote').style.display = filtered.length ? 'none' : 'block';
 }
+
 document.querySelectorAll('.filter-btn').forEach(function(btn){
   btn.addEventListener('click', function(){
     document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
@@ -86,6 +85,7 @@ document.querySelectorAll('.filter-btn').forEach(function(btn){
     renderSubjects();
   });
 });
+
 document.getElementById('subjectSearch').addEventListener('input', renderSubjects);
 window.onUserAuthorized = function(){ renderSubjects(); };
 renderSubjects();
