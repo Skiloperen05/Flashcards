@@ -35,6 +35,23 @@
     document.head.appendChild(link);
   }
 
+  function addScript(id, src, onload) {
+    var existing = document.getElementById(id);
+    if (existing) {
+      if (onload) {
+        if (window.HaugnesSubjects) onload();
+        else existing.addEventListener('load', onload, { once: true });
+      }
+      return;
+    }
+    var script = document.createElement('script');
+    script.id = id;
+    script.src = src;
+    script.defer = true;
+    if (onload) script.onload = onload;
+    document.head.appendChild(script);
+  }
+
   function currentUserPage() {
     var file = window.location.pathname.split('/').pop() || 'index.html';
     return file.toLowerCase();
@@ -51,6 +68,14 @@
     } else {
       addStylesheet('haugnes-dashboard-css', '../shared/haugnes-dashboard.css');
     }
+  }
+
+  function loadSubjectMeta(onload) {
+    if (window.HaugnesSubjects) {
+      if (onload) onload();
+      return;
+    }
+    addScript('haugnes-subject-meta-js', '../shared/subject-meta.js', onload);
   }
 
   function applyDashboardBranding() {
@@ -75,6 +100,34 @@
     };
   }
 
+  function renderDashboardSubjects() {
+    if (currentUserPage() !== 'index.html' || !window.HaugnesSubjects) return;
+    var container = document.querySelector('.subjects');
+    if (!container) return;
+
+    var subjects = window.HaugnesSubjects.getAll().filter(function (subject) {
+      return subject.status !== 'build';
+    }).slice(0, 4);
+
+    container.innerHTML = subjects.map(function (subject) {
+      var todayCards = subject.code === 'RET14' ? 48 : subject.code === 'SOL1' ? 32 : subject.code === 'SAM2' ? 28 : 31;
+      return '<a class="subject-card" style="--accent:' + subject.accent + ';--p:' + subject.progress + '%" href="' + subject.path + '">'
+        + '<div class="subject-top"><span class="subject-icon">' + subject.icon + '</span><span class="dots">⋯</span></div>'
+        + '<div class="subject-code">' + subject.code + '</div>'
+        + '<div class="subject-name">' + subject.name + '</div>'
+        + '<div class="percent-row"><b>' + subject.progress + '%</b><span>' + todayCards + ' kort i dag</span></div>'
+        + '<div class="progress"><i></i></div>'
+        + '<span class="subject-btn">Åpne fag</span>'
+        + '</a>';
+    }).join('');
+
+    var sectionLink = document.querySelector('#mine-fag a');
+    if (sectionLink) {
+      sectionLink.href = 'subjects.html';
+      sectionLink.textContent = 'Se alle fag →';
+    }
+  }
+
   function standardizeDashboardLinks() {
     var subjectsNav = document.querySelector('.nav-link[href="#mine-fag"]');
     if (subjectsNav) subjectsNav.href = 'subjects.html';
@@ -84,6 +137,9 @@
       todayStart.href = '../flashcards/?subject=ret14';
       todayStart.textContent = 'Start flashcards';
     }
+
+    var todayPlan = document.querySelector('#today .ghost-link[href="../ret14/"]');
+    if (todayPlan) todayPlan.href = '../ret14/';
 
     var recommendationStart = document.querySelector('.recommend .start-btn[href="../ret14/"]');
     if (recommendationStart) {
@@ -122,6 +178,12 @@
     applyDashboardBranding();
     standardizeDashboardLinks();
     enhanceAchievementsPage();
+    if (currentUserPage() === 'index.html') {
+      loadSubjectMeta(function () {
+        renderDashboardSubjects();
+        standardizeDashboardLinks();
+      });
+    }
   }
 
   if (document.readyState === 'loading') {
