@@ -45,10 +45,42 @@
     };
   }
 
+  function standardizeDashboardLinks() {
+    var todayStart = document.querySelector('#today .start-btn[href="../ret14/"]');
+    if (todayStart) {
+      todayStart.href = '../flashcards/?subject=ret14';
+      todayStart.textContent = 'Start flashcards';
+    }
+
+    var recommendationStart = document.querySelector('.recommend .start-btn[href="../ret14/"]');
+    if (recommendationStart) {
+      recommendationStart.href = '../flashcards/?subject=ret14';
+      recommendationStart.textContent = 'Start nå';
+    }
+
+    document.querySelectorAll('.subject-card .subject-btn').forEach(function (button) {
+      button.textContent = 'Åpne fag';
+    });
+
+    document.querySelectorAll('.subject-card').forEach(function (card) {
+      var code = card.querySelector('.subject-code');
+      var href = card.getAttribute('href') || '';
+      if (!code) return;
+      card.setAttribute('aria-label', 'Åpne fagside for ' + code.textContent.trim());
+      if (href.indexOf('../ret14/') === 0 || href.indexOf('../sol1/') === 0 || href.indexOf('../sam2/') === 0 || href.indexOf('../sam3/') === 0) {
+        card.setAttribute('title', 'Åpne fagside');
+      }
+    });
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', applyDashboardBranding);
+    document.addEventListener('DOMContentLoaded', function () {
+      applyDashboardBranding();
+      standardizeDashboardLinks();
+    });
   } else {
     applyDashboardBranding();
+    standardizeDashboardLinks();
   }
 
   loadSharedAuthGuard().then(function (AuthGuard) {
@@ -61,8 +93,12 @@
       if (!session) return;
       window.__userSession = session;
       applyDashboardBranding();
+      standardizeDashboardLinks();
       installSharedLogout(AuthGuard);
-      window.setTimeout(function () { installSharedLogout(AuthGuard); }, 0);
+      window.setTimeout(function () {
+        installSharedLogout(AuthGuard);
+        standardizeDashboardLinks();
+      }, 0);
       if (typeof window.onUserAuthorized === 'function') window.onUserAuthorized(session);
     });
   }).catch(function () {
