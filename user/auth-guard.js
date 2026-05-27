@@ -26,13 +26,29 @@
     });
   }
 
-  function addDashboardStylesheet() {
-    if (document.getElementById('haugnes-dashboard-css')) return;
+  function addStylesheet(id, href) {
+    if (document.getElementById(id)) return;
     var link = document.createElement('link');
-    link.id = 'haugnes-dashboard-css';
+    link.id = id;
     link.rel = 'stylesheet';
-    link.href = '../shared/haugnes-dashboard.css';
+    link.href = href;
     document.head.appendChild(link);
+  }
+
+  function currentUserPage() {
+    var file = window.location.pathname.split('/').pop() || 'index.html';
+    return file.toLowerCase();
+  }
+
+  function addPageStylesheet() {
+    var page = currentUserPage();
+    if (page === 'achievements.html') {
+      addStylesheet('haugnes-achievements-css', '../shared/haugnes-achievements.css');
+    } else if (page === 'progress.html') {
+      addStylesheet('haugnes-progress-css', '../shared/haugnes-progress.css');
+    } else {
+      addStylesheet('haugnes-dashboard-css', '../shared/haugnes-dashboard.css');
+    }
   }
 
   function applyDashboardBranding() {
@@ -44,6 +60,9 @@
       mark.style.border = '1px solid rgba(255,255,255,.14)';
       mark.style.boxShadow = '0 14px 30px rgba(0,0,0,.28),0 0 34px rgba(47,98,255,.18)';
       mark.style.overflow = 'hidden';
+    });
+    document.querySelectorAll('.logo-text').forEach(function (text) {
+      if (/StudieHub/i.test(text.textContent)) text.textContent = 'Haugnes';
     });
   }
 
@@ -82,16 +101,28 @@
     });
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () {
-      addDashboardStylesheet();
-      applyDashboardBranding();
-      standardizeDashboardLinks();
-    });
-  } else {
-    addDashboardStylesheet();
+  function enhanceAchievementsPage() {
+    if (currentUserPage() !== 'achievements.html') return;
+    document.title = 'Prestasjoner — Haugnes Flashcards';
+    var heroTitle = document.querySelector('.hero-title');
+    var heroSub = document.querySelector('.hero-sub');
+    var back = document.querySelector('.header-back');
+    if (heroTitle) heroTitle.innerHTML = 'Bygg en <span>streak</span>.';
+    if (heroSub) heroSub.textContent = 'Lås opp badges når du fullfører økter, repeterer kort og treffer nye milepæler.';
+    if (back) back.lastChild.textContent = ' Dashboard';
+  }
+
+  function runEnhancements() {
+    addPageStylesheet();
     applyDashboardBranding();
     standardizeDashboardLinks();
+    enhanceAchievementsPage();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runEnhancements);
+  } else {
+    runEnhancements();
   }
 
   loadSharedAuthGuard().then(function (AuthGuard) {
@@ -103,13 +134,11 @@
     AuthGuard.requireAuth().then(function (session) {
       if (!session) return;
       window.__userSession = session;
-      addDashboardStylesheet();
-      applyDashboardBranding();
-      standardizeDashboardLinks();
+      runEnhancements();
       installSharedLogout(AuthGuard);
       window.setTimeout(function () {
         installSharedLogout(AuthGuard);
-        standardizeDashboardLinks();
+        runEnhancements();
       }, 0);
       if (typeof window.onUserAuthorized === 'function') window.onUserAuthorized(session);
     });
