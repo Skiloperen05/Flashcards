@@ -26,6 +26,15 @@
     });
   }
 
+  function addDashboardStylesheet() {
+    if (document.getElementById('haugnes-dashboard-css')) return;
+    var link = document.createElement('link');
+    link.id = 'haugnes-dashboard-css';
+    link.rel = 'stylesheet';
+    link.href = '../shared/haugnes-dashboard.css';
+    document.head.appendChild(link);
+  }
+
   function applyDashboardBranding() {
     var logoPath = '../assets/haugnes-logo-mark.svg';
     document.querySelectorAll('.logo-mark').forEach(function (mark) {
@@ -33,7 +42,7 @@
       mark.setAttribute('aria-hidden', 'true');
       mark.style.background = "#0b244e url('" + logoPath + "') center/78% no-repeat";
       mark.style.border = '1px solid rgba(255,255,255,.14)';
-      mark.style.boxShadow = '0 14px 30px rgba(0,0,0,.28)';
+      mark.style.boxShadow = '0 14px 30px rgba(0,0,0,.28),0 0 34px rgba(47,98,255,.18)';
       mark.style.overflow = 'hidden';
     });
   }
@@ -75,10 +84,12 @@
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
+      addDashboardStylesheet();
       applyDashboardBranding();
       standardizeDashboardLinks();
     });
   } else {
+    addDashboardStylesheet();
     applyDashboardBranding();
     standardizeDashboardLinks();
   }
@@ -92,6 +103,7 @@
     AuthGuard.requireAuth().then(function (session) {
       if (!session) return;
       window.__userSession = session;
+      addDashboardStylesheet();
       applyDashboardBranding();
       standardizeDashboardLinks();
       installSharedLogout(AuthGuard);
