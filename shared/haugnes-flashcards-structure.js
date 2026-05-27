@@ -6,7 +6,7 @@
 
   function byId(id) { return document.getElementById(id); }
 
-  var SUBJECT_META = {
+  var FALLBACK_SUBJECTS = {
     ret14: {
       label: 'RET14 Skatterett',
       short: 'RET14',
@@ -23,13 +23,29 @@
     }
   };
 
+  function toFlashcardsMeta(subject) {
+    if (!subject) return null;
+    return {
+      label: subject.code + ' ' + subject.name,
+      short: subject.code,
+      path: subject.path && subject.path !== '#' ? subject.path : null,
+      accent: subject.accent || '#2f62ff',
+      description: subject.description || 'Egendefinert fag med egne deck og kort.'
+    };
+  }
+
   function getSubjectId() {
     return window.currentSubjectId || new URLSearchParams(window.location.search).get('subject') || null;
   }
 
   function getSubjectMeta() {
     var id = getSubjectId();
-    var meta = SUBJECT_META[id];
+    if (window.HaugnesSubjects && typeof window.HaugnesSubjects.findById === 'function') {
+      var sharedSubject = window.HaugnesSubjects.findById(id);
+      var sharedMeta = toFlashcardsMeta(sharedSubject);
+      if (sharedMeta) return sharedMeta;
+    }
+    var meta = FALLBACK_SUBJECTS[id];
     if (meta) return meta;
     if (typeof window.getAllSubjects === 'function') {
       var subject = window.getAllSubjects().find(function (s) { return s.id === id; });
@@ -124,7 +140,11 @@
 
     document.querySelectorAll('.subject-card[data-id]').forEach(function (card) {
       var id = card.getAttribute('data-id');
-      var meta = SUBJECT_META[id];
+      var meta = null;
+      if (window.HaugnesSubjects && typeof window.HaugnesSubjects.findById === 'function') {
+        meta = toFlashcardsMeta(window.HaugnesSubjects.findById(id));
+      }
+      if (!meta) meta = FALLBACK_SUBJECTS[id];
       card.setAttribute('role', 'button');
       card.setAttribute('tabindex', '0');
       if (meta) {
