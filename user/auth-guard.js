@@ -46,6 +46,8 @@
       addStylesheet('haugnes-achievements-css', '../shared/haugnes-achievements.css');
     } else if (page === 'progress.html') {
       addStylesheet('haugnes-progress-css', '../shared/haugnes-progress.css');
+    } else if (page === 'subjects.html') {
+      addStylesheet('haugnes-subjects-css', '../shared/haugnes-subjects.css');
     } else {
       addStylesheet('haugnes-dashboard-css', '../shared/haugnes-dashboard.css');
     }
@@ -74,6 +76,9 @@
   }
 
   function standardizeDashboardLinks() {
+    var subjectsNav = document.querySelector('.nav-link[href="#mine-fag"]');
+    if (subjectsNav) subjectsNav.href = 'subjects.html';
+
     var todayStart = document.querySelector('#today .start-btn[href="../ret14/"]');
     if (todayStart) {
       todayStart.href = '../flashcards/?subject=ret14';
