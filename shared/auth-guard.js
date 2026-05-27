@@ -103,6 +103,10 @@
     return /\/ret14\/quiz\/?(?:index\.html)?$/.test(window.location.pathname);
   }
 
+  function isRet14ExamPage() {
+    return /\/ret14\/eksamen\/?(?:index\.html)?$/.test(window.location.pathname);
+  }
+
   function normalizeFlashcardsRoute() {
     if (!isFlashcardsPage()) return;
     var params = new URLSearchParams(window.location.search);
@@ -148,10 +152,28 @@
     }, 0);
   }
 
+  function enhanceRet14ExamPage() {
+    if (!isRet14ExamPage()) return;
+    addStylesheet('haugnes-ret14-eksamen-css', rootRelative('shared/haugnes-ret14-eksamen.css'));
+    document.title = 'RET14 Eksamensradar — Haugnes';
+    if (!document.querySelector('.haugnes-tool-nav')) {
+      var nav = document.createElement('nav');
+      nav.className = 'haugnes-tool-nav';
+      nav.innerHTML = '<a class="haugnes-tool-brand" href="' + rootRelative('user/index.html') + '"><span class="haugnes-tool-logo"></span><span>Haugnes</span></a><div class="haugnes-tool-links"><a class="haugnes-tool-link primary" href="' + rootRelative('ret14/') + '">← RET14</a><a class="haugnes-tool-link" href="' + rootRelative('ret14/quiz/') + '">Quiz</a><a class="haugnes-tool-link" href="' + rootRelative('flashcards/?subject=ret14') + '">Flashcards</a><a class="haugnes-tool-link" href="' + rootRelative('user/index.html') + '">Dashboard</a></div>';
+      document.body.insertBefore(nav, document.body.firstChild);
+    }
+    if (!document.querySelector('.haugnes-tool-backdrop')) {
+      var backdrop = document.createElement('div');
+      backdrop.className = 'haugnes-tool-backdrop';
+      document.body.insertBefore(backdrop, document.body.firstChild);
+    }
+  }
+
   function enhancePages() {
     applyBranding();
     enhanceFlashcardsPage();
     enhanceRet14QuizPage();
+    enhanceRet14ExamPage();
   }
 
   normalizeFlashcardsRoute();
@@ -233,6 +255,7 @@
     applyBranding: applyBranding,
     normalizeFlashcardsRoute: normalizeFlashcardsRoute,
     enhanceFlashcardsPage: enhanceFlashcardsPage,
-    enhanceRet14QuizPage: enhanceRet14QuizPage
+    enhanceRet14QuizPage: enhanceRet14QuizPage,
+    enhanceRet14ExamPage: enhanceRet14ExamPage
   };
 })(window, document);
