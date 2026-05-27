@@ -86,10 +86,21 @@
     document.querySelectorAll('.logo-text').forEach(function (text) {
       if (/StudieHub/i.test(text.textContent)) text.textContent = 'Haugnes';
     });
+
+    document.querySelectorAll('.brand').forEach(function (brand) {
+      if (/StudieHub/i.test(brand.textContent)) {
+        var label = brand.querySelector('span:last-child');
+        if (label) label.textContent = 'Haugnes';
+      }
+    });
   }
 
   function isFlashcardsPage() {
     return /\/flashcards\/?(?:index\.html)?$/.test(window.location.pathname);
+  }
+
+  function isRet14QuizPage() {
+    return /\/ret14\/quiz\/?(?:index\.html)?$/.test(window.location.pathname);
   }
 
   function normalizeFlashcardsRoute() {
@@ -126,15 +137,28 @@
     document.title = 'Flashcards — Haugnes';
   }
 
-  normalizeFlashcardsRoute();
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () {
+  function enhanceRet14QuizPage() {
+    if (!isRet14QuizPage()) return;
+    addStylesheet('haugnes-ret14-quiz-css', rootRelative('shared/haugnes-ret14-quiz.css'));
+    document.title = 'RET14 Quiz — Haugnes';
+    window.setTimeout(function () {
       applyBranding();
-      enhanceFlashcardsPage();
-    });
-  } else {
+      var brandLabel = document.querySelector('.brand span:last-child');
+      if (brandLabel) brandLabel.textContent = 'Haugnes';
+    }, 0);
+  }
+
+  function enhancePages() {
     applyBranding();
     enhanceFlashcardsPage();
+    enhanceRet14QuizPage();
+  }
+
+  normalizeFlashcardsRoute();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', enhancePages);
+  } else {
+    enhancePages();
   }
 
   function getLoginPath() {
@@ -165,8 +189,7 @@
           return null;
         }
         reveal();
-        applyBranding();
-        enhanceFlashcardsPage();
+        enhancePages();
         return session;
       }).catch(function () {
         window.location.replace(getLoginUrlWithNext());
@@ -209,6 +232,7 @@
     getRootPath: getRootPath,
     applyBranding: applyBranding,
     normalizeFlashcardsRoute: normalizeFlashcardsRoute,
-    enhanceFlashcardsPage: enhanceFlashcardsPage
+    enhanceFlashcardsPage: enhanceFlashcardsPage,
+    enhanceRet14QuizPage: enhanceRet14QuizPage
   };
 })(window, document);
