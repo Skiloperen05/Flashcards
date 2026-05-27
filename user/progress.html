@@ -3,205 +3,78 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Progresjon — StudieHub</title>
+<title>Statistikk / Fremgang — Haugnes Flashcards</title>
+<link rel="icon" href="../assets/haugnes-logo-mark.svg">
+<link rel="apple-touch-icon" href="../assets/haugnes-logo-mark.svg">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg: #f1f5f9;
-  --surface: #ffffff;
-  --header-bg: #0f172a;
-  --text: #0f172a;
-  --muted: #64748b;
-  --border: #e2e8f0;
-  --accent: #6366f1;
-  --radius-lg: 20px;
-  --radius-md: 12px;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
-  --shadow-md: 0 4px 16px rgba(0,0,0,.08), 0 1px 4px rgba(0,0,0,.04);
-  --transition: 0.22s cubic-bezier(.4,0,.2,1);
-}
-
-body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-}
-
-/* ── Header ── */
-.site-header {
-  background: var(--header-bg);
-  padding: 0 24px;
-  height: 64px;
-  display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 100;
-}
-.site-logo {
-  display: flex; align-items: center; gap: 10px; text-decoration: none;
-}
-.logo-mark {
-  width: 32px; height: 32px; background: var(--accent);
-  border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px;
-}
-.logo-text { font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
-.header-back {
-  display: flex; align-items: center; gap: 6px;
-  color: #94a3b8; font-size: 13px; font-weight: 500;
-  text-decoration: none; padding: 6px 12px;
-  border-radius: var(--radius-md);
-  transition: background var(--transition), color var(--transition);
-}
-.header-back:hover { background: rgba(255,255,255,.08); color: #e2e8f0; }
-
-/* ── Page hero ── */
-.page-hero {
-  background: var(--header-bg);
-  padding: 36px 24px 56px;
-  text-align: center;
-}
-.hero-icon {
-  font-size: 36px; margin-bottom: 12px;
-}
-.hero-title {
-  font-size: 26px; font-weight: 700; color: #f8fafc; letter-spacing: -0.5px; margin-bottom: 6px;
-}
-.hero-sub { font-size: 14px; color: #94a3b8; }
-
-/* ── Content ── */
-.main {
-  max-width: 720px;
-  margin: -28px auto 0;
-  padding: 0 20px 60px;
-  position: relative; z-index: 1;
-}
-
-.empty-state {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  padding: 60px 24px;
-  text-align: center;
-}
-.empty-icon { font-size: 44px; margin-bottom: 14px; }
-.empty-title { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
-.empty-sub { font-size: 14px; color: var(--muted); }
-.empty-link {
-  display: inline-block; margin-top: 20px;
-  background: var(--accent); color: #fff;
-  padding: 10px 20px; border-radius: 10px;
-  text-decoration: none; font-size: 13px; font-weight: 600;
-  transition: background var(--transition);
-}
-.empty-link:hover { background: #4f46e5; }
-
-.subject-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  padding: 24px;
-  margin-bottom: 16px;
-  animation: fadeUp .4s ease both;
-}
-
-.card-header {
-  display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;
-}
-.subject-name {
-  display: flex; align-items: center; gap: 10px;
-}
-.subject-dot {
-  width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
-}
-.subject-title { font-size: 17px; font-weight: 700; color: var(--text); }
-.mastery-badge {
-  font-size: 12px; font-weight: 700;
-  padding: 4px 10px; border-radius: 20px;
-}
-
-.stats-row {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px;
-}
-.mini-stat {
-  background: var(--bg);
-  border-radius: var(--radius-md);
-  padding: 12px;
-  text-align: center;
-}
-.mini-stat-val { font-size: 20px; font-weight: 800; color: var(--text); line-height: 1; }
-.mini-stat-label { font-size: 11px; color: var(--muted); font-weight: 600; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.4px; }
-
-.progress-section { }
-.progress-labels {
-  display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
-}
-.progress-label { font-size: 12px; font-weight: 600; color: var(--muted); }
-.progress-pct { font-size: 13px; font-weight: 700; }
-.bar-track {
-  height: 10px; background: var(--border);
-  border-radius: 999px; overflow: hidden;
-}
-.bar-fill {
-  height: 100%; border-radius: 999px;
-  width: 0%;
-  transition: width 1s cubic-bezier(.4,0,.2,1);
-}
-
-.quiz-row {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border);
-  font-size: 13px; color: var(--muted);
-}
-.quiz-best { font-weight: 700; color: var(--text); }
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 480px) {
-  .stats-row { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-}
-</style>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/haugnes-progress.css">
 </head>
 <body>
-
 <header class="site-header">
-  <a class="site-logo" href="../index.html">
-    <div class="logo-mark">📚</div>
-    <span class="logo-text">StudieHub</span>
+  <a class="site-logo" href="index.html" aria-label="Haugnes Flashcards dashboard">
+    <span class="logo-mark"></span>
+    <span><span class="logo-text">Haugnes</span><span class="logo-sub">Flashcards</span></span>
   </a>
   <a class="header-back" href="index.html">
     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-    Brukerområde
+    Dashboard
   </a>
 </header>
 
 <section class="page-hero">
-  <div class="hero-icon">📈</div>
-  <div class="hero-title">Din progresjon</div>
-  <div class="hero-sub">Oversikt over fremgang per fag og deck</div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-kicker">Statistikk / fremgang</div>
+      <h1 class="hero-title">Se hva du <span>mestrer</span>.</h1>
+      <p class="hero-sub">Oversikt over økter, kort repetert, quizscore og fag der du bør prioritere neste økt.</p>
+    </div>
+    <div class="hero-actions">
+      <a class="hero-btn" href="../flashcards/">Start flashcards →</a>
+      <a class="hero-btn secondary" href="index.html">Til dashboard</a>
+    </div>
+  </div>
 </section>
 
 <main class="main">
-  <div id="list"></div>
+  <section class="overview-grid" id="overviewGrid" aria-label="Nøkkeltall"></section>
+  <div class="content-grid">
+    <section>
+      <div class="progress-panel">
+        <h2 class="panel-title">Aktivitet over tid</h2>
+        <div class="activity-chart" id="activityChart" aria-label="Aktivitetsgraf"></div>
+      </div>
+      <div class="subject-list" id="list"></div>
+    </section>
+    <aside class="side-panel">
+      <section class="progress-panel focus-card">
+        <h2 class="panel-title">Fokusområde</h2>
+        <p id="focusText">Når du har fullført noen økter, viser vi hvilke fag og temaer du bør øve på først.</p>
+        <div class="focus-list" id="focusList"></div>
+      </section>
+      <section class="progress-panel focus-card">
+        <h2 class="panel-title">Anbefalt neste steg</h2>
+        <p>Bruk flashcards jevnlig og fullfør øktene, så blir statistikken mer presis over tid.</p>
+        <div class="focus-list">
+          <a class="focus-item" href="../flashcards/?subject=ret14"><span><strong>RET14 flashcards</strong><span>Start eksamensrelevant repetisjon</span></span><span class="tag">Start</span></a>
+          <a class="focus-item" href="../flashcards/?subject=subj_sol1"><span><strong>SOL1 flashcards</strong><span>Øv begreper og modeller</span></span><span class="tag">Start</span></a>
+        </div>
+      </section>
+    </aside>
+  </div>
 </main>
 
 <script src="auth-guard.js"></script>
 <script>
 var SUBJECT_COLORS = {
-  'ret14': '#2563eb',
-  'sol1':  '#059669',
-  'sam2':  '#d97706',
-  'sam3':  '#7c3aed',
-  'met2':  '#dc2626',
+  'ret14': '#2f62ff',
+  'sol1':  '#20b97a',
+  'subj_sol1': '#20b97a',
+  'sam2':  '#f09828',
+  'sam3':  '#ef4444',
+  'met2':  '#ef4444',
   'mat10': '#0891b2'
 };
 
@@ -210,18 +83,81 @@ function getColor(id) {
   for (var key in SUBJECT_COLORS) {
     if (lower.indexOf(key) !== -1) return SUBJECT_COLORS[key];
   }
-  return '#6366f1';
+  return '#2f62ff';
 }
 
 function hexToRgb(hex) {
-  var r = parseInt(hex.slice(1,3),16);
-  var g = parseInt(hex.slice(3,5),16);
-  var b = parseInt(hex.slice(5,7),16);
+  var clean = (hex || '#2f62ff').replace('#','');
+  var r = parseInt(clean.slice(0,2),16);
+  var g = parseInt(clean.slice(2,4),16);
+  var b = parseInt(clean.slice(4,6),16);
   return r+','+g+','+b;
 }
 
 function getStats() {
   try { return JSON.parse(localStorage.getItem('fc_stats') || '{}'); } catch(e) { return {}; }
+}
+
+function niceDeckName(id) {
+  if (!id) return 'Ukjent fag';
+  return id
+    .replace(/^deck[_-]/i,'')
+    .replace(/^quiz[_-]/i,'')
+    .replace(/subj[_-]/i,'')
+    .replace(/[_-]+/g,' ')
+    .replace(/\b\w/g,function(c){return c.toUpperCase();});
+}
+
+function getSubjectKey(id) {
+  var lower = (id || '').toLowerCase();
+  if (lower.indexOf('ret14') !== -1) return 'RET14';
+  if (lower.indexOf('sol1') !== -1 || lower.indexOf('subj_sol1') !== -1) return 'SOL1';
+  if (lower.indexOf('sam2') !== -1) return 'SAM2';
+  if (lower.indexOf('sam3') !== -1) return 'SAM3';
+  return niceDeckName(id).split(' ')[0] || 'Fag';
+}
+
+function renderOverview(summary) {
+  var el = document.getElementById('overviewGrid');
+  el.innerHTML = ''
+    + '<div class="metric-card"><b>'+summary.totalCards+'</b><span>Kort repetert</span></div>'
+    + '<div class="metric-card"><b>'+summary.mastery+'%</b><span>Nøyaktighet</span></div>'
+    + '<div class="metric-card"><b>'+summary.totalSessions+'</b><span>Økter fullført</span></div>'
+    + '<div class="metric-card"><b>'+summary.quizAttempts+'</b><span>Quizforsøk</span></div>'
+    + '<div class="metric-card"><b>'+summary.bestQuiz+'%</b><span>Beste quiz</span></div>';
+}
+
+function renderActivity(entries) {
+  var buckets = [0,0,0,0,0,0,0];
+  var labels = ['Man','Tir','Ons','Tor','Fre','Lør','Søn'];
+  entries.forEach(function(entry) {
+    var sessions = (entry[1].sessions || []);
+    sessions.forEach(function(sess) {
+      var date = sess.date ? new Date(sess.date) : null;
+      var day = date && !isNaN(date.getTime()) ? (date.getDay()+6)%7 : 0;
+      buckets[day] += sess.total || 0;
+    });
+  });
+  var max = Math.max.apply(null,buckets.concat([1]));
+  document.getElementById('activityChart').innerHTML = buckets.map(function(v,i) {
+    var h = Math.max(4, Math.round((v/max)*100));
+    return '<div class="bar-col"><div class="bar-wrap"><div class="bar" style="height:'+h+'%"></div></div><div class="bar-label">'+labels[i]+'</div></div>';
+  }).join('');
+}
+
+function renderFocus(cards) {
+  var focus = cards.slice().sort(function(a,b){ return a.pct - b.pct; }).slice(0,3);
+  var text = document.getElementById('focusText');
+  var list = document.getElementById('focusList');
+  if (!focus.length) {
+    text.textContent = 'Start en økt for å se hvilke fag som bør prioriteres.';
+    list.innerHTML = '';
+    return;
+  }
+  text.textContent = 'Basert på lavest mestring bør du prioritere disse områdene først.';
+  list.innerHTML = focus.map(function(item) {
+    return '<div class="focus-item"><span><strong>'+item.name+'</strong><span>'+item.total+' kort repetert</span></span><span class="tag">'+item.pct+'%</span></div>';
+  }).join('');
 }
 
 window.onUserAuthorized = function() {
@@ -230,6 +166,9 @@ window.onUserAuthorized = function() {
   var list = document.getElementById('list');
 
   if (!entries.length) {
+    renderOverview({totalCards:0,mastery:0,totalSessions:0,quizAttempts:0,bestQuiz:0});
+    renderActivity([]);
+    renderFocus([]);
     list.innerHTML = '<div class="empty-state">'
       + '<div class="empty-icon">📭</div>'
       + '<div class="empty-title">Ingen data ennå</div>'
@@ -239,10 +178,13 @@ window.onUserAuthorized = function() {
     return;
   }
 
+  var totalSessions = 0, totalCards = 0, totalRight = 0, quizAttempts = 0, bestQuiz = 0;
   var cards = [];
+  list.innerHTML = '';
+
   entries.forEach(function(entry, i) {
     var id = entry[0];
-    var d  = entry[1];
+    var d  = entry[1] || {};
     var ss = d.sessions || [];
     var qs = d.quizSessions || [];
     var total = ss.reduce(function(a,x){ return a + (x.total||0); }, 0);
@@ -252,18 +194,25 @@ window.onUserAuthorized = function() {
     var color = getColor(id);
     var rgb   = hexToRgb(color);
 
-    var masteryBg    = 'rgba('+rgb+',.12)';
+    totalSessions += ss.length;
+    totalCards += total;
+    totalRight += right;
+    quizAttempts += qs.length;
+    if (best !== null && best > bestQuiz) bestQuiz = best;
+
+    var masteryBg    = 'rgba('+rgb+',.14)';
     var masteryColor = color;
-    var masteryLabel = pct >= 80 ? '🌟 Ekspert' : pct >= 50 ? '📘 På vei' : '🌱 Starter';
+    var masteryLabel = pct >= 80 ? '🌟 Sterk' : pct >= 50 ? '📘 På vei' : '🌱 Prioriter';
+    var displayName = getSubjectKey(id) + ' · ' + niceDeckName(id);
 
     var card = document.createElement('div');
     card.className = 'subject-card';
-    card.style.animationDelay = (i * 0.08) + 's';
+    card.style.animationDelay = (i * 0.06) + 's';
     card.innerHTML = ''
       + '<div class="card-header">'
       +   '<div class="subject-name">'
-      +     '<div class="subject-dot" style="background:'+color+'"></div>'
-      +     '<span class="subject-title">'+id.toUpperCase()+'</span>'
+      +     '<div class="subject-dot" style="background:'+color+';color:'+color+'"></div>'
+      +     '<span class="subject-title">'+displayName+'</span>'
       +   '</div>'
       +   '<span class="mastery-badge" style="background:'+masteryBg+';color:'+masteryColor+'">'+masteryLabel+'</span>'
       + '</div>'
@@ -278,18 +227,20 @@ window.onUserAuthorized = function() {
       +     '<span class="progress-pct" style="color:'+color+'">'+pct+'%</span>'
       +   '</div>'
       +   '<div class="bar-track">'
-      +     '<div class="bar-fill" data-pct="'+pct+'" style="background:'+color+'"></div>'
+      +     '<div class="bar-fill" data-pct="'+pct+'" style="background:linear-gradient(90deg,'+color+',#7da0ff);color:'+color+'"></div>'
       +   '</div>'
       + '</div>'
-      + (best !== null
-        ? '<div class="quiz-row"><span>Beste quiz-score</span><span class="quiz-best">'+best+'%</span></div>'
-        : '')
-      ;
-    cards.push(card);
+      + (best !== null ? '<div class="quiz-row"><span>Beste quiz-score</span><span class="quiz-best">'+best+'%</span></div>' : '');
+
+    cards.push({name: displayName, total: total, pct: pct});
     list.appendChild(card);
   });
 
-  // Animate progress bars after paint
+  var mastery = totalCards ? Math.round((totalRight/totalCards)*100) : 0;
+  renderOverview({totalCards:totalCards,mastery:mastery,totalSessions:totalSessions,quizAttempts:quizAttempts,bestQuiz:bestQuiz});
+  renderActivity(entries);
+  renderFocus(cards);
+
   requestAnimationFrame(function() {
     requestAnimationFrame(function() {
       document.querySelectorAll('.bar-fill').forEach(function(el) {
