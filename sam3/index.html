@@ -3,257 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SAM3 — StudieHub</title>
+<title>SAM3 Makroøkonomi — Haugnes Flashcards</title>
+<link rel="icon" href="../assets/haugnes-logo-mark.svg">
+<link rel="apple-touch-icon" href="../assets/haugnes-logo-mark.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../shared/auth-guard.js"></script>
-<script>AuthGuard.requireAuth().then(function(session){if(!session)return;AuthGuard.bindUserInfo&&AuthGuard.bindUserInfo('userEmailLabel','userChip','userAvatar');});</script>
-<script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
-<script src="sam3-flashcards-data.js"></script>
-<script src="formelquiz-data.js?v=p4-1"></script>
-<script src="sam3-topics.js?v=p4-1"></script>
-<script src="sam3-search.js?v=p4-1"></script>
-<script src="sam3-progress.js?v=p4-1"></script>
+<link rel="stylesheet" href="../shared/haugnes-theme.css">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#f4f6fa;--surface:#fff;--header-bg:#0f172a;--accent:#dc2626;--text:#0f172a;--muted:#64748b;--border:#e5e9f0;--radius-lg:18px;--radius-md:12px;--shadow-sm:0 1px 2px rgba(15,23,42,.05);--shadow:0 1px 3px rgba(15,23,42,.06),0 1px 2px rgba(15,23,42,.04);--shadow-hover:0 12px 32px rgba(15,23,42,.12),0 2px 8px rgba(15,23,42,.06);--transition:.22s cubic-bezier(.4,0,.2,1)}
-body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5;-webkit-font-smoothing:antialiased}
-.site-header{background:var(--header-bg);padding:0 22px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.site-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.logo-mark{width:30px;height:30px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px}
-.logo-text{font-size:16px;font-weight:800;color:#fff;letter-spacing:-.3px}
-.breadcrumb{display:flex;align-items:center;gap:7px;font-size:13px}
-.breadcrumb a{color:#94a3b8;text-decoration:none;font-weight:600}
-.breadcrumb a:hover{color:#cbd5e1}
-.breadcrumb-sep{color:#475569}
-.breadcrumb-current{color:#e2e8f0;font-weight:700}
-.hero{background:var(--header-bg);padding:46px 22px 78px;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 14% -10%,rgba(220,38,38,.22),transparent 42%),radial-gradient(circle at 92% 0,rgba(99,102,241,.18),transparent 38%);pointer-events:none}
-.hero-inner{max-width:1080px;margin:0 auto;position:relative}
-.subject-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(220,38,38,.16);border:1px solid rgba(248,113,113,.32);color:#fecaca;font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;padding:5px 11px;border-radius:999px;margin-bottom:18px}
-.subject-dot{width:6px;height:6px;background:var(--accent);border-radius:50%}
-.hero-title{font-size:clamp(28px,4.6vw,44px);font-weight:900;color:#f8fafc;letter-spacing:-1.2px;margin-bottom:10px;line-height:1.05}
-.hero-sub{font-size:15px;color:#cbd5e1;max-width:760px;line-height:1.55}
-.main{max-width:1080px;margin:-48px auto 0;padding:0 20px 60px;position:relative}
-.stats-row{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:28px}
-.stat-chip{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:10px 16px;display:flex;flex-direction:column;gap:1px;box-shadow:var(--shadow-sm)}
-.stat-value{font-size:19px;font-weight:800;color:var(--text);letter-spacing:-.4px;line-height:1.2}
-.stat-label{font-size:10.5px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.5px}
-
-.section-title{font-size:11.5px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--muted);margin:0 0 14px}
-
-/* Anbefalt sti */
-.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-bottom:28px}
-.flow-step{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px;text-decoration:none;color:inherit;display:flex;gap:12px;align-items:flex-start;transition:border-color .15s,transform .08s,box-shadow .15s;position:relative}
-.flow-step:hover{border-color:#cbd5e1;transform:translateY(-2px);box-shadow:var(--shadow-hover)}
-.flow-num{width:28px;height:28px;border-radius:10px;background:#fef2f2;color:var(--accent);font-weight:800;display:grid;place-items:center;flex-shrink:0;font-size:13px;border:1px solid #fecaca}
-.flow-body b{display:block;font-size:13.5px;font-weight:800;letter-spacing:-.2px;color:var(--text);margin-bottom:3px}
-.flow-body p{font-size:12px;color:var(--muted);line-height:1.45;margin:0}
-
-/* Topp prioritet */
-.priority{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;margin-bottom:28px;box-shadow:var(--shadow-sm)}
-.priority-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:14px}
-.priority-head h2{font-size:13px;font-weight:800;letter-spacing:-.2px;color:var(--text);margin:0}
-.priority-head a{font-size:12px;color:var(--accent);text-decoration:none;font-weight:700}
-.priority-head a:hover{text-decoration:underline}
-.priority-rows{display:flex;flex-direction:column;gap:8px}
-.priority-row{display:grid;grid-template-columns:46px 1fr auto;gap:12px;align-items:center;padding:11px 13px;background:#fafbfd;border:1px solid var(--border);border-radius:12px}
-.priority-score{font-family:Inter,system-ui,sans-serif;font-weight:800;font-size:15px;color:#991b1b;text-align:center;background:#fff7f7;border:1px solid #fecaca;border-radius:8px;padding:5px 0;line-height:1}
-.priority-score small{display:block;font-size:9px;color:var(--muted);font-weight:700;margin-top:1px;letter-spacing:.3px}
-.priority-info b{display:block;font-size:13px;font-weight:800;color:var(--text);letter-spacing:-.15px;line-height:1.3}
-.priority-info p{font-size:11.5px;color:var(--muted);margin:3px 0 0;line-height:1.4;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical}
-.priority-cta{display:flex;gap:5px;flex-shrink:0}
-.priority-cta a{font-size:11.5px;font-weight:800;text-decoration:none;padding:5px 10px;border-radius:8px;border:1px solid;letter-spacing:-.1px;white-space:nowrap}
-.priority-cta a.quiz{background:#fff;border-color:#c7d2fe;color:#4338ca}
-.priority-cta a.quiz:hover{background:#eef2ff}
-.priority-cta a.flash{background:#fff;border-color:#bbf7d0;color:#166534}
-.priority-cta a.flash:hover{background:#f0fdf4}
-.search-wrap{position:relative;margin-bottom:28px}
-.search-input{width:100%;padding:14px 16px 14px 44px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);font:inherit;font-size:14px;color:var(--ink);outline:none;box-shadow:var(--shadow-sm);transition:border-color .15s,box-shadow .15s}
-.search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(220,38,38,.08)}
-.search-wrap::before{content:'🔎';position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;opacity:.5}
-.search-results{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-hover);max-height:420px;overflow-y:auto;display:none;z-index:50}
-.search-results.show{display:block}
-.search-group{padding:8px 0}
-.search-group:not(:last-child){border-bottom:1px solid var(--border)}
-.search-group h4{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);padding:4px 14px 6px}
-.search-item{display:block;padding:8px 14px;text-decoration:none;color:var(--ink);font-size:13px}
-.search-item:hover{background:var(--surface-2)}
-.search-item b{display:block;font-weight:700;line-height:1.3}
-.search-item span{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
-.search-empty{padding:14px;text-align:center;color:var(--muted);font-size:12.5px}
-.streak{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;box-shadow:var(--shadow-sm)}
-.streak-num{font-size:32px;font-weight:900;color:var(--accent);letter-spacing:-1.2px;line-height:1;display:flex;align-items:baseline;gap:6px}
-.streak-num small{font-size:11px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.7px}
-.streak-info{flex:1;min-width:180px}
-.streak-info b{display:block;font-size:13px;font-weight:800;color:var(--text)}
-.streak-info p{font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.4}
-.streak-strip{display:flex;gap:3px}
-.streak-day{width:14px;height:14px;border-radius:4px;background:var(--surface-2);border:1px solid var(--border)}
-.streak-day.had{background:linear-gradient(135deg,#dc2626,#f97316);border-color:transparent}
-.streak-day.today{outline:2px solid var(--accent);outline-offset:1px}
-.streak-totals{display:flex;gap:14px;font-size:11.5px;color:var(--muted);flex-wrap:wrap}
-.streak-totals span b{color:var(--text);font-weight:800;font-size:13px;margin-right:3px}
-
-.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-.tool-card{background:var(--surface);border-radius:var(--radius-lg);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column;transition:transform var(--transition),box-shadow var(--transition)}
-.tool-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover)}
-.tool-card.disabled{opacity:.6;cursor:default}
-.tool-card.disabled:hover{transform:none;box-shadow:var(--shadow)}
-.tool-icon-area{padding:24px 22px 16px;display:flex;align-items:flex-start;justify-content:space-between}
-.tool-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:21px}
-.tool-status{font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:999px;letter-spacing:.4px;text-transform:uppercase}
-.status-active{background:#fee2e2;color:#991b1b}
-.status-new{background:#ede9fe;color:#5b21b6}
-.status-soon{background:#f1f5f9;color:#94a3b8}
-.tool-divider{height:1px;background:var(--border);margin:0 22px}
-.tool-body{padding:0 22px 22px;flex:1;display:flex;flex-direction:column}
-.tool-name{font-size:16px;font-weight:800;color:var(--text);letter-spacing:-.3px;margin:14px 0 5px}
-.tool-desc{font-size:12.5px;color:var(--muted);line-height:1.55;flex:1;margin-bottom:18px}
-.tool-action{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted);font-weight:700}
-.tool-open{color:var(--accent);font-weight:800;display:flex;align-items:center;gap:4px}
-.footer{border-top:1px solid var(--border);padding:18px 22px;text-align:center;font-size:12px;color:#94a3b8}
-.footer a{color:#6366f1;text-decoration:none}
-@media(max-width:640px){.hero{padding:34px 18px 70px}.tool-grid{grid-template-columns:1fr}.stats-row{gap:6px}.site-header{padding:0 14px}.breadcrumb{font-size:12px}.priority-row{grid-template-columns:46px 1fr;row-gap:8px}.priority-cta{grid-column:1/-1;justify-content:flex-start}}
+.hf-subject-layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:20px}.hf-subject-aside{display:grid;gap:16px;align-content:start}.hf-hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}.hf-secondary-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border-radius:14px;border:1px solid rgba(255,255,255,.16);color:#fff;text-decoration:none;font-size:14px;font-weight:900;background:rgba(255,255,255,.045)}.hf-tabbar{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.hf-tabbar a{padding:9px 13px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);color:#cbd7ef;text-decoration:none;font-size:13px;font-weight:850}.hf-tabbar a.active{background:#ef4444;color:#fff}.hf-priority{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid #edf2f8}.hf-priority:last-child{border-bottom:0}.hf-priority b{font-size:14px}.hf-priority span{font-size:12px;color:#65738d}.hf-score{display:grid;place-items:center;width:86px;height:86px;border-radius:50%;background:conic-gradient(#ef4444 0 59%,#e7edf6 59% 100%);position:relative}.hf-score::before{content:"";position:absolute;inset:9px;border-radius:50%;background:#fff}.hf-score strong{position:relative;z-index:1;font-size:20px;color:#08172f}@media(max-width:980px){.hf-subject-layout{grid-template-columns:1fr}}
 </style>
 </head>
-<body>
-<header class="site-header"><a class="site-logo" href="../"><div class="logo-mark">📚</div><span class="logo-text">StudieHub</span></a><nav class="breadcrumb"><a href="../">Hjem</a><span class="breadcrumb-sep">›</span><span class="breadcrumb-current">SAM3</span></nav></header>
-<section class="hero"><div class="hero-inner"><div class="subject-badge"><span class="subject-dot"></span>Makroøkonomi</div><h1 class="hero-title">SAM3</h1><p class="hero-sub">Nasjonalregnskap, vekstmodeller, arbeidsmarked, inflasjon, IS–MP, AS–AD, åpen økonomi og stabiliseringspolitikk.</p></div></section>
-<main class="main">
-<div class="stats-row">
-  <div class="stat-chip"><span class="stat-value" id="stat-decks">–</span><span class="stat-label">Kortdekker</span></div>
-  <div class="stat-chip"><span class="stat-value" id="stat-cards">–</span><span class="stat-label">Flashcards</span></div>
-  <div class="stat-chip"><span class="stat-value" id="stat-formulas">–</span><span class="stat-label">Formler</span></div>
-  <div class="stat-chip"><span class="stat-value" id="stat-topics">–</span><span class="stat-label">Temaer i radar</span></div>
-</div>
+<body class="haugnes-app">
+<header class="hf-shell hf-topbar">
+  <a class="hf-brand" href="../user/index.html"><span class="hf-logo"></span><span><span class="hf-brand-title">Haugnes</span><span class="hf-brand-sub">Flashcards</span></span></a>
+  <nav class="hf-nav" aria-label="Navigasjon"><a href="../user/index.html">Dashboard</a><a href="../flashcards/">Alle flashcards</a><a class="primary" href="flashcards.html">Start øving</a></nav>
+</header>
 
-<div class="streak" id="streakWidget" style="display:none">
-  <div class="streak-num"><span id="streakNum">0</span><small>dager på rad</small></div>
-  <div class="streak-info"><b id="streakLabel">Start streaken i dag</b><p id="streakSub">Hver dag du øver med SAM3 teller.</p></div>
-  <div class="streak-strip" id="streakStrip" title="Siste 14 dager"></div>
-  <div class="streak-totals" id="streakTotals"></div>
-</div>
-<div class="search-wrap"><input type="search" class="search-input" id="sam3Search" placeholder="Søk i alle SAM3-ressurser — formler, flashcards, radar-temaer…" autocomplete="off"><div class="search-results" id="sam3SearchResults"></div></div>
-
-<p class="section-title">Anbefalt sti</p>
-<nav class="flow">
-  <a class="flow-step" href="eksamensradar-v3.html"><span class="flow-num">1</span><div class="flow-body"><b>Eksamensradar</b><p>Finn ut hva som er viktigst å lese akkurat nå.</p></div></a>
-  <a class="flow-step" href="flashcards.html"><span class="flow-num">2</span><div class="flow-body"><b>Flashcards</b><p>Slå opp begrep, modeller og typiske svar.</p></div></a>
-  <a class="flow-step" href="formelquiz.html"><span class="flow-num">3</span><div class="flow-body"><b>Formelquiz</b><p>Test om formlene sitter under press.</p></div></a>
-</nav>
-
-<section class="priority" id="priorityPanel">
-  <div class="priority-head"><h2>Topp prioritet nå</h2><a href="eksamensradar-v3.html">Full radar →</a></div>
-  <div class="priority-rows" id="priorityRows"></div>
+<section class="hf-shell hf-hero">
+  <div class="hf-kicker">Makroøkonomi · SAM3</div>
+  <div class="hf-hero-grid">
+    <div>
+      <h1 class="hf-title">SAM3 <span>Makroøkonomi</span></h1>
+      <p class="hf-lead">Vekst, inflasjon, arbeidsledighet, finans- og pengepolitikk, åpen økonomi og makromodeller. Bruk verktøyene til å koble teori, grafer og formler.</p>
+      <div class="hf-tabbar"><a class="active" href="./">Oversikt</a><a href="flashcards.html">Flashcards</a><a href="formelquiz.html">Formelquiz</a><a href="formelark.html">Formelark</a><a href="eksamensradar-v3.html">Eksamensradar</a><a href="mock-eksamen.html">Mock eksamen</a></div>
+      <div class="hf-hero-actions"><a class="hf-btn" href="flashcards.html">Start flashcards →</a><a class="hf-secondary-btn" href="formelquiz.html">Ta formelquiz</a></div>
+    </div>
+    <aside class="hf-panel"><div class="hf-panel-inner"><div class="hf-stats"><div class="hf-stat"><b>12+</b><span>makrotemaer</span></div><div class="hf-stat"><b>5</b><span>aktive verktøy</span></div><div class="hf-stat"><b>1</b><span>mock-eksamen</span></div></div></div></aside>
+  </div>
 </section>
 
-<p class="section-title">Læringsverktøy</p>
-<div class="tool-grid">
-  <a class="tool-card" href="eksamensradar-v3.html"><div class="tool-icon-area"><div class="tool-icon" style="background:#fff7ed">📊</div><span class="tool-status status-active">Tilgjengelig</span></div><div class="tool-divider"></div><div class="tool-body"><div class="tool-name">Eksamensradar</div><p class="tool-desc">Prioriteringskart basert på tidligere SAM3-eksamener og 2026-kontekst.</p><div class="tool-action"><span class="tool-open">Åpne radar <span>→</span></span><span id="toolToTopics">8 temaer</span></div></div></a>
-  <a class="tool-card" href="flashcards.html"><div class="tool-icon-area"><div class="tool-icon" style="background:#fef2f2">🃏</div><span class="tool-status status-active">Tilgjengelig</span></div><div class="tool-divider"></div><div class="tool-body"><div class="tool-name">SAM3 Flashcards</div><p class="tool-desc">Eksamensrettede kort med rating og «øv på de svake»-modus.</p><div class="tool-action"><span class="tool-open">Åpne <span>→</span></span><span id="toolToDecks">13 dekker</span></div></div></a>
-  <a class="tool-card" href="formelquiz.html"><div class="tool-icon-area"><div class="tool-icon" style="background:#eef2ff">∑</div><span class="tool-status status-active">Tilgjengelig</span></div><div class="tool-divider"></div><div class="tool-body"><div class="tool-name">Formelquiz</div><p class="tool-desc">Fyll inn manglende deler av sentrale SAM3-formler. Symbolquiz og figur per formel.</p><div class="tool-action"><span class="tool-open">Start quiz <span>→</span></span><span id="toolToFormulas">22 formler</span></div></div></a>
-  <a class="tool-card" href="multiple-choice.html"><div class="tool-icon-area"><div class="tool-icon" style="background:#fef3c7">🧠</div><span class="tool-status status-new">Ny</span></div><div class="tool-divider"></div><div class="tool-body"><div class="tool-name">Multiple choice</div><p class="tool-desc">Quizmodus med 4 alternativer per formel. Bra for rask gjenkjenning før eksamen.</p><div class="tool-action"><span class="tool-open">Start <span>→</span></span><span>Velg dekk</span></div></div></a>
-  <a class="tool-card" href="mock-eksamen.html"><div class="tool-icon-area"><div class="tool-icon" style="background:#f3e8ff">⏱️</div><span class="tool-status status-new">Ny</span></div><div class="tool-divider"></div><div class="tool-body"><div class="tool-name">Mock-eksamen</div><p class="tool-desc">Tidssatt simulering — tilfeldig blanding fra alle dekk med full per-tema-rapport.</p><div class="tool-action"><span class="tool-open">Simuler <span>→</span></span><span>15–30 min</span></div></div></a>
-  <a class="tool-card" href="formelark.html"><div class="tool-icon-area"><div class="tool-icon" style="background:#ecfdf5">📄</div><span class="tool-status status-new">Ny</span></div><div class="tool-divider"></div><div class="tool-body"><div class="tool-name">Formelark</div><p class="tool-desc">Komplett oversikt over alle SAM3-formler med utledning og symbolfasit — klar til print eller PDF.</p><div class="tool-action"><span class="tool-open">Åpne <span>→</span></span><span>A4-print</span></div></div></a>
-</div>
+<main class="hf-main">
+  <div class="hf-shell hf-subject-layout">
+    <div>
+      <div class="hf-section-head"><div><h2 class="hf-section-title">Læringsverktøy</h2></div><p class="hf-section-copy">SAM3 krever at du både husker begreper og kan bruke modeller. Start med flashcards, repeter formler og test deg med mock-eksamen.</p></div>
+      <div class="hf-card-grid">
+        <a class="hf-tool-card" style="--accent:#ef4444" href="flashcards.html"><div class="hf-tool-top"><div class="hf-tool-icon">▱</div><span class="hf-status">Tilgjengelig</span></div><div class="hf-tool-body"><h3>Flashcards</h3><p>Repetisjon av sentrale begreper, modeller og sammenhenger i makroøkonomi.</p><div class="hf-tool-foot"><span>Åpne →</span><span>øving</span></div></div></a>
+        <a class="hf-tool-card" style="--accent:#7c3aed" href="formelquiz.html"><div class="hf-tool-top"><div class="hf-tool-icon">🧠</div><span class="hf-status">Quiz</span></div><div class="hf-tool-body"><h3>Formelquiz</h3><p>Test symboler, formler og sammenhenger med egen quizflyt for makroformler.</p><div class="hf-tool-foot"><span>Start quiz →</span><span>formler</span></div></div></a>
+        <a class="hf-tool-card" style="--accent:#2f62ff" href="formelark.html"><div class="hf-tool-top"><div class="hf-tool-icon">Σ</div><span class="hf-status">Tilgjengelig</span></div><div class="hf-tool-body"><h3>Formelark</h3><p>Samlet oversikt over viktige formler, symboler og definisjoner du bør kunne.</p><div class="hf-tool-foot"><span>Åpne →</span><span>referanse</span></div></div></a>
+        <a class="hf-tool-card" style="--accent:#e6911b" href="eksamensradar-v3.html"><div class="hf-tool-top"><div class="hf-tool-icon">📊</div><span class="hf-status">Radar</span></div><div class="hf-tool-body"><h3>Eksamensradar</h3><p>Prioriter temaer og se hvilke makroområder som bør øves først mot eksamen.</p><div class="hf-tool-foot"><span>Åpne →</span><span>analyse</span></div></div></a>
+        <a class="hf-tool-card" style="--accent:#20b97a" href="multiple-choice.html"><div class="hf-tool-top"><div class="hf-tool-icon">✓</div><span class="hf-status">Tilgjengelig</span></div><div class="hf-tool-body"><h3>Multiple Choice</h3><p>Test deg på sentrale begreper og mekanismer med raske spørsmål og feedback.</p><div class="hf-tool-foot"><span>Start →</span><span>MCQ</span></div></div></a>
+        <a class="hf-tool-card" style="--accent:#111827" href="mock-eksamen.html"><div class="hf-tool-top"><div class="hf-tool-icon">🏁</div><span class="hf-status">Eksamen</span></div><div class="hf-tool-body"><h3>Mock eksamen</h3><p>Øv eksamensnært med samlet test og oppgaver som binder temaene sammen.</p><div class="hf-tool-foot"><span>Åpne →</span><span>simulering</span></div></div></a>
+      </div>
+      <div class="hf-wide-grid">
+        <section class="hf-info-card"><h3>Viktige temaer</h3><div class="hf-topic"><div><strong>IS-MP / AD-AS</strong><span>Kjerne for analyse</span></div><div class="hf-meter" style="--accent:#ef4444;--p:88%"><i></i></div></div><div class="hf-topic"><div><strong>Inflasjon og pengepolitikk</strong><span>Typiske mekanismer</span></div><div class="hf-meter" style="--accent:#2f62ff;--p:82%"><i></i></div></div><div class="hf-topic"><div><strong>Åpen økonomi</strong><span>Krevende koblinger</span></div><div class="hf-meter" style="--accent:#e6911b;--p:74%"><i></i></div></div></section>
+        <section class="hf-info-card"><h3>Anbefalt øvingsløp</h3><div class="hf-priority"><div><b>1. Flashcards</b><span>Begreper og mekanismer</span></div><span>20 min</span></div><div class="hf-priority"><div><b>2. Formelquiz</b><span>Symboler og relasjoner</span></div><span>15 min</span></div><div class="hf-priority"><div><b>3. Mock eksamen</b><span>Test helheten</span></div><span>45 min</span></div></section>
+      </div>
+      <div class="hf-cta"><div><strong>Neste anbefalte økt: Formelquiz + inflasjon</strong><p style="margin:5px 0 0;color:#becbdf;font-size:14px">Repetisjon av symboler og sentrale sammenhenger</p></div><a class="hf-btn" href="formelquiz.html">Start nå →</a></div>
+    </div>
+    <aside class="hf-subject-aside"><section class="hf-info-card"><h3>Fremgang</h3><div style="display:flex;align-items:center;gap:18px"><div class="hf-score"><strong>59%</strong></div><div><strong style="display:block;color:#08172f;font-size:18px">Makro</strong><span style="color:#65738d;font-size:13px">under oppbygging</span></div></div></section><section class="hf-info-card"><h3>Snarveier</h3><div class="hf-priority"><a href="../user/index.html" style="color:#2f62ff;text-decoration:none;font-weight:900">Dashboard</a><span>→</span></div><div class="hf-priority"><a href="formelark.html" style="color:#2f62ff;text-decoration:none;font-weight:900">Formelark</a><span>→</span></div><div class="hf-priority"><a href="eksamensradar-v3.html" style="color:#2f62ff;text-decoration:none;font-weight:900">Eksamensradar</a><span>→</span></div></section></aside>
+  </div>
 </main>
-<footer class="footer"><a href="../">← Tilbake til StudieHub</a></footer>
-<script>
-(function(){
-  // Topp prioritet panel
-  var topics=window.SAM3_TOPICS||[];
-  var links=window.SAM3_LINKS||{};
-  var rows=document.getElementById('priorityRows');
-  topics.slice(0,3).forEach(function(t){
-    var ctaQuiz=t.quizDeck&&links.quizUrl?'<a class="quiz" href="'+links.quizUrl(t.quizDeck)+'">Quiz →</a>':'';
-    var ctaFlash=t.flashDeck&&links.flashUrl?'<a class="flash" href="'+links.flashUrl(t.flashDeck)+'">Flashcards →</a>':'';
-    var row=document.createElement('div');
-    row.className='priority-row';
-    row.innerHTML='<span class="priority-score">'+t.score.toFixed(1)+'<small>/10</small></span>'+
-                  '<div class="priority-info"><b>'+t.name+'</b><p>'+t.desc+'</p></div>'+
-                  '<div class="priority-cta">'+ctaQuiz+ctaFlash+'</div>';
-    rows.appendChild(row);
-  });
-  document.getElementById('stat-topics').textContent=topics.length;
-
-  // Tell flashcards
-  function unzipSAM3(s){var bin=atob(s),bytes=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return JSON.parse(pako.ungzip(bytes,{to:'string'}));}
-  var fdecks=window.SAM3_FLASHCARD_DECKS||[];
-  if(!fdecks.length&&window.SAM3_FLASHCARDS_GZIP){try{fdecks=unzipSAM3(window.SAM3_FLASHCARDS_GZIP.replace('o7eksowow8ez','o7eksow8ez'));}catch(e){console.warn(e);}}
-  if(fdecks.length){
-    document.getElementById('stat-decks').textContent=fdecks.length;
-    var totalCards=fdecks.reduce(function(s,d){return s+d.cards.length;},0);
-    document.getElementById('stat-cards').textContent=totalCards;
-    document.getElementById('toolToDecks').textContent=fdecks.length+' dekker';
-  }
-
-  // Tell formler (fra formelquiz-data.js sin globale `cards`)
-  if(window.cards&&window.cards.length){
-    document.getElementById('stat-formulas').textContent=window.cards.length;
-    document.getElementById('toolToFormulas').textContent=window.cards.length+' formler';
-  }else if(typeof cards!=='undefined'&&cards.length){
-    document.getElementById('stat-formulas').textContent=cards.length;
-    document.getElementById('toolToFormulas').textContent=cards.length+' formler';
-  }
-
-  // Streak-widget
-  if(window.SAM3Progress){
-    var s=window.SAM3Progress.getStreak();
-    var t=window.SAM3Progress.getTotals();
-    document.getElementById('streakWidget').style.display='flex';
-    document.getElementById('streakNum').textContent=s.current||1;
-    var label=s.current>=2?'🔥 '+s.current+' dager på rad':s.current===1?'Streaken er i gang':'Start streaken i dag';
-    document.getElementById('streakLabel').textContent=label;
-    document.getElementById('streakSub').textContent=s.longest>s.current?'Lengste tidligere: '+s.longest+' dager.':'Kom tilbake i morgen for å holde flammen brennende.';
-    var stripEl=document.getElementById('streakStrip');
-    s.recent.forEach(function(r,i){
-      var d=document.createElement('div');
-      d.className='streak-day'+(r.had?' had':'')+(i===s.recent.length-1?' today':'');
-      d.title=r.d;
-      stripEl.appendChild(d);
-    });
-    var totalsEl=document.getElementById('streakTotals');
-    var parts=[];
-    if(t.flashRated)parts.push('<span><b>'+t.flashRated+'</b>flashcards ratet</span>');
-    if(t.formulaTotal)parts.push('<span><b>'+Math.round(100*t.formulaRight/Math.max(1,t.formulaTotal))+'%</b>formelnøyaktighet</span>');
-    if(t.symbolTotal)parts.push('<span><b>'+t.symbolRight+'/'+t.symbolTotal+'</b>symboltreff</span>');
-    totalsEl.innerHTML=parts.join('');
-  }
-
-  // Søk
-  if(window.SAM3Search){
-    window.SAM3Search.init();
-    var inp=document.getElementById('sam3Search');
-    var results=document.getElementById('sam3SearchResults');
-    function render(items){
-      if(!items.length){results.innerHTML='<div class="search-empty">Ingen treff. Prøv «kronekurs», «Solow», «Phillips» osv.</div>';results.classList.add('show');return;}
-      var groups={radar:[],formel:[],flashcard:[]};
-      items.forEach(function(it){groups[it.type].push(it);});
-      var labels={radar:'Radar-temaer',formel:'Formler',flashcard:'Flashcards'};
-      var html='';
-      Object.keys(groups).forEach(function(k){
-        if(!groups[k].length)return;
-        html+='<div class="search-group"><h4>'+labels[k]+'</h4>';
-        groups[k].forEach(function(it){
-          html+='<a class="search-item" href="'+it.url+'"><b>'+it.label.replace(/</g,'&lt;')+'</b><span>'+(it.sub||'').replace(/</g,'&lt;')+'</span></a>';
-        });
-        html+='</div>';
-      });
-      results.innerHTML=html;
-      results.classList.add('show');
-    }
-    inp.addEventListener('input',function(){
-      var v=inp.value.trim();
-      if(v.length<2){results.classList.remove('show');results.innerHTML='';return;}
-      render(window.SAM3Search.search(v));
-    });
-    inp.addEventListener('focus',function(){if(inp.value.trim().length>=2)render(window.SAM3Search.search(inp.value));});
-    document.addEventListener('click',function(e){if(!e.target.closest('.search-wrap'))results.classList.remove('show');});
-    document.addEventListener('keydown',function(e){if(e.key==='Escape'){results.classList.remove('show');inp.blur();}});
-  }
-})();
-</script>
+<footer class="hf-footer"><div class="hf-shell"><a href="../user/index.html">← Tilbake til dashboard</a></div></footer>
 </body>
 </html>
