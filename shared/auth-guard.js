@@ -51,6 +51,15 @@
     document.head.appendChild(link);
   }
 
+  function addScript(id, src) {
+    if (document.getElementById(id)) return;
+    var script = document.createElement('script');
+    script.id = id;
+    script.src = src;
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+
   function applyBranding() {
     var logoPath = getAssetPath('haugnes-logo-mark.svg');
     addIconLink('icon', logoPath);
@@ -102,6 +111,7 @@
     if (!isFlashcardsPage()) return;
     normalizeFlashcardsRoute();
     addStylesheet('haugnes-flashcards-css', rootRelative('shared/haugnes-flashcards.css'));
+    addScript('haugnes-flashcards-structure-js', rootRelative('shared/haugnes-flashcards-structure.js'));
     document.title = 'Flashcards — Haugnes';
   }
 
