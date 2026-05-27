@@ -87,7 +87,7 @@
       if (/StudieHub/i.test(text.textContent)) text.textContent = 'Haugnes';
     });
 
-    document.querySelectorAll('.brand').forEach(function (brand) {
+    document.querySelectorAll('.brand,.logo').forEach(function (brand) {
       if (/StudieHub/i.test(brand.textContent)) {
         var label = brand.querySelector('span:last-child');
         if (label) label.textContent = 'Haugnes';
@@ -105,6 +105,10 @@
 
   function isRet14ExamPage() {
     return /\/ret14\/eksamen\/?(?:index\.html)?$/.test(window.location.pathname);
+  }
+
+  function isRet14PensumPage() {
+    return /\/ret14\/pensum\/?(?:index\.html)?$/.test(window.location.pathname);
   }
 
   function normalizeFlashcardsRoute() {
@@ -152,6 +156,14 @@
     }, 0);
   }
 
+  function ensureToolBackdrop() {
+    if (!document.querySelector('.haugnes-tool-backdrop')) {
+      var backdrop = document.createElement('div');
+      backdrop.className = 'haugnes-tool-backdrop';
+      document.body.insertBefore(backdrop, document.body.firstChild);
+    }
+  }
+
   function enhanceRet14ExamPage() {
     if (!isRet14ExamPage()) return;
     addStylesheet('haugnes-ret14-eksamen-css', rootRelative('shared/haugnes-ret14-eksamen.css'));
@@ -162,11 +174,19 @@
       nav.innerHTML = '<a class="haugnes-tool-brand" href="' + rootRelative('user/index.html') + '"><span class="haugnes-tool-logo"></span><span>Haugnes</span></a><div class="haugnes-tool-links"><a class="haugnes-tool-link primary" href="' + rootRelative('ret14/') + '">← RET14</a><a class="haugnes-tool-link" href="' + rootRelative('ret14/quiz/') + '">Quiz</a><a class="haugnes-tool-link" href="' + rootRelative('flashcards/?subject=ret14') + '">Flashcards</a><a class="haugnes-tool-link" href="' + rootRelative('user/index.html') + '">Dashboard</a></div>';
       document.body.insertBefore(nav, document.body.firstChild);
     }
-    if (!document.querySelector('.haugnes-tool-backdrop')) {
-      var backdrop = document.createElement('div');
-      backdrop.className = 'haugnes-tool-backdrop';
-      document.body.insertBefore(backdrop, document.body.firstChild);
-    }
+    ensureToolBackdrop();
+  }
+
+  function enhanceRet14PensumPage() {
+    if (!isRet14PensumPage()) return;
+    addStylesheet('haugnes-ret14-pensum-css', rootRelative('shared/haugnes-ret14-pensum.css'));
+    document.title = 'RET14 Pensumoversikt — Haugnes';
+    window.setTimeout(function () {
+      applyBranding();
+      var logoLabel = document.querySelector('.logo span:last-child');
+      if (logoLabel) logoLabel.textContent = 'Haugnes';
+    }, 0);
+    ensureToolBackdrop();
   }
 
   function enhancePages() {
@@ -174,6 +194,7 @@
     enhanceFlashcardsPage();
     enhanceRet14QuizPage();
     enhanceRet14ExamPage();
+    enhanceRet14PensumPage();
   }
 
   normalizeFlashcardsRoute();
@@ -256,6 +277,7 @@
     normalizeFlashcardsRoute: normalizeFlashcardsRoute,
     enhanceFlashcardsPage: enhanceFlashcardsPage,
     enhanceRet14QuizPage: enhanceRet14QuizPage,
-    enhanceRet14ExamPage: enhanceRet14ExamPage
+    enhanceRet14ExamPage: enhanceRet14ExamPage,
+    enhanceRet14PensumPage: enhanceRet14PensumPage
   };
 })(window, document);
