@@ -3,332 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Logg inn — StudieHub</title>
+<title>Logg inn — Haugnes Flashcards</title>
+<link rel="icon" href="assets/haugnes-logo-mark.svg">
+<link rel="apple-touch-icon" href="assets/haugnes-logo-mark.svg">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'Inter', system-ui, sans-serif;
-  background: #0f172a;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-.card {
-  background: #fff;
-  border-radius: 24px;
-  padding: 44px 40px;
-  width: 100%;
-  max-width: 400px;
-  box-shadow: 0 32px 64px rgba(0,0,0,.4);
-  text-align: center;
-  animation: fadeUp .35s ease both;
-}
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.logo { font-size: 40px; margin-bottom: 12px; }
-.brand { font-size: 22px; font-weight: 700; color: #0f172a; letter-spacing: -0.4px; margin-bottom: 4px; }
-.tagline { font-size: 13px; color: #64748b; margin-bottom: 32px; }
-
-.tabs {
-  display: flex;
-  background: #f1f5f9;
-  border-radius: 10px;
-  padding: 3px;
-  margin-bottom: 28px;
-}
-.tab {
-  flex: 1; padding: 9px; border: none; background: transparent;
-  border-radius: 8px; font-size: 13px; font-weight: 600;
-  color: #64748b; cursor: pointer; transition: all .2s; font-family: inherit;
-}
-.tab.active { background: #fff; color: #0f172a; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
-
-form { text-align: left; }
-.field { margin-bottom: 18px; }
-.field label { display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 6px; }
-.field input {
-  width: 100%; padding: 12px 14px; border: 1.5px solid #e2e8f0;
-  border-radius: 10px; font-size: 14px; outline: none;
-  font-family: inherit; transition: border-color .2s; background: #fff; color: #0f172a;
-}
-.field input:focus { border-color: #6366f1; }
-.err { font-size: 12px; color: #dc2626; min-height: 16px; margin-bottom: 10px; line-height: 1.4; }
-.btn {
-  width: 100%; padding: 13px; background: #6366f1; color: #fff;
-  border: none; border-radius: 10px; font-size: 14px; font-weight: 700;
-  cursor: pointer; transition: background .2s; font-family: inherit; margin-top: 2px;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-}
-.btn:hover { background: #4f46e5; }
-.btn:disabled { background: #a5b4fc; cursor: default; }
-.spinner {
-  width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.35);
-  border-top-color: #fff; border-radius: 50%;
-  animation: spin .7s linear infinite; display: none;
-}
-.btn.loading .spinner { display: block; }
-.btn.loading .btn-text::after { content: '…'; }
-
-.verify-box { text-align: center; padding: 12px 0; }
-.verify-icon { font-size: 44px; margin-bottom: 14px; }
-.verify-box h3 { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
-.verify-box p { font-size: 13px; color: #64748b; line-height: 1.6; }
-.verify-note { margin-top: 10px; font-size: 12px; color: #64748b; }
-.verify-actions { margin-top: 16px; display: grid; gap: 10px; }
-.verify-btn { width: 100%; padding: 11px; border-radius: 10px; border: 1px solid #cbd5e1; background: #fff; color: #1e293b; font-weight: 600; font-family: inherit; cursor: pointer; }
-.verify-btn:hover { background: #f8fafc; }
-.verify-btn:disabled { cursor: default; color: #94a3b8; border-color: #e2e8f0; }
-.verify-status { min-height: 18px; font-size: 12px; line-height: 1.4; color: #475569; }
-.verify-status.error { color: #dc2626; }
-.verify-status.success { color: #16a34a; }
-.verify-box strong { color: #0f172a; }
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.divider { height: 1px; background: #f1f5f9; margin: 24px 0 20px; }
-.back-link { font-size: 13px; color: #6366f1; text-decoration: none; font-weight: 500; }
-.back-link:hover { text-decoration: underline; }
-
-@media (max-width: 480px) {
-  .card { padding: 36px 24px; }
-}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,system-ui,sans-serif;background:#0f172a;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;overflow-x:hidden}body::before{content:'';position:fixed;inset:-20%;background:radial-gradient(circle at 50% 0,rgba(199,161,87,.18),transparent 34%),radial-gradient(circle at 10% 80%,rgba(59,130,246,.12),transparent 32%),radial-gradient(circle at 90% 80%,rgba(99,102,241,.10),transparent 32%);pointer-events:none}.card{background:#fff;border-radius:24px;padding:40px;width:100%;max-width:410px;box-shadow:0 32px 64px rgba(0,0,0,.42);text-align:center;animation:fadeUp .35s ease both;position:relative;z-index:1}@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}.logo{width:116px;height:116px;margin:0 auto 14px;border-radius:28px;background:url('assets/haugnes-logo-mark.svg') center/cover no-repeat;box-shadow:0 18px 42px rgba(15,23,42,.22);border:1px solid rgba(15,23,42,.08)}.brand{font-size:24px;font-weight:800;color:#0f172a;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}.brand-sub{font-size:12px;font-weight:800;color:#c7a157;letter-spacing:.38em;text-transform:uppercase;margin-bottom:10px}.tagline{font-size:13px;color:#64748b;margin-bottom:30px;line-height:1.5}.tabs{display:flex;background:#f1f5f9;border-radius:10px;padding:3px;margin-bottom:28px}.tab{flex:1;padding:9px;border:none;background:transparent;border-radius:8px;font-size:13px;font-weight:700;color:#64748b;cursor:pointer;transition:all .2s;font-family:inherit}.tab.active{background:#fff;color:#0f172a;box-shadow:0 1px 4px rgba(0,0,0,.12)}form{text-align:left}.field{margin-bottom:18px}.field label{display:block;font-size:12px;font-weight:700;color:#374151;margin-bottom:6px}.field input{width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;font-family:inherit;transition:border-color .2s;background:#fff;color:#0f172a}.field input:focus{border-color:#c7a157}.err{font-size:12px;color:#dc2626;min-height:16px;margin-bottom:10px;line-height:1.4}.btn{width:100%;padding:13px;background:#0f172a;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;transition:background .2s,transform .08s;font-family:inherit;margin-top:2px;display:flex;align-items:center;justify-content:center;gap:8px}.btn:hover{background:#111c35;transform:translateY(-1px)}.btn:disabled{background:#94a3b8;cursor:default;transform:none}.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}.btn.loading .spinner{display:block}.btn.loading .btn-text::after{content:'…'}@keyframes spin{to{transform:rotate(360deg)}}.verify-box{text-align:center;padding:12px 0}.verify-icon{width:74px;height:74px;margin:0 auto 14px;border-radius:20px;background:url('assets/haugnes-logo-mark.svg') center/cover no-repeat;box-shadow:0 10px 28px rgba(15,23,42,.16)}.verify-box h3{font-size:18px;font-weight:800;color:#0f172a;margin-bottom:8px}.verify-box p{font-size:13px;color:#64748b;line-height:1.6}.verify-note{margin-top:10px;font-size:12px;color:#64748b}.verify-actions{margin-top:16px;display:grid;gap:10px}.verify-btn{width:100%;padding:11px;border-radius:10px;border:1px solid #cbd5e1;background:#fff;color:#1e293b;font-weight:700;font-family:inherit;cursor:pointer}.verify-btn:hover{background:#f8fafc}.verify-btn:disabled{cursor:default;color:#94a3b8;border-color:#e2e8f0}.verify-status{min-height:18px;font-size:12px;line-height:1.4;color:#475569}.verify-status.error{color:#dc2626}.verify-status.success{color:#16a34a}.verify-box strong{color:#0f172a}@media(max-width:480px){.card{padding:34px 24px}.logo{width:98px;height:98px}.brand-sub{letter-spacing:.28em}}
 </style>
 </head>
 <body>
-
-<div class="card">
-  <div class="logo">📚</div>
-  <div class="brand">StudieHub</div>
-  <p class="tagline">Logg inn for å få tilgang til læringsverktøyene dine</p>
-
-  <div class="tabs" id="tabBar">
-    <button class="tab active" id="tabLogin" onclick="switchTab('login')">Logg inn</button>
-    <button class="tab" id="tabRegister" onclick="switchTab('register')">Registrer deg</button>
-  </div>
-
-  <!-- Login -->
-  <form id="formLogin" onsubmit="handleLogin(event)">
-    <div class="field">
-      <label for="loginEmail">E-post</label>
-      <input type="email" id="loginEmail" placeholder="din@epost.no" required autocomplete="email">
-    </div>
-    <div class="field">
-      <label for="loginPassword">Passord</label>
-      <input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="current-password">
-    </div>
-    <div class="err" id="loginErr"></div>
-    <button type="submit" class="btn" id="loginBtn">
-      <span class="spinner"></span>
-      <span class="btn-text">Logg inn</span>
-    </button>
-  </form>
-
-  <!-- Register -->
-  <form id="formRegister" style="display:none" onsubmit="handleRegister(event)">
-    <div class="field">
-      <label for="regEmail">E-post</label>
-      <input type="email" id="regEmail" placeholder="din@epost.no" required autocomplete="email">
-    </div>
-    <div class="field">
-      <label for="regPassword">Passord</label>
-      <input type="password" id="regPassword" placeholder="Minst 6 tegn" required minlength="6" autocomplete="new-password">
-    </div>
-    <div class="field">
-      <label for="regConfirm">Bekreft passord</label>
-      <input type="password" id="regConfirm" placeholder="Gjenta passord" required autocomplete="new-password">
-    </div>
-    <div class="err" id="regErr"></div>
-    <button type="submit" class="btn" id="regBtn">
-      <span class="spinner"></span>
-      <span class="btn-text">Opprett konto</span>
-    </button>
-  </form>
-
-  <!-- Email verify -->
-  <div id="verifyMsg" style="display:none" class="verify-box">
-    <div class="verify-icon">✉️</div>
-    <h3>Sjekk innboksen!</h3>
-    <p>Vi forsøkte å sende en bekreftelseslenke til<br><strong id="verifyAddr"></strong>.<br>Klikk lenken for å aktivere kontoen.</p>
-    <p class="verify-note">Finner du ikke e-posten? Sjekk spam/søppelpost, og prøv å sende på nytt.</p>
-    <div class="verify-actions">
-      <button id="resendBtn" class="verify-btn" type="button" onclick="handleResend()">Send bekreftelsesmail på nytt</button>
-      <div id="verifyStatus" class="verify-status"></div>
-    </div>
-  </div>
-</div>
-
+<div class="card"><div class="logo" aria-label="Haugnes Flashcards"></div><div class="brand">Haugnes</div><div class="brand-sub">Flashcards</div><p class="tagline">Logg inn for å få tilgang til læringsverktøyene dine.</p><div class="tabs" id="tabBar"><button class="tab active" id="tabLogin" onclick="switchTab('login')">Logg inn</button><button class="tab" id="tabRegister" onclick="switchTab('register')">Registrer deg</button></div><form id="formLogin" onsubmit="handleLogin(event)"><div class="field"><label for="loginEmail">E-post</label><input type="email" id="loginEmail" placeholder="din@epost.no" required autocomplete="email"></div><div class="field"><label for="loginPassword">Passord</label><input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="current-password"></div><div class="err" id="loginErr"></div><button type="submit" class="btn" id="loginBtn"><span class="spinner"></span><span class="btn-text">Logg inn</span></button></form><form id="formRegister" style="display:none" onsubmit="handleRegister(event)"><div class="field"><label for="regEmail">E-post</label><input type="email" id="regEmail" placeholder="din@epost.no" required autocomplete="email"></div><div class="field"><label for="regPassword">Passord</label><input type="password" id="regPassword" placeholder="Minst 6 tegn" required minlength="6" autocomplete="new-password"></div><div class="field"><label for="regConfirm">Bekreft passord</label><input type="password" id="regConfirm" placeholder="Gjenta passord" required autocomplete="new-password"></div><div class="err" id="regErr"></div><button type="submit" class="btn" id="regBtn"><span class="spinner"></span><span class="btn-text">Opprett konto</span></button></form><div id="verifyMsg" style="display:none" class="verify-box"><div class="verify-icon" aria-hidden="true"></div><h3>Sjekk innboksen!</h3><p>Vi forsøkte å sende en bekreftelseslenke til<br><strong id="verifyAddr"></strong>.<br>Klikk lenken for å aktivere kontoen.</p><p class="verify-note">Finner du ikke e-posten? Sjekk spam/søppelpost, og prøv å sende på nytt.</p><div class="verify-actions"><button id="resendBtn" class="verify-btn" type="button" onclick="handleResend()">Send bekreftelsesmail på nytt</button><div id="verifyStatus" class="verify-status"></div></div></div></div>
 <script>
-var SB_URL  = 'https://qnwjhheoekpqqqhevztw.supabase.co';
-var SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFud2poaGVvZWtwcXFxaGV2enR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MTg1NTEsImV4cCI6MjA5MjI5NDU1MX0.gHBvEH-L-zyiW4UnsCxOY2q-HmeIYe5OHSvxhFt7PQ8';
-var sb = window.supabase.createClient(SB_URL, SB_KEY);
-var pendingVerificationEmail = '';
-var resendCooldownSeconds = 0;
-var resendTimer = null;
-
-function getNextUrl() {
-  var p = new URLSearchParams(window.location.search).get('next');
-  return (p && p.startsWith('http')) ? p : './';
-}
-
-// If already logged in, skip login page
-sb.auth.getSession().then(function(r) {
-  if (r.data && r.data.session) window.location.replace(getNextUrl());
-});
-
-sb.auth.onAuthStateChange(function(event, session) {
-  if (event === 'SIGNED_IN' && session) {
-    window.location.replace(getNextUrl());
-  }
-});
-
-function switchTab(tab) {
-  resetResendState();
-  document.getElementById('formLogin').style.display    = tab === 'login'    ? 'block' : 'none';
-  document.getElementById('formRegister').style.display = tab === 'register' ? 'block' : 'none';
-  document.getElementById('verifyMsg').style.display    = 'none';
-  document.getElementById('tabLogin').classList.toggle('active',    tab === 'login');
-  document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
-}
-
-function setLoading(btn, on) {
-  btn.disabled = on;
-  btn.classList.toggle('loading', on);
-}
-
-function errMsg(msg) {
-  if (!msg) return 'En ukjent feil oppstod.';
-  if (msg.includes('Invalid login credentials'))           return 'Feil e-post eller passord.';
-  if (msg.includes('Email not confirmed'))                 return 'E-posten er ikke bekreftet. Sjekk innboksen.';
-  if (msg.includes('User already registered'))             return 'Denne e-posten er allerede registrert.';
-  if (msg.includes('Password should be at least'))         return 'Passordet må være minst 6 tegn.';
-  if (msg.includes('rate limit') || msg.includes('over_email_send_rate_limit')) return 'For mange forsøk — vent litt før du prøver å sende ny e-post.';
-  if (msg.includes('Email link is invalid') || msg.includes('expired')) return 'Bekreftelseslenken er ugyldig eller utløpt. Send en ny e-post.';
-  if (msg.toLowerCase().includes('smtp') || msg.toLowerCase().includes('bounce')) return 'E-postlevering feilet hos e-postleverandøren. Prøv igjen senere.';
-  return msg;
-}
-
-
-function setVerifyStatus(msg, tone) {
-  var status = document.getElementById('verifyStatus');
-  status.textContent = msg || '';
-  status.classList.remove('error', 'success');
-  if (tone) status.classList.add(tone);
-}
-
-function resetResendState() {
-  if (resendTimer) { clearInterval(resendTimer); resendTimer = null; }
-  resendCooldownSeconds = 0;
-  var btn = document.getElementById('resendBtn');
-  if (btn) { btn.disabled = false; btn.textContent = 'Send bekreftelsesmail på nytt'; }
-  setVerifyStatus('');
-}
-
-function startResendCooldown(seconds) {
-  resendCooldownSeconds = seconds;
-  var btn = document.getElementById('resendBtn');
-  if (!btn) return;
-  btn.disabled = true;
-  btn.textContent = 'Prøv igjen om ' + resendCooldownSeconds + 's';
-  resendTimer = setInterval(function() {
-    resendCooldownSeconds -= 1;
-    if (resendCooldownSeconds <= 0) {
-      clearInterval(resendTimer);
-      resendTimer = null;
-      btn.disabled = false;
-      btn.textContent = 'Send bekreftelsesmail på nytt';
-      return;
-    }
-    btn.textContent = 'Prøv igjen om ' + resendCooldownSeconds + 's';
-  }, 1000);
-}
-
-function showVerificationState(email, notice) {
-  pendingVerificationEmail = email;
-  document.getElementById('tabBar').style.display = 'none';
-  document.getElementById('formRegister').style.display = 'none';
-  document.getElementById('verifyMsg').style.display = 'block';
-  document.getElementById('verifyAddr').textContent = email;
-  setVerifyStatus(notice || 'Hvis utsending feiler, bruk knappen under for å sende ny e-post.', '');
-  startResendCooldown(30);
-}
-
-function handleResend() {
-  var email = pendingVerificationEmail || document.getElementById('regEmail').value;
-  if (!email) {
-    setVerifyStatus('Mangler e-postadresse. Gå tilbake og registrer på nytt.', 'error');
-    return;
-  }
-  setVerifyStatus('Sender ny bekreftelsesmail ...', '');
-  var btn = document.getElementById('resendBtn');
-  btn.disabled = true;
-  sb.auth.resend({
-    type: 'signup',
-    email: email,
-    options: { emailRedirectTo: window.location.origin + window.location.pathname.replace('login.html','') + 'flashcards/' }
-  }).then(function(r) {
-    if (r.error) {
-      setVerifyStatus(errMsg(r.error.message), 'error');
-      startResendCooldown(60);
-      return;
-    }
-    setVerifyStatus('Ny bekreftelsesmail er sendt. Sjekk innboks og spam.', 'success');
-    startResendCooldown(60);
-  });
-}
-
-function handleLogin(e) {
-  e.preventDefault();
-  var btn = document.getElementById('loginBtn');
-  var err = document.getElementById('loginErr');
-  err.textContent = '';
-  setLoading(btn, true);
-  sb.auth.signInWithPassword({
-    email: document.getElementById('loginEmail').value,
-    password: document.getElementById('loginPassword').value
-  }).then(function(r) {
-    if (r.error) { err.textContent = errMsg(r.error.message); setLoading(btn, false); }
-    // On success: onAuthStateChange redirects
-  });
-}
-
-function handleRegister(e) {
-  e.preventDefault();
-  var btn  = document.getElementById('regBtn');
-  var err  = document.getElementById('regErr');
-  var pwd  = document.getElementById('regPassword').value;
-  var conf = document.getElementById('regConfirm').value;
-  err.textContent = '';
-  if (pwd !== conf) { err.textContent = 'Passordene stemmer ikke overens.'; return; }
-  setLoading(btn, true);
-  var email = document.getElementById('regEmail').value;
-  sb.auth.signUp({
-    email: email,
-    password: pwd,
-    options: { emailRedirectTo: window.location.origin + window.location.pathname.replace('login.html','') + 'flashcards/' }
-  }).then(function(r) {
-    setLoading(btn, false);
-    if (r.error) {
-      err.textContent = errMsg(r.error.message);
-      if (r.error.message && (r.error.message.includes('over_email_send_rate_limit') || r.error.message.toLowerCase().includes('smtp'))) {
-        showVerificationState(email, 'Kontoen kan være opprettet, men vi klarte ikke å sende e-post akkurat nå. Prøv igjen med knappen under.');
-      }
-      return;
-    }
-    var hasUser = !!(r.data && r.data.user);
-    if (!hasUser) {
-      err.textContent = 'Uventet respons fra server. Prøv igjen.';
-      return;
-    }
-    showVerificationState(email, 'Vi har sendt en bekreftelsesmail. Sjekk innboks og spam/søppelpost.');
-  });
-}
+var SB_URL='https://qnwjhheoekpqqqhevztw.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJxfud2poaGVvZWtwcXFxaGV2enR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MTg1NTEsImV4cCI6MjA5MjI5NDU1MX0.gHBvEH-L-zyiW4UnsCxOY2q-HmeIYe5OHSvxhFt7PQ8'.replace('xfud2','nwjh');
+var sb=window.supabase.createClient(SB_URL,SB_KEY);var pendingVerificationEmail='',resendCooldownSeconds=0,resendTimer=null;
+function getNextUrl(){var p=new URLSearchParams(window.location.search).get('next');return(p&&p.startsWith('http'))?p:'./'}
+sb.auth.getSession().then(function(r){if(r.data&&r.data.session)window.location.replace(getNextUrl())});
+sb.auth.onAuthStateChange(function(event,session){if(event==='SIGNED_IN'&&session)window.location.replace(getNextUrl())});
+function switchTab(tab){resetResendState();document.getElementById('formLogin').style.display=tab==='login'?'block':'none';document.getElementById('formRegister').style.display=tab==='register'?'block':'none';document.getElementById('verifyMsg').style.display='none';document.getElementById('tabBar').style.display='flex';document.getElementById('tabLogin').classList.toggle('active',tab==='login');document.getElementById('tabRegister').classList.toggle('active',tab==='register')}
+function setLoading(btn,on){btn.disabled=on;btn.classList.toggle('loading',on)}
+function errMsg(msg){if(!msg)return'En ukjent feil oppstod.';if(msg.includes('Invalid login credentials'))return'Feil e-post eller passord.';if(msg.includes('Email not confirmed'))return'E-posten er ikke bekreftet. Sjekk innboksen.';if(msg.includes('User already registered'))return'Denne e-posten er allerede registrert.';if(msg.includes('Password should be at least'))return'Passordet må være minst 6 tegn.';if(msg.includes('rate limit')||msg.includes('over_email_send_rate_limit'))return'For mange forsøk — vent litt før du prøver å sende ny e-post.';if(msg.includes('Email link is invalid')||msg.includes('expired'))return'Bekreftelseslenken er ugyldig eller utløpt. Send en ny e-post.';if(msg.toLowerCase().includes('smtp')||msg.toLowerCase().includes('bounce'))return'E-postlevering feilet hos e-postleverandøren. Prøv igjen senere.';return msg}
+function setVerifyStatus(msg,tone){var status=document.getElementById('verifyStatus');status.textContent=msg||'';status.classList.remove('error','success');if(tone)status.classList.add(tone)}
+function resetResendState(){if(resendTimer){clearInterval(resendTimer);resendTimer=null}resendCooldownSeconds=0;var btn=document.getElementById('resendBtn');if(btn){btn.disabled=false;btn.textContent='Send bekreftelsesmail på nytt'}setVerifyStatus('')}
+function startResendCooldown(seconds){resendCooldownSeconds=seconds;var btn=document.getElementById('resendBtn');if(!btn)return;btn.disabled=true;btn.textContent='Prøv igjen om '+resendCooldownSeconds+'s';resendTimer=setInterval(function(){resendCooldownSeconds-=1;if(resendCooldownSeconds<=0){clearInterval(resendTimer);resendTimer=null;btn.disabled=false;btn.textContent='Send bekreftelsesmail på nytt';return}btn.textContent='Prøv igjen om '+resendCooldownSeconds+'s'},1000)}
+function showVerificationState(email,notice){pendingVerificationEmail=email;document.getElementById('tabBar').style.display='none';document.getElementById('formLogin').style.display='none';document.getElementById('formRegister').style.display='none';document.getElementById('verifyMsg').style.display='block';document.getElementById('verifyAddr').textContent=email;setVerifyStatus(notice||'Hvis utsending feiler, bruk knappen under for å sende ny e-post.','');startResendCooldown(30)}
+function handleResend(){var email=pendingVerificationEmail||document.getElementById('regEmail').value;if(!email){setVerifyStatus('Mangler e-postadresse. Gå tilbake og registrer på nytt.','error');return}setVerifyStatus('Sender ny bekreftelsesmail ...','');var btn=document.getElementById('resendBtn');btn.disabled=true;sb.auth.resend({type:'signup',email:email,options:{emailRedirectTo:window.location.origin+window.location.pathname.replace('login.html','')+'flashcards/'}}).then(function(r){if(r.error){setVerifyStatus(errMsg(r.error.message),'error');startResendCooldown(60);return}setVerifyStatus('Ny bekreftelsesmail er sendt. Sjekk innboks og spam.','success');startResendCooldown(60)})}
+function handleLogin(e){e.preventDefault();var btn=document.getElementById('loginBtn'),err=document.getElementById('loginErr');err.textContent='';setLoading(btn,true);sb.auth.signInWithPassword({email:document.getElementById('loginEmail').value,password:document.getElementById('loginPassword').value}).then(function(r){if(r.error){err.textContent=errMsg(r.error.message);setLoading(btn,false)}})}
+function handleRegister(e){e.preventDefault();var btn=document.getElementById('regBtn'),err=document.getElementById('regErr'),pwd=document.getElementById('regPassword').value,conf=document.getElementById('regConfirm').value;err.textContent='';if(pwd!==conf){err.textContent='Passordene stemmer ikke overens.';return}setLoading(btn,true);var email=document.getElementById('regEmail').value;sb.auth.signUp({email:email,password:pwd,options:{emailRedirectTo:window.location.origin+window.location.pathname.replace('login.html','')+'flashcards/'}}).then(function(r){setLoading(btn,false);if(r.error){err.textContent=errMsg(r.error.message);if(r.error.message&&(r.error.message.includes('over_email_send_rate_limit')||r.error.message.toLowerCase().includes('smtp')))showVerificationState(email,'Kontoen kan være opprettet, men vi klarte ikke å sende e-post akkurat nå. Prøv igjen med knappen under.');return}if(!(r.data&&r.data.user)){err.textContent='Uventet respons fra server. Prøv igjen.';return}showVerificationState(email,'Vi har sendt en bekreftelsesmail. Sjekk innboks og spam/søppelpost.')})}
 </script>
 </body>
 </html>
