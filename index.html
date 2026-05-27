@@ -1,28 +1,220 @@
 <!DOCTYPE html>
 <html lang="no">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>StudieHub</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="shared/auth-guard.js"></script>
-<!-- Import the global UI upgrades to ensure a consistent header across pages -->
-<link rel="stylesheet" href="shared/ui-upgrades.css">
-<script>AuthGuard.requireAuth().then(function(session){if(!session)return;AuthGuard.bindUserInfo('userEmailLabel','userChip','userAvatar');});</script>
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--bg:#f1f5f9;--surface:#fff;--header-bg:#0f172a;--text:#0f172a;--text-muted:#64748b;--border:#e2e8f0;--radius-lg:20px;--radius-md:12px;--shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);--shadow-md:0 4px 16px rgba(0,0,0,.08),0 1px 4px rgba(0,0,0,.04);--shadow-hover:0 12px 32px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.06);--transition:.22s cubic-bezier(.4,0,.2,1)}body{font-family:Inter,system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}.site-header{background:var(--header-bg);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}.site-logo{display:flex;align-items:center;gap:10px;text-decoration:none}.logo-mark{width:32px;height:32px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}.logo-text{font-size:17px;font-weight:800;color:#fff;letter-spacing:-.3px}.header-action{display:flex;align-items:center;gap:8px;color:#94a3b8;font-size:13px;font-weight:600;text-decoration:none;padding:6px 12px;border-radius:var(--radius-md);transition:background var(--transition),color var(--transition)}.header-action:hover{background:rgba(255,255,255,.08);color:#e2e8f0}.hero{background:var(--header-bg);padding:48px 24px 56px;text-align:center;position:relative;overflow:hidden}.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:rgba(255,255,255,.06)}.hero-eyebrow{font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#6366f1;margin-bottom:12px}.hero-title{font-size:clamp(28px,5vw,40px);font-weight:800;color:#f8fafc;letter-spacing:-.8px;margin-bottom:10px}.hero-sub{font-size:15px;color:#94a3b8;max-width:480px;margin:0 auto}.main{max-width:980px;margin:0 auto;padding:40px 20px 60px}.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}.section-title{font-size:13px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--text-muted)}.subject-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:48px}.subject-card{background:var(--surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;cursor:pointer;text-decoration:none;display:block;transition:transform var(--transition),box-shadow var(--transition);border:1px solid var(--border)}.subject-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover)}.card-stripe{height:6px}.card-body{padding:20px 22px 22px}.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}.card-name{font-size:17px;font-weight:800;color:var(--text);letter-spacing:-.3px}.badge{font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px;white-space:nowrap}.badge-active{background:#ede9fe;color:#5b21b6}.card-desc{font-size:13px;color:var(--text-muted);margin-bottom:16px;line-height:1.5}.card-footer{display:flex;align-items:center;justify-content:space-between}.tools-dots{display:flex;gap:5px}.tool-dot{width:7px;height:7px;border-radius:50%;opacity:.35}.tool-dot.active{opacity:1}.card-arrow{font-size:16px;color:#cbd5e1;transition:transform var(--transition),color var(--transition)}.subject-card:hover .card-arrow{color:#6366f1;transform:translateX(3px)}.all-flashcards-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 22px;display:flex;align-items:center;justify-content:space-between;text-decoration:none;transition:transform var(--transition),box-shadow var(--transition);box-shadow:var(--shadow-sm);margin-bottom:48px}.all-flashcards-bar:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}.all-fc-left{display:flex;align-items:center;gap:14px}.all-fc-icon{width:40px;height:40px;background:#ede9fe;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}.all-fc-label{font-size:15px;font-weight:800;color:var(--text)}.all-fc-sub{font-size:12px;color:var(--text-muted);margin-top:1px}.all-fc-arrow{font-size:18px;color:#cbd5e1}.placeholder-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-top:16px}.placeholder-card{background:var(--surface);border:1px dashed var(--border);border-radius:var(--radius-md);padding:18px 16px;text-align:center;text-decoration:none}.placeholder-label{font-size:15px;font-weight:800;color:var(--text-muted);margin-bottom:4px}.placeholder-sub{font-size:11px;color:#94a3b8}.site-footer{border-top:1px solid var(--border);padding:24px;text-align:center;font-size:12px;color:#94a3b8}@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}.subject-grid>*,.all-flashcards-bar,.placeholder-grid>*{animation:fadeUp .4s ease both}@media(max-width:600px){.hero{padding:36px 20px 44px}.subject-grid{grid-template-columns:1fr}.placeholder-grid{grid-template-columns:repeat(2,1fr)}.header-action span{display:none}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Haugnes Flashcards — Lær smartere</title>
+  <link rel="icon" href="assets/haugnes-logo-mark.svg">
+  <link rel="apple-touch-icon" href="assets/haugnes-logo-mark.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#06152d;
+      --navy-2:#0a2142;
+      --navy-3:#102b54;
+      --blue:#2f62ff;
+      --blue-2:#5a82ff;
+      --gold:#e8bd65;
+      --gold-2:#f7d995;
+      --ink:#071329;
+      --muted:#62708a;
+      --line:#dce4ef;
+      --soft:#f4f7fb;
+      --surface:#fff;
+      --radius-xl:30px;
+      --radius-lg:22px;
+      --radius-md:14px;
+      --shadow:0 24px 70px rgba(7,19,41,.14);
+      --shadow-soft:0 14px 34px rgba(7,19,41,.10);
+      --container:1160px;
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#fff;color:var(--ink);line-height:1.55;min-height:100vh;overflow-x:hidden}
+    a{color:inherit;text-decoration:none}
+    .page{background:linear-gradient(180deg,#06152d 0,#071a35 47%,#f7f9fd 47%,#fff 100%)}
+    .shell{width:min(var(--container),calc(100% - 48px));margin:0 auto}
+    .topbar{height:80px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.08);position:relative;z-index:20}
+    .brand{display:flex;align-items:center;gap:14px;color:#fff}
+    .brand-mark{width:46px;height:46px;border-radius:13px;background:url('assets/haugnes-logo-mark.svg') center/cover no-repeat;box-shadow:0 13px 30px rgba(0,0,0,.32),0 0 0 1px rgba(255,255,255,.16)}
+    .brand-name{font-size:20px;font-weight:800;letter-spacing:.32em;line-height:1;text-transform:uppercase}
+    .brand-sub{font-size:10px;font-weight:800;letter-spacing:.52em;color:var(--gold);text-transform:uppercase;margin-top:6px}
+    .nav{display:flex;align-items:center;gap:30px;color:rgba(255,255,255,.84);font-size:14px;font-weight:650}
+    .nav a{transition:color .18s ease,transform .18s ease}.nav a:hover{color:#fff;transform:translateY(-1px)}
+    .login-btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:11px 18px;border-radius:12px;background:linear-gradient(135deg,#3f6dff,#244eea);color:#fff!important;box-shadow:0 16px 34px rgba(47,98,255,.34);font-weight:800}.login-btn:hover{transform:translateY(-2px)!important}
+    .hero{position:relative;padding:68px 0 54px;min-height:600px;isolation:isolate}
+    .hero::before{content:"";position:absolute;inset:-120px -10vw auto auto;width:620px;height:620px;background:radial-gradient(circle,rgba(47,98,255,.28),transparent 66%);filter:blur(2px);z-index:-1}
+    .hero::after{content:"";position:absolute;left:-18vw;top:90px;width:520px;height:520px;background:radial-gradient(circle,rgba(232,189,101,.16),transparent 68%);z-index:-1}
+    .hero-grid{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(420px,.98fr);gap:56px;align-items:center}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border:1px solid rgba(90,130,255,.36);border-radius:999px;background:rgba(47,98,255,.16);color:#9bb5ff;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;margin-bottom:20px}
+    .eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 16px rgba(232,189,101,.9)}
+    h1{font-size:clamp(48px,6.3vw,78px);line-height:.96;letter-spacing:-.065em;color:#fff;font-weight:900;margin-bottom:24px;max-width:720px}
+    h1 span{display:block;color:var(--gold);letter-spacing:-.055em;text-shadow:0 18px 48px rgba(232,189,101,.14)}
+    .lead{font-size:18px;color:#cbd8ee;max-width:560px;margin-bottom:32px}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:42px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:11px;border-radius:14px;padding:15px 24px;font-size:15px;font-weight:900;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease}
+    .btn-primary{background:linear-gradient(135deg,#3f6dff,#244eea);color:#fff;box-shadow:0 18px 38px rgba(47,98,255,.36)}
+    .btn-secondary{border:1px solid rgba(255,255,255,.24);color:#fff;background:rgba(255,255,255,.04);backdrop-filter:blur(10px)}
+    .btn:hover{transform:translateY(-2px)}.btn-secondary:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.38)}
+    .trust-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;max-width:660px}
+    .trust-item{display:flex;gap:12px;align-items:flex-start;color:#d8e2f5}.trust-icon{width:30px;height:30px;flex:0 0 30px;border:1px solid rgba(232,189,101,.45);border-radius:10px;display:grid;place-items:center;color:var(--gold);font-weight:900;background:rgba(232,189,101,.08)}
+    .trust-title{font-size:13px;font-weight:900;color:#fff}.trust-text{font-size:12px;color:#aebdd3;line-height:1.45;margin-top:2px}
+    .hero-visual{position:relative;height:470px;display:grid;place-items:center}
+    .visual-glow{position:absolute;width:440px;height:440px;border-radius:50%;background:radial-gradient(circle,rgba(232,189,101,.20),rgba(47,98,255,.10) 42%,transparent 68%);filter:blur(4px)}
+    .orb-ring{position:absolute;width:396px;height:396px;border-radius:50%;border:2px solid rgba(232,189,101,.74);box-shadow:0 0 48px rgba(232,189,101,.20),inset 0 0 36px rgba(232,189,101,.09);animation:ringPulse 5s ease-in-out infinite}.orb-ring::before,.orb-ring::after{content:"";position:absolute;border-radius:50%;background:var(--gold);box-shadow:0 0 20px rgba(232,189,101,.88)}.orb-ring::before{width:8px;height:8px;left:32px;top:80px}.orb-ring::after{width:5px;height:5px;right:56px;bottom:88px}
+    .stage{position:relative;width:360px;height:360px;display:grid;place-items:center;animation:floatHero 5.6s ease-in-out infinite}
+    .card-stack{position:relative;width:220px;height:255px;transform:rotate(-4deg);filter:drop-shadow(0 28px 42px rgba(0,0,0,.38))}
+    .flash-card{position:absolute;inset:0;border-radius:22px;background:linear-gradient(145deg,#fff,#f2f4f8);border:1px solid rgba(255,255,255,.88);box-shadow:inset 0 0 0 1px rgba(7,19,41,.05)}
+    .flash-card.back-2{transform:translate(44px,-20px) rotate(10deg);background:linear-gradient(145deg,#245082,#17345e);opacity:.78}.flash-card.back-1{transform:translate(24px,-10px) rotate(6deg);background:linear-gradient(145deg,#3b6ca9,#173b6a);opacity:.92}
+    .flash-card.front{display:grid;place-items:center;overflow:hidden}.flash-card.front::after{content:"";position:absolute;right:-36px;bottom:-36px;width:100px;height:100px;border-radius:24px;background:linear-gradient(145deg,#e7edf6,#fff);transform:rotate(20deg);box-shadow:0 -8px 26px rgba(7,19,41,.13)}
+    .front img{width:108px;height:108px;object-fit:contain;position:relative;z-index:2;filter:drop-shadow(0 12px 18px rgba(7,19,41,.16))}
+    .pedestal{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:330px;height:88px;border-radius:50%;background:linear-gradient(180deg,#153465,#071a34);box-shadow:0 28px 44px rgba(0,0,0,.42),inset 0 12px 24px rgba(255,255,255,.10)}.pedestal::after{content:"";position:absolute;left:36px;right:36px;top:17px;height:24px;border-radius:50%;background:rgba(255,255,255,.08)}
+    .floating{position:absolute;z-index:4;display:grid;place-items:center;filter:drop-shadow(0 18px 28px rgba(0,0,0,.26));animation:floatIcon 4.8s ease-in-out infinite}.bulb{top:6px;left:50%;transform:translateX(-50%);font-size:48px;color:#ffd978;text-shadow:0 0 26px rgba(232,189,101,.82)}.target{right:2px;top:142px;width:78px;height:78px;border-radius:50%;background:radial-gradient(circle at center,#071329 0 22%,#fff 23% 38%,#071329 39% 55%,#e8bd65 56% 100%);border:6px solid #d6a64d}.target::after{content:"↗";font-size:38px;color:#e8bd65;transform:translate(12px,-12px);font-weight:900}.bars{left:2px;top:162px;width:64px;height:58px;align-items:end;grid-template-columns:repeat(3,12px);gap:7px}.bars span{display:block;width:12px;border-radius:4px 4px 1px 1px;background:linear-gradient(180deg,#f7d995,#d99b36)}.bars span:nth-child(1){height:22px}.bars span:nth-child(2){height:38px}.bars span:nth-child(3){height:52px}.book{bottom:42px;left:50%;transform:translateX(-50%);font-size:42px;color:var(--gold)}
+    @keyframes floatHero{0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}@keyframes floatIcon{0%,100%{margin-top:0}50%{margin-top:-9px}}@keyframes ringPulse{0%,100%{opacity:.86;transform:scale(1)}50%{opacity:1;transform:scale(1.025)}}
+    .feature-ribbon{position:relative;margin-top:-8px;z-index:10;background:linear-gradient(135deg,rgba(12,37,75,.97),rgba(7,24,49,.97));border:1px solid rgba(255,255,255,.10);border-radius:22px;box-shadow:0 28px 70px rgba(0,0,0,.28);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));overflow:hidden}.feature{padding:28px 28px;display:grid;grid-template-columns:46px 1fr;gap:16px;align-items:start;color:#dbe7fa;border-right:1px solid rgba(255,255,255,.09)}.feature:last-child{border-right:0}.feature-icon{width:46px;height:46px;border-radius:15px;border:1px solid rgba(90,130,255,.4);display:grid;place-items:center;color:#5f8cff;background:rgba(47,98,255,.11);font-size:22px}.feature h3{font-size:15px;color:#fff;margin-bottom:5px}.feature p{font-size:13px;color:#b3c1d7;line-height:1.55}
+    .section{padding:74px 0}.section-light{background:#fff}.section-head{display:flex;justify-content:space-between;align-items:end;gap:30px;margin-bottom:28px}.section-kicker{font-size:12px;font-weight:900;color:#405170;text-transform:uppercase;letter-spacing:.12em;margin-bottom:9px}.section-title{font-size:clamp(28px,3.5vw,44px);line-height:1.06;letter-spacing:-.045em;color:#071329;font-weight:900;max-width:550px}.section-copy{font-size:16px;color:var(--muted);max-width:430px}.subject-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.subject-card{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow-soft);padding:22px;min-height:218px;position:relative;overflow:hidden;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}.subject-card::before{content:"";position:absolute;inset:0 0 auto;height:5px;background:var(--accent)}.subject-card:hover{transform:translateY(-5px);box-shadow:0 22px 46px rgba(7,19,41,.15);border-color:#cbd7e8}.subject-top{display:flex;justify-content:space-between;align-items:start;margin:8px 0 14px}.subject-icon{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font-weight:900;font-size:18px;box-shadow:0 12px 24px color-mix(in srgb,var(--accent),transparent 72%)}.subject-tools{font-size:12px;font-weight:900;padding:5px 10px;border-radius:999px;background:#eef2ff;color:#3448b5}.subject-code{font-size:18px;font-weight:900;letter-spacing:-.02em;color:#071329}.subject-name{font-size:12px;font-weight:800;color:#66748b;margin-bottom:12px}.subject-desc{font-size:13px;color:#60708a;line-height:1.55;min-height:64px}.subject-foot{display:flex;justify-content:space-between;align-items:center;margin-top:18px}.dots{display:flex;gap:6px}.dots i{width:7px;height:7px;border-radius:50%;background:var(--accent);display:block}.arrow{color:#9aa8bd;font-size:20px;transition:transform .18s ease,color .18s ease}.subject-card:hover .arrow{transform:translateX(4px);color:var(--accent)}
+    .result-card{display:grid;grid-template-columns:1fr 1.08fr;gap:0;background:linear-gradient(135deg,#f5f8fd,#fff);border:1px solid #e5edf8;border-radius:26px;box-shadow:var(--shadow-soft);overflow:hidden}.study-illustration{min-height:330px;background:radial-gradient(circle at 24% 20%,rgba(232,189,101,.26),transparent 28%),linear-gradient(140deg,#0b2447,#132f59);position:relative;overflow:hidden}.desk-card{position:absolute;left:52px;right:52px;bottom:48px;height:170px;border-radius:24px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.16);box-shadow:0 24px 44px rgba(0,0,0,.24);backdrop-filter:blur(8px)}.laptop{position:absolute;left:80px;bottom:80px;width:210px;height:128px;border-radius:13px;background:linear-gradient(180deg,#f8fbff,#e2e9f3);box-shadow:0 22px 38px rgba(0,0,0,.28)}.laptop::before{content:"";position:absolute;left:18px;right:18px;top:20px;height:54px;border-radius:9px;background:linear-gradient(135deg,#e9f0fb,#fff)}.chart-line{position:absolute;left:118px;bottom:134px;width:115px;height:48px;border-left:2px solid #9bb5ff;border-bottom:2px solid #9bb5ff}.chart-line::after{content:"";position:absolute;left:10px;top:20px;width:90px;height:28px;border-top:4px solid #2f62ff;border-radius:50%;transform:rotate(-8deg)}.book-stack{position:absolute;right:82px;bottom:78px;width:118px;height:58px}.book-stack span{display:block;height:16px;border-radius:5px;margin-bottom:4px;background:#e8bd65;box-shadow:0 6px 12px rgba(0,0,0,.18)}.book-stack span:nth-child(2){background:#2f62ff}.book-stack span:nth-child(3){background:#fff}.result-content{padding:48px 52px}.result-content h2{font-size:34px;line-height:1.08;letter-spacing:-.04em;margin:8px 0 28px}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.metric{border-left:1px solid #d9e2ef;padding-left:20px}.metric-icon{font-size:28px;color:#2f62ff;margin-bottom:10px}.metric-value{font-size:28px;font-weight:900;color:#1f4fe0;letter-spacing:-.04em}.metric-label{font-size:13px;color:#5f6f86;margin-top:4px;line-height:1.45}.cta-band{margin:72px 0 0;border-radius:24px;background:linear-gradient(135deg,#06152d,#0b2549 58%,#071329);color:#fff;overflow:hidden;position:relative;box-shadow:0 28px 70px rgba(7,19,41,.28);display:grid;grid-template-columns:1fr auto;align-items:center;gap:30px;padding:34px 40px}.cta-band::before{content:"🚀";position:absolute;left:42px;top:50%;transform:translateY(-50%) rotate(-12deg);font-size:82px;opacity:.28;filter:drop-shadow(0 12px 20px rgba(232,189,101,.26))}.cta-text{position:relative;padding-left:122px}.cta-kicker{font-size:12px;font-weight:900;color:#9bb5ff;text-transform:uppercase;letter-spacing:.13em;margin-bottom:7px}.cta-title{font-size:30px;font-weight:900;letter-spacing:-.04em}.cta-sub{color:#b9c8de;font-size:14px;margin-top:5px}.site-footer{padding:34px 0 44px;color:#6d7a91;font-size:13px}.footer-row{display:flex;align-items:center;justify-content:space-between;gap:20px;border-top:1px solid #e6edf7;padding-top:26px}.footer-brand{display:flex;align-items:center;gap:10px;font-weight:900;color:#23324a}.footer-mark{width:32px;height:32px;border-radius:9px;background:url('assets/haugnes-logo-mark.svg') center/cover no-repeat;box-shadow:0 0 0 1px #e0e7f2}
+    @media(max-width:980px){.shell{width:min(var(--container),calc(100% - 32px))}.nav{gap:16px}.nav a:not(.login-btn){display:none}.hero{padding-top:44px}.hero-grid{grid-template-columns:1fr;gap:22px}.hero-visual{height:420px;order:-1}.trust-row{grid-template-columns:1fr}.feature-ribbon,.subject-grid,.metrics{grid-template-columns:1fr 1fr}.result-card{grid-template-columns:1fr}.cta-band{grid-template-columns:1fr}.cta-text{padding-left:0}.cta-band::before{right:28px;left:auto;top:22px;transform:none;font-size:62px}}
+    @media(max-width:640px){.topbar{height:72px}.brand-mark{width:38px;height:38px}.brand-name{font-size:16px;letter-spacing:.22em}.brand-sub{font-size:9px;letter-spacing:.36em}.login-btn{padding:10px 13px}.hero{min-height:auto;padding-bottom:34px}h1{font-size:46px}.lead{font-size:16px}.hero-actions{display:grid}.btn{width:100%}.hero-visual{height:350px;transform:scale(.82);margin:-34px -28px -24px}.feature-ribbon{grid-template-columns:1fr}.feature{border-right:0;border-bottom:1px solid rgba(255,255,255,.09)}.subject-grid,.metrics{grid-template-columns:1fr}.section{padding:52px 0}.section-head{display:block}.section-copy{margin-top:12px}.result-content{padding:34px 24px}.study-illustration{min-height:260px}.footer-row{display:block}.footer-brand{margin-bottom:12px}.cta-band{padding:30px 24px}.cta-title{font-size:25px}}
+  </style>
 </head>
 <body>
-<header class="site-header"><a class="site-logo" href="."><div class="logo-mark">📚</div><span class="logo-text">StudieHub</span></a><div style="display:flex;align-items:center;gap:12px;"><a class="header-action" href="flashcards/"><span>Alle flashcards</span></a><a class="header-action" href="user/index.html">👤 Brukerområde</a><div id="userChip" style="display:none;align-items:center;gap:10px;"><a href="user/index.html" style="display:flex;align-items:center;gap:8px;text-decoration:none;padding:5px 10px 5px 5px;border-radius:20px;"><div id="userAvatar" style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;"></div><span id="userEmailLabel" style="font-size:13px;font-weight:700;color:rgba(255,255,255,.85);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span></a><button onclick="siteLogout()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);padding:5px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;">Logg ut</button></div></div></header>
-<section class="hero"><p class="hero-eyebrow">Studieapp</p><h1 class="hero-title">Velg et fag</h1><p class="hero-sub">Flashcards, eksamensanalyse og læringsverktøy samlet på ett sted.</p></section>
-<main class="main"><div class="section-header"><span class="section-title">Aktive fag</span></div><div class="subject-grid">
-<a class="subject-card" href="ret14/"><div class="card-stripe" style="background:#2563eb;"></div><div class="card-body"><div class="card-top"><span class="card-name">RET14</span><span class="badge badge-active">4 verktøy</span></div><p class="card-desc">Skatterett — personinntekt, aksjer, avskrivning, fradrag og eiendom.</p><div class="card-footer"><div class="tools-dots"><div class="tool-dot active" style="background:#2563eb;"></div><div class="tool-dot active" style="background:#2563eb;"></div><div class="tool-dot active" style="background:#2563eb;"></div><div class="tool-dot active" style="background:#2563eb;"></div></div><span class="card-arrow">→</span></div></div></a>
-<a class="subject-card" href="sol1/"><div class="card-stripe" style="background:#059669;"></div><div class="card-body"><div class="card-top"><span class="card-name">SOL 1</span><span class="badge badge-active">5 verktøy</span></div><p class="card-desc">Organisasjonsatferd — individ, gruppe, ledelse og organisasjonsdesign.</p><div class="card-footer"><div class="tools-dots"><div class="tool-dot active" style="background:#059669;"></div><div class="tool-dot active" style="background:#059669;"></div><div class="tool-dot active" style="background:#059669;"></div><div class="tool-dot active" style="background:#059669;"></div><div class="tool-dot active" style="background:#059669;"></div></div><span class="card-arrow">→</span></div></div></a>
-<a class="subject-card" href="sam2/"><div class="card-stripe" style="background:#d97706;"></div><div class="card-body"><div class="card-top"><span class="card-name">SAM2</span><span class="badge badge-active">2 verktøy</span></div><p class="card-desc">Mikroøkonomi — eksamensradar og rangert oppgaveprioritering for kapittel 1–13.</p><div class="card-footer"><div class="tools-dots"><div class="tool-dot active" style="background:#d97706;"></div><div class="tool-dot active" style="background:#d97706;"></div></div><span class="card-arrow">→</span></div></div></a>
-<a class="subject-card" href="sam3/"><div class="card-stripe" style="background:#dc2626;"></div><div class="card-body"><div class="card-top"><span class="card-name">SAM3</span><span class="badge badge-active">2 verktøy</span></div><p class="card-desc">Makroøkonomi — flashcards og eksamensradar for vekst, inflasjon, IS-MP, AS-AD, åpen økonomi og politikk.</p><div class="card-footer"><div class="tools-dots"><div class="tool-dot active" style="background:#dc2626;" title="SAM3 flashcards"></div><div class="tool-dot active" style="background:#f97316;" title="SAM3 eksamensradar"></div></div><span class="card-arrow">→</span></div></div></a>
-</div><div class="section-header" style="margin-top:16px;"><span class="section-title">Snarveier</span></div><a class="all-flashcards-bar" href="flashcards/"><div class="all-fc-left"><div class="all-fc-icon">🗂</div><div><div class="all-fc-label">Alle flashcards</div><div class="all-fc-sub">Se alle fag og dekker samlet</div></div></div><span class="all-fc-arrow">→</span></a><div class="section-header" style="margin-top:48px;"><span class="section-title">Kommende fag</span></div><p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Disse fagene er ikke satt opp ennå.</p><div class="placeholder-grid"><a class="placeholder-card" href="met2/"><div class="placeholder-label">MET2</div><div class="placeholder-sub">Kommer snart</div></a><a class="placeholder-card" href="mat10/"><div class="placeholder-label">MAT10</div><div class="placeholder-sub">Kommer snart</div></a></div></main><footer class="site-footer">StudieHub &mdash; Laget for effektiv eksamensforberedelse</footer><script>function siteLogout(){AuthGuard.logout();}</script>
+  <div class="page">
+    <header class="shell topbar">
+      <a class="brand" href="." aria-label="Haugnes Flashcards">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span><span class="brand-name">Haugnes</span><span class="brand-sub">Flashcards</span></span>
+      </a>
+      <nav class="nav" aria-label="Hovedmeny">
+        <a href="login.html" data-login-next="flashcards/">Alle flashcards</a>
+        <a href="#fag">Fag</a>
+        <a href="#hvordan">Hvordan det virker</a>
+        <a href="#start">Priser</a>
+        <a class="login-btn" href="login.html" data-login-next="user/index.html">Logg inn →</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="shell hero">
+        <div class="hero-grid">
+          <div>
+            <div class="eyebrow">Studieapp for NHH-studenter</div>
+            <h1>Lær smartere.<span>Øv det som teller.</span></h1>
+            <p class="lead">Flashcards, eksamensanalyse og læringsverktøy samlet på ett sted. Mestre fagene, spar tid og få bedre kontroll før eksamen.</p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="login.html" data-login-next="user/index.html">Kom i gang gratis <span>→</span></a>
+              <a class="btn btn-secondary" href="#fag">Se alle fag</a>
+            </div>
+            <div class="trust-row" aria-label="Fordeler">
+              <div class="trust-item"><div class="trust-icon">◎</div><div><div class="trust-title">Eksamensfokusert</div><div class="trust-text">Relevante kort basert på tidligere eksamener.</div></div></div>
+              <div class="trust-item"><div class="trust-icon">▥</div><div><div class="trust-title">Bevist effektivt</div><div class="trust-text">Spaced repetition som gir varig læring.</div></div></div>
+              <div class="trust-item"><div class="trust-icon">◇</div><div><div class="trust-title">Kvalitetssikret</div><div class="trust-text">Laget av studenter og fageksperter.</div></div></div>
+            </div>
+          </div>
+
+          <div class="hero-visual" aria-hidden="true">
+            <div class="visual-glow"></div>
+            <div class="orb-ring"></div>
+            <div class="floating bulb">💡</div>
+            <div class="floating target"></div>
+            <div class="floating bars"><span></span><span></span><span></span></div>
+            <div class="floating book">📖</div>
+            <div class="stage">
+              <div class="card-stack">
+                <div class="flash-card back-2"></div>
+                <div class="flash-card back-1"></div>
+                <div class="flash-card front"><img src="assets/haugnes-logo-mark.svg" alt=""></div>
+              </div>
+              <div class="pedestal"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="shell feature-ribbon" id="hvordan" aria-label="Funksjoner">
+        <article class="feature"><div class="feature-icon">▱</div><div><h3>Flashcards</h3><p>Enkle kort som hjelper deg å huske det viktigste.</p></div></article>
+        <article class="feature"><div class="feature-icon">⌂</div><div><h3>Eksamensanalyse</h3><p>Se hva som ofte går igjen, og prioriter riktig.</p></div></article>
+        <article class="feature"><div class="feature-icon">◷</div><div><h3>Spaced repetition</h3><p>Øv med intervaller som bygger langtidshukommelse.</p></div></article>
+        <article class="feature"><div class="feature-icon">↗</div><div><h3>Fremgang & statistikk</h3><p>Følg progresjonen og se hva du mestrer.</p></div></article>
+      </section>
+    </main>
+  </div>
+
+  <section class="section section-light" id="fag">
+    <div class="shell">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">Aktive fag</div>
+          <h2 class="section-title">Øv med de mest populære fagene.</h2>
+        </div>
+        <p class="section-copy">Start med et fag, få oversikt over verktøyene og gå rett til øvingen når du er klar.</p>
+      </div>
+      <div class="subject-grid">
+        <a class="subject-card" style="--accent:#2f62ff" href="login.html" data-login-next="ret14/">
+          <div class="subject-top"><div class="subject-icon">%</div><span class="subject-tools">4 verktøy</span></div>
+          <div class="subject-code">RET14</div><div class="subject-name">Skatterett</div>
+          <p class="subject-desc">Personinntekt, aksjer, avskrivning, fradrag og eiendom.</p>
+          <div class="subject-foot"><div class="dots"><i></i><i></i><i></i><i></i></div><span class="arrow">→</span></div>
+        </a>
+        <a class="subject-card" style="--accent:#14976d" href="login.html" data-login-next="sol1/">
+          <div class="subject-top"><div class="subject-icon">♚</div><span class="subject-tools">5 verktøy</span></div>
+          <div class="subject-code">SOL 1</div><div class="subject-name">Organisasjonsrett</div>
+          <p class="subject-desc">Individ, gruppe, ledelse og organisasjonsdesign.</p>
+          <div class="subject-foot"><div class="dots"><i></i><i></i><i></i><i></i></div><span class="arrow">→</span></div>
+        </a>
+        <a class="subject-card" style="--accent:#e68112" href="login.html" data-login-next="sam2/">
+          <div class="subject-top"><div class="subject-icon">◔</div><span class="subject-tools">2 verktøy</span></div>
+          <div class="subject-code">SAM2</div><div class="subject-name">Mikroøkonomi</div>
+          <p class="subject-desc">Eksamensradar og rangert oppgaveprioritering for kapittel 1–13.</p>
+          <div class="subject-foot"><div class="dots"><i></i><i></i><i></i></div><span class="arrow">→</span></div>
+        </a>
+        <a class="subject-card" style="--accent:#dc3333" href="login.html" data-login-next="sam3/">
+          <div class="subject-top"><div class="subject-icon">↗</div><span class="subject-tools">2 verktøy</span></div>
+          <div class="subject-code">SAM3</div><div class="subject-name">Makroøkonomi</div>
+          <p class="subject-desc">Flashcards og eksamensradar for vekst, inflasjon og åpen økonomi.</p>
+          <div class="subject-foot"><div class="dots"><i></i><i></i><i></i></div><span class="arrow">→</span></div>
+        </a>
+      </div>
+
+      <div class="result-card" style="margin-top:58px">
+        <div class="study-illustration" aria-hidden="true">
+          <div class="desk-card"></div><div class="laptop"></div><div class="chart-line"></div><div class="book-stack"><span></span><span></span><span></span></div>
+        </div>
+        <div class="result-content">
+          <div class="section-kicker">Dokumenterte arbeidsmåter</div>
+          <h2>Bygget for bedre oversikt og smartere repetisjon.</h2>
+          <div class="metrics">
+            <div class="metric"><div class="metric-icon">↗</div><div class="metric-value">Fokus</div><div class="metric-label">Øv på temaene som faktisk betyr mest.</div></div>
+            <div class="metric"><div class="metric-icon">◷</div><div class="metric-value">Flyt</div><div class="metric-label">Kort og tydelige økter du kan gjennomføre ofte.</div></div>
+            <div class="metric"><div class="metric-icon">🏆</div><div class="metric-value">Kontroll</div><div class="metric-label">Se hva du mestrer før du går videre.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-band" id="start">
+        <div class="cta-text"><div class="cta-kicker">Klar for å ta studiene til neste nivå?</div><div class="cta-title">Start å lære smartere i dag.</div><div class="cta-sub">Logg inn og fortsett med fagene dine på et mer ryddig og visuelt sted.</div></div>
+        <a class="btn btn-primary" href="login.html" data-login-next="user/index.html">Kom i gang gratis <span>→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="shell footer-row">
+      <div class="footer-brand"><span class="footer-mark" aria-hidden="true"></span>Haugnes Flashcards</div>
+      <div>Trygt, ryddig og laget for effektiv eksamensforberedelse.</div>
+    </div>
+  </footer>
+
+  <script>
+    (function(){
+      var origin = window.location.href;
+      document.querySelectorAll('[data-login-next]').forEach(function(link){
+        var next = new URL(link.getAttribute('data-login-next'), origin).href;
+        link.href = 'login.html?next=' + encodeURIComponent(next);
+      });
+    })();
+  </script>
 </body>
 </html>
