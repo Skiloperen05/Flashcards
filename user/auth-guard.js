@@ -1,23 +1,24 @@
 (function (window, document) {
   var SHARED_SCRIPT = '../shared/auth-guard.js';
+  var MODEL_PAGES = {
+    'a-besvarelser.html': { label: 'A-besvarelser', icon: '▤', subtitle: 'Se sterke tidligere svar' },
+    'oppgavebank.html': { label: 'Oppgavebank', icon: '▣', subtitle: 'Øv på eksamensnære oppgaver' },
+    'notater.html': { label: 'Notater', icon: '▥', subtitle: 'Samle egne fagnotater' },
+    'studieplan.html': { label: 'Studieplan', icon: '☷', subtitle: 'Planlegg ukens økter' },
+    'settings.html': { label: 'Innstillinger', icon: '⚙', subtitle: 'Profil og preferanser' }
+  };
 
   function loadSharedAuthGuard() {
     return new Promise(function (resolve, reject) {
-      if (window.AuthGuard) {
-        resolve(window.AuthGuard);
-        return;
-      }
-
+      if (window.AuthGuard) return resolve(window.AuthGuard);
       var existing = Array.prototype.slice.call(document.scripts).filter(function (script) {
         return /shared\/auth-guard\.js(?:\?|$)/.test(script.src || '');
       })[0];
-
       if (existing) {
         existing.addEventListener('load', function () { resolve(window.AuthGuard); });
         existing.addEventListener('error', reject);
         return;
       }
-
       var script = document.createElement('script');
       script.src = SHARED_SCRIPT;
       script.onload = function () { resolve(window.AuthGuard); };
@@ -53,21 +54,34 @@
   }
 
   function currentUserPage() {
-    var file = window.location.pathname.split('/').pop() || 'index.html';
-    return file.toLowerCase();
+    return (window.location.pathname.split('/').pop() || 'index.html').toLowerCase();
   }
+
+  function isModelPage(page) { return !!MODEL_PAGES[page]; }
 
   function addPageStylesheet() {
     var page = currentUserPage();
-    if (page === 'achievements.html') {
-      addStylesheet('haugnes-achievements-css', '../shared/haugnes-achievements.css');
-    } else if (page === 'progress.html') {
-      addStylesheet('haugnes-progress-css', '../shared/haugnes-progress.css');
-    } else if (page === 'subjects.html') {
-      addStylesheet('haugnes-subjects-css', '../shared/haugnes-subjects.css');
-    } else {
-      addStylesheet('haugnes-dashboard-css', '../shared/haugnes-dashboard.css');
-    }
+    if (page === 'achievements.html') addStylesheet('haugnes-achievements-css', '../shared/haugnes-achievements.css');
+    else if (page === 'progress.html') addStylesheet('haugnes-progress-css', '../shared/haugnes-progress.css');
+    else if (page === 'subjects.html') addStylesheet('haugnes-subjects-css', '../shared/haugnes-subjects.css');
+    else if (!isModelPage(page)) addStylesheet('haugnes-dashboard-css', '../shared/haugnes-dashboard.css');
+  }
+
+  function installNavVisibilityStyles() {
+    if (document.getElementById('haugnes-user-nav-visibility-fix')) return;
+    var style = document.createElement('style');
+    style.id = 'haugnes-user-nav-visibility-fix';
+    style.textContent = [
+      '.sidebar{overflow-y:auto;scrollbar-width:thin}',
+      '.sidebar::-webkit-scrollbar{width:8px}',
+      '.sidebar::-webkit-scrollbar-thumb{background:rgba(126,162,255,.25);border-radius:999px}',
+      '.sidebar .nav{gap:5px}',
+      '.sidebar .nav-link{min-height:38px;padding:9px 11px}',
+      '.sidebar .side-bottom{margin-top:14px}',
+      '.side-col .small-list{max-height:none}',
+      '@media(max-height:820px){.sidebar{padding-top:16px;padding-bottom:16px}.brand{padding-bottom:6px}.streak-card{padding:13px}.streak-number{font-size:26px}.user-mini{padding:9px}}'
+    ].join('\n');
+    document.head.appendChild(style);
   }
 
   function loadSubjectMeta(onload) {
@@ -95,20 +109,16 @@
 
   function installSharedLogout(AuthGuard) {
     if (!AuthGuard || typeof AuthGuard.logout !== 'function') return;
-    window.handleLogout = function () {
-      return AuthGuard.logout();
-    };
+    window.handleLogout = function () { return AuthGuard.logout(); };
   }
 
   function renderDashboardSubjects() {
     if (currentUserPage() !== 'index.html' || !window.HaugnesSubjects) return;
     var container = document.querySelector('.subjects');
     if (!container) return;
-
     var subjects = window.HaugnesSubjects.getAll().filter(function (subject) {
       return subject.status !== 'build';
     }).slice(0, 3);
-
     container.innerHTML = subjects.map(function (subject) {
       var todayCards = subject.code === 'RET14' ? 48 : subject.code === 'SOL1' ? 32 : subject.code === 'SAM2' ? 28 : 31;
       var emblem = subject.emblem
@@ -123,7 +133,6 @@
         + '<span class="subject-cta">Start øving</span>'
         + '</a>';
     }).join('');
-
     var sectionLink = document.querySelector('#mine-fag a');
     if (sectionLink) {
       sectionLink.href = 'subjects.html';
@@ -134,34 +143,72 @@
   function standardizeDashboardLinks() {
     var subjectsNav = document.querySelector('.nav-link[href="#mine-fag"]');
     if (subjectsNav) subjectsNav.href = 'subjects.html';
-
     var todayStart = document.querySelector('#today .start-btn[href="../ret14/"]');
     if (todayStart) {
       todayStart.href = '../flashcards/?subject=ret14';
       todayStart.textContent = 'Start økt →';
     }
-
     var todayPlan = document.querySelector('#today .ghost-link[href="../ret14/"]');
     if (todayPlan) todayPlan.href = '../ret14/';
-
     var recommendationStart = document.querySelector('.recommend .start-btn[href="../ret14/"]');
     if (recommendationStart) {
       recommendationStart.href = '../flashcards/?subject=ret14';
       recommendationStart.textContent = 'Start nå →';
     }
-
-    document.querySelectorAll('.subject-card .subject-cta').forEach(function (button) {
-      button.textContent = 'Start øving';
-    });
-
+    document.querySelectorAll('.subject-card .subject-cta').forEach(function (button) { button.textContent = 'Start øving'; });
+    document.querySelectorAll('.subject-card .subject-btn').forEach(function (button) { button.textContent = 'Åpne fag'; });
     document.querySelectorAll('.subject-card').forEach(function (card) {
       var code = card.querySelector('.subject-code');
       var href = card.getAttribute('href') || '';
       if (!code) return;
       card.setAttribute('aria-label', 'Åpne fagside for ' + code.textContent.trim());
-      if (href.indexOf('../ret14/') === 0 || href.indexOf('../sol1/') === 0 || href.indexOf('../sam2/') === 0 || href.indexOf('../sam3/') === 0) {
-        card.setAttribute('title', 'Åpne fagside');
+      if (href.indexOf('../ret14/') === 0 || href.indexOf('../sol1/') === 0 || href.indexOf('../sam2/') === 0 || href.indexOf('../sam3/') === 0) card.setAttribute('title', 'Åpne fagside');
+    });
+  }
+
+  function createNavLink(href, config, isActive) {
+    var link = document.createElement('a');
+    link.className = 'nav-link' + (isActive ? ' active' : '');
+    link.href = href;
+    link.innerHTML = '<span class="nav-ico">' + config.icon + '</span>' + config.label;
+    return link;
+  }
+
+  function installModelPageLinks() {
+    var page = currentUserPage();
+    var nav = document.querySelector('.sidebar .nav, nav.nav');
+    if (nav) {
+      var insertionAnchor = nav.querySelector('a[href="../ret14/eksamen/"]') || nav.querySelector('a[href="subjects.html"]') || nav.querySelector('a[href="progress.html"]');
+      Object.keys(MODEL_PAGES).forEach(function (href) {
+        if (nav.querySelector('a[href="' + href + '"]')) return;
+        var link = createNavLink(href, MODEL_PAGES[href], page === href);
+        if (insertionAnchor && insertionAnchor.parentNode === nav) {
+          insertionAnchor.insertAdjacentElement('afterend', link);
+          insertionAnchor = link;
+        } else nav.appendChild(link);
+      });
+      if (isModelPage(page)) {
+        document.querySelectorAll('.nav-link.active').forEach(function (active) {
+          if (active.getAttribute('href') !== page) active.classList.remove('active');
+        });
+        var current = nav.querySelector('a[href="' + page + '"]');
+        if (current) current.classList.add('active');
       }
+    }
+    if (page === 'index.html') installDashboardShortcuts();
+  }
+
+  function installDashboardShortcuts() {
+    var shortcuts = document.querySelector('.side-col .small-list');
+    if (!shortcuts) return;
+    ['a-besvarelser.html', 'oppgavebank.html', 'notater.html', 'studieplan.html', 'settings.html'].forEach(function (href) {
+      if (shortcuts.querySelector('a[href="' + href + '"]')) return;
+      var config = MODEL_PAGES[href];
+      var item = document.createElement('a');
+      item.className = 'small-item';
+      item.href = href;
+      item.innerHTML = '<div><strong>' + config.label + '</strong><span>' + config.subtitle + '</span></div><span>→</span>';
+      shortcuts.appendChild(item);
     });
   }
 
@@ -178,29 +225,28 @@
 
   function runEnhancements() {
     addPageStylesheet();
+    installNavVisibilityStyles();
     applyDashboardBranding();
     standardizeDashboardLinks();
+    installModelPageLinks();
     enhanceAchievementsPage();
     if (currentUserPage() === 'index.html') {
       loadSubjectMeta(function () {
         renderDashboardSubjects();
         standardizeDashboardLinks();
+        installModelPageLinks();
       });
     }
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', runEnhancements);
-  } else {
-    runEnhancements();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', runEnhancements);
+  else runEnhancements();
 
   loadSharedAuthGuard().then(function (AuthGuard) {
     if (!AuthGuard || typeof AuthGuard.requireAuth !== 'function') {
       window.location.replace('../login.html');
       return;
     }
-
     AuthGuard.requireAuth().then(function (session) {
       if (!session) return;
       window.__userSession = session;
@@ -212,7 +258,5 @@
       }, 0);
       if (typeof window.onUserAuthorized === 'function') window.onUserAuthorized(session);
     });
-  }).catch(function () {
-    window.location.replace('../login.html');
-  });
+  }).catch(function () { window.location.replace('../login.html'); });
 })(window, document);
