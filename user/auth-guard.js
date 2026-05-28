@@ -65,7 +65,7 @@
       addStylesheet('haugnes-progress-css', '../shared/haugnes-progress.css');
     } else if (page === 'subjects.html') {
       addStylesheet('haugnes-subjects-css', '../shared/haugnes-subjects.css');
-    } else {
+    } else if (page !== 'a-besvarelser.html') {
       addStylesheet('haugnes-dashboard-css', '../shared/haugnes-dashboard.css');
     }
   }
@@ -162,6 +162,37 @@
     });
   }
 
+  function installABesvarelserLinks() {
+    var page = currentUserPage();
+    var nav = document.querySelector('.sidebar .nav, nav.nav');
+    if (nav && !nav.querySelector('a[href="a-besvarelser.html"]')) {
+      var link = document.createElement('a');
+      link.className = 'nav-link' + (page === 'a-besvarelser.html' ? ' active' : '');
+      link.href = 'a-besvarelser.html';
+      link.innerHTML = '<span class="nav-ico">▤</span>A-besvarelser';
+      var anchor = nav.querySelector('a[href="../ret14/eksamen/"]') || nav.querySelector('a[href="progress.html"]');
+      if (anchor && anchor.parentNode === nav) anchor.insertAdjacentElement('afterend', link);
+      else nav.appendChild(link);
+    }
+
+    if (page === 'a-besvarelser.html') {
+      document.querySelectorAll('.nav-link.active').forEach(function (active) {
+        if (active.getAttribute('href') !== 'a-besvarelser.html') active.classList.remove('active');
+      });
+    }
+
+    if (page === 'index.html') {
+      var shortcuts = document.querySelector('.side-col .small-list');
+      if (shortcuts && !shortcuts.querySelector('a[href="a-besvarelser.html"]')) {
+        var item = document.createElement('a');
+        item.className = 'small-item';
+        item.href = 'a-besvarelser.html';
+        item.innerHTML = '<div><strong>A-besvarelser</strong><span>Se sterke tidligere svar</span></div><span>→</span>';
+        shortcuts.insertBefore(item, shortcuts.firstChild);
+      }
+    }
+  }
+
   function enhanceAchievementsPage() {
     if (currentUserPage() !== 'achievements.html') return;
     document.title = 'Prestasjoner — Haugnes Flashcards';
@@ -177,11 +208,13 @@
     addPageStylesheet();
     applyDashboardBranding();
     standardizeDashboardLinks();
+    installABesvarelserLinks();
     enhanceAchievementsPage();
     if (currentUserPage() === 'index.html') {
       loadSubjectMeta(function () {
         renderDashboardSubjects();
         standardizeDashboardLinks();
+        installABesvarelserLinks();
       });
     }
   }
