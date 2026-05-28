@@ -12,10 +12,128 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#06142d;--bg2:#081b3b;--panel:#0b2148;--panel2:#102b5a;--card:#0f2a5c;--card2:#0c234e;--line:rgba(255,255,255,.10);--line2:rgba(255,255,255,.16);--text:#f8fbff;--muted:#91a5c8;--soft:#cbd7ef;--blue:#2f62ff;--blue2:#5f88ff;--gold:#e8bc68;--green:#20b97a;--orange:#f09828;--red:#ef4444;--shadow:0 24px 60px rgba(0,0,0,.30);--radius:22px;--radius2:16px}
-html{scroll-behavior:smooth}body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 18% 12%,rgba(47,98,255,.18),transparent 25%),radial-gradient(circle at 80% 4%,rgba(232,188,104,.12),transparent 24%),linear-gradient(180deg,#06142d,#071835 56%,#06142d);color:var(--text);min-height:100vh;overflow-x:hidden}a{text-decoration:none;color:inherit}button{font-family:inherit}.app{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100vh}.sidebar{position:sticky;top:0;height:100vh;padding:22px 18px;background:linear-gradient(180deg,rgba(4,16,38,.96),rgba(7,23,51,.96));border-right:1px solid var(--line);display:flex;flex-direction:column;gap:22px}.brand{display:flex;align-items:center;gap:12px;padding:0 6px 12px;color:#fff}.logo-mark{width:46px;height:46px;border-radius:14px;background:#0b244e url('../assets/haugnes-logo-mark.svg') center/78% no-repeat;border:1px solid rgba(255,255,255,.14);box-shadow:0 14px 30px rgba(0,0,0,.28);flex:0 0 46px}.brand-title{font-size:20px;font-weight:850;letter-spacing:.22em;text-transform:uppercase;line-height:1}.brand-sub{font-size:9px;font-weight:900;letter-spacing:.44em;text-transform:uppercase;color:var(--gold);margin-top:5px}.nav{display:grid;gap:7px}.nav-link{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:14px;color:#c6d3eb;font-size:14px;font-weight:750;transition:background .18s ease,color .18s ease,transform .18s ease}.nav-link:hover{background:rgba(255,255,255,.06);color:#fff;transform:translateX(2px)}.nav-link.active{background:linear-gradient(135deg,#2455ef,#3f73ff);color:#fff;box-shadow:0 12px 26px rgba(47,98,255,.28)}.nav-ico{width:20px;text-align:center}.side-bottom{margin-top:auto}.streak-card{padding:17px;border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.035));border:1px solid var(--line)}.streak-label{font-size:12px;color:var(--muted);font-weight:750}.streak-number{font-size:33px;font-weight:900;letter-spacing:-.06em;margin:4px 0}.streak-number span{font-size:13px;color:var(--muted);letter-spacing:0;font-weight:750}.streak-bar{height:8px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden}.streak-bar i{display:block;width:72%;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),#ff8b33)}.user-mini{margin-top:14px;display:flex;align-items:center;gap:10px;padding:11px;border-radius:18px;background:rgba(255,255,255,.05);border:1px solid var(--line)}.avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#2f62ff,#e8bc68);font-weight:900;color:#fff}.user-mini strong{display:block;font-size:13px}.user-mini span{display:block;color:var(--muted);font-size:11px;margin-top:1px}.main{min-width:0;padding:22px 26px 34px}.topline{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:22px}.hello h1{font-size:30px;line-height:1.1;letter-spacing:-.04em}.hello p{font-size:15px;color:#c2cee4;margin-top:4px}.top-actions{display:flex;align-items:center;gap:12px}.search{height:42px;min-width:210px;border:1px solid var(--line);background:rgba(255,255,255,.055);border-radius:14px;color:#dce6f7;display:flex;align-items:center;gap:9px;padding:0 13px;font-size:13px;font-weight:700}.icon-btn{width:42px;height:42px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.055);color:#dce6f7;display:grid;place-items:center;cursor:pointer}.avatar-top{display:flex;align-items:center;gap:10px;padding:4px 10px 4px 4px;border-radius:999px;background:rgba(255,255,255,.055);border:1px solid var(--line)}.avatar-top .avatar{width:34px;height:34px}.avatar-top span{font-size:13px;font-weight:850}.dashboard{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:22px}.grid-main{display:grid;gap:22px}.hero-row{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}.panel{background:linear-gradient(180deg,rgba(14,39,84,.92),rgba(8,26,58,.92));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);position:relative;overflow:hidden}.panel::before{content:"";position:absolute;right:-80px;top:-90px;width:210px;height:210px;border-radius:50%;background:radial-gradient(circle,rgba(47,98,255,.20),transparent 68%);pointer-events:none}.panel-inner{position:relative;z-index:1;padding:22px}.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:18px}.panel-title{font-size:16px;font-weight:900;letter-spacing:-.02em}.panel-sub{font-size:12px;color:var(--muted);font-weight:700;margin-top:2px}.today-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}.big-stat{padding:14px;border-radius:16px;background:rgba(255,255,255,.055);border:1px solid var(--line)}.big-stat b{font-size:28px;line-height:1;font-weight:900;letter-spacing:-.06em}.big-stat span{display:block;margin-top:5px;font-size:12px;color:var(--muted);font-weight:700}.primary-row{display:flex;align-items:center;gap:12px}.start-btn{flex:1;display:flex;align-items:center;justify-content:center;height:46px;border-radius:14px;background:linear-gradient(135deg,#2a58ea,#4274ff);color:#fff;font-weight:900;box-shadow:0 18px 32px rgba(47,98,255,.28)}.ghost-link{height:46px;padding:0 16px;border-radius:14px;border:1px solid var(--line);display:flex;align-items:center;color:#cdd8ef;font-weight:850;font-size:13px}.trophy{width:84px;height:84px;border-radius:22px;display:grid;place-items:center;background:rgba(232,188,104,.12);border:1px solid rgba(232,188,104,.2);font-size:42px}.chart-card{min-height:242px}.line-chart{height:128px;margin:8px 0 10px;position:relative;border-left:1px solid rgba(255,255,255,.12);border-bottom:1px solid rgba(255,255,255,.12);background:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:100% 33%,16.66% 100%;border-radius:8px}.line-chart svg{position:absolute;inset:0;width:100%;height:100%}.chart-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.chart-stat{padding:10px;border-radius:14px;background:rgba(255,255,255,.045);border:1px solid var(--line)}.chart-stat b{display:block;font-size:18px}.chart-stat span{font-size:11px;color:var(--muted);font-weight:700}.section-title{display:flex;align-items:center;justify-content:space-between;margin:4px 0 -4px}.section-title h2{font-size:20px;letter-spacing:-.04em}.section-title a{font-size:13px;color:#9db4ff;font-weight:850}.subjects{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.subject-card{padding:17px;border-radius:20px;background:linear-gradient(180deg,rgba(15,43,92,.94),rgba(8,25,56,.94));border:1px solid var(--line);box-shadow:0 16px 34px rgba(0,0,0,.22);transition:transform .18s ease,border-color .18s ease}.subject-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.18)}.subject-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:15px}.subject-icon{width:42px;height:42px;border-radius:14px;background:var(--accent);display:grid;place-items:center;font-weight:900;color:#fff}.dots{color:#6f83a8;font-weight:900}.subject-code{font-size:17px;font-weight:900}.subject-name{font-size:11px;color:var(--muted);font-weight:750}.percent-row{display:flex;align-items:center;justify-content:space-between;margin-top:15px;font-size:12px;color:var(--muted)}.percent-row b{font-size:18px;color:#fff}.progress{height:8px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden;margin:9px 0 12px}.progress i{display:block;height:100%;border-radius:99px;background:var(--accent);width:var(--p)}.subject-btn{height:36px;border-radius:12px;background:linear-gradient(135deg,#2657e9,#3e72ff);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff}.side-col{display:grid;gap:18px;align-content:start}.recommend{padding:20px}.rec-badge{display:inline-flex;gap:6px;align-items:center;padding:6px 10px;border-radius:999px;background:rgba(232,188,104,.12);border:1px solid rgba(232,188,104,.22);color:var(--gold);font-size:12px;font-weight:900;margin-bottom:14px}.recommend h3{font-size:20px;line-height:1.18;letter-spacing:-.04em;margin-bottom:8px}.recommend p{font-size:13px;color:#aab8d0;line-height:1.6}.rec-meta{display:flex;gap:10px;margin:16px 0}.rec-meta span{flex:1;padding:10px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid var(--line);font-size:12px;color:#cbd7ed;font-weight:750}.small-list{display:grid;gap:10px}.small-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border-radius:15px;background:rgba(255,255,255,.045);border:1px solid var(--line)}.small-item strong{font-size:13px}.small-item span{font-size:11px;color:var(--muted);display:block;margin-top:1px}.tag{font-size:11px;font-weight:900;padding:5px 8px;border-radius:999px;background:rgba(47,98,255,.16);color:#9bb3ff}.logout{width:100%;height:42px;border-radius:14px;border:1px solid rgba(239,68,68,.25);background:rgba(239,68,68,.08);color:#fecaca;font-weight:850;cursor:pointer}.mobile-top{display:none}
-@media(max-width:1180px){.app{grid-template-columns:1fr}.sidebar{display:none}.mobile-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.dashboard{grid-template-columns:1fr}.topline{display:none}.hero-row{grid-template-columns:1fr}.subjects{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:680px){.main{padding:16px}.subjects,.today-stats,.chart-stats{grid-template-columns:1fr}.primary-row{display:grid}.search{display:none}.avatar-top span{display:none}.mobile-top .brand-title{font-size:17px}.mobile-top .brand-sub{letter-spacing:.28em}.panel-inner{padding:18px}}
+:root{--bg:#06142d;--panel:#0b2148;--card:#0f2a5c;--line:rgba(255,255,255,.10);--line2:rgba(255,255,255,.16);--text:#f8fbff;--muted:#91a5c8;--soft:#cbd7ef;--blue:#2f62ff;--blue2:#5f88ff;--gold:#e8bc68;--green:#20b97a;--orange:#f09828;--purple:#a855f7;--red:#ef4444;--shadow:0 24px 60px rgba(0,0,0,.30);--radius:22px}
+html{scroll-behavior:smooth}
+body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 18% 12%,rgba(47,98,255,.18),transparent 25%),radial-gradient(circle at 80% 4%,rgba(232,188,104,.12),transparent 24%),linear-gradient(180deg,#06142d,#071835 56%,#06142d);color:var(--text);min-height:100vh;overflow-x:hidden}
+a{text-decoration:none;color:inherit}button{font-family:inherit}
+svg{display:block}
+.app{display:grid;grid-template-columns:256px minmax(0,1fr);min-height:100vh}
+
+/* Sidebar */
+.sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;padding:22px 16px;background:linear-gradient(180deg,rgba(4,16,38,.96),rgba(7,23,51,.96));border-right:1px solid var(--line);display:flex;flex-direction:column;gap:18px}
+.sidebar::-webkit-scrollbar{width:7px}.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.10);border-radius:99px}
+.brand{display:flex;align-items:center;gap:12px;padding:0 6px 10px;color:#fff}
+.logo-mark{width:46px;height:46px;border-radius:14px;background:#0b244e url('../assets/haugnes-logo-mark.svg') center/78% no-repeat;border:1px solid rgba(255,255,255,.14);box-shadow:0 14px 30px rgba(0,0,0,.28);flex:0 0 46px}
+.brand-title{font-size:20px;font-weight:850;letter-spacing:.2em;text-transform:uppercase;line-height:1}
+.brand-sub{font-size:9px;font-weight:900;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);margin-top:5px}
+.nav{display:grid;gap:5px}
+.nav-link{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:13px;color:#c0cfe9;font-size:14px;font-weight:750;transition:background .18s,color .18s,transform .18s}
+.nav-link:hover{background:rgba(255,255,255,.06);color:#fff;transform:translateX(2px)}
+.nav-link.active{background:linear-gradient(135deg,#2455ef,#3f73ff);color:#fff;box-shadow:0 12px 26px rgba(47,98,255,.28)}
+.nav-link svg{width:20px;height:20px;flex:0 0 20px;stroke:currentColor;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.nav-link svg.fill{fill:currentColor;stroke:none}
+.side-bottom{margin-top:auto;display:grid;gap:12px}
+.user-mini{display:flex;align-items:center;gap:11px;padding:11px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.avatar{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#2f62ff,#e8bc68);font-weight:900;color:#fff;flex:0 0 40px}
+.user-mini-text{flex:1;min-width:0}
+.user-mini-text strong{display:block;font-size:13px}
+.user-mini-text span{display:block;color:var(--muted);font-size:11px;margin-top:1px}
+.user-mini .chev{color:var(--muted);font-size:18px}
+.upgrade{padding:16px;border-radius:18px;background:linear-gradient(180deg,rgba(232,188,104,.16),rgba(47,98,255,.10));border:1px solid rgba(232,188,104,.28);text-align:center}
+.upgrade .crown svg{width:24px;height:24px;margin:0 auto;fill:var(--gold)}
+.upgrade b{display:block;font-size:15px;font-weight:900;margin:7px 0 5px}
+.upgrade p{font-size:11.5px;color:#c2cee4;line-height:1.45;margin-bottom:13px}
+.upgrade .up-btn{display:flex;align-items:center;justify-content:center;gap:8px;height:40px;border-radius:12px;background:linear-gradient(135deg,#245cff,#4b7dff);font-size:13px;font-weight:850;color:#fff;box-shadow:0 14px 28px rgba(47,98,255,.30)}
+.logout{width:100%;height:40px;border-radius:13px;border:1px solid rgba(239,68,68,.25);background:rgba(239,68,68,.08);color:#fecaca;font-weight:800;font-size:13px;cursor:pointer}
+
+/* Main */
+.main{min-width:0;padding:26px 28px 36px}
+.mobile-top{display:none}
+.hello h1{font-size:30px;line-height:1.1;letter-spacing:-.04em}
+.hello p{font-size:15px;color:#c2cee4;margin-top:5px}
+.dashboard{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;align-items:start;margin-top:24px}
+.grid-main{display:grid;gap:22px;min-width:0}
+.panel{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(14,39,84,.92),rgba(8,26,58,.92));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.panel::before{content:"";position:absolute;right:-80px;top:-90px;width:210px;height:210px;border-radius:50%;background:radial-gradient(circle,rgba(47,98,255,.20),transparent 68%);pointer-events:none}
+.panel-inner{position:relative;z-index:1;padding:22px}
+.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:18px}
+.panel-title{font-size:16px;font-weight:900;letter-spacing:-.02em}
+.panel-sub{font-size:12px;color:var(--muted);font-weight:700;margin-top:3px}
+
+/* Dagens økt */
+.target{width:64px;height:64px;border-radius:18px;display:grid;place-items:center;background:radial-gradient(circle at 50% 38%,rgba(232,188,104,.34),rgba(232,188,104,.08));border:1px solid rgba(232,188,104,.30);color:#f3c469;box-shadow:0 0 30px rgba(232,188,104,.16)}
+.target svg{width:34px;height:34px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.today-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.big-stat{padding:16px;border-radius:16px;background:rgba(255,255,255,.055);border:1px solid var(--line)}
+.big-stat b{font-size:30px;line-height:1;font-weight:900;letter-spacing:-.05em}
+.big-stat span{display:block;margin-top:7px;font-size:12px;color:var(--muted);font-weight:700}
+.primary-row{display:flex;align-items:center;gap:12px}
+.start-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:9px;height:48px;border-radius:14px;background:linear-gradient(135deg,#2a58ea,#4274ff);color:#fff;font-weight:900;box-shadow:0 18px 32px rgba(47,98,255,.28)}
+.ghost-link{height:48px;padding:0 18px;border-radius:14px;border:1px solid var(--line);display:flex;align-items:center;color:#cdd8ef;font-weight:850;font-size:13px}
+
+/* Mine fag */
+.section-title{display:flex;align-items:center;justify-content:space-between;margin:2px 0 -6px}
+.section-title h2{font-size:21px;letter-spacing:-.04em}
+.section-title a{font-size:13px;color:#9db4ff;font-weight:850}
+.subjects{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.subject-card{position:relative;overflow:hidden;display:flex;flex-direction:column;padding:18px;border-radius:20px;background:linear-gradient(180deg,rgba(15,43,92,.94),rgba(8,25,56,.94));border:1px solid var(--line);box-shadow:0 16px 34px rgba(0,0,0,.22);transition:transform .18s,border-color .18s}
+.subject-card:hover{transform:translateY(-4px);border-color:var(--line2)}
+.subject-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:13px}
+.subject-icon{width:42px;height:42px;border-radius:13px;background:var(--accent);display:grid;place-items:center;font-size:20px;color:#fff;box-shadow:0 0 24px color-mix(in srgb,var(--accent,#2f62ff),transparent 60%)}
+.dots{color:#6f83a8;font-weight:900;font-size:18px;line-height:1}
+.subject-code{font-size:18px;font-weight:900}
+.subject-name{font-size:12px;color:var(--muted);font-weight:750;margin-top:1px}
+.ring{position:relative;width:130px;height:130px;margin:16px auto 8px}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:9}
+.ring-bg{stroke:rgba(255,255,255,.09)}
+.ring-fg{stroke:var(--accent);stroke-linecap:round;stroke-dasharray:326.726;stroke-dashoffset:calc(326.726 - 326.726 * var(--pct,0) / 100);filter:drop-shadow(0 0 7px color-mix(in srgb,var(--accent,#2f62ff),transparent 45%));transition:stroke-dashoffset .6s ease}
+.ring-label{position:absolute;inset:0;display:grid;place-items:center;font-size:31px;font-weight:900;letter-spacing:-.04em}
+.ring-sub{text-align:center;font-size:12px;color:var(--muted);font-weight:750;margin-bottom:15px}
+.subject-cta{margin-top:auto;text-align:center;padding-top:13px;border-top:1px solid var(--line);font-size:13px;font-weight:850;color:#9db4ff}
+
+/* Side column */
+.side-col{display:grid;gap:18px;align-content:start}
+.isq{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#fff;flex:0 0 40px}
+.isq svg{width:21px;height:21px;stroke:#fff;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.isq svg.fill{fill:#fff;stroke:none}
+.isq-sm{width:34px;height:34px;border-radius:10px;flex:0 0 34px}.isq-sm svg{width:18px;height:18px}
+.isq-blue{background:linear-gradient(135deg,#2a58ea,#4274ff)}
+.isq-green{background:linear-gradient(135deg,#15a34a,#22c55e)}
+.isq-orange{background:linear-gradient(135deg,#ef7a16,#fb923c)}
+.isq-purple{background:linear-gradient(135deg,#7c3aed,#a855f7)}
+.isq-red{background:linear-gradient(135deg,#dc2626,#ef4444)}
+.stat-row .panel-inner{display:flex;align-items:center;gap:14px;padding:18px}
+.stat-row-text{flex:1}
+.stat-row-text span{display:block;font-size:13px;color:var(--muted);font-weight:750}
+.stat-row-text b{font-size:24px;font-weight:900;letter-spacing:-.04em}
+.stat-row-text b i{font-size:14px;font-style:normal;color:var(--muted);font-weight:750}
+.stat-row .chev{color:var(--muted);font-size:20px}
+.habits{display:grid;gap:12px;margin-top:16px}
+.habit{display:flex;align-items:center;gap:13px;padding:12px;border-radius:15px;background:rgba(255,255,255,.045);border:1px solid var(--line)}
+.habit-text{flex:1}
+.habit-text span{display:block;font-size:12.5px;color:var(--muted);font-weight:750}
+.habit-text b{font-size:18px;font-weight:900;letter-spacing:-.03em}
+.habit-foot{margin-top:15px;font-size:12px;color:var(--muted);text-align:center}
+.recommend .panel-inner{padding:20px}
+.rec-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.rec-title{font-size:15px;font-weight:900}
+.rec-sub{font-size:12px;color:var(--muted);font-weight:750}
+.recommend h3{font-size:21px;line-height:1.18;letter-spacing:-.04em;margin:2px 0 0}
+.rec-meta{display:flex;gap:10px;margin:16px 0}
+.rec-meta span{flex:1;display:flex;align-items:center;gap:7px;padding:10px;border-radius:13px;background:rgba(255,255,255,.05);border:1px solid var(--line);font-size:12px;color:#cbd7ed;font-weight:750}
+.rec-meta svg{width:15px;height:15px;stroke:#9db4ff;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:0 0 15px}
+.weak-list{display:grid;gap:11px;margin-top:16px}
+.weak{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:rgba(255,255,255,.045);border:1px solid var(--line)}
+.weak strong{font-size:13.5px;font-weight:800}
+.weak-meta{display:flex;gap:10px}
+.weak-meta span{flex:1;display:flex;align-items:center;gap:7px;padding:10px;border-radius:13px;background:rgba(255,255,255,.05);border:1px solid var(--line);font-size:12px;color:#cbd7ed;font-weight:750}
+.weak-meta svg{width:15px;height:15px;stroke:#9db4ff;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:0 0 15px}
+.icon-btn{width:42px;height:42px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.055);color:#dce6f7;display:grid;place-items:center;cursor:pointer;font-size:18px}
+
+@media(max-width:1180px){.app{grid-template-columns:1fr}.sidebar{display:none}.mobile-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.dashboard{grid-template-columns:1fr}}
+@media(max-width:760px){.subjects{grid-template-columns:1fr}.today-stats{grid-template-columns:1fr}.primary-row{display:grid}}
+@media(max-width:680px){.main{padding:16px}.panel-inner{padding:18px}}
 </style>
 </head>
 <body>
@@ -23,62 +141,103 @@ html{scroll-behavior:smooth}body{font-family:Inter,system-ui,-apple-system,Blink
   <aside class="sidebar">
     <a class="brand" href="../index.html"><span class="logo-mark"></span><span><span class="brand-title">Haugnes</span><span class="brand-sub">Flashcards</span></span></a>
     <nav class="nav" aria-label="Brukermeny">
-      <a class="nav-link active" href="index.html"><span class="nav-ico">⌂</span>Hjem</a>
-      <a class="nav-link" href="#mine-fag"><span class="nav-ico">▦</span>Mine fag</a>
-      <a class="nav-link" href="#today"><span class="nav-ico">◎</span>Fokus for i dag</a>
-      <a class="nav-link" href="../ret14/eksamen/"><span class="nav-ico">◈</span>Eksamensanalyse</a>
-      <a class="nav-link" href="achievements.html"><span class="nav-ico">🏆</span>Prestasjoner</a>
-      <a class="nav-link" href="progress.html"><span class="nav-ico">▥</span>Statistikk</a>
-      <a class="nav-link" href="../flashcards/"><span class="nav-ico">▱</span>Alle flashcards</a>
+      <a class="nav-link active" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg>Hjem</a>
+      <a class="nav-link" href="#mine-fag"><svg viewBox="0 0 24 24"><path d="M12 6.5C10.5 5 7.5 4.5 4.5 5v13c3-.5 6 0 7.5 1.5 1.5-1.5 4.5-2 7.5-1.5V5c-3-.5-6 0-7.5 1.5z"/><path d="M12 6.5V20"/></svg>Mine fag</a>
+      <a class="nav-link" href="#today"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6"/></svg>Fokus for i dag</a>
+      <a class="nav-link" href="../ret14/eksamen/"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 3.5h6v3H9z"/><path d="M8.5 11h7M8.5 15h5"/></svg>Eksamensanalyse</a>
+      <a class="nav-link" href="a-besvarelser.html"><svg viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V20.5H7z"/><path d="M14 3.5V8h4"/><path d="M9.5 13h5M9.5 16.5h5"/></svg>A-besvarelser</a>
+      <a class="nav-link" href="oppgavebank.html"><svg viewBox="0 0 24 24"><path d="M4 13.5 6.5 5h11L20 13.5"/><path d="M4 13.5v5.5h16v-5.5"/><path d="M8.5 13.5a3.5 3.5 0 0 0 7 0"/></svg>Oppgavebank</a>
+      <a class="nav-link" href="achievements.html"><svg viewBox="0 0 24 24"><path d="M8 4.5h8v4a4 4 0 0 1-8 0z"/><path d="M8 6H5.5v1.5a3 3 0 0 0 3 3M16 6h2.5v1.5a3 3 0 0 1-3 3M9.5 20h5M12 13v3.5"/></svg>Prestasjoner</a>
+      <a class="nav-link" href="progress.html"><svg viewBox="0 0 24 24"><path d="M4 20h16M7 17v-5M12 17V7M17 17v-8"/></svg>Statistikk</a>
+      <a class="nav-link" href="../flashcards/"><svg viewBox="0 0 24 24"><rect x="4" y="7" width="13" height="13" rx="2"/><path d="M8 3.5h10A1.5 1.5 0 0 1 19.5 5v10"/></svg>Alle flashcards</a>
+      <a class="nav-link" href="innstillinger.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M21.5 12h-3M5.5 12h-3M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1M18.4 18.4l-2.1-2.1M7.7 7.7 5.6 5.6"/></svg>Innstillinger</a>
     </nav>
     <div class="side-bottom">
-      <div class="streak-card"><div class="streak-label">Streak</div><div class="streak-number">12 <span>dager 🔥</span></div><div class="streak-bar"><i></i></div></div>
-      <div class="user-mini"><div class="avatar" id="sideAvatar">?</div><div><strong id="sideName">Bruker</strong><span>NHH-student</span></div></div>
+      <a class="user-mini" href="innstillinger.html"><div class="avatar" id="sideAvatar">?</div><div class="user-mini-text"><strong id="sideName">Bruker</strong><span>NHH-student</span></div><span class="chev">›</span></a>
+      <div class="upgrade">
+        <div class="crown"><svg viewBox="0 0 24 24"><path d="M3 8l4.5 3.5L12 5l4.5 6.5L21 8l-1.5 11h-15z"/></svg></div>
+        <b>Premium</b>
+        <p>Få tilgang til eksklusive verktøy og analyser.</p>
+        <a class="up-btn" href="innstillinger.html">Oppgrader nå →</a>
+      </div>
+      <button class="logout" onclick="handleLogout()">Logg ut</button>
     </div>
   </aside>
 
   <main class="main">
     <div class="mobile-top"><a class="brand" href="../index.html"><span class="logo-mark"></span><span><span class="brand-title">Haugnes</span><span class="brand-sub">Flashcards</span></span></a><button class="icon-btn" onclick="handleLogout()">⎋</button></div>
 
-    <header class="topline">
-      <div class="hello"><h1>Hei <span id="heroName">der</span>! 👋</h1><p>Klar for en effektiv studiedag?</p></div>
-      <div class="top-actions"><div class="search">⌕ Søk</div><button class="icon-btn" title="Varsler">🔔</button><div class="avatar-top"><div class="avatar" id="topAvatar">?</div><span id="topName">Bruker</span></div></div>
+    <header class="hello">
+      <h1>Hei <span id="heroName">der</span>! 👋</h1>
+      <p>Klar for en effektiv studiedag?</p>
     </header>
 
     <div class="dashboard">
       <div class="grid-main">
-        <section class="hero-row" id="today">
-          <article class="panel">
-            <div class="panel-inner">
-              <div class="panel-head"><div><div class="panel-title">Dagens økt</div><div class="panel-sub">Anbefalt for deg</div></div><div class="trophy">🎯</div></div>
-              <div class="today-stats"><div class="big-stat"><b>48</b><span>kort å repetere</span></div><div class="big-stat"><b>35</b><span>forventet min</span></div><div class="big-stat"><b>RET14</b><span>fokusområde</span></div></div>
-              <div class="primary-row"><a class="start-btn" href="../ret14/">Start økt</a><a class="ghost-link" href="../ret14/">Se detaljert plan →</a></div>
+        <section class="panel" id="today">
+          <div class="panel-inner">
+            <div class="panel-head">
+              <div><div class="panel-title">Dagens økt</div><div class="panel-sub">Anbefalt for deg</div></div>
+              <div class="target"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".7"/><path d="M18 6l3-3M19 3h2v2"/></svg></div>
             </div>
-          </article>
-
-          <article class="panel chart-card">
-            <div class="panel-inner">
-              <div class="panel-head"><div><div class="panel-title">Fremgang denne uken</div><div class="panel-sub">Repetisjon og nye kort</div></div><div class="tag">+9%</div></div>
-              <div class="line-chart"><svg viewBox="0 0 320 128" preserveAspectRatio="none"><polyline points="0,104 45,62 90,82 135,58 180,50 225,72 270,36 320,18" fill="none" stroke="#5f88ff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="0,110 45,92 90,98 135,82 180,78 225,88 270,62 320,48" fill="none" stroke="rgba(232,188,104,.8)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-              <div class="chart-stats"><div class="chart-stat"><b id="cardsStat">342</b><span>kort repetert</span></div><div class="chart-stat"><b id="newStat">67</b><span>nye kort lært</span></div><div class="chart-stat"><b>86%</b><span>nøyaktighet</span></div></div>
+            <div class="today-stats">
+              <div class="big-stat"><b>48</b><span>kort å repetere</span></div>
+              <div class="big-stat"><b>35</b><span>forventet tid min</span></div>
+              <div class="big-stat"><b>66%</b><span>forventet ROI</span></div>
             </div>
-          </article>
+            <div class="primary-row"><a class="start-btn" href="../ret14/">Start økt →</a><a class="ghost-link" href="../ret14/">Se detaljert plan →</a></div>
+          </div>
         </section>
 
         <div class="section-title" id="mine-fag"><h2>Mine fag</h2><a href="../flashcards/">Se alle fag →</a></div>
         <section class="subjects">
-          <a class="subject-card" style="--accent:#2f62ff;--p:86%" href="../ret14/"><div class="subject-top"><span class="subject-icon">%</span><span class="dots">⋯</span></div><div class="subject-code">RET14</div><div class="subject-name">Skatterett</div><div class="percent-row"><b>86%</b><span>48 kort i dag</span></div><div class="progress"><i></i></div><span class="subject-btn">Start øving</span></a>
-          <a class="subject-card" style="--accent:#20b97a;--p:72%" href="../sol1/"><div class="subject-top"><span class="subject-icon">◎</span><span class="dots">⋯</span></div><div class="subject-code">SOL1</div><div class="subject-name">Organisasjonsrett</div><div class="percent-row"><b>72%</b><span>32 kort i dag</span></div><div class="progress"><i></i></div><span class="subject-btn">Start øving</span></a>
-          <a class="subject-card" style="--accent:#f09828;--p:65%" href="../sam2/"><div class="subject-top"><span class="subject-icon">◔</span><span class="dots">⋯</span></div><div class="subject-code">SAM2</div><div class="subject-name">Mikroøkonomi</div><div class="percent-row"><b>65%</b><span>28 kort i dag</span></div><div class="progress"><i></i></div><span class="subject-btn">Start øving</span></a>
-          <a class="subject-card" style="--accent:#ef4444;--p:59%" href="../sam3/"><div class="subject-top"><span class="subject-icon">↗</span><span class="dots">⋯</span></div><div class="subject-code">SAM3</div><div class="subject-name">Makroøkonomi</div><div class="percent-row"><b>59%</b><span>31 kort i dag</span></div><div class="progress"><i></i></div><span class="subject-btn">Start øving</span></a>
+          <a class="subject-card" style="--accent:#2f62ff;--pct:86" href="../ret14/"><div class="subject-top"><span class="subject-icon">⚖️</span><span class="dots">⋮</span></div><div class="subject-code">RET14</div><div class="subject-name">Skatterett</div><div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">86%</div></div><div class="ring-sub">48 kort i dag</div><span class="subject-cta">Start øving</span></a>
+          <a class="subject-card" style="--accent:#20b97a;--pct:72" href="../sol1/"><div class="subject-top"><span class="subject-icon">🧠</span><span class="dots">⋮</span></div><div class="subject-code">SOL1</div><div class="subject-name">Organisasjonsatferd</div><div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">72%</div></div><div class="ring-sub">32 kort i dag</div><span class="subject-cta">Start øving</span></a>
+          <a class="subject-card" style="--accent:#f09828;--pct:65" href="../sam2/"><div class="subject-top"><span class="subject-icon">📈</span><span class="dots">⋮</span></div><div class="subject-code">SAM2</div><div class="subject-name">Mikroøkonomi</div><div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">65%</div></div><div class="ring-sub">28 kort i dag</div><span class="subject-cta">Start øving</span></a>
         </section>
       </div>
 
       <aside class="side-col">
-        <article class="panel recommend"><div class="rec-badge">✨ Neste anbefaling</div><h3>Fokuser på fradragsrett i RET14</h3><p>Du gjør det bra, men dette området bør repeteres før du går videre.</p><div class="rec-meta"><span>28 kort</span><span>≈ 20 min</span></div><a class="start-btn" href="../ret14/" style="height:42px">Start nå</a></article>
-        <article class="panel"><div class="panel-inner"><div class="panel-title" style="margin-bottom:14px">Sterkeste område</div><div class="small-list"><div class="small-item"><div><strong>Transaksjonskostnader</strong><span>SAM2</span></div><span class="tag">92%</span></div><div class="small-item"><div><strong>Personinntekt</strong><span>RET14</span></div><span class="tag">88%</span></div><div class="small-item"><div><strong>Ledelse</strong><span>SOL1</span></div><span class="tag">84%</span></div></div></div></article>
-        <article class="panel"><div class="panel-inner"><div class="panel-title" style="margin-bottom:14px">Snarveier</div><div class="small-list"><a class="small-item" href="progress.html"><div><strong>Statistikk</strong><span>Se fremgang</span></div><span>→</span></a><a class="small-item" href="achievements.html"><div><strong>Prestasjoner</strong><span>Badges og mål</span></div><span>→</span></a><a class="small-item" href="../flashcards/"><div><strong>Alle flashcards</strong><span>Samlet oversikt</span></div><span>→</span></a></div></div></article>
-        <button class="logout" onclick="handleLogout()">Logg ut</button>
+        <article class="panel stat-row">
+          <div class="panel-inner">
+            <div class="isq isq-blue"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg></div>
+            <div class="stat-row-text"><span>Totalt øvd</span><b>128 <i>dager</i></b></div>
+            <span class="chev">›</span>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-inner">
+            <div class="panel-title">Studievaner</div>
+            <div class="panel-sub">Langsiktig innsats gir resultater ✨</div>
+            <div class="habits">
+              <div class="habit"><div class="isq isq-orange"><svg class="fill" viewBox="0 0 24 24"><path d="M13 2.5c.3 2.8 2.3 4 3.2 5.7.6 1.1.8 2.2.8 3.4a5 5 0 1 1-10 0c0-1.4.5-2.7 1.5-3.8.2 1.6 1.3 2.4 2 3-.5-1.9.2-4 1.5-6.4z"/></svg></div><div class="habit-text"><span>Beste streak</span><b>12 dager</b></div></div>
+              <div class="habit"><div class="isq isq-green"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="M9 14.5l2 2 4-4"/></svg></div><div class="habit-text"><span>Økter denne måneden</span><b id="sessStat">14</b></div></div>
+              <div class="habit"><div class="isq isq-purple"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="13" rx="2.2"/><path d="M7.5 4.5h11A1.5 1.5 0 0 1 20 6v11"/></svg></div><div class="habit-text"><span>Kort repetert</span><b id="cardsStat">3 240</b></div></div>
+            </div>
+            <div class="habit-foot">Hold deg nysgjerrig, fortsett å bygge! 💙</div>
+          </div>
+        </article>
+
+        <article class="panel recommend">
+          <div class="panel-inner">
+            <div class="rec-head"><div class="isq isq-purple"><svg viewBox="0 0 24 24"><path d="M12 4v16M7 20h10"/><path d="M5 8h14"/><path d="M5 8l-2.2 4.5a2.2 2.2 0 0 0 4.4 0z"/><path d="M19 8l-2.2 4.5a2.2 2.2 0 0 0 4.4 0z"/><circle cx="12" cy="5" r="1.3"/></svg></div><div><div class="rec-title">Neste anbefaling</div><div class="rec-sub">Fokus på tema</div></div></div>
+            <h3>Fradragsrett i RET14</h3>
+            <div class="rec-meta"><span><svg viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V20.5H7z"/><path d="M14 3.5V8h4"/></svg>28 kort</span><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>≈ 30 min</span></div>
+            <a class="start-btn" href="../ret14/" style="height:44px">Start nå →</a>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-inner">
+            <div class="panel-title">Svakeste område</div>
+            <div class="weak-list">
+              <div class="weak"><div class="isq isq-sm isq-red"><svg viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg></div><strong>Transaksjonskostnader</strong></div>
+              <div class="weak"><div class="isq isq-sm isq-blue"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.8"/></svg></div><strong>SOL1</strong></div>
+              <div class="weak-meta"><span><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8.5 12.5l2.5 2.5 5-5"/></svg>42 kort</span><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>≈ 29 min</span></div>
+            </div>
+          </div>
+        </article>
       </aside>
     </div>
   </main>
@@ -89,7 +248,8 @@ html{scroll-behavior:smooth}body{font-family:Inter,system-ui,-apple-system,Blink
 function getStats(){try{return JSON.parse(localStorage.getItem('fc_stats')||'{}')}catch(e){return {}}}
 function countStats(){var s=getStats(),sess=0,cards=0,q=0,qp=[];Object.values(s).forEach(function(d){(d.sessions||[]).forEach(function(x){sess++;cards+=x.total||0});(d.quizSessions||[]).forEach(function(x){q++;qp.push(x.pct||0)})});return{sessions:sess,cards:cards,quiz:q,avg:qp.length?Math.round(qp.reduce(function(a,b){return a+b},0)/qp.length):0}}
 function nameFromEmail(email){var username=(email||'student').split('@')[0];return username.charAt(0).toUpperCase()+username.slice(1)}
-window.onUserAuthorized=function(session){var email=session&&session.user&&session.user.email||'';var name=nameFromEmail(email);var initial=name.charAt(0).toUpperCase();['heroName','sideName','topName'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=name});['sideAvatar','topAvatar'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=initial});var stats=countStats();if(stats.cards>0)document.getElementById('cardsStat').textContent=stats.cards;if(stats.quiz>0)document.getElementById('newStat').textContent=stats.quiz}
+function setText(id,val){var el=document.getElementById(id);if(el)el.textContent=val}
+window.onUserAuthorized=function(session){var email=session&&session.user&&session.user.email||'';var name=nameFromEmail(email);var initial=name.charAt(0).toUpperCase();setText('heroName',name);setText('sideName',name);setText('sideAvatar',initial);var stats=countStats();if(stats.cards>0)setText('cardsStat',stats.cards.toLocaleString('no'));if(stats.sessions>0)setText('sessStat',stats.sessions)}
 function handleLogout(){var SUPABASE_URL='https://qnwjhheoekpqqqhevztw.supabase.co';var SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJxfud2poaGVvZWtwcXFxaGV2enR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MTg1NTEsImV4cCI6MjA5MjI5NDU1MX0.gHBvEH-L-zyiW4UnsCxOY2q-HmeIYe5OHSvxhFt7PQ8'.replace('xfud2','nwjh');var sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);sb.auth.signOut().finally(function(){window.location.replace('../login.html')})}
 </script>
 </body>
