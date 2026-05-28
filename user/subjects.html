@@ -56,7 +56,7 @@ function cardHtml(s){
   var isDisabled = s.path === '#';
   var description = s.description || s.desc || '';
   return '<article class="subject-card" data-status="'+s.status+'" data-search="'+(s.code+' '+s.name+' '+description).toLowerCase()+'" style="--accent:'+s.accent+';--p:'+s.progress+'%">'
-    + '<div class="subject-top"><div class="subject-icon">'+s.icon+'</div><span class="status '+(s.status==='active'?'active':'')+'">'+s.statusText+'</span></div>'
+    + '<div class="subject-top"><div class="subject-icon">'+(s.emblem?'<img class="emblem-img" src="'+s.emblem+'" alt="" onerror="this.remove()">':'')+'<span class="emblem-fallback">'+s.icon+'</span></div><span class="status '+(s.status==='active'?'active':'')+'">'+s.statusText+'</span></div>'
     + '<div class="subject-code">'+s.code+'</div><div class="subject-name">'+s.name+'</div>'
     + '<p class="subject-desc">'+description+'</p>'
     + '<div class="metrics"><div class="metric"><b>'+s.decks+'</b><span>Deck</span></div><div class="metric"><b>'+s.cards+'</b><span>Innhold</span></div><div class="metric"><b>'+s.tools+'</b><span>Verktøy</span></div></div>'
