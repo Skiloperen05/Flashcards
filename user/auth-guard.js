@@ -1,5 +1,12 @@
 (function (window, document) {
   var SHARED_SCRIPT = '../shared/auth-guard.js';
+  var MODEL_PAGES = {
+    'a-besvarelser.html': { label: 'A-besvarelser', icon: '▤', subtitle: 'Se sterke tidligere svar' },
+    'oppgavebank.html': { label: 'Oppgavebank', icon: '▣', subtitle: 'Øv på eksamensnære oppgaver' },
+    'notater.html': { label: 'Notater', icon: '▥', subtitle: 'Samle egne fagnotater' },
+    'studieplan.html': { label: 'Studieplan', icon: '☷', subtitle: 'Planlegg ukens økter' },
+    'settings.html': { label: 'Innstillinger', icon: '⚙', subtitle: 'Profil og preferanser' }
+  };
 
   function loadSharedAuthGuard() {
     return new Promise(function (resolve, reject) {
@@ -57,6 +64,10 @@
     return file.toLowerCase();
   }
 
+  function isModelPage(page) {
+    return !!MODEL_PAGES[page];
+  }
+
   function addPageStylesheet() {
     var page = currentUserPage();
     if (page === 'achievements.html') {
@@ -65,7 +76,7 @@
       addStylesheet('haugnes-progress-css', '../shared/haugnes-progress.css');
     } else if (page === 'subjects.html') {
       addStylesheet('haugnes-subjects-css', '../shared/haugnes-subjects.css');
-    } else if (page !== 'a-besvarelser.html') {
+    } else if (!isModelPage(page)) {
       addStylesheet('haugnes-dashboard-css', '../shared/haugnes-dashboard.css');
     }
   }
@@ -162,35 +173,56 @@
     });
   }
 
-  function installABesvarelserLinks() {
+  function createNavLink(href, config, isActive) {
+    var link = document.createElement('a');
+    link.className = 'nav-link' + (isActive ? ' active' : '');
+    link.href = href;
+    link.innerHTML = '<span class="nav-ico">' + config.icon + '</span>' + config.label;
+    return link;
+  }
+
+  function installModelPageLinks() {
     var page = currentUserPage();
     var nav = document.querySelector('.sidebar .nav, nav.nav');
-    if (nav && !nav.querySelector('a[href="a-besvarelser.html"]')) {
-      var link = document.createElement('a');
-      link.className = 'nav-link' + (page === 'a-besvarelser.html' ? ' active' : '');
-      link.href = 'a-besvarelser.html';
-      link.innerHTML = '<span class="nav-ico">▤</span>A-besvarelser';
-      var anchor = nav.querySelector('a[href="../ret14/eksamen/"]') || nav.querySelector('a[href="progress.html"]');
-      if (anchor && anchor.parentNode === nav) anchor.insertAdjacentElement('afterend', link);
-      else nav.appendChild(link);
-    }
 
-    if (page === 'a-besvarelser.html') {
-      document.querySelectorAll('.nav-link.active').forEach(function (active) {
-        if (active.getAttribute('href') !== 'a-besvarelser.html') active.classList.remove('active');
+    if (nav) {
+      var insertionAnchor = nav.querySelector('a[href="../ret14/eksamen/"]') || nav.querySelector('a[href="progress.html"]') || nav.querySelector('a[href="subjects.html"]');
+      Object.keys(MODEL_PAGES).forEach(function (href) {
+        if (nav.querySelector('a[href="' + href + '"]')) return;
+        var link = createNavLink(href, MODEL_PAGES[href], page === href);
+        if (insertionAnchor && insertionAnchor.parentNode === nav) {
+          insertionAnchor.insertAdjacentElement('afterend', link);
+          insertionAnchor = link;
+        } else {
+          nav.appendChild(link);
+        }
       });
-    }
 
-    if (page === 'index.html') {
-      var shortcuts = document.querySelector('.side-col .small-list');
-      if (shortcuts && !shortcuts.querySelector('a[href="a-besvarelser.html"]')) {
-        var item = document.createElement('a');
-        item.className = 'small-item';
-        item.href = 'a-besvarelser.html';
-        item.innerHTML = '<div><strong>A-besvarelser</strong><span>Se sterke tidligere svar</span></div><span>→</span>';
-        shortcuts.insertBefore(item, shortcuts.firstChild);
+      if (isModelPage(page)) {
+        document.querySelectorAll('.nav-link.active').forEach(function (active) {
+          if (active.getAttribute('href') !== page) active.classList.remove('active');
+        });
+        var current = nav.querySelector('a[href="' + page + '"]');
+        if (current) current.classList.add('active');
       }
     }
+
+    if (page === 'index.html') installDashboardShortcuts();
+  }
+
+  function installDashboardShortcuts() {
+    var shortcuts = document.querySelector('.side-col .small-list');
+    if (!shortcuts) return;
+
+    ['a-besvarelser.html', 'oppgavebank.html', 'notater.html', 'studieplan.html'].forEach(function (href) {
+      if (shortcuts.querySelector('a[href="' + href + '"]')) return;
+      var config = MODEL_PAGES[href];
+      var item = document.createElement('a');
+      item.className = 'small-item';
+      item.href = href;
+      item.innerHTML = '<div><strong>' + config.label + '</strong><span>' + config.subtitle + '</span></div><span>→</span>';
+      shortcuts.appendChild(item);
+    });
   }
 
   function enhanceAchievementsPage() {
@@ -208,13 +240,13 @@
     addPageStylesheet();
     applyDashboardBranding();
     standardizeDashboardLinks();
-    installABesvarelserLinks();
+    installModelPageLinks();
     enhanceAchievementsPage();
     if (currentUserPage() === 'index.html') {
       loadSubjectMeta(function () {
         renderDashboardSubjects();
         standardizeDashboardLinks();
-        installABesvarelserLinks();
+        installModelPageLinks();
       });
     }
   }
