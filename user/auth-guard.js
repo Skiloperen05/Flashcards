@@ -111,8 +111,11 @@
 
     container.innerHTML = subjects.map(function (subject) {
       var todayCards = subject.code === 'RET14' ? 48 : subject.code === 'SOL1' ? 32 : subject.code === 'SAM2' ? 28 : 31;
+      var emblem = subject.emblem
+        ? '<img class="emblem-img" src="' + subject.emblem + '" alt="" onerror="this.remove()">'
+        : '';
       return '<a class="subject-card" style="--accent:' + subject.accent + ';--pct:' + subject.progress + '" href="' + subject.path + '">'
-        + '<div class="subject-top"><span class="subject-icon">' + subject.icon + '</span><span class="dots">⋮</span></div>'
+        + '<div class="subject-top"><span class="subject-icon">' + emblem + '<span class="emblem-fallback">' + subject.icon + '</span></span><span class="dots">⋮</span></div>'
         + '<div class="subject-code">' + subject.code + '</div>'
         + '<div class="subject-name">' + subject.name + '</div>'
         + '<div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">' + subject.progress + '%</div></div>'
