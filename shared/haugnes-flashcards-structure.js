@@ -20,8 +20,45 @@
       path: '../sol1/',
       accent: '#20b97a',
       description: 'Begreper, teorier, modeller og teoriskriving for SOL1.'
+    },
+    sam2: {
+      label: 'SAM2 Mikroøkonomi',
+      short: 'SAM2',
+      path: '../sam2/',
+      accent: '#f09828',
+      description: 'Oppgaver, figurer og modellforståelse i mikroøkonomi.'
+    },
+    sam3: {
+      label: 'SAM3 Makroøkonomi',
+      short: 'SAM3',
+      path: '../sam3/',
+      accent: '#ef4444',
+      description: 'Makromodeller, formler, V25-eksamen og eksamensnær repetisjon.'
     }
   };
+
+  function rootRelative(path) {
+    if (window.AuthGuard && typeof window.AuthGuard.getRootPath === 'function') {
+      return window.AuthGuard.getRootPath().replace(/\/$/, '/') + path.replace(/^\//, '');
+    }
+    var script = document.currentScript || Array.prototype.slice.call(document.scripts).filter(function (s) {
+      return /haugnes-flashcards-structure\.js(?:\?|$)/.test(s.src || '');
+    }).pop();
+    if (script && script.src) {
+      var scriptUrl = new URL(script.src, window.location.href);
+      return new URL('../' + path.replace(/^\//, ''), scriptUrl).pathname;
+    }
+    return '../' + path.replace(/^\//, '');
+  }
+
+  function loadSessionEnhancement() {
+    if (document.getElementById('haugnes-flashcard-session-js')) return;
+    var script = document.createElement('script');
+    script.id = 'haugnes-flashcard-session-js';
+    script.src = rootRelative('shared/haugnes-flashcard-session.js');
+    script.defer = true;
+    document.head.appendChild(script);
+  }
 
   function toFlashcardsMeta(subject) {
     if (!subject) return null;
@@ -260,6 +297,7 @@
   }
 
   function install() {
+    loadSessionEnhancement();
     var tries = 0;
     var timer = window.setInterval(function () {
       tries++;
@@ -275,6 +313,7 @@
       wrap('startDeck', enhanceAll);
       wrap('showEndScreen', enhanceAll);
       enhanceAll();
+      if (window.HaugnesFlashcardSession && typeof window.HaugnesFlashcardSession.install === 'function') window.HaugnesFlashcardSession.install();
     }, 50);
   }
 
