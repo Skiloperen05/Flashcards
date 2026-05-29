@@ -40,7 +40,7 @@
     var existing = document.getElementById(id);
     if (existing) {
       if (onload) {
-        if (window.HaugnesSubjects) onload();
+        if ((id === 'haugnes-subject-meta-js' && window.HaugnesSubjects) || (id === 'nhh-schedule-api-js' && window.NHHScheduleAPI) || (id === 'haugnes-studyplan-js' && window.HaugnesStudyplan)) onload();
         else existing.addEventListener('load', onload, { once: true });
       }
       return;
@@ -223,6 +223,15 @@
     if (back) back.lastChild.textContent = ' Dashboard';
   }
 
+  function loadStudyplanTools() {
+    if (currentUserPage() !== 'studieplan.html') return;
+    addScript('nhh-schedule-api-js', '../shared/nhh-schedule-api.js', function () {
+      addScript('haugnes-studyplan-js', '../shared/haugnes-studyplan.js', function () {
+        if (window.HaugnesStudyplan && typeof window.HaugnesStudyplan.render === 'function') window.HaugnesStudyplan.render();
+      });
+    });
+  }
+
   function runEnhancements() {
     addPageStylesheet();
     installNavVisibilityStyles();
@@ -230,6 +239,7 @@
     standardizeDashboardLinks();
     installModelPageLinks();
     enhanceAchievementsPage();
+    loadStudyplanTools();
     if (currentUserPage() === 'index.html') {
       loadSubjectMeta(function () {
         renderDashboardSubjects();
@@ -258,5 +268,7 @@
       }, 0);
       if (typeof window.onUserAuthorized === 'function') window.onUserAuthorized(session);
     });
-  }).catch(function () { window.location.replace('../login.html'); });
+  }).catch(function () {
+    window.location.replace('../login.html');
+  });
 })(window, document);
