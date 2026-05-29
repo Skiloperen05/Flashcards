@@ -15,6 +15,7 @@
   function rootRelative(path) { return window.AuthGuard && typeof window.AuthGuard.getRootPath === 'function' ? window.AuthGuard.getRootPath().replace(/\/$/, '/') + path.replace(/^\//, '') : '../' + path.replace(/^\//, ''); }
   function retry(key, fn, max, delay) { tries[key] = (tries[key] || 0) + 1; if (tries[key] > (max || 25)) return; window.setTimeout(fn, delay || 120); }
   function readJson(key, fallback) { try { var raw = window.localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; } }
+  function formatNumber(n) { return Number(n || 0).toLocaleString('no-NO'); }
 
   function normaliseSubjectId(id) {
     var lower = String(id || '').toLowerCase();
@@ -57,7 +58,7 @@
       });
     }
 
-    return { total: totals.total, right: totals.right, sessions: totals.sessions, pct: totals.total ? Math.round((totals.right / totals.total) * 100) : subject.progress };
+    return { total: totals.total, right: totals.right, sessions: totals.sessions, pct: totals.total ? Math.round((totals.right / totals.total) * 100) : 0 };
   }
 
   function aggregateStats(subjects) {
@@ -67,20 +68,44 @@
       total += s.total; right += s.right; sessions += s.sessions;
       active.push({ subject: subject, stats: s });
     });
-    active.sort(function (a, b) { return (a.stats.total ? a.stats.pct : a.subject.progress) - (b.stats.total ? b.stats.pct : b.subject.progress); });
-    return { total: total, right: right, sessions: sessions, mastery: total ? Math.round((right / total) * 100) : 0, weakest: active[0] || null };
+    active.sort(function (a, b) {
+      if (!!a.stats.total !== !!b.stats.total) return a.stats.total ? 1 : -1;
+      return a.stats.pct - b.stats.pct;
+    });
+    return { total: total, right: right, sessions: sessions, mastery: total ? Math.round((right / total) * 100) : 0, weakest: active.find(function (x) { return x.stats.total; }) || null };
   }
 
   function setText(id, text) { var el = document.getElementById(id); if (el) el.textContent = text; }
-  function getTodayCards(subject) { return ({ RET14: 48, SOL1: 32, SAM2: 28, SAM3: 31 })[subject.code] || 18; }
   function flashcardHref(subject) { if (subject.code === 'SAM3') return '../sam3/flashcards.html'; return subject.flashcards || subject.path || '#'; }
 
   function cardHtml(subject) {
     var stats = subjectStats(subject);
-    var pct = stats.total ? stats.pct : subject.progress;
+    var pct = stats.total ? stats.pct : 0;
     var emblem = subject.emblem ? '<img class="emblem-img" src="' + subject.emblem + '" alt="" onerror="this.remove()">' : '';
-    var sub = stats.total ? stats.total + ' kort øvd · ' + stats.sessions + ' økter' : getTodayCards(subject) + ' kort i dag';
+    var sub = stats.total ? formatNumber(stats.total) + ' kort øvd · ' + stats.sessions + ' økter' : 'Ikke startet ennå';
     return '<a class="subject-card" style="--accent:' + subject.accent + ';--pct:' + pct + '" href="' + (subject.path || '#') + '"><div class="subject-top"><span class="subject-icon">' + emblem + '<span class="emblem-fallback">' + subject.icon + '</span></span><span class="dots">⋮</span></div><div class="subject-code">' + subject.code + '</div><div class="subject-name">' + subject.name + '</div><div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">' + pct + '%</div></div><div class="ring-sub">' + sub + '</div><span class="subject-cta" data-flashcards="' + flashcardHref(subject) + '">Start øving</span></a>';
+  }
+
+  function setTodayStats(summary) {
+    var cards = document.querySelectorAll('#today .big-stat');
+    if (!cards.length) return;
+    var values = [summary.total, summary.sessions, summary.mastery + '%'];
+    var labels = ['kort repetert', 'økter fullført', 'nøyaktighet'];
+    cards.forEach(function (card, i) {
+      var b = card.querySelector('b');
+      var span = card.querySelector('span');
+      if (b) b.textContent = i === 0 ? formatNumber(values[i]) : values[i];
+      if (span) span.textContent = labels[i];
+    });
+  }
+
+  function setStudyHabits(summary) {
+    setText('cardsStat', formatNumber(summary.total));
+    setText('sessStat', summary.sessions);
+    var totalPanel = document.querySelector('.stat-row-text b');
+    if (totalPanel) totalPanel.innerHTML = summary.sessions + ' <i>økter</i>';
+    var bestStreak = document.querySelector('.habit-text b');
+    if (bestStreak && /Beste streak/i.test(bestStreak.parentElement.textContent)) bestStreak.textContent = summary.sessions ? 'Aktiv' : 'Ikke startet';
   }
 
   function enhanceDashboard() {
@@ -91,26 +116,25 @@
     var grid = document.querySelector('.subjects');
     if (grid) {
       grid.innerHTML = active.map(cardHtml).join('');
-      grid.addEventListener('click', function (event) {
-        var cta = event.target.closest('.subject-cta[data-flashcards]');
-        if (!cta) return;
-        event.preventDefault();
-        window.location.href = cta.getAttribute('data-flashcards');
-      });
+      if (!grid.dataset.hfBound) {
+        grid.dataset.hfBound = '1';
+        grid.addEventListener('click', function (event) {
+          var cta = event.target.closest('.subject-cta[data-flashcards]');
+          if (!cta) return;
+          event.preventDefault();
+          window.location.href = cta.getAttribute('data-flashcards');
+        });
+      }
     }
     var mineFag = document.querySelector('#mine-fag a');
     if (mineFag) { mineFag.href = 'subjects.html'; mineFag.textContent = 'Se alle fag →'; }
-    var todayStats = document.querySelectorAll('#today .big-stat b');
-    if (todayStats[0]) todayStats[0].textContent = summary.total ? Math.max(18, 90 - summary.mastery) : '48';
-    if (todayStats[1]) todayStats[1].textContent = summary.sessions ? Math.max(15, Math.min(45, summary.sessions * 4)) : '35';
-    if (todayStats[2]) todayStats[2].textContent = summary.total ? Math.max(50, Math.min(96, summary.mastery + 12)) + '%' : '66%';
-    if (summary.total) setText('cardsStat', summary.total.toLocaleString('no'));
-    if (summary.sessions) setText('sessStat', summary.sessions);
+    setTodayStats(summary);
+    setStudyHabits(summary);
     var target = summary.weakest && summary.weakest.subject ? summary.weakest.subject : active[0];
     var start = document.querySelector('#today .start-btn');
     var plan = document.querySelector('#today .ghost-link');
-    if (start && target) { start.href = flashcardHref(target); start.textContent = 'Start ' + target.code + ' →'; }
-    if (plan && target) plan.href = target.path || 'subjects.html';
+    if (start && target) { start.href = flashcardHref(target); start.textContent = summary.total ? 'Fortsett ' + target.code + ' →' : 'Start første økt →'; }
+    if (plan && target) { plan.href = target.path || 'subjects.html'; plan.textContent = 'Åpne fagside →'; }
   }
 
   function loadAnswerLibrary() {
@@ -123,10 +147,7 @@
     document.head.appendChild(script);
   }
 
-  function enhanceABesvarelserSensor() {
-    if (!inUserPage('a-besvarelser.html')) return;
-    loadAnswerLibrary();
-  }
+  function enhanceABesvarelserSensor() { if (inUserPage('a-besvarelser.html')) loadAnswerLibrary(); }
 
   function enhanceProgressNextSteps() {
     if (!inUserPage('progress.html') || document.body.dataset.hfProgressNextEnhanced) return;
