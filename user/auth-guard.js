@@ -40,7 +40,7 @@
     var existing = document.getElementById(id);
     if (existing) {
       if (onload) {
-        if ((id === 'haugnes-subject-meta-js' && window.HaugnesSubjects) || (id === 'nhh-schedule-api-js' && window.NHHScheduleAPI) || (id === 'haugnes-studyplan-js' && window.HaugnesStudyplan)) onload();
+        if ((id === 'haugnes-subject-meta-js' && window.HaugnesSubjects) || (id === 'timeedit-fetch-proxy-js' && window.HaugnesTimeEditProxy) || (id === 'nhh-schedule-api-js' && window.NHHScheduleAPI) || (id === 'haugnes-studyplan-js' && window.HaugnesStudyplan)) onload();
         else existing.addEventListener('load', onload, { once: true });
       }
       return;
@@ -116,45 +116,29 @@
     if (currentUserPage() !== 'index.html' || !window.HaugnesSubjects) return;
     var container = document.querySelector('.subjects');
     if (!container) return;
-    var subjects = window.HaugnesSubjects.getAll().filter(function (subject) {
-      return subject.status !== 'build';
-    }).slice(0, 3);
+    var subjects = window.HaugnesSubjects.getAll().filter(function (subject) { return subject.status !== 'build'; }).slice(0, 3);
     container.innerHTML = subjects.map(function (subject) {
       var todayCards = subject.code === 'RET14' ? 48 : subject.code === 'SOL1' ? 32 : subject.code === 'SAM2' ? 28 : 31;
-      var emblem = subject.emblem
-        ? '<img class="emblem-img" src="' + subject.emblem + '" alt="" onerror="this.remove()">'
-        : '';
+      var emblem = subject.emblem ? '<img class="emblem-img" src="' + subject.emblem + '" alt="" onerror="this.remove()">' : '';
       return '<a class="subject-card" style="--accent:' + subject.accent + ';--pct:' + subject.progress + '" href="' + subject.path + '">'
         + '<div class="subject-top"><span class="subject-icon">' + emblem + '<span class="emblem-fallback">' + subject.icon + '</span></span><span class="dots">⋮</span></div>'
-        + '<div class="subject-code">' + subject.code + '</div>'
-        + '<div class="subject-name">' + subject.name + '</div>'
+        + '<div class="subject-code">' + subject.code + '</div><div class="subject-name">' + subject.name + '</div>'
         + '<div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">' + subject.progress + '%</div></div>'
-        + '<div class="ring-sub">' + todayCards + ' kort i dag</div>'
-        + '<span class="subject-cta">Start øving</span>'
-        + '</a>';
+        + '<div class="ring-sub">' + todayCards + ' kort i dag</div><span class="subject-cta">Start øving</span></a>';
     }).join('');
     var sectionLink = document.querySelector('#mine-fag a');
-    if (sectionLink) {
-      sectionLink.href = 'subjects.html';
-      sectionLink.textContent = 'Se alle fag →';
-    }
+    if (sectionLink) { sectionLink.href = 'subjects.html'; sectionLink.textContent = 'Se alle fag →'; }
   }
 
   function standardizeDashboardLinks() {
     var subjectsNav = document.querySelector('.nav-link[href="#mine-fag"]');
     if (subjectsNav) subjectsNav.href = 'subjects.html';
     var todayStart = document.querySelector('#today .start-btn[href="../ret14/"]');
-    if (todayStart) {
-      todayStart.href = '../flashcards/?subject=ret14';
-      todayStart.textContent = 'Start økt →';
-    }
+    if (todayStart) { todayStart.href = '../flashcards/?subject=ret14'; todayStart.textContent = 'Start økt →'; }
     var todayPlan = document.querySelector('#today .ghost-link[href="../ret14/"]');
     if (todayPlan) todayPlan.href = '../ret14/';
     var recommendationStart = document.querySelector('.recommend .start-btn[href="../ret14/"]');
-    if (recommendationStart) {
-      recommendationStart.href = '../flashcards/?subject=ret14';
-      recommendationStart.textContent = 'Start nå →';
-    }
+    if (recommendationStart) { recommendationStart.href = '../flashcards/?subject=ret14'; recommendationStart.textContent = 'Start nå →'; }
     document.querySelectorAll('.subject-card .subject-cta').forEach(function (button) { button.textContent = 'Start øving'; });
     document.querySelectorAll('.subject-card .subject-btn').forEach(function (button) { button.textContent = 'Åpne fag'; });
     document.querySelectorAll('.subject-card').forEach(function (card) {
@@ -182,15 +166,11 @@
       Object.keys(MODEL_PAGES).forEach(function (href) {
         if (nav.querySelector('a[href="' + href + '"]')) return;
         var link = createNavLink(href, MODEL_PAGES[href], page === href);
-        if (insertionAnchor && insertionAnchor.parentNode === nav) {
-          insertionAnchor.insertAdjacentElement('afterend', link);
-          insertionAnchor = link;
-        } else nav.appendChild(link);
+        if (insertionAnchor && insertionAnchor.parentNode === nav) { insertionAnchor.insertAdjacentElement('afterend', link); insertionAnchor = link; }
+        else nav.appendChild(link);
       });
       if (isModelPage(page)) {
-        document.querySelectorAll('.nav-link.active').forEach(function (active) {
-          if (active.getAttribute('href') !== page) active.classList.remove('active');
-        });
+        document.querySelectorAll('.nav-link.active').forEach(function (active) { if (active.getAttribute('href') !== page) active.classList.remove('active'); });
         var current = nav.querySelector('a[href="' + page + '"]');
         if (current) current.classList.add('active');
       }
@@ -225,9 +205,11 @@
 
   function loadStudyplanTools() {
     if (currentUserPage() !== 'studieplan.html') return;
-    addScript('nhh-schedule-api-js', '../shared/nhh-schedule-api.js', function () {
-      addScript('haugnes-studyplan-js', '../shared/haugnes-studyplan.js', function () {
-        if (window.HaugnesStudyplan && typeof window.HaugnesStudyplan.render === 'function') window.HaugnesStudyplan.render();
+    addScript('timeedit-fetch-proxy-js', '../shared/timeedit-fetch-proxy.js', function () {
+      addScript('nhh-schedule-api-js', '../shared/nhh-schedule-api.js', function () {
+        addScript('haugnes-studyplan-js', '../shared/haugnes-studyplan.js', function () {
+          if (window.HaugnesStudyplan && typeof window.HaugnesStudyplan.render === 'function') window.HaugnesStudyplan.render();
+        });
       });
     });
   }
@@ -241,11 +223,7 @@
     enhanceAchievementsPage();
     loadStudyplanTools();
     if (currentUserPage() === 'index.html') {
-      loadSubjectMeta(function () {
-        renderDashboardSubjects();
-        standardizeDashboardLinks();
-        installModelPageLinks();
-      });
+      loadSubjectMeta(function () { renderDashboardSubjects(); standardizeDashboardLinks(); installModelPageLinks(); });
     }
   }
 
@@ -253,22 +231,14 @@
   else runEnhancements();
 
   loadSharedAuthGuard().then(function (AuthGuard) {
-    if (!AuthGuard || typeof AuthGuard.requireAuth !== 'function') {
-      window.location.replace('../login.html');
-      return;
-    }
+    if (!AuthGuard || typeof AuthGuard.requireAuth !== 'function') { window.location.replace('../login.html'); return; }
     AuthGuard.requireAuth().then(function (session) {
       if (!session) return;
       window.__userSession = session;
       runEnhancements();
       installSharedLogout(AuthGuard);
-      window.setTimeout(function () {
-        installSharedLogout(AuthGuard);
-        runEnhancements();
-      }, 0);
+      window.setTimeout(function () { installSharedLogout(AuthGuard); runEnhancements(); }, 0);
       if (typeof window.onUserAuthorized === 'function') window.onUserAuthorized(session);
     });
-  }).catch(function () {
-    window.location.replace('../login.html');
-  });
+  }).catch(function () { window.location.replace('../login.html'); });
 })(window, document);
