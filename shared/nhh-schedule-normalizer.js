@@ -5,6 +5,7 @@
   window.__haugnesNhhScheduleNormalizerInstalled = true;
 
   var KNOWN_SUBJECTS = ['RET14', 'SOL1', 'SAM2', 'SAM3', 'MET2', 'MAT10'];
+  var COURSE_RE = /\b([A-ZÆØÅ]{2,6})\s*-?\s*(\d{1,4}[A-Z]?)\b/g;
 
   function cleanText(value) {
     return String(value || '')
@@ -18,12 +19,12 @@
   }
 
   function subjectCode(value) {
-    return String(value || '').toUpperCase().replace(/\s+/g, '');
+    return String(value || '').toUpperCase().replace(/\s+/g, '').replace(/-/g, '');
   }
 
   function subjectPattern(code) {
     var compact = subjectCode(code);
-    var spaced = compact.replace(/([A-ZÆØÅ]+)(\d+)/, '$1\\s*$2');
+    var spaced = compact.replace(/([A-ZÆØÅ]+)(\d+)/, '$1\\s*-?\\s*$2');
     return new RegExp('(^|[^A-ZÆØÅ0-9])(' + compact + '|' + spaced + ')([^A-ZÆØÅ0-9]|$)', 'i');
   }
 
@@ -33,6 +34,22 @@
       if (subjectPattern(KNOWN_SUBJECTS[i]).test(text)) return KNOWN_SUBJECTS[i];
     }
     return '';
+  }
+
+  function extractCourseCodes(value) {
+    var text = cleanText(value).toUpperCase();
+    var codes = [];
+    var seen = {};
+    var match;
+    COURSE_RE.lastIndex = 0;
+    while ((match = COURSE_RE.exec(text))) {
+      var code = subjectCode(match[1] + match[2]);
+      if (!seen[code]) {
+        seen[code] = true;
+        codes.push(code);
+      }
+    }
+    return codes;
   }
 
   function selectedSubjects(args, api) {
@@ -62,7 +79,7 @@
     var c = subjectCode(code);
     if (!c) return clean;
     var escaped = c.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    var spaced = c.replace(/(\D+)(\d+)/, '$1\\s*$2').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    var spaced = c.replace(/(\D+)(\d+)/, '$1\\s*-?\\s*$2').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     var patterns = [
       new RegExp('^' + escaped + '\\s*[·.:-]\\s*', 'i'),
       new RegExp('^' + spaced + '\\s*[·.:-]\\s*', 'i')
@@ -74,8 +91,8 @@
   function normalizeEvent(event) {
     if (!event) return event;
     var next = Object.assign({}, event);
-    var combined = cleanText([next.subjectCode, next.title, next.raw].join(' '));
-    var detected = detectSubject(combined);
+    var bodyText = cleanText([next.title, next.raw].join(' '));
+    var detected = detectSubject(bodyText);
     next.subjectCode = detected || subjectCode(next.subjectCode);
     next.title = stripDuplicateSubjectPrefix(next.title, next.subjectCode) || next.title;
     next.raw = cleanText(next.raw || '');
@@ -85,10 +102,18 @@
     return next;
   }
 
+  function hasForeignCourse(event, allowedSubjects) {
+    var allowed = (allowedSubjects || []).map(subjectCode).filter(Boolean);
+    if (!allowed.length || !event) return false;
+    var codes = extractCourseCodes([event.title, event.raw].join(' '));
+    if (!codes.length) return false;
+    return codes.every(function (code) { return allowed.indexOf(code) === -1; });
+  }
+
   function titleKey(event) {
     return cleanText(event.title).toLowerCase()
       .replace(/[^a-z0-9æøå]+/g, ' ')
-      .replace(/\b(se studentweb|orakel|digital|skriftlig|skoleeksamen|makroøkonomi|mikroøkonomi|analyse og lineær algebra)\b/g, '')
+      .replace(/\b(se studentweb|orakel|digital|skriftlig|skoleeksamen|makroøkonomi|mikroøkonomi|analyse og lineær algebra|advanced qualitative methods|lecture)\b/g, '')
       .replace(/\s+/g, ' ')
       .trim();
   }
@@ -105,6 +130,7 @@
     var result = [];
     (events || []).map(normalizeEvent).forEach(function (event) {
       if (!event || !event.date) return;
+      if (hasForeignCourse(event, allowed)) return;
       if (allowed.length && allowed.indexOf(subjectCode(event.subjectCode)) === -1) return;
       if (!withinTerm(event)) return;
       var key = dedupeKey(event);
@@ -129,8 +155,8 @@
   }
 
   function patch(api) {
-    if (!api || api.__haugnesNormalizerPatchedV2) return;
-    api.__haugnesNormalizerPatchedV2 = true;
+    if (!api || api.__haugnesNormalizerPatchedV3) return;
+    api.__haugnesNormalizerPatchedV3 = true;
 
     var originalGetAllEvents = api.getAllEvents;
     if (typeof originalGetAllEvents === 'function') {
@@ -166,6 +192,7 @@
     api.normalizeEvents = normalizeAndDedupe;
     api.normalizeEvent = normalizeEvent;
     api.detectSubjectFromTimeEdit = detectSubject;
+    api.extractCourseCodesFromTimeEdit = extractCourseCodes;
     normalizeCache(api);
   }
 
