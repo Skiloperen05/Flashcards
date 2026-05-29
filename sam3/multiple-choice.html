@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SAM3 — Multiple choice</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../shared/auth-guard.js"></script>
 <script>try{AuthGuard.requireAuth().then(s=>{if(!s)return;if(AuthGuard.bindUserInfo)AuthGuard.bindUserInfo('userEmailLabel','userChip','userAvatar');});}catch(e){console.warn(e);}</script>
 <link rel="stylesheet" href="formelquiz.css?v=p5-1">
@@ -17,7 +17,7 @@
 .mcAlt:hover:not(:disabled){border-color:#cbd5e1;background:var(--surface-2)}
 .mcAlt:active:not(:disabled){transform:translateY(1px)}
 .mcAlt:disabled{cursor:default}
-.mcAlt .mcLetter{font-family:Inter,sans-serif;font-weight:800;font-size:13px;color:var(--muted);background:var(--surface-2);border:1px solid var(--border);width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex-shrink:0;letter-spacing:0}
+.mcAlt .mcLetter{font-family:'Lora',Georgia,'Times New Roman',serif;font-weight:800;font-size:13px;color:var(--muted);background:var(--surface-2);border:1px solid var(--border);width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex-shrink:0;letter-spacing:0}
 .mcAlt.correct{border-color:#10b981;background:#ecfdf5;color:#065f46}
 .mcAlt.correct .mcLetter{background:#10b981;color:#fff;border-color:#10b981}
 .mcAlt.wrong{border-color:var(--red);background:#fef2f2;color:#991b1b}

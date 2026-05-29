@@ -26,7 +26,7 @@
   --radius-lg:18px;
   --radius-xl:22px;
 }
-body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;font-feature-settings:"cv11","ss01"}
+body{font-family:'Lora',Georgia,'Times New Roman',serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;font-feature-settings:"cv11","ss01"}
 
 /* ===== Topbar ===== */
 .topbar{height:60px;background:var(--dark);display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:5}
@@ -180,7 +180,7 @@ h1{font-size:clamp(28px,4.6vw,44px);letter-spacing:-1.2px;color:#f8fafc;font-wei
 .donut{display:block;margin:2px 0}
 .donut .donut-track{fill:none;stroke:#eef2f6;stroke-width:9}
 .donut .donut-value{fill:none;stroke-width:9;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset .7s cubic-bezier(.4,0,.2,1)}
-.donut .donut-pct{font-family:Inter,system-ui,sans-serif;font-size:20px;font-weight:800;fill:var(--ink);letter-spacing:-.5px}
+.donut .donut-pct{font-family:'Lora',Georgia,'Times New Roman',serif;font-size:20px;font-weight:800;fill:var(--ink);letter-spacing:-.5px}
 
 /* Sections */
 .summarySection{margin-top:22px;padding-top:18px;border-top:1px solid var(--border)}
@@ -251,7 +251,7 @@ h1{font-size:clamp(28px,4.6vw,44px);letter-spacing:-1.2px;color:#f8fafc;font-wei
 .fig svg{width:100%;height:auto;display:block;background:#fff;border-radius:14px;border:1px solid var(--border)}
 
 /* ===== Figure SVG typography (.fig) ===== */
-.fig text{font-family:Inter,system-ui,sans-serif}
+.fig text{font-family:'Lora',Georgia,'Times New Roman',serif}
 .fig .serif{font-family:Georgia,'Times New Roman',serif}
 .fig .navy{fill:var(--ink)}
 .fig .red{fill:var(--red)}
