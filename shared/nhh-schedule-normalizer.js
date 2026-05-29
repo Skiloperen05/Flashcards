@@ -107,7 +107,7 @@
     if (!allowed.length || !event) return false;
     var codes = extractCourseCodes([event.title, event.raw].join(' '));
     if (!codes.length) return false;
-    return codes.every(function (code) { return allowed.indexOf(code) === -1; });
+    return codes.some(function (code) { return allowed.indexOf(code) === -1; });
   }
 
   function titleKey(event) {
@@ -155,8 +155,8 @@
   }
 
   function patch(api) {
-    if (!api || api.__haugnesNormalizerPatchedV3) return;
-    api.__haugnesNormalizerPatchedV3 = true;
+    if (!api || api.__haugnesNormalizerPatchedV4) return;
+    api.__haugnesNormalizerPatchedV4 = true;
 
     var originalGetAllEvents = api.getAllEvents;
     if (typeof originalGetAllEvents === 'function') {
