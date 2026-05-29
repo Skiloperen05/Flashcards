@@ -15,8 +15,6 @@
   function rootRelative(path) { return window.AuthGuard && typeof window.AuthGuard.getRootPath === 'function' ? window.AuthGuard.getRootPath().replace(/\/$/, '/') + path.replace(/^\//, '') : '../' + path.replace(/^\//, ''); }
   function retry(key, fn, max, delay) { tries[key] = (tries[key] || 0) + 1; if (tries[key] > (max || 25)) return; window.setTimeout(fn, delay || 120); }
   function readJson(key, fallback) { try { var raw = window.localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; } }
-  function readStats() { return readJson('fc_stats', {}); }
-  function readSubjectStats() { return readJson('hf_subject_stats', {}); }
 
   function normaliseSubjectId(id) {
     var lower = String(id || '').toLowerCase();
@@ -33,61 +31,44 @@
     totals.sessions++;
     totals.total += session.total || 0;
     totals.right += session.results && session.results.right || 0;
-    totals.half += session.results && session.results.half || 0;
-    totals.wrong += session.results && session.results.wrong || 0;
     if (session.date && (!totals.lastDate || new Date(session.date) > new Date(totals.lastDate))) totals.lastDate = session.date;
   }
 
   function subjectStats(subject) {
     var aliases = [subject.id, subject.code].concat(subject.aliases || []).map(normaliseSubjectId);
-    var primaryKey = normaliseSubjectId(subject.id || subject.code);
-    var totals = { total: 0, right: 0, half: 0, wrong: 0, sessions: 0, quiz: 0, bestQuiz: null, lastDate: null, fromSubjectStore: false };
-    var subjectStore = readSubjectStats();
+    var totals = { total: 0, right: 0, sessions: 0, quiz: 0, bestQuiz: null, lastDate: null, fromSubjectStore: false };
+    var subjectStore = readJson('hf_subject_stats', {});
 
     aliases.forEach(function (alias) {
       var data = subjectStore[alias];
       if (!data) return;
       totals.fromSubjectStore = true;
       (data.sessions || []).forEach(function (session) { addSessionToTotals(session, totals); });
-      (data.quizSessions || []).forEach(function (session) {
-        totals.quiz++;
-        if (totals.bestQuiz === null || (session.pct || 0) > totals.bestQuiz) totals.bestQuiz = session.pct || 0;
-        if (session.date && (!totals.lastDate || new Date(session.date) > new Date(totals.lastDate))) totals.lastDate = session.date;
-      });
+      (data.quizSessions || []).forEach(function (session) { totals.quiz++; if (totals.bestQuiz === null || (session.pct || 0) > totals.bestQuiz) totals.bestQuiz = session.pct || 0; });
     });
 
     if (!totals.fromSubjectStore) {
-      var stats = readStats();
+      var stats = readJson('fc_stats', {});
       Object.keys(stats).forEach(function (key) {
         var normal = normaliseSubjectId(key);
         if (aliases.indexOf(normal) === -1 && aliases.every(function (alias) { return normal.indexOf(alias) === -1; })) return;
         var data = stats[key] || {};
         (data.sessions || []).forEach(function (session) { addSessionToTotals(session, totals); });
-        (data.quizSessions || []).forEach(function (session) {
-          totals.quiz++;
-          if (totals.bestQuiz === null || (session.pct || 0) > totals.bestQuiz) totals.bestQuiz = session.pct || 0;
-          if (session.date && (!totals.lastDate || new Date(session.date) > new Date(totals.lastDate))) totals.lastDate = session.date;
-        });
       });
     }
 
-    var pct = totals.total ? Math.round((totals.right / totals.total) * 100) : subject.progress;
-    return { total: totals.total, right: totals.right, half: totals.half, wrong: totals.wrong, sessions: totals.sessions, quiz: totals.quiz, bestQuiz: totals.bestQuiz, pct: pct, lastDate: totals.lastDate, key: primaryKey };
+    return { total: totals.total, right: totals.right, sessions: totals.sessions, pct: totals.total ? Math.round((totals.right / totals.total) * 100) : subject.progress };
   }
 
   function aggregateStats(subjects) {
-    var total = 0, right = 0, sessions = 0, quiz = 0, active = [];
+    var total = 0, right = 0, sessions = 0, active = [];
     subjects.forEach(function (subject) {
       var s = subjectStats(subject);
-      total += s.total; right += s.right; sessions += s.sessions; quiz += s.quiz;
+      total += s.total; right += s.right; sessions += s.sessions;
       active.push({ subject: subject, stats: s });
     });
-    active.sort(function (a, b) {
-      var aScore = a.stats.total ? a.stats.pct : a.subject.progress;
-      var bScore = b.stats.total ? b.stats.pct : b.subject.progress;
-      return aScore - bScore;
-    });
-    return { total: total, right: right, sessions: sessions, quiz: quiz, mastery: total ? Math.round((right / total) * 100) : 0, weakest: active[0] || null, best: active[active.length - 1] || null };
+    active.sort(function (a, b) { return (a.stats.total ? a.stats.pct : a.subject.progress) - (b.stats.total ? b.stats.pct : b.subject.progress); });
+    return { total: total, right: right, sessions: sessions, mastery: total ? Math.round((right / total) * 100) : 0, weakest: active[0] || null };
   }
 
   function setText(id, text) { var el = document.getElementById(id); if (el) el.textContent = text; }
@@ -97,24 +78,9 @@
   function cardHtml(subject) {
     var stats = subjectStats(subject);
     var pct = stats.total ? stats.pct : subject.progress;
-    var todayCards = Math.max(8, stats.total && pct < 70 ? 38 : getTodayCards(subject));
     var emblem = subject.emblem ? '<img class="emblem-img" src="' + subject.emblem + '" alt="" onerror="this.remove()">' : '';
-    var sub = stats.total ? stats.total + ' kort øvd · ' + stats.sessions + ' økter' : todayCards + ' kort i dag';
-    return '<a class="subject-card" style="--accent:' + subject.accent + ';--pct:' + pct + '" href="' + (subject.path || '#') + '">'
-      + '<div class="subject-top"><span class="subject-icon">' + emblem + '<span class="emblem-fallback">' + subject.icon + '</span></span><span class="dots">⋮</span></div>'
-      + '<div class="subject-code">' + subject.code + '</div><div class="subject-name">' + subject.name + '</div>'
-      + '<div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">' + pct + '%</div></div>'
-      + '<div class="ring-sub">' + sub + '</div><span class="subject-cta" data-flashcards="' + flashcardHref(subject) + '">Start øving</span></a>';
-  }
-
-  function injectDashboardNote(summary) {
-    var panel = document.querySelector('#today .panel-inner');
-    if (!panel || panel.querySelector('.hf-dashboard-live-note')) return;
-    var note = document.createElement('div');
-    note.className = 'hf-dashboard-live-note';
-    note.style.cssText = 'margin-top:12px;color:#91a5c8;font-size:12px;text-align:center;font-weight:750';
-    note.textContent = summary.total ? 'Dashboardet bruker nå øktene dine fra flashcards lokalt.' : 'Start en flashcard-økt, så blir dashboardet personlig.';
-    panel.appendChild(note);
+    var sub = stats.total ? stats.total + ' kort øvd · ' + stats.sessions + ' økter' : getTodayCards(subject) + ' kort i dag';
+    return '<a class="subject-card" style="--accent:' + subject.accent + ';--pct:' + pct + '" href="' + (subject.path || '#') + '"><div class="subject-top"><span class="subject-icon">' + emblem + '<span class="emblem-fallback">' + subject.icon + '</span></span><span class="dots">⋮</span></div><div class="subject-code">' + subject.code + '</div><div class="subject-name">' + subject.name + '</div><div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">' + pct + '%</div></div><div class="ring-sub">' + sub + '</div><span class="subject-cta" data-flashcards="' + flashcardHref(subject) + '">Start øving</span></a>';
   }
 
   function enhanceDashboard() {
@@ -140,58 +106,38 @@
     if (todayStats[2]) todayStats[2].textContent = summary.total ? Math.max(50, Math.min(96, summary.mastery + 12)) + '%' : '66%';
     if (summary.total) setText('cardsStat', summary.total.toLocaleString('no'));
     if (summary.sessions) setText('sessStat', summary.sessions);
-
+    var target = summary.weakest && summary.weakest.subject ? summary.weakest.subject : active[0];
     var start = document.querySelector('#today .start-btn');
     var plan = document.querySelector('#today .ghost-link');
-    var target = summary.weakest && summary.weakest.subject ? summary.weakest.subject : active[0];
     if (start && target) { start.href = flashcardHref(target); start.textContent = 'Start ' + target.code + ' →'; }
     if (plan && target) plan.href = target.path || 'subjects.html';
+  }
 
-    var rec = document.querySelector('.recommend h3');
-    var recStart = document.querySelector('.recommend .start-btn');
-    var recMeta = document.querySelector('.recommend .rec-meta');
-    if (target && rec) rec.textContent = target.code === 'SAM3' ? 'SAM3 V25 eksamenspakke' : 'Prioriter ' + target.code;
-    if (target && recStart) { recStart.href = target.code === 'SAM3' ? '../sam3/' : flashcardHref(target); recStart.textContent = target.code === 'SAM3' ? 'Åpne V25 →' : 'Start nå →'; }
-    if (target && recMeta) recMeta.innerHTML = '<span><svg viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V20.5H7z"/><path d="M14 3.5V8h4"/></svg>' + getTodayCards(target) + ' kort</span><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>≈ 25 min</span>';
-    injectDashboardNote(summary);
+  function loadAnswerLibrary() {
+    if (!inUserPage('a-besvarelser.html')) return;
+    if (document.getElementById('haugnes-answer-library-js')) return;
+    var script = document.createElement('script');
+    script.id = 'haugnes-answer-library-js';
+    script.src = rootRelative('shared/haugnes-answer-library.js');
+    script.defer = true;
+    document.head.appendChild(script);
   }
 
   function enhanceABesvarelserSensor() {
     if (!inUserPage('a-besvarelser.html')) return;
-    if (!window.answers || typeof window.render !== 'function') { retry('answer-sensor', enhanceABesvarelserSensor, 30, 120); return; }
-    var sensor = window.answers.find(function (a) { return a.title === V25.sensor.title; });
-    if (!sensor) window.answers.unshift({ course: 'SAM3', icon: '↗', color: '#ef4444', term: 'V25', title: V25.sensor.title, subtitle: 'Makroøkonomi', type: 'analyse', desc: 'Sensorveiledning for våren 2025. Bruk den for å forstå hva sensor faktisk belønner.', meta: ['Sensor', 'PDF', 'V25'], popular: 2, url: V25.sensor.url, download: V25.sensor.download });
-    else { sensor.url = V25.sensor.url; sensor.download = V25.sensor.download; sensor.meta = ['Sensor', 'PDF', 'V25']; }
-    if (!window.render.__hfV25SensorWrapped) {
-      var original = window.render;
-      window.render = function () { var result = original.apply(this, arguments); window.setTimeout(patchCards, 0); return result; };
-      window.render.__hfV25SensorWrapped = true;
-    }
-    function patchCards() {
-      document.querySelectorAll('.answer-card').forEach(function (card) {
-        var title = card.querySelector('.answer-title');
-        if (!title || title.textContent.trim() !== V25.sensor.title) return;
-        var open = card.querySelector('.open-btn');
-        var more = card.querySelector('.ghost-btn[title="Mer"],.ghost-btn[title="Last ned"]');
-        if (open) { open.href = V25.sensor.url; open.target = '_blank'; open.rel = 'noopener'; open.textContent = 'Åpne PDF'; }
-        if (more) { more.href = V25.sensor.download; more.title = 'Last ned'; more.textContent = '↓'; }
-      });
-    }
-    window.render(); patchCards(); if (typeof window.renderPopular === 'function') window.renderPopular();
+    loadAnswerLibrary();
   }
 
   function enhanceProgressNextSteps() {
     if (!inUserPage('progress.html') || document.body.dataset.hfProgressNextEnhanced) return;
     document.body.dataset.hfProgressNextEnhanced = '1';
     var list = document.querySelector('.side-panel .focus-list');
-    if (!list) return;
-    if (!list.querySelector('a[href="../sam3/"]')) {
-      var item = document.createElement('a');
-      item.className = 'focus-item';
-      item.href = '../sam3/';
-      item.innerHTML = '<span><strong>SAM3 V25-pakke</strong><span>Eksamen, sensorveiledning og A-besvarelse</span></span><span class="tag">PDF</span>';
-      list.appendChild(item);
-    }
+    if (!list || list.querySelector('a[href="../sam3/"]')) return;
+    var item = document.createElement('a');
+    item.className = 'focus-item';
+    item.href = '../sam3/';
+    item.innerHTML = '<span><strong>SAM3 V25-pakke</strong><span>Eksamen, sensorveiledning og A-besvarelse</span></span><span class="tag">PDF</span>';
+    list.appendChild(item);
   }
 
   function run() { enhanceDashboard(); enhanceABesvarelserSensor(); enhanceProgressNextSteps(); }
