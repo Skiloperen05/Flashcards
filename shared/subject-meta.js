@@ -9,7 +9,7 @@
       accent: '#2f62ff',
       status: 'active',
       statusText: 'Aktiv',
-      progress: 86,
+      progress: 0,
       decks: '15+',
       cards: '1450',
       tools: '4',
@@ -27,7 +27,7 @@
       accent: '#20b97a',
       status: 'active',
       statusText: 'Aktiv',
-      progress: 72,
+      progress: 0,
       decks: '13+',
       cards: '438',
       tools: '4',
@@ -44,7 +44,7 @@
       accent: '#f09828',
       status: 'exam',
       statusText: 'Eksamen',
-      progress: 65,
+      progress: 0,
       decks: '24',
       cards: '66',
       tools: '3',
@@ -61,7 +61,7 @@
       accent: '#ef4444',
       status: 'active',
       statusText: 'Aktiv',
-      progress: 59,
+      progress: 0,
       decks: '12+',
       cards: '—',
       tools: '6',
@@ -78,7 +78,7 @@
       accent: '#7c3aed',
       status: 'build',
       statusText: 'Under bygging',
-      progress: 20,
+      progress: 0,
       decks: '—',
       cards: '—',
       tools: 'Plan',
@@ -95,7 +95,7 @@
       accent: '#0891b2',
       status: 'build',
       statusText: 'Under bygging',
-      progress: 15,
+      progress: 0,
       decks: '—',
       cards: '—',
       tools: 'Plan',
@@ -109,8 +109,28 @@
     return JSON.parse(JSON.stringify(value));
   }
 
-  function getAll() {
+  function code(value) {
+    return String(value || '').toUpperCase().replace(/[\s-]+/g, '');
+  }
+
+  function selectedCodes() {
+    try {
+      var raw = window.localStorage.getItem('hf_enabled_subjects');
+      var parsed = raw ? JSON.parse(raw) : null;
+      if (Array.isArray(parsed) && parsed.length) return parsed.map(code);
+    } catch (e) {}
+    return ['RET14', 'SOL1', 'SAM2', 'SAM3'];
+  }
+
+  function getCatalog() {
     return clone(subjects);
+  }
+
+  function getAll() {
+    var selected = selectedCodes();
+    return clone(subjects.filter(function (subject) {
+      return selected.indexOf(code(subject.code)) !== -1;
+    }));
   }
 
   function findById(id) {
@@ -128,6 +148,8 @@
 
   window.HaugnesSubjects = {
     getAll: getAll,
+    getCatalog: getCatalog,
+    getAllOriginal: getCatalog,
     findById: findById,
     getFlashcardSubjectId: getFlashcardSubjectId
   };
