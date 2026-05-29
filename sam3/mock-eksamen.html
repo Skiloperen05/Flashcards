@@ -7,6 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../shared/auth-guard.js"></script>
 <script>try{AuthGuard.requireAuth().then(s=>{if(!s)return;if(AuthGuard.bindUserInfo)AuthGuard.bindUserInfo('userEmailLabel','userChip','userAvatar');});}catch(e){console.warn(e);}</script>
 <link rel="stylesheet" href="formelquiz.css?v=p5-1">
+<link rel="stylesheet" href="../shared/tool-header-overrides.css?v=1">
 <style>
 .mcAlts{display:grid;gap:8px;margin-top:16px}
 .mcAlt{font:inherit;text-align:left;background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;cursor:pointer;display:flex;gap:12px;align-items:center;transition:border-color .12s,background .12s,transform .05s;font-family:Georgia,'Times New Roman',serif;font-size:17px;color:var(--ink)}
@@ -42,7 +43,7 @@
   <div id="configPanel">
     <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">Klokken starter når du trykker «Start». Eksamen avsluttes automatisk ved tidsavløp.</p>
     <div class="mockConfig">
-      <label>Antall spørsmål<select id="countSel"><option value="10">10</option><option value="15" selected>15</option><option value="20">20</option><option value="0">Alle (22+)</option></select></label>
+      <label>Antall spørsmål<select id="countSel"><option value="10">10</option><option value="15" selected>15</option><option value="20">20</option><option value="0">Alle</option></select></label>
       <label>Tid<select id="timeSel"><option value="900">15 minutter</option><option value="1200" selected>20 minutter</option><option value="1800">30 minutter</option><option value="0">Uten klokke</option></select></label>
       <button class="btn primary" id="startBtn">Start mock-eksamen →</button>
     </div>
@@ -65,7 +66,7 @@
   <div class="summary" id="summary"></div>
 </section>
 </main>
-<footer class="footer">StudieHub · SAM3 mock-eksamen</footer>
+<footer class="footer">Haugnes · SAM3 mock-eksamen</footer>
 <script src="formelquiz-data.js?v=p5-1"></script>
 <script src="sam3-topics.js?v=p5-1"></script>
 <script src="sam3-math.js?v=p5-1"></script>
