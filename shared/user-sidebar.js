@@ -81,11 +81,25 @@
     return '<a class="nav-link ' + (active === item.id ? 'active' : '') + (item.bottom ? ' hf-nav-bottom' : '') + '" href="' + rootRelative(item.href) + '" data-nav-id="' + item.id + '">' + icon(item.icon) + '<span>' + item.label + '</span></a>';
   }
 
+  function normalizeBrandMarkup() {
+    document.querySelectorAll('.sidebar .brand, .mobile-top .brand').forEach(function (brand) {
+      var title = brand.querySelector('.brand-title');
+      var sub = brand.querySelector('.brand-sub');
+      if (title) title.textContent = 'Haugnes';
+      if (sub) sub.textContent = 'Flashcards';
+    });
+  }
+
   function injectStyles() {
     if (document.getElementById('haugnes-user-sidebar-css')) return;
     var style = document.createElement('style');
     style.id = 'haugnes-user-sidebar-css';
     style.textContent = [
+      '.sidebar .brand{display:flex!important;align-items:center!important;gap:12px!important;padding:0 6px 10px!important;min-width:0!important;overflow:visible!important}',
+      '.sidebar .brand>.logo-mark,.mobile-top .brand>.logo-mark{width:46px!important;height:46px!important;flex:0 0 46px!important;border-radius:14px!important;background:#0b244e url("' + rootRelative('assets/haugnes-logo-mark.svg') + '") center/78% no-repeat!important}',
+      '.sidebar .brand>span:not(.logo-mark),.mobile-top .brand>span:not(.logo-mark){display:grid!important;gap:6px!important;line-height:1!important;min-width:0!important;overflow:visible!important}',
+      '.sidebar .brand-title,.mobile-top .brand-title{display:block!important;font-size:20px!important;font-weight:950!important;letter-spacing:.20em!important;text-transform:uppercase!important;color:#fff!important;white-space:nowrap!important;line-height:1!important}',
+      '.sidebar .brand-sub,.mobile-top .brand-sub{display:block!important;font-size:9px!important;font-weight:950!important;letter-spacing:.42em!important;text-transform:uppercase!important;color:#e8bc68!important;white-space:nowrap!important;line-height:1!important;margin-top:0!important}',
       '.sidebar .nav{display:grid!important;gap:5px!important;flex:0 0 auto}',
       '.sidebar .nav-link{min-height:38px!important}',
       '.sidebar .nav-link:not(.active){background:transparent!important}',
@@ -116,6 +130,7 @@
     var nav = document.querySelector('.sidebar .nav, nav.nav');
     if (!nav) return;
     injectStyles();
+    normalizeBrandMarkup();
     rendering = true;
     var active = activeId();
     nav.innerHTML = MENU.map(function (item) {
@@ -132,6 +147,7 @@
       if (rendering) return;
       window.clearTimeout(installObserver.timer);
       installObserver.timer = window.setTimeout(function () {
+        normalizeBrandMarkup();
         var current = Array.prototype.map.call(nav.querySelectorAll('.nav-link'), function (a) { return a.getAttribute('data-nav-id'); }).join('|');
         var expected = MENU.map(function (item) { return item.id; }).join('|');
         if (current !== expected || !nav.querySelector('.nav-link.active')) render();
