@@ -146,6 +146,115 @@
     }
   };
 
+  pages.mat10.compendium = [
+    ['Kjerneformler', 'Derivasjon, integrasjon, elastisitet, matriser og lineære systemer samlet som hurtigoversikt.', 'Formel først'],
+    ['Oppgavetyper', 'Gjenkjenning av optimering, areal, Taylor-intuisjon, nivåkurver og matriseoperasjoner.', 'Velg metode'],
+    ['Feilbank', 'Fortegn, parenteser, enheter og vilkår for optimum gjøres om til korte kontrollspørsmål.', 'Sjekk før svar']
+  ];
+  pages.mat10.examRadar = {
+    label: 'Regnetunge temaer',
+    summary: 'MAT10-radaren prioriterer oppgavetyper som ofte avgjør poeng: riktig metodevalg, ryddig algebra og kontroll av svar.',
+    accent: '#0891b2',
+    rows: [['Derivasjon og optimering', 'Standard startpunkt for mange eksamensoppgaver.', '88%'], ['Integrasjon', 'Mye poeng på teknikk og tolkning.', '74%'], ['Lineær algebra', 'Matriser og systemer må sitte mekanisk.', '70%']]
+  };
+  pages.mat10.formulaSheet = [
+    ['Derivasjonsregler', 'Produkt, kvotient, kjede, implisitt og elastisitet.', 'MAT10'],
+    ['Integraler', 'Standardintegraler, substitusjon og delvis integrasjon.', 'MAT10'],
+    ['Matriser', 'Determinant, invers, rang og løsning av lineære systemer.', 'MAT10']
+  ];
+
+  pages.met2.compendium = [
+    ['Statistisk begrepskart', 'Utvalg, estimator, forventning, varians, standardfeil og samplingfordeling.', 'Begrep'],
+    ['Testflyt', 'Fra problemtekst til H0/H1, testobservator, kritisk verdi, p-verdi og konklusjon.', 'Metode'],
+    ['Regresjonstolkning', 'Koeffisienter, konfidensintervall, forklaringsgrad og forutsetninger samlet i en fast mal.', 'Output']
+  ];
+  pages.met2.examRadar = {
+    label: 'Tolkning og testvalg',
+    summary: 'MET2-radaren legger mest vekt på temaer som krever presist språk i tillegg til regning.',
+    accent: '#7c3aed',
+    rows: [['Hypotesetesting', 'Velge test og konkludere uten å blande nivåer.', '82%'], ['Konfidensintervall', 'Tolkning, standardfeil og sammenheng med test.', '74%'], ['Regresjon', 'Forklare output, koeffisienter og usikkerhet.', '68%']]
+  };
+  pages.met2.formulaSheet = [
+    ['Forventning og varians', 'Regneregler for snitt, summer og lineærtransformasjoner.', 'MET2'],
+    ['Testobservatorer', 'Z, t, andel, differanser og enkel beslutningsregel.', 'MET2'],
+    ['Regresjon', 'Koeffisienttolkning, standardfeil, t-verdi og prediksjon.', 'MET2']
+  ];
+
+  pages.sam1a.compendium = [
+    ['Markedet', 'Tilbud, etterspørsel, likevekt, overskudd og hvordan skift forklares i tekst og figur.', 'Modell'],
+    ['Velferd', 'Konsumentoverskudd, produsentoverskudd, effektivitet og dødvektstap.', 'Analyse'],
+    ['Markedssvikt', 'Eksternaliteter, kollektive goder, asymmetrisk informasjon og mulige virkemidler.', 'Drøfting']
+  ];
+  pages.sam1a.examRadar = {
+    label: 'Modell og forklaring',
+    summary: 'SAM1A-radaren prioriterer temaer der du må kombinere figur, begrep og kort drøfting.',
+    accent: '#f09828',
+    rows: [['Markedslikevekt', 'Tegn, forklar og tolk endringer i likevekt.', '84%'], ['Elastisitet', 'Regning og økonomisk tolkning av respons.', '72%'], ['Markedssvikt', 'Koble teori til virkemidler og velferdseffekt.', '68%']]
+  };
+  pages.sam1a.formulaSheet = [
+    ['Elastisitet', 'Pris-, inntekts- og krysspriselastisitet med tolkning.', 'SAM1A'],
+    ['Overskudd', 'Arealtenkning for konsument- og produsentoverskudd.', 'SAM1A'],
+    ['Dødvektstap', 'Trekantlogikk ved skatt, regulering og eksternaliteter.', 'SAM1A']
+  ];
+
+  pages.met1.compendium = [
+    ['Rente og tid', 'Sluttverdi, nåverdi, effektiv rente og sammenheng mellom perioder.', 'Finansmatte'],
+    ['Annuitet', 'Fast betaling, restverdi, lån og investeringer med riktig tidsskala.', 'Regning'],
+    ['Rekker', 'Geometriske rekker og økonomisk bruk i kontantstrømmer.', 'Metode']
+  ];
+  pages.met1.examRadar = {
+    label: 'Formelvalg',
+    summary: 'MET1-radaren er laget rundt raske valg: hvilken kontantstrøm, hvilken rente og hvilket tidspunkt.',
+    accent: '#06b6d4',
+    rows: [['Nåverdi', 'Kjernen i investering, lån og kontantstrømmer.', '90%'], ['Annuitet', 'Høy sannsynlighet for regneoppgaver.', '80%'], ['Effektiv rente', 'Typisk kilde til små men dyre feil.', '70%']]
+  };
+  pages.met1.formulaSheet = [
+    ['Nåverdi', 'PV = FV / (1 + r)^n og sum av diskonterte kontantstrømmer.', 'MET1'],
+    ['Sluttverdi', 'FV = PV(1 + r)^n med periodetilpasning.', 'MET1'],
+    ['Annuitet', 'Fast terminbeløp, annuitetsfaktor og restgjeld.', 'MET1']
+  ];
+
+  pages.kom1.compendium = [
+    ['Rapportstruktur', 'Problemstilling, metode, analyse, drøfting og konklusjon som fast skriveflyt.', 'Skriving'],
+    ['Argumentasjon', 'Påstand, belegg, forklaring og overgang mellom avsnitt.', 'Tekst'],
+    ['Presentasjon', 'Åpning, hovedpoeng, slideøkonomi og muntlig avslutning.', 'Muntlig']
+  ];
+  pages.kom1.examRadar = {
+    label: 'Vurderingskriterier',
+    summary: 'KOM1-radaren er ikke en regneradar, men en prioritering av skrive- og formidlingsgrep som løfter innleveringer.',
+    accent: '#e8bc68',
+    rows: [['Problemstilling', 'Må være presis nok til å styre hele teksten.', '82%'], ['Drøfting', 'Knytte funn, kilder og egne vurderinger sammen.', '76%'], ['Språk og struktur', 'Flyt, presisjon og akademisk tone.', '72%']]
+  };
+
+  pages.ret1a.compendium = [
+    ['Juridisk metode', 'Problemstilling, rettsregel, vilkår, subsumsjon og konklusjon.', 'Metode'],
+    ['Avtalerett', 'Inngåelse, fullmakt, ugyldighet og tolkning som disposisjonskort.', 'Tema'],
+    ['Pengekrav og selskap', 'Betaling, mislighold, rente, ansvar og selskapsformer.', 'Tema']
+  ];
+  pages.ret1a.examRadar = {
+    label: 'Drøftingstema',
+    summary: 'RET1A-radaren prioriterer temaer der god struktur og presis subsumsjon ofte betyr mer enn lange svar.',
+    accent: '#3b82f6',
+    rows: [['Avtalerett', 'Hyppige vilkår og faktumsnær drøfting.', '84%'], ['Pengekrav', 'Betaling, mislighold og renter krever ryddig metode.', '74%'], ['Selskapsrett', 'Sammenligning av ansvar, kapital og ledelse.', '66%']]
+  };
+
+  pages.bed1.compendium = [
+    ['Kalkyler', 'Bidrag, selvkost, ABC og relevante kostnader samlet i beslutningsflyt.', 'Kjerne'],
+    ['Regnskap', 'Resultat, beholdningsendringer og sammenheng mellom kostnad og inntekt.', 'Forståelse'],
+    ['Investering', 'Nåverdi, internrente, payback og vurdering av prosjekter.', 'Analyse']
+  ];
+  pages.bed1.examRadar = {
+    label: 'Regneprioritet',
+    summary: 'BED1-radaren prioriterer oppgavetyper som er både poengtunge og lette å forbedre med faste fremgangsmåter.',
+    accent: '#20b97a',
+    rows: [['Produktkalkulasjon', 'Bidrag, selvkost og relevante kostnader.', '86%'], ['Investering', 'Nåverdi og beslutning under usikkerhet.', '76%'], ['Budsjett og resultat', 'Koble tall, begreper og tolkning.', '70%']]
+  };
+  pages.bed1.formulaSheet = [
+    ['Dekningsbidrag', 'Pris minus variable kostnader, total DB og DB-grad.', 'BED1'],
+    ['Selvkost', 'Direkte kostnader pluss fordelte indirekte kostnader.', 'BED1'],
+    ['Nåverdi', 'Diskonter kontantstrømmer og sammenlign med investering.', 'BED1']
+  ];
+
   window.HaugnesSubjectPages = {
     get: function (id) {
       return pages[String(id || '').toLowerCase()] || null;
