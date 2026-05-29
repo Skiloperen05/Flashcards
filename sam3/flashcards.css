@@ -22,7 +22,7 @@
   --radius-lg:18px;
   --radius-xl:22px;
 }
-body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+body{font-family:'Lora',Georgia,'Times New Roman',serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
 
 /* ===== Topbar ===== */
 .topbar{height:60px;background:var(--dark);display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:5}
@@ -124,7 +124,7 @@ b sub,b sup,strong sub,strong sup{font-style:italic;color:inherit;opacity:.85}
 .rating{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
 .rate{font:inherit;border-radius:12px;padding:13px 8px;font-size:12.5px;font-weight:800;border:1.5px solid;cursor:pointer;background:#fff;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:4px;transition:transform .08s,background .12s,box-shadow .12s}
 .rate:active{transform:translateY(1px)}
-.rate kbd{font-family:Inter,sans-serif;font-size:10.5px;font-weight:800;border:1px solid currentColor;border-radius:5px;padding:1px 5px;opacity:.55}
+.rate kbd{font-family:'Lora',Georgia,'Times New Roman',serif;font-size:10.5px;font-weight:800;border:1px solid currentColor;border-radius:5px;padding:1px 5px;opacity:.55}
 .rate.bad{color:var(--red);border-color:#fecaca}
 .rate.bad:hover:not(:disabled){background:#fef2f2;box-shadow:0 4px 14px rgba(220,38,38,.12)}
 .rate.mid{color:var(--amber);border-color:#fde68a}
@@ -158,7 +158,7 @@ b sub,b sup,strong sub,strong sup{font-style:italic;color:inherit;opacity:.85}
 .donut{display:block;margin:2px 0}
 .donut .donut-track{fill:none;stroke:#eef2f6;stroke-width:9}
 .donut .donut-value{fill:none;stroke-width:9;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset .7s cubic-bezier(.4,0,.2,1)}
-.donut .donut-pct{font-family:Inter,system-ui,sans-serif;font-size:20px;font-weight:800;fill:var(--ink);letter-spacing:-.5px}
+.donut .donut-pct{font-family:'Lora',Georgia,'Times New Roman',serif;font-size:20px;font-weight:800;fill:var(--ink);letter-spacing:-.5px}
 
 .distBar{height:14px;border-radius:999px;overflow:hidden;display:flex;background:var(--surface-2);border:1px solid var(--border);margin-top:8px}
 .distBar > div{height:100%}
