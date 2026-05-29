@@ -5,14 +5,22 @@
   window.__haugnesSubjectAccessInstalled = true;
 
   var STORAGE_KEY = 'hf_enabled_subjects';
-  var DEFAULT_CODES = ['RET14', 'SOL1', 'SAM2', 'SAM3'];
+  var MIGRATION_KEY = 'hf_enabled_subjects_catalog_20260529';
+  var CORE_ONLY_KEY = 'hf_enabled_subjects_core_only';
+  var CORE_CODES = ['RET14', 'SOL1', 'SAM2', 'SAM3'];
+  var DEFAULT_CODES = ['RET14', 'SOL1', 'SAM2', 'SAM3', 'MET2', 'MAT10', 'SAM1A', 'MET1', 'KOM1', 'RET1A', 'BED1'];
   var FALLBACK_CATALOG = [
     { code: 'RET14', name: 'Skatterett', accent: '#2f62ff', icon: '⚖️' },
     { code: 'SOL1', name: 'Organisasjonsatferd', accent: '#20b97a', icon: '🧠' },
     { code: 'SAM2', name: 'Mikroøkonomi', accent: '#f09828', icon: '📈' },
     { code: 'SAM3', name: 'Makroøkonomi', accent: '#ef4444', icon: '🌍' },
     { code: 'MET2', name: 'Metode', accent: '#7c3aed', icon: 'Σ' },
-    { code: 'MAT10', name: 'Matematikk', accent: '#0891b2', icon: '∫' }
+    { code: 'MAT10', name: 'Matematikk', accent: '#0891b2', icon: '∫' },
+    { code: 'SAM1A', name: 'Mikroøkonomi intro', accent: '#f09828', icon: '↗' },
+    { code: 'MET1', name: 'Matematikk for økonomer', accent: '#06b6d4', icon: '%' },
+    { code: 'KOM1', name: 'Kommunikasjon', accent: '#e8bc68', icon: '✎' },
+    { code: 'RET1A', name: 'Juridiske emner', accent: '#3b82f6', icon: '§' },
+    { code: 'BED1', name: 'Bedriftsøkonomi', accent: '#20b97a', icon: '◆' }
   ];
   var COURSE_CODES = FALLBACK_CATALOG.map(function (s) { return s.code; });
 
@@ -34,6 +42,12 @@
   function getSelected() {
     var selected = readJson(STORAGE_KEY, null);
     if (!Array.isArray(selected) || !selected.length) selected = DEFAULT_CODES;
+    if (!readJson(CORE_ONLY_KEY, false) && selected.map(code).sort().join(',') === CORE_CODES.slice().sort().join(',')) selected = DEFAULT_CODES.slice();
+    if (!readJson(MIGRATION_KEY, false)) {
+      var compactSelected = selected.map(code).sort().join(',');
+      if (compactSelected === CORE_CODES.slice().sort().join(',')) selected = DEFAULT_CODES.slice();
+      writeJson(MIGRATION_KEY, true);
+    }
     var available = catalog().map(function (s) { return code(s.code || s.id); });
     var value = selected.map(code).filter(function (item, index, arr) { return item && arr.indexOf(item) === index && (!available.length || available.indexOf(item) !== -1); });
     return value.length ? value : DEFAULT_CODES.slice();
@@ -43,6 +57,7 @@
     var available = catalog().map(function (s) { return code(s.code || s.id); });
     var value = (codes || []).map(code).filter(function (item, index, arr) { return item && arr.indexOf(item) === index && (!available.length || available.indexOf(item) !== -1); });
     if (!value.length) value = DEFAULT_CODES.slice(0, 1);
+    writeJson(CORE_ONLY_KEY, value.slice().sort().join(',') === CORE_CODES.slice().sort().join(','));
     writeJson(STORAGE_KEY, value);
     patchIntegrations();
     renderControls();
@@ -148,7 +163,7 @@
       if (!btn) return;
       var current = getSelected();
       if (btn.hasAttribute('data-access-all')) setSelected(catalog().map(function (s) { return s.code || s.id; }));
-      else if (btn.hasAttribute('data-access-core')) setSelected(DEFAULT_CODES);
+      else if (btn.hasAttribute('data-access-core')) setSelected(CORE_CODES);
       else if (btn.hasAttribute('data-access-subject')) {
         var c = btn.getAttribute('data-access-subject');
         var next = current.indexOf(c) !== -1 ? current.filter(function (x) { return x !== c; }) : current.concat([c]);

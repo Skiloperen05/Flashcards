@@ -20,7 +20,7 @@
     }
 
     var path = window.location.pathname;
-    var match = path.match(/^(.*?)(?:ret14|sol1|sam2|sam3|mat10|met2|flashcards|user)\//);
+    var match = path.match(/^(.*?)(?:ret14|sol1|sam2|sam3|mat10|met2|sam1a|met1|kom1|ret1a|bed1|flashcards|user)\//);
     return match ? match[1] : path.replace(/[^/]*$/, '');
   }
 
@@ -75,6 +75,7 @@
 
   function applyBranding() {
     var logoPath = getAssetPath('Flashcardslogo.png');
+    if (/StudieHub/i.test(document.title)) document.title = document.title.replace(/StudieHub/gi, 'Haugnes Flashcards');
     addIconLink('icon', logoPath);
     addIconLink('shortcut icon', logoPath);
     addIconLink('apple-touch-icon', logoPath);
@@ -97,6 +98,10 @@
         var label = brand.querySelector('span:last-child');
         if (label) label.textContent = 'Haugnes';
       }
+    });
+
+    document.querySelectorAll('.footer,footer').forEach(function (footer) {
+      if (/^StudieHub\s*·/i.test(footer.textContent.trim())) footer.textContent = footer.textContent.replace(/StudieHub/gi, 'Haugnes Flashcards');
     });
   }
 
@@ -271,8 +276,18 @@
     document.documentElement.style.visibility = '';
   }
 
+  function isLocalDevBypass() {
+    return /^(localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname) && new URLSearchParams(window.location.search).get('dev') === '1';
+  }
+
   function requireAuth() {
     document.documentElement.style.visibility = 'hidden';
+    if (isLocalDevBypass()) {
+      session = { user: { email: 'dev@student.local' } };
+      reveal();
+      enhancePages();
+      return Promise.resolve(session);
+    }
     try {
       return getClient().auth.getSession().then(function (result) {
         session = result.data && result.data.session;

@@ -10,12 +10,17 @@
     { code: 'SAM2', name: 'Mikroøkonomi', accent: '#f09828', icon: '◔', summary: 'Eksamenspakker for mikroøkonomi samles her når PDF-er legges ut.' },
     { code: 'SAM3', name: 'Makroøkonomi', accent: '#ef4444', icon: '↗', summary: 'V25-pakken ligger ute med original eksamen, A-besvarelse og sensorveiledning.' },
     { code: 'MET2', name: 'Metode', accent: '#7c3aed', icon: 'Σ', summary: 'Eksamenspakker for metode samles her når PDF-er legges ut.' },
-    { code: 'MAT10', name: 'Matematikk', accent: '#0891b2', icon: '∫', summary: 'Eksamenspakker for matematikk samles her når PDF-er legges ut.' }
+    { code: 'MAT10', name: 'Matematikk', accent: '#0891b2', icon: '∫', summary: 'Eksamenspakker for matematikk samles her når PDF-er legges ut.' },
+    { code: 'SAM1A', name: 'Mikroøkonomi intro', accent: '#f09828', icon: '↗', summary: 'Første-semesterpakke for læringsmål, kompendium og eksamensrelevante modeller.' },
+    { code: 'MET1', name: 'Matematikk for økonomer', accent: '#06b6d4', icon: '%', summary: 'Første-semesterpakke for NNV, rente, annuitet og metodeoppgaver.' },
+    { code: 'KOM1', name: 'Kommunikasjon', accent: '#e8bc68', icon: '✎', summary: 'Første-semesterpakke for rapport, presentasjon og akademisk skriving.' },
+    { code: 'RET1A', name: 'Juridiske emner', accent: '#3b82f6', icon: '§', summary: 'Første-semesterpakke for avtalerett, pengekrav, selskapsrett og juridisk metode.' },
+    { code: 'BED1', name: 'Bedriftsøkonomi', accent: '#20b97a', icon: '◆', summary: 'Første-semesterpakke for kalkyler, investering, resultat og budsjettering.' }
   ];
 
   var PACKAGES = [
     { id: 'ret14-v25', subject: 'RET14', term: 'V25', title: 'Våren 2025', subtitle: 'RET14 Skatterett', description: 'Pakkeplass for eksamen, A-besvarelse og sensorveiledning når dokumentene er publisert.', resources: [] },
-    { id: 'sol1-v25', subject: 'SOL1', term: 'V25', title: 'Våren 2025', subtitle: 'SOL1 Organisasjonsatferd', description: 'Pakkeplass for eksamen, A-besvarelse og sensorveiledning når dokumentene er publisert.', resources: [] },
+    { id: 'sol1-v25', subject: 'SOL1', term: 'V25', title: 'Våren 2025', subtitle: 'SOL1 Organisasjonsatferd', description: 'A-besvarelse er funnet lokalt i SOL1-mappen. Pakken er klargjort, men PDF-en publiseres ikke offentlig før filen er gjort klar for deling.', localStatus: 'A-besvarelse funnet lokalt', resources: [] },
     { id: 'sam2-v25', subject: 'SAM2', term: 'V25', title: 'Våren 2025', subtitle: 'SAM2 Mikroøkonomi', description: 'Pakkeplass for eksamen, A-besvarelse og sensorveiledning når dokumentene er publisert.', resources: [] },
     {
       id: 'sam3-v25', subject: 'SAM3', term: 'V25', title: 'Våren 2025', subtitle: 'SAM3 Makroøkonomi',
@@ -27,7 +32,12 @@
       ]
     },
     { id: 'met2-v25', subject: 'MET2', term: 'V25', title: 'Våren 2025', subtitle: 'MET2 Metode', description: 'Pakkeplass for eksamen, A-besvarelse og sensorveiledning når dokumentene er publisert.', resources: [] },
-    { id: 'mat10-v25', subject: 'MAT10', term: 'V25', title: 'Våren 2025', subtitle: 'MAT10 Matematikk', description: 'Pakkeplass for eksamen, A-besvarelse og sensorveiledning når dokumentene er publisert.', resources: [] }
+    { id: 'mat10-v25', subject: 'MAT10', term: 'V25', title: 'Våren 2025', subtitle: 'MAT10 Matematikk', description: 'Pakkeplass for eksamen, A-besvarelse og sensorveiledning når dokumentene er publisert.', resources: [] },
+    { id: 'sam1a-h25', subject: 'SAM1A', term: 'H25', title: 'Høsten 2025', subtitle: 'SAM1A Mikroøkonomi intro', description: 'Pakkeplass basert på lokale læringsmål og kompendium. PDF-er publiseres først når de er klargjort for offentlig bruk.', resources: [] },
+    { id: 'met1-h25', subject: 'MET1', term: 'H25', title: 'Høsten 2025', subtitle: 'MET1 Matematikk for økonomer', description: 'Pakkeplass for rente, NNV, annuitet og metodeoppgaver fra lokale filer.', resources: [] },
+    { id: 'kom1-h25', subject: 'KOM1', term: 'H25', title: 'Høsten 2025', subtitle: 'KOM1 Kommunikasjon', description: 'Pakkeplass for rapporter, presentasjoner og refleksjonstekster som kan bli skrivekort.', resources: [] },
+    { id: 'ret1a-h25', subject: 'RET1A', term: 'H25', title: 'Høsten 2025', subtitle: 'RET1A Juridiske emner', description: 'Pakkeplass for eksamensøving, teorioppgaver og juridisk metode fra første semester.', resources: [] },
+    { id: 'bed1-h25', subject: 'BED1', term: 'H25', title: 'Høsten 2025', subtitle: 'BED1 Bedriftsøkonomi', description: 'Pakkeplass for gamle eksamener, gruppeøvinger og regnetrening fra BED1.', resources: [] }
   ];
 
   var state = { subject: null, packageId: null, query: '' };
@@ -36,7 +46,7 @@
   function esc(s) { return String(s || '').replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
   function code(value) { return String(value || '').toUpperCase().replace(/[\s-]+/g, ''); }
   function readJson(key, fallback) { try { var raw = window.localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; } }
-  function enabledCodes() { return window.HaugnesSubjectAccess ? window.HaugnesSubjectAccess.getSelected() : readJson('hf_enabled_subjects', ['RET14', 'SOL1', 'SAM2', 'SAM3']).map(code); }
+  function enabledCodes() { return window.HaugnesSubjectAccess ? window.HaugnesSubjectAccess.getSelected() : readJson('hf_enabled_subjects', ['RET14', 'SOL1', 'SAM2', 'SAM3', 'MET2', 'MAT10', 'SAM1A', 'MET1', 'KOM1', 'RET1A', 'BED1']).map(code); }
   function enabledSubjects() { var enabled = enabledCodes(); return SUBJECTS.filter(function (s) { return enabled.indexOf(s.code) !== -1; }); }
   function enabledPackages() { var enabled = enabledCodes(); return PACKAGES.filter(function (p) { return enabled.indexOf(p.subject) !== -1; }); }
   function subjectByCode(c) { return SUBJECTS.find(function (s) { return s.code === code(c); }); }
@@ -143,7 +153,7 @@
     return breadcrumb() + '<div class="hf-answer-toolbar"><div><strong style="color:#fff">' + subject.code + ' · ' + subject.name + '</strong><div class="hf-answer-muted">Velg semester/eksamenspakke. Pakker uten PDF-er er tydelig markert.</div></div><button class="hf-secondary" type="button" data-route="home">Alle fag</button></div><div class="hf-package-list">' + packs.map(function (p) {
       var live = p.resources.length > 0;
       var answerCount = p.resources.filter(function (r) { return r.kind === 'A-besvarelse'; }).length;
-      return '<article class="hf-package-card" style="--accent:' + subject.accent + '"><div><div class="hf-resource-kind">' + subject.code + ' · ' + p.term + '</div><h3>' + p.title + '</h3><p>' + p.description + '</p><div class="hf-tile-meta"><span class="hf-meta">' + p.resources.length + ' PDF-er</span><span class="hf-meta">' + answerCount + ' A-besvarelse</span><span class="hf-meta">' + (live ? 'Publisert' : 'Venter på filer') + '</span></div></div><div class="hf-package-actions"><button class="hf-primary" type="button" data-package="' + p.id + '">' + (live ? 'Åpne pakke →' : 'Se pakkeplass →') + '</button></div></article>';
+      return '<article class="hf-package-card" style="--accent:' + subject.accent + '"><div><div class="hf-resource-kind">' + subject.code + ' · ' + p.term + '</div><h3>' + p.title + '</h3><p>' + p.description + '</p><div class="hf-tile-meta"><span class="hf-meta">' + p.resources.length + ' PDF-er</span><span class="hf-meta">' + answerCount + ' A-besvarelse</span><span class="hf-meta">' + (p.localStatus || (live ? 'Publisert' : 'Venter på filer')) + '</span></div></div><div class="hf-package-actions"><button class="hf-primary" type="button" data-package="' + p.id + '">' + (live ? 'Åpne pakke →' : 'Se pakkeplass →') + '</button></div></article>';
     }).join('') + '</div>';
   }
 
@@ -153,7 +163,7 @@
     var subject = subjectByCode(pack.subject);
     var resources = pack.resources.slice().sort(function (a, b) { return (a.order || 0) - (b.order || 0); }).filter(function (r) { var q = state.query.toLowerCase().trim(); return !q || (r.title + ' ' + r.kind + ' ' + r.desc + ' ' + r.subtitle).toLowerCase().indexOf(q) !== -1; });
     var html = breadcrumb() + '<div class="hf-answer-toolbar"><input class="hf-answer-search" id="hfAnswerSearch" type="search" placeholder="Søk i ' + esc(pack.title) + '..." value="' + esc(state.query) + '"><button class="hf-secondary" type="button" data-route="subject" data-subject="' + pack.subject + '">Til ' + pack.subject + '</button></div>';
-    if (!pack.resources.length) return html + '<div class="hf-empty-panel"><strong>' + esc(pack.subtitle) + ' · ' + esc(pack.title) + '</strong><br>Denne pakken er klar, men har ingen publiserte PDF-er ennå. Når eksamen, A-besvarelse eller sensorveiledning legges ut, vises filene her i samme struktur som SAM3-pakken.</div>';
+    if (!pack.resources.length) return html + '<div class="hf-empty-panel"><strong>' + esc(pack.subtitle) + ' · ' + esc(pack.title) + '</strong><br>' + esc(pack.localStatus ? pack.description : 'Denne pakken er klar, men har ingen publiserte PDF-er ennå. Når eksamen, A-besvarelse eller sensorveiledning legges ut, vises filene her i samme struktur som SAM3-pakken.') + '</div>';
     return html + '<div class="hf-resource-grid">' + resources.map(function (r) { return '<article class="hf-resource-card" style="--accent:' + subject.accent + '"><div class="hf-tile-top"><span class="hf-tile-icon">' + esc(r.icon) + '</span><span class="hf-status-pill live">PDF</span></div><div class="hf-resource-kind">' + esc(r.kind) + '</div><h3>' + esc(r.title) + '</h3><p>' + esc(r.desc) + '</p><div class="hf-resource-actions"><a class="hf-primary" href="' + r.url + '" target="_blank" rel="noopener">Åpne PDF</a><a class="hf-secondary" href="' + r.download + '">Last ned</a></div></article>'; }).join('') + '</div>' + (!resources.length ? '<div class="hf-empty-panel">Ingen dokumenter matcher søket.</div>' : '');
   }
 
