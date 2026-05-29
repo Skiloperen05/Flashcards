@@ -57,6 +57,7 @@
       if (onload) {
         if (id === 'haugnes-subject-meta-js' && window.HaugnesSubjects) onload();
         else if (id === 'haugnes-functional-enhancements-js' && window.HaugnesFunctionalEnhancements) onload();
+        else if (id === 'haugnes-dashboard-progress-js' && window.HaugnesDashboardProgress) onload();
         else existing.addEventListener('load', onload, { once: true });
       }
       return;
@@ -205,6 +206,11 @@
     addScript('haugnes-functional-enhancements-js', rootRelative('shared/haugnes-functional-enhancements.js'), function () {
       if (window.HaugnesFunctionalEnhancements && typeof window.HaugnesFunctionalEnhancements.run === 'function') {
         window.HaugnesFunctionalEnhancements.run();
+      }
+    });
+    addScript('haugnes-dashboard-progress-js', rootRelative('shared/haugnes-dashboard-progress.js'), function () {
+      if (window.HaugnesDashboardProgress && typeof window.HaugnesDashboardProgress.run === 'function') {
+        window.HaugnesDashboardProgress.run();
       }
     });
   }
