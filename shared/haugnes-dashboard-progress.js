@@ -76,14 +76,18 @@
   }
 
   function setText(id, text) { var el = document.getElementById(id); if (el) el.textContent = text; }
+  function isPlanned(subject) { return subject && (subject.status === 'build' || subject.path === '#' || subject.flashcards === '#'); }
   function flashcardHref(subject) { if (subject.code === 'SAM3') return '../sam3/flashcards.html'; return subject.flashcards || subject.path || '#'; }
+  function subjectHref(subject) { return isPlanned(subject) ? 'subjects.html' : (subject.path || 'subjects.html'); }
 
   function cardHtml(subject) {
     var stats = subjectStats(subject);
+    var planned = isPlanned(subject);
     var pct = stats.total ? stats.pct : 0;
     var emblem = subject.emblem ? '<img class="emblem-img" src="' + subject.emblem + '" alt="" onerror="this.remove()">' : '';
-    var sub = stats.total ? formatNumber(stats.total) + ' kort øvd · ' + stats.sessions + ' økter' : 'Ikke startet ennå';
-    return '<a class="subject-card" style="--accent:' + subject.accent + ';--pct:' + pct + '" href="' + (subject.path || '#') + '"><div class="subject-top"><span class="subject-icon">' + emblem + '<span class="emblem-fallback">' + subject.icon + '</span></span><span class="dots">⋮</span></div><div class="subject-code">' + subject.code + '</div><div class="subject-name">' + subject.name + '</div><div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">' + pct + '%</div></div><div class="ring-sub">' + sub + '</div><span class="subject-cta" data-flashcards="' + flashcardHref(subject) + '">Start øving</span></a>';
+    var sub = planned ? 'Planlagt fag · synlig fordi du har valgt det' : (stats.total ? formatNumber(stats.total) + ' kort øvd · ' + stats.sessions + ' økter' : 'Ikke startet ennå');
+    var cta = planned ? '<span class="subject-cta" data-planned="1">Planlagt fag</span>' : '<span class="subject-cta" data-flashcards="' + flashcardHref(subject) + '">Start øving</span>';
+    return '<a class="subject-card" style="--accent:' + subject.accent + ';--pct:' + pct + '" href="' + subjectHref(subject) + '"><div class="subject-top"><span class="subject-icon">' + emblem + '<span class="emblem-fallback">' + subject.icon + '</span></span><span class="dots">⋮</span></div><div class="subject-code">' + subject.code + '</div><div class="subject-name">' + subject.name + '</div><div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">' + pct + '%</div></div><div class="ring-sub">' + sub + '</div>' + cta + '</a>';
   }
 
   function setTodayStats(summary) {
@@ -108,14 +112,21 @@
     if (bestStreak && /Beste streak/i.test(bestStreak.parentElement.textContent)) bestStreak.textContent = summary.sessions ? 'Aktiv' : 'Ikke startet';
   }
 
+  function getDashboardSubjects() {
+    if (!window.HaugnesSubjects || typeof window.HaugnesSubjects.getAll !== 'function') return [];
+    var subjects = window.HaugnesSubjects.getAll();
+    if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.filterSubjects === 'function') subjects = window.HaugnesSubjectAccess.filterSubjects(subjects);
+    return subjects;
+  }
+
   function enhanceDashboard() {
     if (!inUserPage('index.html')) return;
     if (!window.HaugnesSubjects || typeof window.HaugnesSubjects.getAll !== 'function') { retry('dashboard-subjects', enhanceDashboard, 30, 120); return; }
-    var active = window.HaugnesSubjects.getAll().filter(function (subject) { return subject.status !== 'build'; });
+    var active = getDashboardSubjects();
     var summary = aggregateStats(active);
     var grid = document.querySelector('.subjects');
     if (grid) {
-      grid.innerHTML = active.map(cardHtml).join('');
+      grid.innerHTML = active.length ? active.map(cardHtml).join('') : '<div class="panel"><div class="panel-inner">Velg fag på Mine fag-siden for å fylle dashboardet.</div></div>';
       if (!grid.dataset.hfBound) {
         grid.dataset.hfBound = '1';
         grid.addEventListener('click', function (event) {
@@ -127,14 +138,14 @@
       }
     }
     var mineFag = document.querySelector('#mine-fag a');
-    if (mineFag) { mineFag.href = 'subjects.html'; mineFag.textContent = 'Se alle fag →'; }
+    if (mineFag) { mineFag.href = 'subjects.html'; mineFag.textContent = 'Administrer fag →'; }
     setTodayStats(summary);
     setStudyHabits(summary);
-    var target = summary.weakest && summary.weakest.subject ? summary.weakest.subject : active[0];
+    var target = summary.weakest && summary.weakest.subject ? summary.weakest.subject : active.find(function (subject) { return !isPlanned(subject); });
     var start = document.querySelector('#today .start-btn');
     var plan = document.querySelector('#today .ghost-link');
     if (start && target) { start.href = flashcardHref(target); start.textContent = summary.total ? 'Fortsett ' + target.code + ' →' : 'Start første økt →'; }
-    if (plan && target) { plan.href = target.path || 'subjects.html'; plan.textContent = 'Åpne fagside →'; }
+    if (plan) { plan.href = 'subjects.html'; plan.textContent = 'Administrer fag →'; }
   }
 
   function loadAnswerLibrary() {
@@ -164,7 +175,10 @@
   function run() { enhanceDashboard(); enhanceABesvarelserSensor(); enhanceProgressNextSteps(); }
   ready(run);
   window.setTimeout(run, 250);
-  window.addEventListener('storage', function (event) { if (event.key === 'hf_subject_stats' || event.key === 'fc_stats') run(); });
+  window.setTimeout(run, 800);
+  window.setTimeout(run, 1600);
+  window.addEventListener('storage', function (event) { if (event.key === 'hf_subject_stats' || event.key === 'fc_stats' || event.key === 'hf_enabled_subjects') run(); });
+  window.addEventListener('haugnes:subject-access-changed', run);
   window.addEventListener('haugnes:flashcard-session-saved', run);
   window.HaugnesDashboardProgress = { run: run, files: V25, subjectStats: subjectStats };
 })(window, document);
