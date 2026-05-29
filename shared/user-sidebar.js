@@ -86,16 +86,29 @@
     var style = document.createElement('style');
     style.id = 'haugnes-user-sidebar-css';
     style.textContent = [
-      '.sidebar .nav{display:grid;gap:5px}',
-      '.sidebar .nav-link{min-height:38px}',
+      '.sidebar .nav{display:grid!important;gap:5px!important;flex:0 0 auto}',
+      '.sidebar .nav-link{min-height:38px!important}',
+      '.sidebar .nav-link:not(.active){background:transparent!important}',
       '.sidebar .nav-link svg{width:20px;height:20px;flex:0 0 20px;stroke:currentColor;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}',
       '.sidebar .nav-link span{min-width:0}',
       '.sidebar .nav .hf-nav-divider{height:1px;background:rgba(255,255,255,.10);margin:8px 8px 5px}',
       '.sidebar .nav-link.hf-nav-bottom{margin-top:4px}',
-      '.sidebar .side-bottom{margin-top:auto}',
-      '@media(max-height:860px){.sidebar .nav{gap:3px}.sidebar .nav-link{padding-top:8px;padding-bottom:8px;min-height:34px}.sidebar .nav .hf-nav-divider{margin-top:5px}}'
+      '@media(max-height:860px){.sidebar .nav{gap:3px!important}.sidebar .nav-link{padding-top:8px!important;padding-bottom:8px!important;min-height:34px!important}.sidebar .nav .hf-nav-divider{margin-top:5px}}'
     ].join('\n');
     document.head.appendChild(style);
+  }
+
+  function loadBottomNormalizer() {
+    if (document.getElementById('haugnes-sidebar-bottom-js')) {
+      if (window.HaugnesSidebarBottom && typeof window.HaugnesSidebarBottom.run === 'function') window.HaugnesSidebarBottom.run();
+      return;
+    }
+    var script = document.createElement('script');
+    script.id = 'haugnes-sidebar-bottom-js';
+    script.src = rootRelative('shared/sidebar-bottom-normalizer.js');
+    script.defer = true;
+    script.onload = function () { if (window.HaugnesSidebarBottom && typeof window.HaugnesSidebarBottom.run === 'function') window.HaugnesSidebarBottom.run(); };
+    document.head.appendChild(script);
   }
 
   function render() {
@@ -109,6 +122,7 @@
       return (item.bottom ? '<div class="hf-nav-divider" aria-hidden="true"></div>' : '') + itemHtml(item, active);
     }).join('');
     rendering = false;
+    loadBottomNormalizer();
     installObserver(nav);
   }
 
