@@ -40,7 +40,7 @@
     var existing = document.getElementById(id);
     if (existing) {
       if (onload) {
-        if ((id === 'haugnes-subject-meta-js' && window.HaugnesSubjects) || (id === 'timeedit-fetch-proxy-js' && window.HaugnesTimeEditProxy) || (id === 'nhh-schedule-api-js' && window.NHHScheduleAPI) || (id === 'nhh-schedule-normalizer-js' && window.NHHScheduleAPI && window.NHHScheduleAPI.normalizeEvents) || (id === 'nhh-strict-course-filter-js' && window.NHHScheduleAPI && window.NHHScheduleAPI.strictCourseFilter) || (id === 'haugnes-studyplan-js' && window.HaugnesStudyplan)) onload();
+        if ((id === 'haugnes-subject-meta-js' && window.HaugnesSubjects) || (id === 'haugnes-subject-access-js' && window.HaugnesSubjectAccess) || (id === 'timeedit-fetch-proxy-js' && window.HaugnesTimeEditProxy) || (id === 'nhh-schedule-api-js' && window.NHHScheduleAPI) || (id === 'nhh-schedule-normalizer-js' && window.NHHScheduleAPI && window.NHHScheduleAPI.normalizeEvents) || (id === 'nhh-strict-course-filter-js' && window.NHHScheduleAPI && window.NHHScheduleAPI.strictCourseFilter) || (id === 'haugnes-studyplan-js' && window.HaugnesStudyplan) || (id === 'haugnes-answer-library-js' && window.__haugnesAnswerLibraryInstalled)) onload();
         else existing.addEventListener('load', onload, { once: true });
       }
       return;
@@ -92,6 +92,15 @@
     addScript('haugnes-subject-meta-js', '../shared/subject-meta.js', onload);
   }
 
+  function loadSubjectAccess(onload) {
+    loadSubjectMeta(function () {
+      addScript('haugnes-subject-access-js', '../shared/subject-access.js', function () {
+        if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.enhanceCurrentPage === 'function') window.HaugnesSubjectAccess.enhanceCurrentPage();
+        if (onload) onload();
+      });
+    });
+  }
+
   function applyDashboardBranding() {
     var logoPath = '../assets/haugnes-logo-mark.svg';
     document.querySelectorAll('.logo-mark').forEach(function (mark) {
@@ -116,18 +125,17 @@
     if (currentUserPage() !== 'index.html' || !window.HaugnesSubjects) return;
     var container = document.querySelector('.subjects');
     if (!container) return;
-    var subjects = window.HaugnesSubjects.getAll().filter(function (subject) { return subject.status !== 'build'; }).slice(0, 3);
+    var subjects = window.HaugnesSubjects.getAll().filter(function (subject) { return subject.status !== 'build'; });
     container.innerHTML = subjects.map(function (subject) {
-      var todayCards = subject.code === 'RET14' ? 48 : subject.code === 'SOL1' ? 32 : subject.code === 'SAM2' ? 28 : 31;
       var emblem = subject.emblem ? '<img class="emblem-img" src="' + subject.emblem + '" alt="" onerror="this.remove()">' : '';
-      return '<a class="subject-card" style="--accent:' + subject.accent + ';--pct:' + subject.progress + '" href="' + subject.path + '">'
+      return '<a class="subject-card" style="--accent:' + subject.accent + ';--pct:' + (subject.progress || 0) + '" href="' + subject.path + '">'
         + '<div class="subject-top"><span class="subject-icon">' + emblem + '<span class="emblem-fallback">' + subject.icon + '</span></span><span class="dots">⋮</span></div>'
         + '<div class="subject-code">' + subject.code + '</div><div class="subject-name">' + subject.name + '</div>'
-        + '<div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">' + subject.progress + '%</div></div>'
-        + '<div class="ring-sub">' + todayCards + ' kort i dag</div><span class="subject-cta">Start øving</span></a>';
-    }).join('');
+        + '<div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">' + (subject.progress || 0) + '%</div></div>'
+        + '<div class="ring-sub">Ikke startet ennå</div><span class="subject-cta">Start øving</span></a>';
+    }).join('') || '<div class="panel"><div class="panel-inner">Velg fag på Mine fag-siden for å fylle dashboardet.</div></div>';
     var sectionLink = document.querySelector('#mine-fag a');
-    if (sectionLink) { sectionLink.href = 'subjects.html'; sectionLink.textContent = 'Se alle fag →'; }
+    if (sectionLink) { sectionLink.href = 'subjects.html'; sectionLink.textContent = 'Administrer fag →'; }
   }
 
   function standardizeDashboardLinks() {
@@ -141,13 +149,6 @@
     if (recommendationStart) { recommendationStart.href = '../flashcards/?subject=ret14'; recommendationStart.textContent = 'Start nå →'; }
     document.querySelectorAll('.subject-card .subject-cta').forEach(function (button) { button.textContent = 'Start øving'; });
     document.querySelectorAll('.subject-card .subject-btn').forEach(function (button) { button.textContent = 'Åpne fag'; });
-    document.querySelectorAll('.subject-card').forEach(function (card) {
-      var code = card.querySelector('.subject-code');
-      var href = card.getAttribute('href') || '';
-      if (!code) return;
-      card.setAttribute('aria-label', 'Åpne fagside for ' + code.textContent.trim());
-      if (href.indexOf('../ret14/') === 0 || href.indexOf('../sol1/') === 0 || href.indexOf('../sam2/') === 0 || href.indexOf('../sam3/') === 0) card.setAttribute('title', 'Åpne fagside');
-    });
   }
 
   function createNavLink(href, config, isActive) {
@@ -205,12 +206,15 @@
 
   function loadStudyplanTools() {
     if (currentUserPage() !== 'studieplan.html') return;
-    addScript('timeedit-fetch-proxy-js', '../shared/timeedit-fetch-proxy.js', function () {
-      addScript('nhh-schedule-api-js', '../shared/nhh-schedule-api.js', function () {
-        addScript('nhh-schedule-normalizer-js', '../shared/nhh-schedule-normalizer.js', function () {
-          addScript('nhh-strict-course-filter-js', '../shared/nhh-strict-course-filter.js', function () {
-            addScript('haugnes-studyplan-js', '../shared/haugnes-studyplan.js', function () {
-              if (window.HaugnesStudyplan && typeof window.HaugnesStudyplan.render === 'function') window.HaugnesStudyplan.render();
+    loadSubjectAccess(function () {
+      addScript('timeedit-fetch-proxy-js', '../shared/timeedit-fetch-proxy.js', function () {
+        addScript('nhh-schedule-api-js', '../shared/nhh-schedule-api.js', function () {
+          addScript('nhh-schedule-normalizer-js', '../shared/nhh-schedule-normalizer.js', function () {
+            addScript('nhh-strict-course-filter-js', '../shared/nhh-strict-course-filter.js', function () {
+              addScript('haugnes-studyplan-js', '../shared/haugnes-studyplan.js', function () {
+                if (window.HaugnesStudyplan && typeof window.HaugnesStudyplan.render === 'function') window.HaugnesStudyplan.render();
+                if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.enhanceCurrentPage === 'function') window.HaugnesSubjectAccess.enhanceCurrentPage();
+              });
             });
           });
         });
@@ -218,21 +222,35 @@
     });
   }
 
+  function loadAnswerLibrary() {
+    if (currentUserPage() !== 'a-besvarelser.html') return;
+    loadSubjectAccess(function () {
+      addScript('haugnes-answer-library-js', '../shared/haugnes-answer-library.js');
+    });
+  }
+
   function runEnhancements() {
     addPageStylesheet();
     installNavVisibilityStyles();
     applyDashboardBranding();
-    standardizeDashboardLinks();
-    installModelPageLinks();
-    enhanceAchievementsPage();
-    loadStudyplanTools();
-    if (currentUserPage() === 'index.html') {
-      loadSubjectMeta(function () { renderDashboardSubjects(); standardizeDashboardLinks(); installModelPageLinks(); });
-    }
+    loadSubjectAccess(function () {
+      standardizeDashboardLinks();
+      installModelPageLinks();
+      enhanceAchievementsPage();
+      loadStudyplanTools();
+      loadAnswerLibrary();
+      if (currentUserPage() === 'index.html') renderDashboardSubjects();
+    });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', runEnhancements);
   else runEnhancements();
+
+  window.addEventListener('haugnes:subject-access-changed', function () {
+    runEnhancements();
+    if (window.HaugnesDashboardProgress && typeof window.HaugnesDashboardProgress.run === 'function') window.HaugnesDashboardProgress.run();
+    if (window.HaugnesAnswerLibrary && typeof window.HaugnesAnswerLibrary.render === 'function') window.HaugnesAnswerLibrary.render();
+  });
 
   loadSharedAuthGuard().then(function (AuthGuard) {
     if (!AuthGuard || typeof AuthGuard.requireAuth !== 'function') { window.location.replace('../login.html'); return; }
