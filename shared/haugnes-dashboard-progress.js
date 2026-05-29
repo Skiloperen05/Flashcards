@@ -201,6 +201,20 @@
     document.head.appendChild(script);
   }
 
+  function loadUserSidebar() {
+    if (!/\/user\//.test(window.location.pathname)) return;
+    if (document.getElementById('haugnes-user-sidebar-js')) {
+      if (window.HaugnesUserSidebar && typeof window.HaugnesUserSidebar.run === 'function') window.HaugnesUserSidebar.run();
+      return;
+    }
+    var script = document.createElement('script');
+    script.id = 'haugnes-user-sidebar-js';
+    script.src = rootRelative('shared/user-sidebar.js');
+    script.defer = true;
+    script.onload = function () { if (window.HaugnesUserSidebar && typeof window.HaugnesUserSidebar.run === 'function') window.HaugnesUserSidebar.run(); };
+    document.head.appendChild(script);
+  }
+
   function enhanceABesvarelserSensor() { if (inUserPage('a-besvarelser.html')) loadAnswerLibrary(); }
 
   function enhanceProgressNextSteps() {
@@ -217,7 +231,7 @@
     list.appendChild(item);
   }
 
-  function run() { enhanceDashboard(); enhanceABesvarelserSensor(); enhanceProgressNextSteps(); }
+  function run() { loadUserSidebar(); enhanceDashboard(); enhanceABesvarelserSensor(); enhanceProgressNextSteps(); }
   ready(run);
   window.setTimeout(run, 250);
   window.setTimeout(run, 800);
