@@ -14,6 +14,7 @@
     { code: 'MET2', name: 'Metode', accent: '#7c3aed', icon: 'Σ' },
     { code: 'MAT10', name: 'Matematikk', accent: '#0891b2', icon: '∫' }
   ];
+  var COURSE_CODES = FALLBACK_CATALOG.map(function (s) { return s.code; });
 
   function code(value) { return String(value || '').toUpperCase().replace(/[\s-]+/g, ''); }
   function readJson(key, fallback) { try { var raw = window.localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; } }
@@ -21,12 +22,14 @@
   function esc(s) { return String(s || '').replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
   function pageName() { return (window.location.pathname.split('/').pop() || 'index.html').toLowerCase(); }
 
-  function catalog() {
+  function rawCatalog() {
     if (window.HaugnesSubjects && typeof window.HaugnesSubjects.getCatalog === 'function') return window.HaugnesSubjects.getCatalog();
     if (window.HaugnesSubjects && typeof window.HaugnesSubjects.getAllOriginal === 'function') return window.HaugnesSubjects.getAllOriginal();
     if (window.HaugnesSubjects && typeof window.HaugnesSubjects.getAll === 'function' && !window.HaugnesSubjects.__subjectAccessPatched) return window.HaugnesSubjects.getAll();
     return JSON.parse(JSON.stringify(FALLBACK_CATALOG));
   }
+
+  function catalog() { return rawCatalog(); }
 
   function getSelected() {
     var selected = readJson(STORAGE_KEY, null);
@@ -44,6 +47,7 @@
     patchIntegrations();
     renderControls();
     filterVisibleDom();
+    refreshSubjectPage();
     window.dispatchEvent(new CustomEvent('haugnes:subject-access-changed', { detail: { subjects: value.slice() } }));
     return value;
   }
@@ -61,12 +65,12 @@
   function patchSubjectMeta() {
     var meta = window.HaugnesSubjects;
     if (!meta || meta.__subjectAccessPatched || typeof meta.getAll !== 'function') return;
-    var originalGetAll = meta.getAll.bind(meta);
-    var originalFindById = typeof meta.findById === 'function' ? meta.findById.bind(meta) : null;
-    meta.getCatalog = function () { return originalGetAll(); };
-    meta.getAllOriginal = function () { return originalGetAll(); };
-    meta.getAll = function () { return filterSubjects(originalGetAll()); };
-    if (originalFindById) meta.findById = function (id) { return originalFindById(id); };
+    var sourceGetAll = typeof meta.getCatalog === 'function' ? meta.getCatalog.bind(meta) : meta.getAll.bind(meta);
+    var sourceFindById = typeof meta.findById === 'function' ? meta.findById.bind(meta) : null;
+    meta.getCatalog = function () { return JSON.parse(JSON.stringify(sourceGetAll())); };
+    meta.getAllOriginal = meta.getCatalog;
+    meta.getAll = function () { return filterSubjects(sourceGetAll()); };
+    if (sourceFindById) meta.findById = function (id) { return sourceFindById(id); };
     meta.__subjectAccessPatched = true;
   }
 
@@ -108,7 +112,8 @@
       '.hf-access-actions{display:flex;gap:8px;flex-wrap:wrap}.hf-access-actions button{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);color:#cbd7ef;border-radius:11px;padding:8px 10px;font:850 11px Lora,Georgia,serif;cursor:pointer}',
       '.hf-access-grid{display:flex;gap:9px;flex-wrap:wrap}.hf-access-pill{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);color:#b9c7df;border-radius:999px;padding:9px 11px;font:900 12px Lora,Georgia,serif;cursor:pointer;display:inline-flex;gap:7px;align-items:center}',
       '.hf-access-pill.active{background:linear-gradient(135deg,#245cff,#4b7dff);border-color:rgba(126,162,255,.44);color:#fff}.hf-access-dot{width:9px;height:9px;border-radius:50%;background:var(--accent,#2f62ff)}',
-      '.hf-subject-hidden-by-access{display:none!important}'
+      '.hf-subject-hidden-by-access{display:none!important}',
+      '.hf-access-empty{padding:16px;border-radius:18px;background:rgba(255,255,255,.035);border:1px dashed rgba(126,162,255,.25);color:#aebddd;font:850 13px/1.5 Lora,Georgia,serif;margin-top:12px}'
     ].join('\n');
     document.head.appendChild(style);
   }
@@ -167,12 +172,74 @@
     } catch (e) {}
   }
 
-  function filterVisibleDom() {
-    var selected = getSelected();
-    document.querySelectorAll('.hf-subject-pill[data-subject]').forEach(function (el) {
-      var show = selected.indexOf(code(el.getAttribute('data-subject'))) !== -1;
-      el.classList.toggle('hf-subject-hidden-by-access', !show);
+  function detectSubjectFromElement(el) {
+    if (!el) return '';
+    var attrs = ['data-subject', 'data-course', 'data-fag', 'data-code'];
+    for (var i = 0; i < attrs.length; i++) {
+      var v = el.getAttribute && el.getAttribute(attrs[i]);
+      if (v) return code(v);
+    }
+    var explicit = el.querySelector && el.querySelector('.subject-code,.course-code,.badge-stack .badge:last-child,.kicker');
+    if (explicit) {
+      var ex = code(explicit.textContent);
+      if (COURSE_CODES.indexOf(ex) !== -1) return ex;
+    }
+    var text = String(el.textContent || '').toUpperCase();
+    for (var j = 0; j < COURSE_CODES.length; j++) {
+      var compact = COURSE_CODES[j];
+      var spaced = compact.replace(/([A-ZÆØÅ]+)(\d+)/, '$1\\s*-?\\s*$2');
+      var re = new RegExp('(^|[^A-ZÆØÅ0-9])(' + compact + '|' + spaced + ')([^A-ZÆØÅ0-9]|$)', 'i');
+      if (re.test(text)) return compact;
+    }
+    return '';
+  }
+
+  function hideBySubject(el, selected) {
+    if (!el || el.id === 'hfSubjectAccessPanel' || el.closest && el.closest('#hfSubjectAccessPanel')) return;
+    var c = detectSubjectFromElement(el);
+    if (!c) return;
+    el.classList.toggle('hf-subject-hidden-by-access', selected.indexOf(c) === -1);
+  }
+
+  function filterSelectOptions(selected) {
+    document.querySelectorAll('select option').forEach(function (option) {
+      var c = detectSubjectFromElement(option);
+      if (!c) return;
+      option.disabled = selected.indexOf(c) === -1;
+      option.hidden = selected.indexOf(c) === -1;
     });
+  }
+
+  function showEmptyHintIfNeeded(selector, hostSelector, text) {
+    var host = document.querySelector(hostSelector);
+    if (!host) return;
+    var visible = Array.prototype.some.call(document.querySelectorAll(selector), function (el) { return !el.classList.contains('hf-subject-hidden-by-access'); });
+    var existing = host.querySelector('.hf-access-empty');
+    if (visible && existing) existing.remove();
+    if (!visible && !existing) host.insertAdjacentHTML('beforeend', '<div class="hf-access-empty">' + esc(text) + '</div>');
+  }
+
+  function filterVisibleDom() {
+    injectStyles();
+    var selected = getSelected();
+    [
+      '.hf-subject-pill[data-subject]',
+      '.subject-card',
+      '.model-card',
+      '.answer-card',
+      '.note-tab',
+      '.popular-item',
+      '.focus-item',
+      '.subject-row',
+      '.course-card',
+      '[data-course]',
+      '[data-fag]'
+    ].forEach(function (selector) {
+      document.querySelectorAll(selector).forEach(function (el) { hideBySubject(el, selected); });
+    });
+    filterSelectOptions(selected);
+    if (pageName() === 'oppgavebank.html') showEmptyHintIfNeeded('.model-card', '.workspace > section, main, body', 'Ingen oppgaver matcher de valgte fagene dine ennå. Endre fagvalg på Mine fag-siden.');
+    if (pageName() === 'notater.html') showEmptyHintIfNeeded('.note-tab', '.note-list', 'Ingen notater matcher de valgte fagene dine ennå.');
   }
 
   function enhanceCurrentPage() {
@@ -187,6 +254,7 @@
     enhanceCurrentPage();
     window.setTimeout(enhanceCurrentPage, 120);
     window.setTimeout(enhanceCurrentPage, 600);
+    window.setTimeout(filterVisibleDom, 1200);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
@@ -204,6 +272,7 @@
     setSelected: setSelected,
     isEnabled: isEnabled,
     filterSubjects: filterSubjects,
+    filterVisibleDom: filterVisibleDom,
     enhanceCurrentPage: enhanceCurrentPage,
     patchIntegrations: patchIntegrations
   };
