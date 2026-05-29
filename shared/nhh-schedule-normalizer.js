@@ -4,6 +4,8 @@
   if (window.__haugnesNhhScheduleNormalizerInstalled) return;
   window.__haugnesNhhScheduleNormalizerInstalled = true;
 
+  var KNOWN_SUBJECTS = ['RET14', 'SOL1', 'SAM2', 'SAM3', 'MET2', 'MAT10'];
+
   function cleanText(value) {
     return String(value || '')
       .replace(/\\n/g, ' ')
@@ -17,6 +19,42 @@
 
   function subjectCode(value) {
     return String(value || '').toUpperCase().replace(/\s+/g, '');
+  }
+
+  function subjectPattern(code) {
+    var compact = subjectCode(code);
+    var spaced = compact.replace(/([A-ZÆØÅ]+)(\d+)/, '$1\\s*$2');
+    return new RegExp('(^|[^A-ZÆØÅ0-9])(' + compact + '|' + spaced + ')([^A-ZÆØÅ0-9]|$)', 'i');
+  }
+
+  function detectSubject(value) {
+    var text = cleanText(value).toUpperCase();
+    for (var i = 0; i < KNOWN_SUBJECTS.length; i++) {
+      if (subjectPattern(KNOWN_SUBJECTS[i]).test(text)) return KNOWN_SUBJECTS[i];
+    }
+    return '';
+  }
+
+  function selectedSubjects(args, api) {
+    var raw = args && args[0];
+    if (!raw || !raw.length) raw = api && typeof api.getSelectedSubjects === 'function' ? api.getSelectedSubjects() : [];
+    return (raw || []).map(subjectCode).filter(Boolean);
+  }
+
+  function termRange() {
+    try {
+      var raw = window.localStorage.getItem('hf_studyplan_term');
+      if (!raw) return null;
+      var term = JSON.parse(raw);
+      if (term && /^20\d{2}-\d{2}-\d{2}$/.test(term.start || '') && /^20\d{2}-\d{2}-\d{2}$/.test(term.end || '')) return term;
+    } catch (e) {}
+    return null;
+  }
+
+  function withinTerm(event) {
+    var term = termRange();
+    if (!term || !event || !event.date) return true;
+    return event.date >= term.start && event.date <= term.end;
   }
 
   function stripDuplicateSubjectPrefix(title, code) {
@@ -36,7 +74,9 @@
   function normalizeEvent(event) {
     if (!event) return event;
     var next = Object.assign({}, event);
-    next.subjectCode = subjectCode(next.subjectCode);
+    var combined = cleanText([next.subjectCode, next.title, next.raw].join(' '));
+    var detected = detectSubject(combined);
+    next.subjectCode = detected || subjectCode(next.subjectCode);
     next.title = stripDuplicateSubjectPrefix(next.title, next.subjectCode) || next.title;
     next.raw = cleanText(next.raw || '');
     next.sourceLabel = cleanText(next.sourceLabel || 'NHH');
@@ -45,27 +85,28 @@
     return next;
   }
 
-  function dedupeKey(event) {
-    var title = cleanText(event.title).toLowerCase()
+  function titleKey(event) {
+    return cleanText(event.title).toLowerCase()
       .replace(/[^a-z0-9æøå]+/g, ' ')
-      .replace(/\b(se studentweb|orakel|digital|skriftlig|skoleeksamen)\b/g, '')
+      .replace(/\b(se studentweb|orakel|digital|skriftlig|skoleeksamen|makroøkonomi|mikroøkonomi|analyse og lineær algebra)\b/g, '')
       .replace(/\s+/g, ' ')
       .trim();
-    return [
-      subjectCode(event.subjectCode),
-      event.type || '',
-      event.date || '',
-      event.time || '',
-      event.durationMin || '',
-      title
-    ].join('|');
   }
 
-  function normalizeAndDedupe(events) {
+  function dedupeKey(event) {
+    var base = [subjectCode(event.subjectCode), event.type || '', event.date || '', event.time || '', event.durationMin || ''].join('|');
+    if (event.type === 'exam') return base;
+    return base + '|' + titleKey(event);
+  }
+
+  function normalizeAndDedupe(events, allowedSubjects) {
+    var allowed = (allowedSubjects || []).map(subjectCode).filter(Boolean);
     var seen = {};
     var result = [];
     (events || []).map(normalizeEvent).forEach(function (event) {
-      if (!event) return;
+      if (!event || !event.date) return;
+      if (allowed.length && allowed.indexOf(subjectCode(event.subjectCode)) === -1) return;
+      if (!withinTerm(event)) return;
       var key = dedupeKey(event);
       if (seen[key]) return;
       seen[key] = true;
@@ -75,42 +116,48 @@
     return result;
   }
 
+  function normalizeCache(api) {
+    try {
+      var cacheKey = api.storageKeys && api.storageKeys.cache || 'hf_nhh_schedule_cache';
+      var cache = JSON.parse(window.localStorage.getItem(cacheKey) || '{}');
+      Object.keys(cache).forEach(function (code) {
+        if (!cache[code] || !Array.isArray(cache[code].events)) return;
+        cache[code].events = normalizeAndDedupe(cache[code].events, [code]);
+      });
+      window.localStorage.setItem(cacheKey, JSON.stringify(cache));
+    } catch (e) {}
+  }
+
   function patch(api) {
-    if (!api || api.__haugnesNormalizerPatched) return;
-    api.__haugnesNormalizerPatched = true;
+    if (!api || api.__haugnesNormalizerPatchedV2) return;
+    api.__haugnesNormalizerPatchedV2 = true;
 
     var originalGetAllEvents = api.getAllEvents;
     if (typeof originalGetAllEvents === 'function') {
       api.getAllEvents = function () {
-        return normalizeAndDedupe(originalGetAllEvents.apply(api, arguments));
+        return normalizeAndDedupe(originalGetAllEvents.apply(api, arguments), selectedSubjects(arguments, api));
       };
     }
 
     var originalGetCached = api.getCachedNhhEvents;
     if (typeof originalGetCached === 'function') {
       api.getCachedNhhEvents = function () {
-        return normalizeAndDedupe(originalGetCached.apply(api, arguments));
+        return normalizeAndDedupe(originalGetCached.apply(api, arguments), selectedSubjects(arguments, api));
       };
     }
 
     var originalSync = api.sync;
     if (typeof originalSync === 'function') {
       api.sync = function () {
+        var allowed = selectedSubjects(arguments, api);
         return originalSync.apply(api, arguments).then(function (payload) {
           if (payload && payload.results) {
             payload.results.forEach(function (result) {
-              if (result && Array.isArray(result.events)) result.events = normalizeAndDedupe(result.events);
+              if (result && Array.isArray(result.events)) result.events = normalizeAndDedupe(result.events, [result.subjectCode]);
             });
           }
-          if (payload && Array.isArray(payload.events)) payload.events = normalizeAndDedupe(payload.events);
-          try {
-            var cacheKey = api.storageKeys && api.storageKeys.cache || 'hf_nhh_schedule_cache';
-            var cache = JSON.parse(window.localStorage.getItem(cacheKey) || '{}');
-            Object.keys(cache).forEach(function (code) {
-              if (cache[code] && Array.isArray(cache[code].events)) cache[code].events = normalizeAndDedupe(cache[code].events);
-            });
-            window.localStorage.setItem(cacheKey, JSON.stringify(cache));
-          } catch (e) {}
+          if (payload && Array.isArray(payload.events)) payload.events = normalizeAndDedupe(payload.events, allowed);
+          normalizeCache(api);
           return payload;
         });
       };
@@ -118,6 +165,8 @@
 
     api.normalizeEvents = normalizeAndDedupe;
     api.normalizeEvent = normalizeEvent;
+    api.detectSubjectFromTimeEdit = detectSubject;
+    normalizeCache(api);
   }
 
   function install() {
