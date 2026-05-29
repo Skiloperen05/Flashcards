@@ -7,6 +7,15 @@
     sensor: { id: '1myk7l12OsR-jZ76am6e-W7iS1u6FNuTy', title: 'SAM3 sensorveiledning V25', label: 'Sensorveiledning', url: 'https://drive.google.com/file/d/1myk7l12OsR-jZ76am6e-W7iS1u6FNuTy/view', download: 'https://drive.google.com/uc?export=download&id=1myk7l12OsR-jZ76am6e-W7iS1u6FNuTy' }
   };
 
+  var RECOMMENDATIONS = {
+    RET14: { title: 'Fradragsrett i RET14', sub: 'Fokus på tema', cards: 28, minutes: 30, href: '../flashcards/?subject=ret14' },
+    SOL1: { title: 'Motivasjon og ledelse i SOL1', sub: 'Fokus på teori', cards: 32, minutes: 25, href: '../flashcards/?subject=subj_sol1' },
+    SAM2: { title: 'Konsumentteori i SAM2', sub: 'Fokus på modell', cards: 24, minutes: 25, href: '../sam2/oppgaver-klikkbar/' },
+    SAM3: { title: 'Makromodeller i SAM3', sub: 'Fokus på eksamen', cards: 31, minutes: 25, href: '../sam3/flashcards.html' },
+    MET2: { title: 'MET2 er planlagt', sub: 'Fagområde kommer', cards: 0, minutes: 0, href: 'subjects.html', planned: true },
+    MAT10: { title: 'MAT10 er planlagt', sub: 'Fagområde kommer', cards: 0, minutes: 0, href: 'subjects.html', planned: true }
+  };
+
   var tries = {};
 
   function ready(fn) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
@@ -16,6 +25,7 @@
   function retry(key, fn, max, delay) { tries[key] = (tries[key] || 0) + 1; if (tries[key] > (max || 25)) return; window.setTimeout(fn, delay || 120); }
   function readJson(key, fallback) { try { var raw = window.localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; } }
   function formatNumber(n) { return Number(n || 0).toLocaleString('no-NO'); }
+  function esc(s) { return String(s || '').replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
 
   function normaliseSubjectId(id) {
     var lower = String(id || '').toLowerCase();
@@ -119,6 +129,37 @@
     return subjects;
   }
 
+  function chooseRecommendation(subjects, summary) {
+    var pool = (subjects || []).filter(function (subject) { return !isPlanned(subject); });
+    var subject = summary.weakest && summary.weakest.subject ? summary.weakest.subject : pool[0];
+    if (!subject) return null;
+    var rec = RECOMMENDATIONS[subject.code] || { title: subject.code + ' · ' + subject.name, sub: 'Fokus på valgt fag', cards: 20, minutes: 25, href: flashcardHref(subject) };
+    return Object.assign({ subject: subject }, rec);
+  }
+
+  function setRecommendation(subjects, summary) {
+    var panel = document.querySelector('.recommend .panel-inner');
+    if (!panel) return;
+    var rec = chooseRecommendation(subjects, summary);
+    if (!rec) {
+      panel.innerHTML = '<div class="rec-head"><div class="isq isq-purple">+</div><div><div class="rec-title">Neste anbefaling</div><div class="rec-sub">Velg et aktivt fag</div></div></div><h3>Ingen aktiv anbefaling ennå</h3><div class="rec-meta"><span>Velg et fag med innhold</span></div><a class="start-btn" href="subjects.html" style="height:44px">Administrer fag →</a>';
+      return;
+    }
+    panel.innerHTML = '<div class="rec-head"><div class="isq isq-purple"><svg viewBox="0 0 24 24"><path d="M12 4v16M7 20h10"/><path d="M5 8h14"/><path d="M5 8l-2.2 4.5a2.2 2.2 0 0 0 4.4 0z"/><path d="M19 8l-2.2 4.5a2.2 2.2 0 0 0 4.4 0z"/><circle cx="12" cy="5" r="1.3"/></svg></div><div><div class="rec-title">Neste anbefaling</div><div class="rec-sub">' + esc(rec.sub) + '</div></div></div><h3>' + esc(rec.title) + '</h3><div class="rec-meta"><span><svg viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V20.5H7z"/><path d="M14 3.5V8h4"/></svg>' + (rec.cards ? rec.cards + ' kort' : 'Planlagt') + '</span><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>' + (rec.minutes ? '≈ ' + rec.minutes + ' min' : 'Kommer') + '</span></div><a class="start-btn" href="' + esc(rec.href) + '" style="height:44px">' + (rec.planned ? 'Se fag →' : 'Start nå →') + '</a>';
+  }
+
+  function setWeakestArea(subjects, summary) {
+    var panel = document.querySelector('.weak-list');
+    if (!panel) return;
+    var subject = summary.weakest && summary.weakest.subject ? summary.weakest.subject : (subjects || []).filter(function (s) { return !isPlanned(s); })[0];
+    if (!subject) {
+      panel.innerHTML = '<div class="weak"><div class="isq isq-sm isq-blue">+</div><strong>Velg et aktivt fag først</strong></div>';
+      return;
+    }
+    var title = summary.weakest ? 'Neste område å styrke' : 'Ikke nok øvingsdata ennå';
+    panel.innerHTML = '<div class="weak"><div class="isq isq-sm isq-blue"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.8"/></svg></div><strong>' + esc(title) + '</strong></div><div class="weak"><div class="isq isq-sm isq-red"><svg viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg></div><strong>' + esc(subject.code + ' · ' + subject.name) + '</strong></div><div class="weak-meta"><span><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8.5 12.5l2.5 2.5 5-5"/></svg>' + formatNumber(subjectStats(subject).total) + ' kort</span><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>' + (subjectStats(subject).sessions || 0) + ' økter</span></div>';
+  }
+
   function enhanceDashboard() {
     if (!inUserPage('index.html')) return;
     if (!window.HaugnesSubjects || typeof window.HaugnesSubjects.getAll !== 'function') { retry('dashboard-subjects', enhanceDashboard, 30, 120); return; }
@@ -141,6 +182,8 @@
     if (mineFag) { mineFag.href = 'subjects.html'; mineFag.textContent = 'Administrer fag →'; }
     setTodayStats(summary);
     setStudyHabits(summary);
+    setRecommendation(active, summary);
+    setWeakestArea(active, summary);
     var target = summary.weakest && summary.weakest.subject ? summary.weakest.subject : active.find(function (subject) { return !isPlanned(subject); });
     var start = document.querySelector('#today .start-btn');
     var plan = document.querySelector('#today .ghost-link');
@@ -165,6 +208,8 @@
     document.body.dataset.hfProgressNextEnhanced = '1';
     var list = document.querySelector('.side-panel .focus-list');
     if (!list || list.querySelector('a[href="../sam3/"]')) return;
+    var selected = window.HaugnesSubjectAccess && window.HaugnesSubjectAccess.getSelected ? window.HaugnesSubjectAccess.getSelected() : ['SAM3'];
+    if (selected.indexOf('SAM3') === -1) return;
     var item = document.createElement('a');
     item.className = 'focus-item';
     item.href = '../sam3/';
