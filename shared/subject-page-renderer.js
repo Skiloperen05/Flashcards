@@ -20,6 +20,13 @@
     return '<div class="hf-priority"><div><b>' + esc(item[0]) + '</b><span>' + esc(item[1]) + '</span></div><span>' + esc(item[2]) + '</span></div>';
   }
 
+  function sourcesHtml(items) {
+    if (!items || !items.length) return '';
+    return '<section class="hf-info-card hf-source-card"><h3>Lokalt grunnlag</h3>' + items.map(function (item) {
+      return '<div class="hf-source-item"><strong>' + esc(item[0]) + '</strong><span>' + esc(item[1]) + '</span></div>';
+    }).join('') + '</section>';
+  }
+
   function render(page) {
     document.title = page.code + ' ' + page.name + ' — Haugnes Flashcards';
     document.body.style.setProperty('--subject-accent', page.accent);
@@ -33,6 +40,10 @@
     document.getElementById('toolGrid').innerHTML = page.tools.map(toolHtml).join('');
     document.getElementById('topicList').innerHTML = page.topics.map(function (topic) { return topicHtml(topic, page.accent); }).join('');
     document.getElementById('planList').innerHTML = page.plan.map(planHtml).join('');
+    var planHost = document.getElementById('planList').closest('.hf-wide-grid');
+    if (planHost && page.sources && !document.getElementById('sourceCard')) {
+      planHost.insertAdjacentHTML('afterend', '<div id="sourceCard" class="hf-source-grid">' + sourcesHtml(page.sources) + '</div>');
+    }
     document.getElementById('nextStep').textContent = page.next;
     document.getElementById('progressValue').textContent = page.progress;
   }
