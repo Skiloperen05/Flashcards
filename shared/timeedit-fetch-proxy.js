@@ -4,7 +4,7 @@
   if (window.__haugnesTimeEditFetchProxyInstalled) return;
   window.__haugnesTimeEditFetchProxyInstalled = true;
 
-  var SUPABASE_FUNCTION_URL = 'https://qnwjhheoekpqqqhevztw.functions.supabase.co/timeedit';
+  var SUPABASE_FUNCTION_URL = 'https://qnwjhheoekpqqqhevztw.supabase.co/functions/v1/timeedit';
   var originalFetch = window.fetch ? window.fetch.bind(window) : null;
 
   if (!originalFetch) return;
