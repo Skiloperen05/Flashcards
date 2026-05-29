@@ -186,6 +186,10 @@
   }
 
   function ensureToolBackdrop() {
+    if (!document.body) {
+      window.setTimeout(ensureToolBackdrop, 0);
+      return;
+    }
     if (!document.querySelector('.haugnes-tool-backdrop')) {
       var backdrop = document.createElement('div');
       backdrop.className = 'haugnes-tool-backdrop';
@@ -195,6 +199,10 @@
 
   function enhanceRet14ExamPage() {
     if (!isRet14ExamPage()) return;
+    if (!document.body) {
+      window.setTimeout(enhanceRet14ExamPage, 0);
+      return;
+    }
     addStylesheet('haugnes-ret14-eksamen-css', rootRelative('shared/haugnes-ret14-eksamen.css'));
     document.title = 'RET14 Eksamensradar — Haugnes';
     if (!document.querySelector('.haugnes-tool-nav')) {
@@ -236,8 +244,18 @@
     });
   }
 
+  function loadGlobalPolish() {
+    addScript('haugnes-logo-normalizer-js', rootRelative('shared/logo-normalizer.js'), function () {
+      if (window.HaugnesLogoNormalizer && typeof window.HaugnesLogoNormalizer.run === 'function') window.HaugnesLogoNormalizer.run();
+    });
+    addScript('haugnes-tool-header-js', rootRelative('shared/tool-header.js'), function () {
+      if (window.HaugnesToolHeader && typeof window.HaugnesToolHeader.run === 'function') window.HaugnesToolHeader.run();
+    });
+  }
+
   function enhancePages() {
     applyBranding();
+    loadGlobalPolish();
     enhanceFlashcardsPage();
     enhanceRet14QuizPage();
     enhanceRet14ExamPage();

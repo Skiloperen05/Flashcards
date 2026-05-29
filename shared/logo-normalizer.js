@@ -9,7 +9,7 @@
       return window.AuthGuard.getRootPath().replace(/\/$/, '/') + path.replace(/^\//, '');
     }
     var current = window.location.pathname;
-    var match = current.match(/^(.*?)(?:ret14|sol1|sam2|sam3|mat10|met2|flashcards|user)\//);
+    var match = current.match(/^(.*?)(?:ret14|sol1|sam2|sam3|mat10|met2|sam1a|met1|kom1|ret1a|bed1|flashcards|user)\//);
     return (match ? match[1] : current.replace(/[^/]*$/, '')).replace(/\/$/, '/') + path.replace(/^\//, '');
   }
 
@@ -76,6 +76,7 @@
   function run() {
     injectStyles();
     normalizeLinks();
+    if (/StudieHub/i.test(document.title)) document.title = document.title.replace(/StudieHub/gi, 'Haugnes Flashcards');
     [
       '.logo-mark',
       '.brand-mark',
@@ -86,6 +87,14 @@
       '.verify-icon'
     ].forEach(function (selector) {
       document.querySelectorAll(selector).forEach(normalizeElement);
+    });
+    document.querySelectorAll('.brand,.logo').forEach(function (brand) {
+      if (!/StudieHub/i.test(brand.textContent)) return;
+      var label = brand.querySelector('span:last-child') || brand;
+      label.textContent = 'Haugnes';
+    });
+    document.querySelectorAll('footer,.footer').forEach(function (footer) {
+      if (/StudieHub/i.test(footer.textContent)) footer.textContent = footer.textContent.replace(/StudieHub/gi, 'Haugnes Flashcards');
     });
   }
 
