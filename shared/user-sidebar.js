@@ -96,7 +96,7 @@
     style.id = 'haugnes-user-sidebar-css';
     style.textContent = [
       '.sidebar .brand{display:flex!important;align-items:center!important;gap:12px!important;padding:0 6px 10px!important;min-width:0!important;overflow:visible!important}',
-      '.sidebar .brand>.logo-mark,.mobile-top .brand>.logo-mark{width:46px!important;height:46px!important;flex:0 0 46px!important;border-radius:14px!important;background:#0b244e url("' + rootRelative('assets/haugnes-logo-mark.svg') + '") center/78% no-repeat!important}',
+      '.sidebar .brand>.logo-mark,.mobile-top .brand>.logo-mark{width:46px!important;height:46px!important;flex:0 0 46px!important;border-radius:14px!important;background:#0b244e url("' + rootRelative('assets/Flashcardslogo.png') + '") center center/contain no-repeat!important}',
       '.sidebar .brand>span:not(.logo-mark),.mobile-top .brand>span:not(.logo-mark){display:grid!important;gap:6px!important;line-height:1!important;min-width:0!important;overflow:visible!important}',
       '.sidebar .brand-title,.mobile-top .brand-title{display:block!important;font-size:20px!important;font-weight:950!important;letter-spacing:.20em!important;text-transform:uppercase!important;color:#fff!important;white-space:nowrap!important;line-height:1!important}',
       '.sidebar .brand-sub,.mobile-top .brand-sub{display:block!important;font-size:9px!important;font-weight:950!important;letter-spacing:.42em!important;text-transform:uppercase!important;color:#e8bc68!important;white-space:nowrap!important;line-height:1!important;margin-top:0!important}',
