@@ -40,6 +40,7 @@
       document.head.appendChild(existing);
     }
     existing.href = href;
+    if (/icon/i.test(rel)) existing.type = 'image/png';
   }
 
   function addStylesheet(id, href) {
@@ -73,14 +74,15 @@
   }
 
   function applyBranding() {
-    var logoPath = getAssetPath('haugnes-logo-mark.svg');
+    var logoPath = getAssetPath('Flashcardslogo.png');
     addIconLink('icon', logoPath);
+    addIconLink('shortcut icon', logoPath);
     addIconLink('apple-touch-icon', logoPath);
 
     document.querySelectorAll('.logo-mark').forEach(function (mark) {
       mark.textContent = '';
       mark.setAttribute('aria-hidden', 'true');
-      mark.style.background = "url('" + logoPath + "') center/cover no-repeat";
+      mark.style.background = "#0b244e url('" + logoPath + "') center center/contain no-repeat";
       mark.style.border = '1px solid rgba(255,255,255,.16)';
       mark.style.boxShadow = '0 8px 22px rgba(0,0,0,.24)';
       mark.style.overflow = 'hidden';
