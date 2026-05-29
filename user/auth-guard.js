@@ -102,11 +102,11 @@
   }
 
   function applyDashboardBranding() {
-    var logoPath = '../assets/haugnes-logo-mark.svg';
+    var logoPath = '../assets/Flashcardslogo.png';
     document.querySelectorAll('.logo-mark').forEach(function (mark) {
       mark.textContent = '';
       mark.setAttribute('aria-hidden', 'true');
-      mark.style.background = "#0b244e url('" + logoPath + "') center/78% no-repeat";
+      mark.style.background = "#0b244e url('" + logoPath + "') center center/contain no-repeat";
       mark.style.border = '1px solid rgba(255,255,255,.14)';
       mark.style.boxShadow = '0 14px 30px rgba(0,0,0,.28),0 0 34px rgba(47,98,255,.18)';
       mark.style.overflow = 'hidden';
