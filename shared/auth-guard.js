@@ -56,6 +56,7 @@
     if (existing) {
       if (onload) {
         if (id === 'haugnes-subject-meta-js' && window.HaugnesSubjects) onload();
+        else if (id === 'haugnes-functional-enhancements-js' && window.HaugnesFunctionalEnhancements) onload();
         else existing.addEventListener('load', onload, { once: true });
       }
       return;
@@ -111,6 +112,10 @@
     return /\/ret14\/pensum\/?(?:index\.html)?$/.test(window.location.pathname);
   }
 
+  function isUserAreaPage() {
+    return /\/user\//.test(window.location.pathname);
+  }
+
   function normalizeFlashcardsRoute() {
     if (!isFlashcardsPage()) return;
     var params = new URLSearchParams(window.location.search);
@@ -126,7 +131,13 @@
       'sol': 'subj_sol1',
       'organisasjonsatferd': 'subj_sol1',
       'organisasjonsrett': 'subj_sol1',
-      'subj-sol1': 'subj_sol1'
+      'subj-sol1': 'subj_sol1',
+      'sam2': 'sam2',
+      'mikro': 'sam2',
+      'mikroøkonomi': 'sam2',
+      'sam3': 'sam3',
+      'makro': 'sam3',
+      'makroøkonomi': 'sam3'
     };
     if (subjectAliases[subject]) params.set('subject', subjectAliases[subject]);
     if ((params.get('tool') || '').toLowerCase() === 'quiz' && !params.get('mode')) params.set('mode', 'quiz');
@@ -189,12 +200,22 @@
     ensureToolBackdrop();
   }
 
+  function enhanceUserAreaPages() {
+    if (!isUserAreaPage()) return;
+    addScript('haugnes-functional-enhancements-js', rootRelative('shared/haugnes-functional-enhancements.js'), function () {
+      if (window.HaugnesFunctionalEnhancements && typeof window.HaugnesFunctionalEnhancements.run === 'function') {
+        window.HaugnesFunctionalEnhancements.run();
+      }
+    });
+  }
+
   function enhancePages() {
     applyBranding();
     enhanceFlashcardsPage();
     enhanceRet14QuizPage();
     enhanceRet14ExamPage();
     enhanceRet14PensumPage();
+    enhanceUserAreaPages();
   }
 
   normalizeFlashcardsRoute();
@@ -278,6 +299,7 @@
     enhanceFlashcardsPage: enhanceFlashcardsPage,
     enhanceRet14QuizPage: enhanceRet14QuizPage,
     enhanceRet14ExamPage: enhanceRet14ExamPage,
-    enhanceRet14PensumPage: enhanceRet14PensumPage
+    enhanceRet14PensumPage: enhanceRet14PensumPage,
+    enhanceUserAreaPages: enhanceUserAreaPages
   };
 })(window, document);
