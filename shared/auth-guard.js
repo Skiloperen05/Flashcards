@@ -56,6 +56,7 @@
     if (existing) {
       if (onload) {
         if (id === 'haugnes-subject-meta-js' && window.HaugnesSubjects) onload();
+        else if (id === 'haugnes-subject-access-js' && window.HaugnesSubjectAccess) onload();
         else if (id === 'haugnes-functional-enhancements-js' && window.HaugnesFunctionalEnhancements) onload();
         else if (id === 'haugnes-dashboard-progress-js' && window.HaugnesDashboardProgress) onload();
         else existing.addEventListener('load', onload, { once: true });
@@ -147,11 +148,20 @@
     }
   }
 
+  function loadSubjectAccess(callback) {
+    addScript('haugnes-subject-meta-js', rootRelative('shared/subject-meta.js'), function () {
+      addScript('haugnes-subject-access-js', rootRelative('shared/subject-access.js'), function () {
+        if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.enhanceCurrentPage === 'function') window.HaugnesSubjectAccess.enhanceCurrentPage();
+        if (callback) callback();
+      });
+    });
+  }
+
   function enhanceFlashcardsPage() {
     if (!isFlashcardsPage()) return;
     normalizeFlashcardsRoute();
     addStylesheet('haugnes-flashcards-css', rootRelative('shared/haugnes-flashcards.css'));
-    addScript('haugnes-subject-meta-js', rootRelative('shared/subject-meta.js'), function () {
+    loadSubjectAccess(function () {
       addScript('haugnes-flashcards-structure-js', rootRelative('shared/haugnes-flashcards-structure.js'));
     });
     document.title = 'Flashcards — Haugnes';
@@ -203,15 +213,19 @@
 
   function enhanceUserAreaPages() {
     if (!isUserAreaPage()) return;
-    addScript('haugnes-functional-enhancements-js', rootRelative('shared/haugnes-functional-enhancements.js'), function () {
-      if (window.HaugnesFunctionalEnhancements && typeof window.HaugnesFunctionalEnhancements.run === 'function') {
-        window.HaugnesFunctionalEnhancements.run();
-      }
-    });
-    addScript('haugnes-dashboard-progress-js', rootRelative('shared/haugnes-dashboard-progress.js'), function () {
-      if (window.HaugnesDashboardProgress && typeof window.HaugnesDashboardProgress.run === 'function') {
-        window.HaugnesDashboardProgress.run();
-      }
+    loadSubjectAccess(function () {
+      addScript('haugnes-functional-enhancements-js', rootRelative('shared/haugnes-functional-enhancements.js'), function () {
+        if (window.HaugnesFunctionalEnhancements && typeof window.HaugnesFunctionalEnhancements.run === 'function') {
+          window.HaugnesFunctionalEnhancements.run();
+        }
+        if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.filterVisibleDom === 'function') window.HaugnesSubjectAccess.filterVisibleDom();
+      });
+      addScript('haugnes-dashboard-progress-js', rootRelative('shared/haugnes-dashboard-progress.js'), function () {
+        if (window.HaugnesDashboardProgress && typeof window.HaugnesDashboardProgress.run === 'function') {
+          window.HaugnesDashboardProgress.run();
+        }
+        if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.filterVisibleDom === 'function') window.HaugnesSubjectAccess.filterVisibleDom();
+      });
     });
   }
 
@@ -230,6 +244,12 @@
   } else {
     enhancePages();
   }
+
+  window.addEventListener('haugnes:subject-access-changed', function () {
+    if (window.HaugnesDashboardProgress && typeof window.HaugnesDashboardProgress.run === 'function') window.HaugnesDashboardProgress.run();
+    if (window.HaugnesFunctionalEnhancements && typeof window.HaugnesFunctionalEnhancements.run === 'function') window.HaugnesFunctionalEnhancements.run();
+    if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.filterVisibleDom === 'function') window.HaugnesSubjectAccess.filterVisibleDom();
+  });
 
   function getLoginPath() {
     return rootRelative('login.html');
