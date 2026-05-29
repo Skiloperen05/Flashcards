@@ -65,7 +65,7 @@
     style.textContent = [
       '.hf-tool-header{height:76px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 clamp(18px,4vw,44px);background:linear-gradient(180deg,rgba(7,18,42,.98),rgba(8,22,50,.96));border-bottom:1px solid rgba(255,255,255,.08);box-shadow:0 18px 42px rgba(0,0,0,.22);position:relative;z-index:50;font-family:Lora,Georgia,serif}',
       '.hf-tool-brand{display:inline-flex;align-items:center;gap:14px;text-decoration:none;color:#fff;min-width:0}',
-      '.hf-tool-logo{width:44px;height:44px;border-radius:14px;background:#0b244e url("' + rootRelative('assets/haugnes-logo-mark.svg') + '") center/78% no-repeat;border:1px solid rgba(255,255,255,.16);box-shadow:0 12px 28px rgba(0,0,0,.28),0 0 28px rgba(47,98,255,.16);flex:0 0 44px}',
+      '.hf-tool-logo{width:44px;height:44px;border-radius:14px;background:#0b244e url("' + rootRelative('assets/Flashcardslogo.png') + '") center center/contain no-repeat;border:1px solid rgba(255,255,255,.16);box-shadow:0 12px 28px rgba(0,0,0,.28),0 0 28px rgba(47,98,255,.16);flex:0 0 44px}',
       '.hf-tool-wordmark{display:grid;line-height:1}.hf-tool-wordmark strong{font-size:22px;letter-spacing:.18em;color:#fff}.hf-tool-wordmark span{font-size:11px;letter-spacing:.42em;color:#ffd98f;margin-top:6px;font-weight:950}',
       '.hf-tool-crumb{display:flex;align-items:center;gap:10px;min-width:0;color:#99abc8;font-size:14px;font-weight:900;white-space:nowrap}',
       '.hf-tool-crumb a{color:#aebfff;text-decoration:none}.hf-tool-crumb a:hover{color:#fff}.hf-tool-crumb b{color:#fff;font-weight:950}.hf-tool-sep{opacity:.55}',
