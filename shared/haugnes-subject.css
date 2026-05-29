@@ -34,6 +34,16 @@
 .hf-radar-row b{color:#fff;font-size:12px;text-align:right}
 .hf-formula-card{border-color:rgba(123,161,255,.20)}
 .hf-radar-card{border-color:rgba(232,188,104,.20)}
+.hf-material-card{border-color:rgba(32,185,122,.20)}
+.hf-practice-card{border-color:rgba(123,161,255,.22)}
+.hf-practice-list{display:grid;gap:10px}
+.hf-flip-card{width:100%;min-height:128px;text-align:left;padding:15px;border-radius:18px;border:1px solid rgba(255,255,255,.12);background:linear-gradient(135deg,rgba(123,161,255,.10),rgba(255,255,255,.045));color:#fff;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.08);transition:transform .16s ease,border-color .16s ease,background .16s ease}
+.hf-flip-card:hover{transform:translateY(-1px);border-color:rgba(123,161,255,.32);background:linear-gradient(135deg,rgba(123,161,255,.16),rgba(255,255,255,.06))}
+.hf-flip-card.is-flipped{border-color:rgba(232,188,104,.34);background:linear-gradient(135deg,rgba(232,188,104,.16),rgba(47,98,255,.08))}
+.hf-flip-card strong{display:block;margin:9px 0 7px;font-size:14px;line-height:1.35;color:#fff}
+.hf-flip-card em{display:block;font-style:normal;color:#b9c8e5;font-size:12px;line-height:1.55}
+.hf-flip-card small{display:block;margin-top:10px;color:#f1d38a;font-size:11px;font-weight:900}
+.hf-card-tag{display:inline-flex;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);color:#dce6fb;font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.06em}
 .hf-score{display:grid;place-items:center;width:86px;height:86px;border-radius:50%;background:conic-gradient(var(--subject-accent,#2f62ff) 0 var(--subject-progress,72%),rgba(255,255,255,.10) var(--subject-progress,72%) 100%);position:relative;box-shadow:0 0 34px color-mix(in srgb,var(--subject-accent,#2f62ff),transparent 70%)}
 .hf-score::before{content:"";position:absolute;inset:9px;border-radius:50%;background:#081b3b;border:1px solid rgba(255,255,255,.08)}
 .hf-score strong{position:relative;z-index:1;font-size:20px;color:#fff}

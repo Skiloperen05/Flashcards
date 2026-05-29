@@ -162,6 +162,20 @@
     ['Integraler', 'Standardintegraler, substitusjon og delvis integrasjon.', 'MAT10'],
     ['Matriser', 'Determinant, invers, rang og løsning av lineære systemer.', 'MAT10']
   ];
+  pages.mat10.practice = {
+    label: 'Metodevalg',
+    intro: 'Tre korte kontrollkort før du går inn i regneoppgaver.',
+    cards: [
+      ['Optimering', 'Hva må sjekkes etter at den deriverte er null?', 'Tenk både kandidat og type punkt.', 'Andrederivert, randpunkter og om punktet faktisk er maksimum/minimum i definisjonsområdet.', 'Svar med metode, ikke bare tall.'],
+      ['Integral', 'Når er substitusjon ofte riktig grep?', 'Se etter indre funksjon og derivert faktor.', 'Når integranden har en sammensatt funksjon der deriverten av innsiden også finnes i uttrykket.', 'Kjenn igjen mønster før du regner.'],
+      ['Matrise', 'Hva betyr det hvis determinanten er null?', 'Koble til invers og løsning.', 'Matrisen er ikke inverterbar; lineærsystemet kan ha ingen eller uendelig mange løsninger.', 'Skriv konsekvensen for oppgaven.']
+    ]
+  };
+  pages.mat10.examChecklist = [
+    ['Før regning', 'Skriv hvilken metode du bruker og hvorfor den passer.', 'Start'],
+    ['Underveis', 'Hold orden på fortegn, parenteser og definisjonsområde.', 'Kontroll'],
+    ['Til slutt', 'Tolk svaret i ord og sjekk rimelighet.', 'Svar']
+  ];
 
   pages.met2.compendium = [
     ['Statistisk begrepskart', 'Utvalg, estimator, forventning, varians, standardfeil og samplingfordeling.', 'Begrep'],
@@ -178,6 +192,20 @@
     ['Forventning og varians', 'Regneregler for snitt, summer og lineærtransformasjoner.', 'MET2'],
     ['Testobservatorer', 'Z, t, andel, differanser og enkel beslutningsregel.', 'MET2'],
     ['Regresjon', 'Koeffisienttolkning, standardfeil, t-verdi og prediksjon.', 'MET2']
+  ];
+  pages.met2.practice = {
+    label: 'Begrep til tolkning',
+    intro: 'Kortene trener presis formulering, som ofte er forskjellen på nesten riktig og helt riktig.',
+    cards: [
+      ['P-verdi', 'Hva er en p-verdi i én setning?', 'Ikke si sannsynligheten for at H0 er sann.', 'Sannsynligheten for å få et minst like ekstremt resultat som observert, gitt at nullhypotesen er sann.', 'Bruk alltid betingelsen: gitt H0.'],
+      ['KI', 'Hva betyr et 95% konfidensintervall?', 'Tolk metoden, ikke akkurat dette intervallet.', 'Ved gjentatte utvalg vil omtrent 95% av intervallene laget på samme måte dekke den sanne parameteren.', 'Unngå “95% sannsynlighet for parameteren”.'],
+      ['Regresjon', 'Hvordan tolker du en koeffisient?', 'Hold alt annet konstant.', 'For én enhets økning i X forventes Y å endres med koeffisienten, alt annet likt.', 'Nevn enhet og fortegn.']
+    ]
+  };
+  pages.met2.examChecklist = [
+    ['Hypoteser', 'Formuler H0 og H1 med parameter og retning.', 'Start'],
+    ['Testvalg', 'Begrunn test ut fra data, design og antakelser.', 'Metode'],
+    ['Konklusjon', 'Svar i kontekst, ikke bare forkast/ikke forkast.', 'Svar']
   ];
 
   pages.sam1a.compendium = [
@@ -196,6 +224,25 @@
     ['Overskudd', 'Arealtenkning for konsument- og produsentoverskudd.', 'SAM1A'],
     ['Dødvektstap', 'Trekantlogikk ved skatt, regulering og eksternaliteter.', 'SAM1A']
   ];
+  pages.sam1a.canvasMaterials = [
+    ['Canvas-eksamener funnet', 'Lokale course export-filer inneholder SAM1A eksamen H24, H24 gjentak og V25 gjentak.', 'Eksamener'],
+    ['Kompendium funnet', 'Kompendium SAM1A ligger både i NHH-mappen og Downloads og kan brukes som hovedkilde for kort.', 'Kompendium'],
+    ['Læringsmål funnet', 'Læringsmålfilen gir struktur for hvilke begreper og drøftinger som bør prioriteres.', 'Mål']
+  ];
+  pages.sam1a.practice = {
+    label: 'Figur og begrep',
+    intro: 'Hurtigkort for standard mikroresonnementer.',
+    cards: [
+      ['Likevekt', 'Hva skjer med pris og mengde hvis etterspørselen øker?', 'Tenk skift i etterspørselskurven.', 'Etterspørselskurven skifter mot høyre; både likevektspris og likevektsmengde øker.', 'Forklar med figur i eksamenssvar.'],
+      ['Elastisitet', 'Hva betyr priselastisitet under -1?', 'Se på absoluttverdi.', 'Etterspørselen er elastisk: mengden reagerer relativt mer enn prisen.', 'Koble til inntektsvirkning.'],
+      ['Markedssvikt', 'Hvorfor gir negativ eksternalitet for høy mengde?', 'Privat kostnad er lavere enn samfunnskostnad.', 'Markedet tar ikke inn ekstern kostnad, så likevektsmengden blir høyere enn samfunnsøkonomisk effektiv mengde.', 'Vis MSC over MPC.']
+    ]
+  };
+  pages.sam1a.examChecklist = [
+    ['Figur', 'Tegn akser, kurver, skift og ny likevekt tydelig.', 'Start'],
+    ['Forklaring', 'Skriv mekanismen bak skiftet før du konkluderer.', 'Drøft'],
+    ['Velferd', 'Nevn overskudd, effektivitet eller dødvektstap når relevant.', 'Poeng']
+  ];
 
   pages.met1.compendium = [
     ['Rente og tid', 'Sluttverdi, nåverdi, effektiv rente og sammenheng mellom perioder.', 'Finansmatte'],
@@ -213,6 +260,25 @@
     ['Sluttverdi', 'FV = PV(1 + r)^n med periodetilpasning.', 'MET1'],
     ['Annuitet', 'Fast terminbeløp, annuitetsfaktor og restgjeld.', 'MET1']
   ];
+  pages.met1.canvasMaterials = [
+    ['NNV-oppgaver funnet', 'MET1 NNV og rente finnes som PDF/DOCX og inneholder eksamensnære rente- og nåverdioppgaver.', 'Oppgaver'],
+    ['Python-filer funnet', 'Lokale småprogrammer kan senere brukes til fasitkontroll og automatisk regnedrill.', 'Fasit'],
+    ['Prioritert import', 'Start med oppgavetyper for NNV, sluttverdi, annuitet og effektiv rente.', 'Neste']
+  ];
+  pages.met1.practice = {
+    label: 'Finansmatte',
+    intro: 'Tre kort som trener formelvalg før kalkulatoren kommer frem.',
+    cards: [
+      ['NNV', 'Når bruker du nåverdi i stedet for sluttverdi?', 'Tenk tidspunkt for sammenligning.', 'Når kontantstrømmer på ulike tidspunkter skal sammenlignes i dag eller mot en investering nå.', 'Diskonter alle beløp til samme tidspunkt.'],
+      ['Annuitet', 'Hva kjennetegner en annuitet?', 'Se på betalingene.', 'Like store betalinger med fast intervall over flere perioder.', 'Pass på om betaling skjer forskuddsvis eller etterskuddsvis.'],
+      ['Rente', 'Hva er vanlig feil ved effektiv rente?', 'Perioder må matche renten.', 'Å blande periode- og årsrente eller bruke feil antall kapitaliseringer.', 'Gjør rente og periode konsistente først.']
+    ]
+  };
+  pages.met1.examChecklist = [
+    ['Tidslinje', 'Tegn tidspunkt og plasser alle kontantstrømmer.', 'Start'],
+    ['Rente', 'Sjekk at rente og periode er i samme enhet.', 'Kontroll'],
+    ['Svar', 'Oppgi enhet, tidspunkt og avrunding.', 'Svar']
+  ];
 
   pages.kom1.compendium = [
     ['Rapportstruktur', 'Problemstilling, metode, analyse, drøfting og konklusjon som fast skriveflyt.', 'Skriving'],
@@ -225,6 +291,25 @@
     accent: '#e8bc68',
     rows: [['Problemstilling', 'Må være presis nok til å styre hele teksten.', '82%'], ['Drøfting', 'Knytte funn, kilder og egne vurderinger sammen.', '76%'], ['Språk og struktur', 'Flyt, presisjon og akademisk tone.', '72%']]
   };
+  pages.kom1.canvasMaterials = [
+    ['Rapport og presentasjoner funnet', 'KOM1 individuell presentasjon, gruppepresentasjon og strømprisrapport finnes lokalt.', 'Innlevering'],
+    ['Forelesningsmateriell funnet', 'KOM1 Forelesning 5 og annen skrive-/presentasjonsstøtte ligger i Downloads.', 'Forelesning'],
+    ['Prioritert import', 'Bygg maler for problemstilling, analyseavsnitt, konklusjon og muntlig overgang.', 'Neste']
+  ];
+  pages.kom1.practice = {
+    label: 'Skrivegrep',
+    intro: 'Hurtigkortene trener formuleringer og struktur før innlevering.',
+    cards: [
+      ['Problemstilling', 'Hva gjør en problemstilling god?', 'Den må avgrense og styre analysen.', 'Den er konkret, undersøkbar og tydelig nok til at hvert avsnitt kan kobles tilbake til den.', 'Ikke gjør den bredere enn datagrunnlaget.'],
+      ['Avsnitt', 'Hva bør første setning i et analyseavsnitt gjøre?', 'Leseren skal vite poenget raskt.', 'Den bør introdusere hovedpoenget før belegg, forklaring og kobling til problemstillingen.', 'Påstand før bevis.'],
+      ['Konklusjon', 'Hva skal konklusjonen ikke gjøre?', 'Unngå nytt stoff.', 'Den skal ikke introdusere nye hovedargumenter, men samle funn og svare på problemstillingen.', 'Kort og presist.']
+    ]
+  };
+  pages.kom1.examChecklist = [
+    ['Før skriving', 'Avgrens problemstilling og lag disposisjon.', 'Start'],
+    ['Underveis', 'Koble hvert avsnitt til ett tydelig poeng.', 'Flyt'],
+    ['Før levering', 'Sjekk kilder, overgangssetninger og konklusjon.', 'Slutt']
+  ];
 
   pages.ret1a.compendium = [
     ['Juridisk metode', 'Problemstilling, rettsregel, vilkår, subsumsjon og konklusjon.', 'Metode'],
@@ -237,6 +322,25 @@
     accent: '#3b82f6',
     rows: [['Avtalerett', 'Hyppige vilkår og faktumsnær drøfting.', '84%'], ['Pengekrav', 'Betaling, mislighold og renter krever ryddig metode.', '74%'], ['Selskapsrett', 'Sammenligning av ansvar, kapital og ledelse.', '66%']]
   };
+  pages.ret1a.canvasMaterials = [
+    ['Eksamener funnet', 'Lokale filer dekker RET1/RET1A-eksamen fra 2016 til 2025, inkludert H2023, H2024 og V2025.', 'Eksamener'],
+    ['Teorioppgaver funnet', 'Selskapsrett, pengekrav og gjeldsinndrivelse ligger som egne teorioppgaver.', 'Teori'],
+    ['Manduksjon funnet', 'Eksamensmanduksjon og øvingsoppgaver gir struktur for disposisjon og metodekort.', 'Metode']
+  ];
+  pages.ret1a.practice = {
+    label: 'Juridisk metode',
+    intro: 'Korte kort for å holde drøftingen ryddig.',
+    cards: [
+      ['Metode', 'Hva er rekkefølgen i en juridisk drøftelse?', 'Ikke hopp rett til konklusjon.', 'Problemstilling, rettsregel, vilkår, subsumsjon og konklusjon.', 'Bruk faktum aktivt i subsumsjonen.'],
+      ['Vilkår', 'Hvordan håndterer du flere vilkår?', 'Ta ett om gangen.', 'Identifiser hvert vilkår, drøft om faktum oppfyller det, og konkluder delvis før helhetskonklusjonen.', 'Struktur gir poeng.'],
+      ['Konklusjon', 'Hva kjennetegner en god konklusjon?', 'Kort, presis og forankret.', 'Den svarer direkte på problemstillingen og viser virkningen av drøftingen.', 'Unngå nye momenter.']
+    ]
+  };
+  pages.ret1a.examChecklist = [
+    ['Problemstilling', 'Formuler hva partene er uenige om.', 'Start'],
+    ['Rettsregel', 'Få med vilkår og unntak før faktum.', 'Regel'],
+    ['Subsumsjon', 'Bruk konkrete fakta, ikke generelle påstander.', 'Poeng']
+  ];
 
   pages.bed1.compendium = [
     ['Kalkyler', 'Bidrag, selvkost, ABC og relevante kostnader samlet i beslutningsflyt.', 'Kjerne'],
@@ -253,6 +357,25 @@
     ['Dekningsbidrag', 'Pris minus variable kostnader, total DB og DB-grad.', 'BED1'],
     ['Selvkost', 'Direkte kostnader pluss fordelte indirekte kostnader.', 'BED1'],
     ['Nåverdi', 'Diskonter kontantstrømmer og sammenlign med investering.', 'BED1']
+  ];
+  pages.bed1.canvasMaterials = [
+    ['Eksamener funnet', 'BED1-mappen inneholder eksamener fra 2016-2025, inkludert flere gjentak og duplikatsett.', 'Eksamener'],
+    ['Forelesninger funnet', 'Canvas-/OneDrive-filer dekker kostnadsforløp, KRV, prising, investering, kalkulasjon, resultat og budsjettering.', 'Forelesning'],
+    ['Gruppeøving funnet', 'Gruppeøving uke 39 gir konkrete kalkyleoppgaver for første kortpakke.', 'Oppgaver']
+  ];
+  pages.bed1.practice = {
+    label: 'Regnegrep',
+    intro: 'Korte kort for de vanligste beslutnings- og kalkylegrepene.',
+    cards: [
+      ['Dekningsbidrag', 'Hva er dekningsbidrag per enhet?', 'Start med salgspris.', 'Salgspris per enhet minus variable kostnader per enhet.', 'Brukes til lønnsomhet og kapasitetsvalg.'],
+      ['Relevante kostnader', 'Hva gjør en kostnad relevant i en beslutning?', 'Den må påvirkes av valget.', 'Den er fremtidig og forskjellig mellom alternativene.', 'Historiske kostnader er ofte irrelevante.'],
+      ['Nåverdi', 'Hva betyr positiv netto nåverdi?', 'Sammenlign verdi og investering.', 'Prosjektet forventes å skape verdi utover avkastningskravet.', 'Husk å bruke riktig kalkulasjonsrente.']
+    ]
+  };
+  pages.bed1.examChecklist = [
+    ['Oppgavetype', 'Avgjør om det er kalkyle, resultat, investering eller budsjett.', 'Start'],
+    ['Tallflyt', 'Sett opp tabell før du regner detaljer.', 'Orden'],
+    ['Beslutning', 'Skriv anbefaling og økonomisk begrunnelse.', 'Svar']
   ];
 
   window.HaugnesSubjectPages = {

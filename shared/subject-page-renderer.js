@@ -47,8 +47,18 @@
     html += listCard('Kompendium og oversikt', page.compendium, 'hf-compendium-card', 'kompendium');
     html += examRadarHtml(page.examRadar);
     html += listCard('Formelark og metoder', page.formulaSheet, 'hf-formula-card', 'formelark');
+    html += listCard('Canvas- og filgrunnlag', page.canvasMaterials, 'hf-material-card', 'materiale');
+    html += practiceHtml(page.practice);
+    html += listCard('Eksamenssjekkliste', page.examChecklist, 'hf-checklist-card', 'sjekkliste');
     if (!html) return '';
     return '<div id="learningSuite" class="hf-learning-suite">' + html + '</div>';
+  }
+
+  function practiceHtml(practice) {
+    if (!practice || !practice.cards || !practice.cards.length) return '';
+    return '<section class="hf-info-card hf-practice-card" id="hurtigkort"><div class="hf-card-heading"><h3>Hurtigkort</h3><span>' + esc(practice.label || 'Øving') + '</span></div><p class="hf-card-copy">' + esc(practice.intro || '') + '</p><div class="hf-practice-list">' + practice.cards.map(function (card, index) {
+      return '<button class="hf-flip-card" type="button" data-card-index="' + index + '"><span class="hf-card-tag">' + esc(card[0]) + '</span><strong>' + esc(card[1]) + '</strong><em>' + esc(card[2]) + '</em><small>Trykk for fasit</small></button>';
+    }).join('') + '</div></section>';
   }
 
   function addLearningTabs(page) {
@@ -57,6 +67,24 @@
     if (page.compendium) tabbar.insertAdjacentHTML('beforeend', '<a href="#kompendium">Kompendium</a>');
     if (page.examRadar) tabbar.insertAdjacentHTML('beforeend', '<a href="#eksamensradar">Eksamensradar</a>');
     if (page.formulaSheet) tabbar.insertAdjacentHTML('beforeend', '<a href="#formelark">Formelark</a>');
+    if (page.canvasMaterials) tabbar.insertAdjacentHTML('beforeend', '<a href="#materiale">Materiale</a>');
+    if (page.practice) tabbar.insertAdjacentHTML('beforeend', '<a href="#hurtigkort">Hurtigkort</a>');
+    if (page.examChecklist) tabbar.insertAdjacentHTML('beforeend', '<a href="#sjekkliste">Sjekkliste</a>');
+  }
+
+  function bindPractice(page) {
+    if (!page.practice || !page.practice.cards) return;
+    document.querySelectorAll('.hf-flip-card').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var index = Number(button.getAttribute('data-card-index'));
+        var card = page.practice.cards[index];
+        if (!card) return;
+        var flipped = button.classList.toggle('is-flipped');
+        button.querySelector('strong').textContent = flipped ? card[3] : card[1];
+        button.querySelector('em').textContent = flipped ? card[4] : card[2];
+        button.querySelector('small').textContent = flipped ? 'Trykk for spørsmål' : 'Trykk for fasit';
+      });
+    });
   }
 
   function render(page) {
@@ -77,9 +105,10 @@
     if (planHost && page.sources && !document.getElementById('sourceCard')) {
       planHost.insertAdjacentHTML('afterend', '<div id="sourceCard" class="hf-source-grid">' + sourcesHtml(page.sources) + '</div>');
     }
-    if (planHost && (page.compendium || page.examRadar || page.formulaSheet) && !document.getElementById('learningSuite')) {
+    if (planHost && (page.compendium || page.examRadar || page.formulaSheet || page.canvasMaterials || page.practice || page.examChecklist) && !document.getElementById('learningSuite')) {
       var sourceCard = document.getElementById('sourceCard');
       (sourceCard || planHost).insertAdjacentHTML('afterend', learningHtml(page));
+      bindPractice(page);
     }
     document.getElementById('nextStep').textContent = page.next;
     document.getElementById('progressValue').textContent = page.progress;
