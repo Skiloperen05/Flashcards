@@ -49,6 +49,11 @@
       ],
       topics: [['Markedslikevekt', 'Kjerne i faget', '82%'], ['Elastisitet', 'Regne- og tolkningsoppgaver', '70%'], ['Velferdsanalyse', 'Modellforståelse', '62%']],
       plan: [['1. Læringsmål', 'Oversett hvert mål til spørsmål', '20 min'], ['2. Modellkort', 'Tegn og forklar standardskift', '25 min'], ['3. Oppgaver', 'Koble kort til eksamensstil', '30 min']],
+      sources: [
+        ['Læringsmålene.docx', 'Etikk, standard økonomisk teori, atferdsøkonomi, markedssvikt, samfunnsansvar, ulikhet og tillit.'],
+        ['Kompendium SAM1A', 'Brukes som kilde for å bygge kort rundt sentrale begreper, modeller og diskusjonsoppgaver.'],
+        ['Neste import', 'Første kortpakke bør starte med fullkomne markeder, kilder til markedssvikt og etisk teori.']
+      ],
       next: 'Importere læringsmål og kompendium til kortpakker.'
     },
     met1: {
@@ -66,6 +71,11 @@
       ],
       topics: [['Nåverdi', 'Svært sentralt', '88%'], ['Annuitet', 'Typisk eksamen', '76%'], ['Effektiv rente', 'Presis formelbruk', '66%']],
       plan: [['1. Formelvalg', 'Kjenn igjen oppgavetypen', '15 min'], ['2. NNV-oppgaver', 'Regn korte sett', '30 min'], ['3. Feilbank', 'Samle vanlige glipper', '10 min']],
+      sources: [
+        ['MET1 NNV og rente', 'Lokale oppgaver samler høst/vår-sett fra 2018-2023 og gir et naturlig grunnlag for regnedrill.'],
+        ['Python-notater', 'Små lokale regnefiler peker mot automatiserte fasit- og kontrolloppgaver senere.'],
+        ['Neste import', 'Lag først kort for NNV, sluttverdi, annuitet og effektiv rente.']
+      ],
       next: 'Bygge kort fra MET1 NNV- og renteoppgaver.'
     },
     kom1: {
@@ -83,6 +93,11 @@
       ],
       topics: [['Problemstilling', 'Må være skarp', '78%'], ['Rapportstruktur', 'Avgjørende for flyt', '74%'], ['Presentasjon', 'Muntlig levering', '63%']],
       plan: [['1. Struktur', 'Lag disposisjon før skriving', '20 min'], ['2. Belegg', 'Koble på kilder og data', '25 min'], ['3. Språk', 'Stram inn formuleringer', '15 min']],
+      sources: [
+        ['Strømprisrapport', 'Rapporten om NO2, Tyskland, NordLink, volatilitet og energimiks gir konkret skrive- og analysegrunnlag.'],
+        ['Presentasjoner', 'Individuell presentasjon og gruppeoppgave kan bli korte kort for muntlig struktur og slideflyt.'],
+        ['Neste import', 'Bygg skrivekort for problemstilling, analyseavsnitt, kildebruk og konklusjon.']
+      ],
       next: 'Lage skrivekort fra KOM1-innleveringene.'
     },
     ret1a: {
@@ -100,6 +115,11 @@
       ],
       topics: [['Avtalerett', 'Hyppig eksamenstema', '80%'], ['Pengekrav', 'Vilkårsdrøfting', '72%'], ['Selskapsrett', 'Teori og anvendelse', '62%']],
       plan: [['1. Rettsregel', 'Memorer vilkår og unntak', '20 min'], ['2. Subsumsjon', 'Bruk faktum aktivt', '30 min'], ['3. Konklusjon', 'Skriv presist og kort', '10 min']],
+      sources: [
+        ['Selskapsrett', 'Lokal teorioppgave sammenligner aksjeselskap og ansvarlig selskap med ansvar, kapital, ledelse, uttak og skatt.'],
+        ['Eksamensøving', 'Gamle eksamensfiler fra 2016-2025 gir et godt grunnlag for juridisk metode og disposisjon.'],
+        ['Neste import', 'Lag kort for vilkår, lovhjemler, subsumsjon og typiske delkonklusjoner.']
+      ],
       next: 'Strukturere RET1A-eksamensøving og teorioppgaver.'
     },
     bed1: {
@@ -117,6 +137,11 @@
       ],
       topics: [['Produktkalkulasjon', 'Svært eksamensnært', '84%'], ['Investering', 'Regning og vurdering', '73%'], ['Budsjettering', 'Helhetsforståelse', '65%']],
       plan: [['1. Begreper', 'Skill mellom kostnadstyper', '15 min'], ['2. Regnedrill', 'Løs korte standardoppgaver', '35 min'], ['3. Eksamen', 'Tren på gamle sett', '45 min']],
+      sources: [
+        ['Gruppeøving uke 39', 'Lokale notater dekker bidragskalkyle, selvkost, ABC-kalkyle, ledig kapasitet og dekningsbidrag.'],
+        ['Eksamensfiler', 'BED1-mappen har eksamener fra 2016-2025 og flere gruppeøvinger som kan sorteres etter tema.'],
+        ['Neste import', 'Start med kalkylekort og korte regnedriller før full eksamensbank bygges.']
+      ],
       next: 'Bygge BED1-kort fra eksamens- og gruppeøvingsfilene.'
     }
   };
