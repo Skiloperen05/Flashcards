@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Haugnes Flashcards">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#12366f"/>
+      <stop offset="1" stop-color="#061531"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffe39a"/>
+      <stop offset="1" stop-color="#dca43b"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000" flood-opacity=".38"/>
+    </filter>
+  </defs>
+  <rect width="256" height="256" rx="54" fill="url(#bg)"/>
+  <path d="M61 203c38 22 96 22 134 0" fill="none" stroke="url(#gold)" stroke-width="8" stroke-linecap="round" opacity=".9"/>
+  <g filter="url(#shadow)">
+    <rect x="75" y="45" width="107" height="150" rx="18" fill="#eaf1fb" opacity=".95" transform="rotate(-7 128 120)"/>
+    <rect x="88" y="37" width="107" height="150" rx="18" fill="#ffffff" stroke="#b8c8df" stroke-width="3" transform="rotate(6 142 112)"/>
+    <rect x="105" y="58" width="73" height="108" rx="11" fill="#0b244e" transform="rotate(6 142 112)"/>
+    <path d="M125 83v60M159 83v60M125 113h34" fill="none" stroke="#fff" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" transform="rotate(6 142 112)"/>
+    <path d="M113 160c20 15 49 15 69 0" fill="none" stroke="url(#gold)" stroke-width="8" stroke-linecap="round" transform="rotate(6 142 112)"/>
+  </g>
+</svg>
