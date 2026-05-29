@@ -2,7 +2,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>SAM2 oppgaveprioritering</title>
+<link rel="icon" href="../../assets/Flashcardslogo.png">
+<link rel="apple-touch-icon" href="../../assets/Flashcardslogo.png">
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../../shared/auth-guard.js"></script>
+<script>AuthGuard.requireAuth();</script>
 <style>
 :root{--ink:#172033;--muted:#64748b;--line:#fed7aa;--accent:#d97706;--dark:#0f172a;--bg:#fff7ed}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -191,7 +196,7 @@ main{max-width:1280px;margin:auto;padding:28px 24px 80px}
 </div>
 
 <header class="top">
-  <a class="brand" href="../../"><span class="mark">📚</span><span>StudieHub</span></a>
+  <a class="brand" href="../"><span class="mark logo-mark"></span><span>Haugnes</span></a>
   <div class="crumb"><a href="../../">Hjem</a> › <a href="../">SAM2</a> › Oppgaver</div>
 </header>
 

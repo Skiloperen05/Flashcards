@@ -156,5 +156,11 @@ MBTySx9LW/ci9d6KX3gnyRmJtU98tGUNQXobjb1TPTdIE9IDOP/bncbiTgIpqnTlGrA9kcoAk3h8u+Hj
     for(var i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
     return JSON.parse(pako.ungzip(bytes,{to:'string'}));
   }
-  window.SAM3_FLASHCARD_DECKS=unzipDecks(window.SAM3_FLASHCARDS_GZIP);
+  var fixed=(window.SAM3_FLASHCARDS_GZIP||'').replace('o7eksowow8ez','o7eksow8ez');
+  try{
+    window.SAM3_FLASHCARD_DECKS=unzipDecks(fixed);
+  }catch(e){
+    console.warn('SAM3 flashcarddata kunne ikke pakkes ut automatisk',e);
+    window.SAM3_FLASHCARD_DECKS=[];
+  }
 })();

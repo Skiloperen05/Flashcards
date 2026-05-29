@@ -10,7 +10,12 @@
     sam2: { code: 'SAM2', name: 'Mikroøkonomi', href: 'sam2/' },
     sam3: { code: 'SAM3', name: 'Makroøkonomi', href: 'sam3/' },
     met2: { code: 'MET2', name: 'Metode', href: 'met2/' },
-    mat10: { code: 'MAT10', name: 'Matematikk', href: 'mat10/' }
+    mat10: { code: 'MAT10', name: 'Matematikk', href: 'mat10/' },
+    sam1a: { code: 'SAM1A', name: 'Mikroøkonomi intro', href: 'sam1a/' },
+    met1: { code: 'MET1', name: 'Matematikk for økonomer', href: 'met1/' },
+    kom1: { code: 'KOM1', name: 'Kommunikasjon', href: 'kom1/' },
+    ret1a: { code: 'RET1A', name: 'Juridiske emner', href: 'ret1a/' },
+    bed1: { code: 'BED1', name: 'Bedriftsøkonomi', href: 'bed1/' }
   };
 
   function rootRelative(path) {
@@ -21,12 +26,12 @@
   function path() { return window.location.pathname.toLowerCase(); }
   function fileName() { return (window.location.pathname.split('/').pop() || 'index.html').toLowerCase(); }
   function isUserPage() { return /\/user\//.test(path()); }
-  function isLoginOrFrontPage() { return /\/(login\.html|index\.html)?$/.test(path()) && !/(ret14|sol1|sam2|sam3|met2|mat10|flashcards|user)\//.test(path()); }
+  function isLoginOrFrontPage() { return /\/(login\.html|index\.html)?$/.test(path()) && !/(ret14|sol1|sam2|sam3|met2|mat10|sam1a|met1|kom1|ret1a|bed1|flashcards|user)\//.test(path()); }
   function esc(value) { return String(value || '').replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
 
   function subjectFromUrl() {
     var p = path();
-    var match = p.match(/\/(ret14|sol1|sam2|sam3|met2|mat10)\//);
+    var match = p.match(/\/(ret14|sol1|sam2|sam3|met2|mat10|sam1a|met1|kom1|ret1a|bed1)\//);
     if (match && SUBJECTS[match[1]]) return SUBJECTS[match[1]];
     if (/\/flashcards\//.test(p)) {
       var subject = (new URLSearchParams(window.location.search).get('subject') || '').toLowerCase();
@@ -55,7 +60,8 @@
 
   function shouldRun() {
     if (isUserPage() || isLoginOrFrontPage()) return false;
-    return /(ret14|sol1|sam2|sam3|met2|mat10|flashcards)\//.test(path());
+    if (document.body && document.body.classList.contains('haugnes-app')) return false;
+    return /(ret14|sol1|sam2|sam3|met2|mat10|sam1a|met1|kom1|ret1a|bed1|flashcards)\//.test(path());
   }
 
   function injectStyles() {
