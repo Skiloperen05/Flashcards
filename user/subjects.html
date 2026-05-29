@@ -40,7 +40,7 @@
       <button class="filter-btn active" type="button" data-filter="all">Alle</button>
       <button class="filter-btn" type="button" data-filter="active">Aktive</button>
       <button class="filter-btn" type="button" data-filter="exam">Eksamen</button>
-      <button class="filter-btn" type="button" data-filter="build">Under bygging</button>
+      <button class="filter-btn" type="button" data-filter="build">Planlagt</button>
     </div>
   </div>
   <div class="subjects-grid" id="subjectsGrid"></div>
@@ -54,6 +54,7 @@ var currentFilter = 'all';
 
 function cardHtml(s){
   var isDisabled = s.path === '#';
+  var hasFlashcards = s.flashcards && s.flashcards !== '#';
   var description = s.description || s.desc || '';
   return '<article class="subject-card" data-status="'+s.status+'" data-search="'+(s.code+' '+s.name+' '+description).toLowerCase()+'" style="--accent:'+s.accent+';--p:'+s.progress+'%">'
     + '<div class="subject-top"><div class="subject-icon">'+(s.emblem?'<img class="emblem-img" src="'+s.emblem+'" alt="" onerror="this.remove()">':'')+'<span class="emblem-fallback">'+s.icon+'</span></div><span class="status '+(s.status==='active'?'active':'')+'">'+s.statusText+'</span></div>'
@@ -61,7 +62,7 @@ function cardHtml(s){
     + '<p class="subject-desc">'+description+'</p>'
     + '<div class="metrics"><div class="metric"><b>'+s.decks+'</b><span>Deck</span></div><div class="metric"><b>'+s.cards+'</b><span>Innhold</span></div><div class="metric"><b>'+s.tools+'</b><span>Verktøy</span></div></div>'
     + '<div class="progress-labels"><span>Progresjon</span><b>'+s.progress+'%</b></div><div class="bar"><i></i></div>'
-    + '<div class="card-actions"><a class="card-btn primary" href="'+s.path+'">'+(isDisabled?'Kommer senere':'Åpne fag')+'</a><a class="card-btn secondary" href="'+s.flashcards+'">Start øving</a></div>'
+    + '<div class="card-actions"><a class="card-btn primary" href="'+s.path+'">'+(isDisabled?'Kommer senere':'Åpne fag')+'</a><a class="card-btn secondary" href="'+(hasFlashcards?s.flashcards:s.path)+'">'+(hasFlashcards?'Start øving':'Se plan')+'</a></div>'
     + '</article>';
 }
 
