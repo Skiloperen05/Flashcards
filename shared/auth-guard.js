@@ -205,6 +205,7 @@
     }
     addStylesheet('haugnes-ret14-eksamen-css', rootRelative('shared/haugnes-ret14-eksamen.css'));
     document.title = 'RET14 Eksamensradar — Haugnes';
+    if (document.querySelector('.hf-tool-header')) return;
     if (!document.querySelector('.haugnes-tool-nav')) {
       var nav = document.createElement('nav');
       nav.className = 'haugnes-tool-nav';
