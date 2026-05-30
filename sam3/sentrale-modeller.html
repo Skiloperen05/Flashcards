@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SAM3 — Sentrale modeller</title>
+<link rel="icon" href="../assets/haugnes-logo-mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/haugnes-theme.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../shared/auth-guard.js"></script>
+<script>AuthGuard.requireAuth();</script>
+<style>
+body{margin:0;background:#06142d;color:#eef4ff;font-family:Lora,Georgia,serif}.shell{width:min(1180px,calc(100% - 32px));margin:0 auto}.top{display:flex;align-items:center;justify-content:space-between;padding:22px 0}.brand{display:flex;align-items:center;gap:12px;color:#fff;text-decoration:none;font-weight:900}.brand i{width:42px;height:42px;border-radius:14px;background:#0b244e url('../assets/haugnes-logo-mark.svg') center/cover no-repeat;border:1px solid rgba(255,255,255,.14)}.crumb{display:flex;gap:10px;align-items:center;color:#9fb0d0;font-size:13px}.crumb a{color:#dbe7ff;text-decoration:none}.hero{padding:34px 0 22px}.kicker{display:inline-flex;padding:7px 11px;border-radius:999px;background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.28);color:#fecaca;font-size:12px;font-weight:900}.hero h1{margin:16px 0 10px;font-size:clamp(34px,5vw,68px);line-height:.96;letter-spacing:0}.hero p{max-width:780px;margin:0;color:#b8c7e2;font-size:17px;line-height:1.65}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 15px;border-radius:12px;text-decoration:none;font-weight:900;font-size:13px}.btn.primary{background:#ef4444;color:#fff}.btn.secondary{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);color:#dbe7ff}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:22px 0 34px}.card{display:flex;flex-direction:column;gap:12px;min-height:250px;padding:20px;border-radius:18px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.11);text-decoration:none;color:inherit}.card:hover{border-color:rgba(239,68,68,.4);transform:translateY(-1px)}.tag{width:max-content;padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:#dbe7ff;font-size:11px;font-weight:900}.card h2{margin:0;color:#fff;font-size:21px}.card p{margin:0;color:#b8c7e2;font-size:14px;line-height:1.55;flex:1}.meta{display:flex;justify-content:space-between;gap:10px;color:#8fa5ca;font-size:12px;font-weight:900}.panel{margin:0 0 34px;padding:22px;border-radius:18px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1)}.panel h2{margin:0 0 14px;font-size:22px}.workflow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.step{padding:15px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09)}.step b{display:block;color:#fff;margin-bottom:6px}.step span{display:block;color:#aebddd;font-size:13px;line-height:1.5}.footer{padding:26px 0 40px;color:#8fa5ca}.footer a{color:#dbe7ff;text-decoration:none}@media(max-width:950px){.grid{grid-template-columns:1fr 1fr}.workflow{grid-template-columns:1fr 1fr}}@media(max-width:640px){.top{align-items:flex-start;gap:12px;flex-direction:column}.grid,.workflow{grid-template-columns:1fr}.hero h1{font-size:38px}}
+</style>
+</head>
+<body>
+<header class="shell top"><a class="brand" href="./"><i></i><span>Haugnes<br>Flashcards</span></a><nav class="crumb"><a href="../user/index.html">Dashboard</a><span>›</span><a href="./">SAM3</a><span>›</span><b>Sentrale modeller</b></nav></header>
+<section class="shell hero"><div class="kicker">SAM3 · modellbibliotek</div><h1>Sentrale modeller</h1><p>Et eget modellverktøy for makro: hver modell har egen fil med kjerneidé, ligninger, grafintuisjon, sjokk, eksamensbruk og vanlige feil.</p><div class="actions"><a class="btn primary" href="modeller/solow.html">Start med Solow</a><a class="btn secondary" href="flashcards.html?deck=d3">Øv flashcards</a><a class="btn secondary" href="formelquiz.html?deck=vekst">Formelquiz vekst</a></div></section>
+<main class="shell">
+<section class="grid" aria-label="Modeller">
+<a class="card" href="modeller/solow.html"><span class="tag">Vekst · lang sikt</span><h2>Solow-modellen</h2><p>Kapitalakkumulasjon, steady state, overgangsdynamikk, konvergens og hvorfor teknologi driver varig vekst i produksjon per arbeider.</p><div class="meta"><span>nivå vs vekst</span><span>åpne →</span></div></a>
+<a class="card" href="modeller/romer.html"><span class="tag">Endogen vekst</span><h2>Romer-modellen</h2><p>Ideer, ikke-rivalisering, FoU, kunnskapsspredning og hvorfor politikk og institusjoner kan påvirke langsiktig vekst.</p><div class="meta"><span>teknologi</span><span>åpne →</span></div></a>
+<a class="card" href="modeller/as-ad.html"><span class="tag">Kort sikt</span><h2>AS-AD-modellen</h2><p>Samlet etterspørsel og tilbud, inflasjon, produksjonsgap, forventninger og overgang fra kort til lang sikt.</p><div class="meta"><span>sjokk</span><span>åpne →</span></div></a>
+<a class="card" href="modeller/is-mp.html"><span class="tag">Etterspørsel</span><h2>IS-MP</h2><p>Realrente, etterspørsel, pengepolitikk og hvordan renteregelen stabiliserer økonomien ved ulike sjokk.</p><div class="meta"><span>rente</span><span>åpne →</span></div></a>
+<a class="card" href="modeller/phillips.html"><span class="tag">Inflasjon</span><h2>Phillipskurven</h2><p>Produksjonsgap, ledighet, inflasjonsforventninger og sentralbankens troverdighet.</p><div class="meta"><span>forventninger</span><span>åpne →</span></div></a>
+<a class="card" href="modeller/apen-okonomi.html"><span class="tag">Åpen økonomi</span><h2>Valuta og UIP</h2><p>Valutakurs, renteparitet, nettoeksport, kapitalbevegelser og importert inflasjon.</p><div class="meta"><span>kronekurs</span><span>åpne →</span></div></a>
+</section>
+<section class="panel"><h2>Slik bruker du modellfilene</h2><div class="workflow"><div class="step"><b>1. Kjerne</b><span>Les modellen som en mekanisme, ikke som en liste med begreper.</span></div><div class="step"><b>2. Figur</b><span>Tren på akser, kurver, likevekt og hva som skifter ved sjokk.</span></div><div class="step"><b>3. Eksamensbruk</b><span>Bruk modellen til å forklare årsak, virkning, overgang og politikkrespons.</span></div><div class="step"><b>4. Vanlige feil</b><span>Sjekk presisjonsfeilene før du skriver endelig svar.</span></div></div></section>
+</main>
+<footer class="shell footer"><a href="./">← Tilbake til SAM3</a></footer>
+</body>
+</html>
