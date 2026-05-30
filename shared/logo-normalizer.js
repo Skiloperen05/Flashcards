@@ -33,7 +33,9 @@
       '.brand-mark.hf-logo-normalized{width:54px!important;height:54px!important;border-radius:17px!important}',
       '.topbar .logo span:first-child.hf-logo-normalized,.hf-tool-logo.hf-logo-normalized,.haugnes-tool-logo.hf-logo-normalized{width:44px!important;height:44px!important;flex:0 0 44px!important;border-radius:14px!important}',
       '.card>.logo.hf-logo-normalized{width:116px!important;height:116px!important;border-radius:28px!important;margin:0 auto 14px!important}',
-      '.verify-icon.hf-logo-normalized{width:74px!important;height:74px!important;border-radius:20px!important;margin:0 auto 14px!important}'
+      '.verify-icon.hf-logo-normalized{width:74px!important;height:74px!important;border-radius:20px!important;margin:0 auto 14px!important}',
+      '.hf-models-card{border-color:rgba(239,68,68,.34)!important;background:linear-gradient(135deg,rgba(239,68,68,.13),rgba(47,98,255,.07))!important}',
+      '.hf-models-card .hf-tool-icon{background:rgba(239,68,68,.16)!important;color:#fecaca!important}'
     ].join('\n');
     document.head.appendChild(style);
   }
@@ -73,6 +75,27 @@
     });
   }
 
+  function injectSam3ModelsCard() {
+    var path = window.location.pathname;
+    if (!/\/sam3\/?(?:index\.html)?$/.test(path)) return;
+    if (document.querySelector('a[href="sentrale-modeller.html"]')) return;
+    var grid = document.querySelector('.hf-card-grid');
+    if (!grid) return;
+    var card = document.createElement('a');
+    card.className = 'hf-tool-card hf-models-card';
+    card.style.setProperty('--accent', '#ef4444');
+    card.href = 'sentrale-modeller.html';
+    card.innerHTML = '<div class="hf-tool-top"><div class="hf-tool-icon">◇</div><span class="hf-status">Nytt</span></div><div class="hf-tool-body"><h3>Sentrale modeller</h3><p>Egne modellfiler for Solow, Romer, AS-AD, IS-MP, Phillipskurven og åpen økonomi.</p><div class="hf-tool-foot"><span>Åpne →</span><span>modellbibliotek</span></div></div>';
+    grid.insertBefore(card, grid.firstChild);
+    var tabs = document.querySelector('.hf-tabbar');
+    if (tabs && !tabs.querySelector('a[href="sentrale-modeller.html"]')) {
+      var tab = document.createElement('a');
+      tab.href = 'sentrale-modeller.html';
+      tab.textContent = 'Sentrale modeller';
+      tabs.appendChild(tab);
+    }
+  }
+
   function run() {
     injectStyles();
     normalizeLinks();
@@ -96,6 +119,7 @@
     document.querySelectorAll('footer,.footer').forEach(function (footer) {
       if (/StudieHub/i.test(footer.textContent)) footer.textContent = footer.textContent.replace(/StudieHub/gi, 'Haugnes Flashcards');
     });
+    injectSam3ModelsCard();
   }
 
   function schedule() {
