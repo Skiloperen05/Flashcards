@@ -85,7 +85,7 @@
     card.className = 'hf-tool-card hf-models-card';
     card.style.setProperty('--accent', '#ef4444');
     card.href = 'sentrale-modeller.html';
-    card.innerHTML = '<div class="hf-tool-top"><div class="hf-tool-icon">◇</div><span class="hf-status">Nytt</span></div><div class="hf-tool-body"><h3>Sentrale modeller</h3><p>Egne modellfiler for Solow, Romer, AS-AD, IS-MP, Phillipskurven og åpen økonomi.</p><div class="hf-tool-foot"><span>Åpne →</span><span>modellbibliotek</span></div></div>';
+    card.innerHTML = '<div class="hf-tool-top"><div class="hf-tool-icon">◇</div><span class="hf-status">Nytt</span></div><div class="hf-tool-body"><h3>Sentrale modeller</h3><p>PDF-modellark for Solow, Romer, AS-AD, IS-MP, Phillipskurven og åpen økonomi.</p><div class="hf-tool-foot"><span>PDF-ark →</span><span>modellbibliotek</span></div></div>';
     grid.insertBefore(card, grid.firstChild);
     var tabs = document.querySelector('.hf-tabbar');
     if (tabs && !tabs.querySelector('a[href="sentrale-modeller.html"]')) {
