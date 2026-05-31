@@ -7,11 +7,11 @@
       accent: '#0891b2',
       progress: '34%',
       lead: 'Formler, regneteknikk og eksamensnære økter for funksjoner, derivasjon, integrasjon, matriser og lineære systemer.',
-      stats: [['6', 'kjerneområder'], ['26+', 'eksamenssett'], ['Plan', 'flashcards']],
+      stats: [['6', 'kjerneområder'], ['26+', 'eksamenssett'], ['Aktiv', 'flashcards']],
       tools: [
-        ['∫', 'Formelbank', 'Samlet oversikt over standardresultater, derivasjonsregler, integraler, matriser og typiske eksamensgrep.', 'Bygges fra MAT10-mappen', '#', '#0891b2'],
-        ['ƒ', 'Regneøkter', 'Temabaserte økter for grenseverdier, optimering, lineær algebra og flervariabel analyse.', 'Klargjøres', '#', '#2f62ff'],
-        ['✓', 'Eksamensdrill', 'Prioritert trening fra tidligere oppgaver og løsningsmønstre.', 'Planlagt', '#', '#e8bc68']
+        ['∫', 'Formelbank', 'Samlet oversikt over standardresultater, derivasjonsregler, integraler, matriser og typiske eksamensgrep.', 'Klar', '#formelark', '#0891b2'],
+        ['ƒ', 'Regneøkter', 'Temabaserte økter for grenseverdier, optimering, lineær algebra og flervariabel analyse.', 'Oppgaver', '../user/oppgavebank.html?subject=MAT10', '#2f62ff'],
+        ['✓', 'Flashcards', 'Korte metodekort for optimering, integrasjon, matriser og økonomisk tolkning.', 'Kort', '../flashcards/?subject=mat10', '#e8bc68']
       ],
       topics: [['Derivasjon og optimering', 'Høy eksamensverdi', '86%'], ['Integrasjon og areal', 'Mange standardgrep', '72%'], ['Matriser og lineære systemer', 'Krever repetisjon', '68%']],
       plan: [['1. Formelbank', 'Start med regler og typiske fallgruver', '15 min'], ['2. Regneøkter', 'Løs korte oppgaver med fasitnær tenkning', '30 min'], ['3. Eksamensdrill', 'Prioriter gamle eksamensoppgaver', '45 min']],
@@ -24,11 +24,11 @@
       accent: '#7c3aed',
       progress: '28%',
       lead: 'Et samlet område for metodeforståelse, hypotesetesting, regresjon og tolkning av statistiske resultater.',
-      stats: [['5', 'temaområder'], ['12+', 'oppgavetyper'], ['Plan', 'quiz']],
+      stats: [['5', 'temaområder'], ['12+', 'oppgavetyper'], ['Aktiv', 'oppgaver']],
       tools: [
-        ['Σ', 'Begrepskort', 'Forklaringer av estimator, forventning, varians, konfidensintervall, p-verdi og signifikans.', 'Klargjøres', '#', '#7c3aed'],
-        ['β', 'Regresjonslab', 'Tolkning av koeffisienter, modellvalg, forutsetninger og vanlige eksamensspørsmål.', 'Planlagt', '#', '#2f62ff'],
-        ['?', 'Hypotesetest-quiz', 'Korte beslutningsoppgaver der du velger test, formulerer hypoteser og tolker resultat.', 'Planlagt', '#', '#e8bc68']
+        ['Σ', 'Begrepskort', 'Forklaringer av estimator, forventning, varians, konfidensintervall, p-verdi og signifikans.', 'Kort', '../flashcards/?subject=met2', '#7c3aed'],
+        ['β', 'Regresjonslab', 'Tolkning av koeffisienter, modellvalg, forutsetninger og vanlige eksamensspørsmål.', 'Oppgaver', '../user/oppgavebank.html?subject=MET2&topic=Regresjon', '#2f62ff'],
+        ['?', 'Hypotesetest-quiz', 'Korte beslutningsoppgaver der du velger test, formulerer hypoteser og tolker resultat.', 'Oppgaver', '../user/oppgavebank.html?subject=MET2&topic=Hypotesetest', '#e8bc68']
       ],
       topics: [['Hypotesetesting', 'Må sitte presist', '78%'], ['Konfidensintervall', 'Standard eksamensgrep', '70%'], ['Regresjon og tolkning', 'Høy praktisk verdi', '64%']],
       plan: [['1. Begrepskort', 'Få presisjon i språk og definisjoner', '20 min'], ['2. Testvalg', 'Velg riktig metode ut fra oppgavetekst', '25 min'], ['3. Regresjon', 'Tolk output og begrunn modellvalg', '35 min']],
@@ -43,9 +43,9 @@
       lead: 'Grunnleggende samfunnsøkonomi med etterspørsel, tilbud, markedslikevekt, velferd og sentrale modeller fra læringsmålene.',
       stats: [['1', 'kompendium'], ['1', 'læringsmålfil'], ['Ny', 'fagside']],
       tools: [
-        ['↗', 'Læringsmål', 'Gjør læringsmålene om til konkrete øvingspunkter og korte forklaringskort.', 'Basert på lokal fil', '#', '#f09828'],
-        ['◒', 'Modellkort', 'Markedskryss, elastisitet, overskudd og skift forklart som kort og minioppgaver.', 'Planlagt', '#', '#2f62ff'],
-        ['✓', 'Eksamenstrening', 'Prioritert oppgavetrening når gamle oppgaver og egne notater er strukturert.', 'Planlagt', '#', '#e8bc68']
+        ['↗', 'Læringsmål', 'Gjør læringsmålene om til konkrete øvingspunkter og korte forklaringskort.', 'Kort', '../flashcards/?subject=sam1a', '#f09828'],
+        ['◒', 'Modellkort', 'Markedskryss, elastisitet, overskudd og skift forklart som kort og minioppgaver.', 'Hurtigkort', '#hurtigkort', '#2f62ff'],
+        ['✓', 'Eksamenstrening', 'Prioritert oppgavetrening fra tidligere oppgaver og typiske grunnkursgrep.', 'Oppgaver', '../user/oppgavebank.html?subject=SAM1A', '#e8bc68']
       ],
       topics: [['Markedslikevekt', 'Kjerne i faget', '82%'], ['Elastisitet', 'Regne- og tolkningsoppgaver', '70%'], ['Velferdsanalyse', 'Modellforståelse', '62%']],
       plan: [['1. Læringsmål', 'Oversett hvert mål til spørsmål', '20 min'], ['2. Modellkort', 'Tegn og forklar standardskift', '25 min'], ['3. Oppgaver', 'Koble kort til eksamensstil', '30 min']],
@@ -65,9 +65,9 @@
       lead: 'Nåverdi, rente, rekker og grunnleggende metode samlet i en rolig treningsside for første semester.',
       stats: [['2', 'lokale filer'], ['NNV', 'hovedtema'], ['Ny', 'fagside']],
       tools: [
-        ['%', 'Rente og NNV', 'Kort og oppgaver for nåverdi, sluttverdi, annuitet og effektiv rente.', 'Basert på lokale notater', '#', '#06b6d4'],
-        ['∑', 'Rekker', 'Geometriske rekker og økonomiske anvendelser med små regnedriller.', 'Planlagt', '#', '#2f62ff'],
-        ['✓', 'Metodekort', 'Fremgangsmåter som hjelper deg å velge riktig formel raskt.', 'Planlagt', '#', '#e8bc68']
+        ['%', 'Rente og NNV', 'Kort og oppgaver for nåverdi, sluttverdi, annuitet og effektiv rente.', 'Kort', '../flashcards/?subject=met1', '#06b6d4'],
+        ['∑', 'Rekker', 'Geometriske rekker og økonomiske anvendelser med små regnedriller.', 'Metoder', '#formelark', '#2f62ff'],
+        ['✓', 'Metodekort', 'Fremgangsmåter som hjelper deg å velge riktig formel raskt.', 'Oppgaver', '../user/oppgavebank.html?subject=MET1', '#e8bc68']
       ],
       topics: [['Nåverdi', 'Svært sentralt', '88%'], ['Annuitet', 'Typisk eksamen', '76%'], ['Effektiv rente', 'Presis formelbruk', '66%']],
       plan: [['1. Formelvalg', 'Kjenn igjen oppgavetypen', '15 min'], ['2. NNV-oppgaver', 'Regn korte sett', '30 min'], ['3. Feilbank', 'Samle vanlige glipper', '10 min']],
@@ -87,9 +87,9 @@
       lead: 'Skriving, presentasjon og akademisk kommunikasjon basert på rapporter, refleksjonstekster og presentasjonsmateriale.',
       stats: [['7', 'lokale dokumenter'], ['Rapport', 'hovedprodukt'], ['Ny', 'fagside']],
       tools: [
-        ['✎', 'Rapportmal', 'Strukturer problemstilling, analyse, drøfting og konklusjon fra tidligere innleveringer.', 'Klargjøres', '#', '#e8bc68'],
-        ['▣', 'Presentasjon', 'Kort for dramaturgi, slideflyt og muntlig formidling.', 'Planlagt', '#', '#2f62ff'],
-        ['✓', 'Språkdrill', 'Presise formuleringer, overganger og akademisk tone.', 'Planlagt', '#', '#20b97a']
+        ['✎', 'Rapportmal', 'Strukturer problemstilling, analyse, drøfting og konklusjon fra tidligere innleveringer.', 'Kompendium', '#kompendium', '#e8bc68'],
+        ['▣', 'Presentasjon', 'Kort for dramaturgi, slideflyt og muntlig formidling.', 'Kort', '../flashcards/?subject=kom1', '#2f62ff'],
+        ['✓', 'Språkdrill', 'Presise formuleringer, overganger og akademisk tone.', 'Oppgaver', '../user/oppgavebank.html?subject=KOM1', '#20b97a']
       ],
       topics: [['Problemstilling', 'Må være skarp', '78%'], ['Rapportstruktur', 'Avgjørende for flyt', '74%'], ['Presentasjon', 'Muntlig levering', '63%']],
       plan: [['1. Struktur', 'Lag disposisjon før skriving', '20 min'], ['2. Belegg', 'Koble på kilder og data', '25 min'], ['3. Språk', 'Stram inn formuleringer', '15 min']],
@@ -109,9 +109,9 @@
       lead: 'Avtalerett, selskapsrett, pengekrav og eksamensdrøfting samlet i én fagside med juridisk metode i sentrum.',
       stats: [['14+', 'eksamensfiler'], ['4', 'teoriområder'], ['Ny', 'fagside']],
       tools: [
-        ['§', 'Juridisk metode', 'Tren på vilkår, rettsregel, subsumsjon og konklusjon i korte kort.', 'Klargjøres', '#', '#3b82f6'],
-        ['⚖', 'Eksamensbank', 'Gamle eksamensoppgaver sortert etter tema og drøftingstype.', 'Planlagt', '#', '#e8bc68'],
-        ['✓', 'Teorioppgaver', 'Selskapsrett, pengekrav og gjeldsinndrivelse gjort om til øvingskort.', 'Planlagt', '#', '#20b97a']
+        ['§', 'Juridisk metode', 'Tren på vilkår, rettsregel, subsumsjon og konklusjon i korte kort.', 'Kort', '../flashcards/?subject=ret1a', '#3b82f6'],
+        ['⚖', 'Eksamensbank', 'Gamle eksamensoppgaver sortert etter tema og drøftingstype.', 'Oppgaver', '../user/oppgavebank.html?subject=RET1A', '#e8bc68'],
+        ['✓', 'Teorioppgaver', 'Selskapsrett, pengekrav og gjeldsinndrivelse gjort om til øvingskort.', 'Hurtigkort', '#hurtigkort', '#20b97a']
       ],
       topics: [['Avtalerett', 'Hyppig eksamenstema', '80%'], ['Pengekrav', 'Vilkårsdrøfting', '72%'], ['Selskapsrett', 'Teori og anvendelse', '62%']],
       plan: [['1. Rettsregel', 'Memorer vilkår og unntak', '20 min'], ['2. Subsumsjon', 'Bruk faktum aktivt', '30 min'], ['3. Konklusjon', 'Skriv presist og kort', '10 min']],
@@ -131,9 +131,9 @@
       lead: 'Resultat, kalkyler, investering, budsjettering og eksamensoppgaver samlet som første-semester økonomitrening.',
       stats: [['18+', 'eksamensfiler'], ['4', 'gruppeøvinger'], ['Ny', 'fagside']],
       tools: [
-        ['◆', 'Kalkylekort', 'Produktkalkulasjon, relevante kostnader og kostnadsforløp som korte beslutningskort.', 'Klargjøres', '#', '#20b97a'],
-        ['▥', 'Regnskapsdrill', 'Resultatberegning, beholdningsendringer og nøkkelforståelse.', 'Planlagt', '#', '#2f62ff'],
-        ['✓', 'Eksamensløp', 'Gamle eksamener fra lokale filer prioritert etter tema.', 'Planlagt', '#', '#e8bc68']
+        ['◆', 'Kalkylekort', 'Produktkalkulasjon, relevante kostnader og kostnadsforløp som korte beslutningskort.', 'Kort', '../flashcards/?subject=bed1', '#20b97a'],
+        ['▥', 'Regnskapsdrill', 'Resultatberegning, beholdningsendringer og nøkkelforståelse.', 'Oppgaver', '../user/oppgavebank.html?subject=BED1', '#2f62ff'],
+        ['✓', 'Eksamensløp', 'Gamle eksamener fra lokale filer prioritert etter tema.', 'Radar', '#eksamensradar', '#e8bc68']
       ],
       topics: [['Produktkalkulasjon', 'Svært eksamensnært', '84%'], ['Investering', 'Regning og vurdering', '73%'], ['Budsjettering', 'Helhetsforståelse', '65%']],
       plan: [['1. Begreper', 'Skill mellom kostnadstyper', '15 min'], ['2. Regnedrill', 'Løs korte standardoppgaver', '35 min'], ['3. Eksamen', 'Tren på gamle sett', '45 min']],

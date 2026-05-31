@@ -80,10 +80,10 @@
       statusText: 'MVP',
       progress: 28,
       decks: '5',
-      cards: 'Plan',
+      cards: '5+',
       tools: '3',
       path: '../met2/',
-      flashcards: '#',
+      flashcards: '../flashcards/?subject=met2',
       description: 'Metode, statistikk, hypotesetesting, konfidensintervall og regresjon.'
     },
     {
@@ -97,10 +97,10 @@
       statusText: 'MVP',
       progress: 34,
       decks: '6',
-      cards: 'Plan',
+      cards: '4+',
       tools: '3',
       path: '../mat10/',
-      flashcards: '#',
+      flashcards: '../flashcards/?subject=mat10',
       description: 'Analyse, lineær algebra, formler, regneøkter og eksamensdrill.'
     },
     {
@@ -113,10 +113,10 @@
       statusText: 'Ny',
       progress: 18,
       decks: '3',
-      cards: 'Plan',
+      cards: '4+',
       tools: '3',
       path: '../sam1a/',
-      flashcards: '#',
+      flashcards: '../flashcards/?subject=sam1a',
       description: 'Første semester: læringsmål, markedslikevekt, elastisitet og velferdsanalyse.'
     },
     {
@@ -129,10 +129,10 @@
       statusText: 'Ny',
       progress: 22,
       decks: '3',
-      cards: 'Plan',
+      cards: '4+',
       tools: '3',
       path: '../met1/',
-      flashcards: '#',
+      flashcards: '../flashcards/?subject=met1',
       description: 'Første semester: rente, nåverdi, annuitet, rekker og formelvalg.'
     },
     {
@@ -145,10 +145,10 @@
       statusText: 'Ny',
       progress: 20,
       decks: '3',
-      cards: 'Plan',
+      cards: '4+',
       tools: '3',
       path: '../kom1/',
-      flashcards: '#',
+      flashcards: '../flashcards/?subject=kom1',
       description: 'Første semester: rapportstruktur, presentasjon, akademisk språk og refleksjon.'
     },
     {
@@ -161,10 +161,10 @@
       statusText: 'Eksamen',
       progress: 24,
       decks: '4',
-      cards: 'Plan',
+      cards: '4+',
       tools: '3',
       path: '../ret1a/',
-      flashcards: '#',
+      flashcards: '../flashcards/?subject=ret1a',
       description: 'Første semester: avtalerett, selskapsrett, pengekrav og juridisk metode.'
     },
     {
@@ -177,10 +177,10 @@
       statusText: 'Eksamen',
       progress: 26,
       decks: '4',
-      cards: 'Plan',
+      cards: '4+',
       tools: '3',
       path: '../bed1/',
-      flashcards: '#',
+      flashcards: '../flashcards/?subject=bed1',
       description: 'Første semester: kalkyler, resultat, investering, budsjettering og eksamenstrening.'
     }
   ];

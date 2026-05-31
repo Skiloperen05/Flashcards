@@ -73,16 +73,22 @@
 <script src="../shared/haugnes-study-data.js"></script>
 <script>
 var tasks = window.HaugnesStudyData.questions();
-var activeTopic = '';
+var params = new URLSearchParams(window.location.search);
+var initialSubject = (params.get('subject') || '').toUpperCase();
+var initialTopic = params.get('topic') || '';
+var initialDifficulty = params.get('difficulty') || '';
+var activeTopic = initialTopic;
 function esc(s){return String(s||'').replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]})}
 function subjects(){return window.HaugnesSubjects ? window.HaugnesSubjects.getAll().map(function(s){return s.code}) : Array.from(new Set(tasks.map(function(t){return t.subject})))}
 function fillFilters(){
   var selected=subjects();
   var sel=document.getElementById('subjectFilter');
   sel.innerHTML='<option value="">Alle fag</option>'+selected.map(function(code){return '<option>'+esc(code)+'</option>'}).join('');
+  if(initialSubject&&selected.indexOf(initialSubject)!==-1){sel.value=initialSubject;initialSubject=''}
+  if(initialDifficulty){document.getElementById('difficultyFilter').value=initialDifficulty;initialDifficulty=''}
   var topics=Array.from(new Set(tasks.map(function(t){return t.topic}))).sort();
   document.getElementById('topicChips').innerHTML='<button class="chip active" data-topic="">Alle</button>'+topics.map(function(t){return '<button class="chip" data-topic="'+esc(t)+'">'+esc(t)+'</button>'}).join('');
-  document.querySelectorAll('[data-topic]').forEach(function(btn){btn.onclick=function(){activeTopic=btn.dataset.topic;document.querySelectorAll('[data-topic]').forEach(function(b){b.classList.toggle('active',b===btn)});render()}});
+  document.querySelectorAll('[data-topic]').forEach(function(btn){btn.classList.toggle('active',(btn.dataset.topic||'')===activeTopic);btn.onclick=function(){activeTopic=btn.dataset.topic;document.querySelectorAll('[data-topic]').forEach(function(b){b.classList.toggle('active',b===btn)});render()}});
 }
 function filtered(){
   var q=document.getElementById('taskSearch').value.toLowerCase();
