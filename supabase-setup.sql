@@ -73,6 +73,13 @@ begin
       alter table public.profiles add column is_admin boolean not null default false;
     end if;
 
+    if not exists (
+      select 1 from information_schema.columns
+      where table_schema = 'public' and table_name = 'profiles' and column_name = 'is_friend'
+    ) then
+      alter table public.profiles add column is_friend boolean not null default false;
+    end if;
+
     drop policy if exists "Alle kan lese profiler" on public.profiles;
     drop policy if exists "Bruker kan lese sin profil" on public.profiles;
     create policy "Bruker kan lese sin profil"
@@ -96,6 +103,8 @@ do $$
 begin
   if to_regclass('public.profiles') is not null then
     update public.profiles set is_admin = true where lower(email) = 'birkhaugnes@gmail.com';
+    update public.profiles set is_friend = true
+      where lower(email) in ('alekmoe@gmail.com', 'filipwold@gmail.com', 'sondreskaland99@gmail.com');
   end if;
 end $$;
 
@@ -151,7 +160,8 @@ as $$
   )
   or exists (
     select 1 from public.profiles
-    where id = (select auth.uid()) and is_admin = true
+    where id = (select auth.uid())
+      and (is_admin = true or is_friend = true)
   );
 $$;
 

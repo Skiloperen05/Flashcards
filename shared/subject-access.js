@@ -41,7 +41,8 @@
 
   function entitledSet() {
     if (window.HaugnesEntitlements && typeof window.HaugnesEntitlements.isLoaded === 'function' && window.HaugnesEntitlements.isLoaded()) {
-      if (window.HaugnesEntitlements.isAdmin && window.HaugnesEntitlements.isAdmin()) return null; // null = unrestricted
+      // Admins (not in preview mode) and friends bypass the paywall entirely.
+      if (window.HaugnesEntitlements.hasBypass && window.HaugnesEntitlements.hasBypass()) return null;
       return window.HaugnesEntitlements.getCodes();
     }
     return null;
