@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SAM3 — Flashcards</title>
+<link rel="icon" href="../assets/Flashcardslogo.png">
+<link rel="apple-touch-icon" href="../assets/Flashcardslogo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -11,13 +13,13 @@
 <script>try{AuthGuard.requireAuth().then(s=>{if(!s)return;if(AuthGuard.bindUserInfo)AuthGuard.bindUserInfo('userEmailLabel','userChip','userAvatar');});}catch(e){console.warn(e);}</script>
 <link rel="stylesheet" href="flashcards.css?v=p5-1">
 <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
-<script src="sam3-flashcards-data.js?v=p5-2"></script>
+<script src="sam3-flashcards-data.js?v=2026-05-30-solow-base"></script>
 <script src="sam3-topics.js?v=p5-1"></script>
 <script src="sam3-progress.js?v=p5-1"></script>
 <script src="sam3-math.js?v=p5-1"></script>
 </head>
 <body>
-<header class="topbar"><a class="logo" href="../"><span>📚</span><span>StudieHub</span></a><nav class="crumb"><a href="./">SAM3</a><span class="crumb-sep">›</span><b>Flashcards</b></nav></header>
+<header class="topbar"><a class="logo" href="../"><span class="logo-mark"></span><span>Haugnes</span></a><nav class="crumb"><a href="./">SAM3</a><span class="crumb-sep">›</span><b>Flashcards</b></nav></header>
 <section class="hero"><div class="hero-inner"><div class="badge">SAM3 · Makroøkonomi</div><h1>Flashcards for modeller, teorier og formler</h1><p>Eksamensrettede dekk laget fra SAM3-kompendiet og forelesningsstrukturen. Rate hvert kort for å huske hva som sitter — bruk «Bare svake» for å gå tilbake til kortene du bommet på.</p></div></section>
 <main class="main">
 <section class="panel" id="hub">
@@ -72,7 +74,7 @@
 </section>
 <div class="summary" id="summary"></div>
 </main>
-<footer class="footer">StudieHub · SAM3 flashcards</footer>
+<footer class="footer">Haugnes Flashcards · SAM3 flashcards</footer>
 <script src="flashcards-app.js?v=p5-1"></script>
 </body>
 </html>

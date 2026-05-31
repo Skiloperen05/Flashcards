@@ -20,7 +20,7 @@
 var SB_URL='https://qnwjhheoekpqqqhevztw.supabase.co';
 var SB_KEY=['eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9','eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6In'+'Fud2poaGVvZWtwcXFxaGV2enR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MTg1NTEsImV4cCI6MjA5MjI5NDU1MX0','gHBvEH-L-zyiW4UnsCxOY2q-HmeIYe5OHSvxhFt7PQ8'].join('.');
 var sb=window.supabase.createClient(SB_URL,SB_KEY);var pendingVerificationEmail='',resendCooldownSeconds=0,resendTimer=null;
-function getNextUrl(){var p=new URLSearchParams(window.location.search).get('next');return(p&&p.startsWith('http'))?p:'./'}
+function getNextUrl(){var p=new URLSearchParams(window.location.search).get('next');if(!p)return'./';try{var u=new URL(p,window.location.origin);return u.origin===window.location.origin?u.href:'./'}catch(e){return'./'}}
 sb.auth.getSession().then(function(r){if(r.data&&r.data.session)window.location.replace(getNextUrl())});
 sb.auth.onAuthStateChange(function(event,session){if(event==='SIGNED_IN'&&session)window.location.replace(getNextUrl())});
 function switchTab(tab){resetResendState();document.getElementById('formLogin').style.display=tab==='login'?'block':'none';document.getElementById('formRegister').style.display=tab==='register'?'block':'none';document.getElementById('verifyMsg').style.display='none';document.getElementById('tabBar').style.display='flex';document.getElementById('tabLogin').classList.toggle('active',tab==='login');document.getElementById('tabRegister').classList.toggle('active',tab==='register')}
