@@ -1,6 +1,7 @@
 (function (window, document) {
   var SHARED_SCRIPT = '../shared/auth-guard.js';
   var MODEL_PAGES = {
+    'butikk.html': { label: 'Butikk', icon: '⚷', subtitle: 'Lås opp fag (gratis i beta)' },
     'a-besvarelser.html': { label: 'A-besvarelser', icon: '▤', subtitle: 'Se sterke tidligere svar' },
     'oppgavebank.html': { label: 'Oppgavebank', icon: '▣', subtitle: 'Øv på eksamensnære oppgaver' },
     'notater.html': { label: 'Notater', icon: '▥', subtitle: 'Samle egne fagnotater' },
