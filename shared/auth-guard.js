@@ -20,7 +20,7 @@
     }
 
     var path = window.location.pathname;
-    var match = path.match(/^(.*?)(?:ret14|sol1|sam2|sam3|mat10|met2|flashcards|user)\//);
+    var match = path.match(/^(.*?)(?:ret14|sol1|sam2|sam3|mat10|met2|sam1a|met1|kom1|ret1a|bed1|flashcards|user)\//);
     return match ? match[1] : path.replace(/[^/]*$/, '');
   }
 
@@ -75,6 +75,7 @@
 
   function applyBranding() {
     var logoPath = getAssetPath('Flashcardslogo.png');
+    if (/StudieHub/i.test(document.title)) document.title = document.title.replace(/StudieHub/gi, 'Haugnes Flashcards');
     addIconLink('icon', logoPath);
     addIconLink('shortcut icon', logoPath);
     addIconLink('apple-touch-icon', logoPath);
@@ -97,6 +98,10 @@
         var label = brand.querySelector('span:last-child');
         if (label) label.textContent = 'Haugnes';
       }
+    });
+
+    document.querySelectorAll('.footer,footer').forEach(function (footer) {
+      if (/^StudieHub\s*·/i.test(footer.textContent.trim())) footer.textContent = footer.textContent.replace(/StudieHub/gi, 'Haugnes Flashcards');
     });
   }
 
@@ -181,6 +186,10 @@
   }
 
   function ensureToolBackdrop() {
+    if (!document.body) {
+      window.setTimeout(ensureToolBackdrop, 0);
+      return;
+    }
     if (!document.querySelector('.haugnes-tool-backdrop')) {
       var backdrop = document.createElement('div');
       backdrop.className = 'haugnes-tool-backdrop';
@@ -190,8 +199,13 @@
 
   function enhanceRet14ExamPage() {
     if (!isRet14ExamPage()) return;
+    if (!document.body) {
+      window.setTimeout(enhanceRet14ExamPage, 0);
+      return;
+    }
     addStylesheet('haugnes-ret14-eksamen-css', rootRelative('shared/haugnes-ret14-eksamen.css'));
     document.title = 'RET14 Eksamensradar — Haugnes';
+    if (document.querySelector('.hf-tool-header')) return;
     if (!document.querySelector('.haugnes-tool-nav')) {
       var nav = document.createElement('nav');
       nav.className = 'haugnes-tool-nav';
@@ -231,8 +245,57 @@
     });
   }
 
+  function loadGlobalPolish() {
+    addScript('haugnes-logo-normalizer-js', rootRelative('shared/logo-normalizer.js'), function () {
+      if (window.HaugnesLogoNormalizer && typeof window.HaugnesLogoNormalizer.run === 'function') window.HaugnesLogoNormalizer.run();
+    });
+    addScript('haugnes-tool-header-js', rootRelative('shared/tool-header.js'), function () {
+      if (window.HaugnesToolHeader && typeof window.HaugnesToolHeader.run === 'function') window.HaugnesToolHeader.run();
+    });
+  }
+
+  function installHtmlSafetyGuards() {
+    if (window.__haugnesHtmlSafetyGuardsInstalled) return;
+    window.__haugnesHtmlSafetyGuardsInstalled = true;
+
+    var descriptor = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
+    if (!descriptor || typeof descriptor.set !== 'function' || typeof DOMParser === 'undefined') return;
+    var originalSetter = descriptor.set;
+
+    function isUnsafeUrl(value) {
+      return /^\s*(?:javascript|data):/i.test(String(value || ''));
+    }
+
+    function sanitizeHtml(html) {
+      var doc = new DOMParser().parseFromString(String(html), 'text/html');
+      doc.querySelectorAll('script,iframe,object,embed,meta,base,link[rel="import"]').forEach(function (node) {
+        node.remove();
+      });
+      doc.body.querySelectorAll('*').forEach(function (node) {
+        Array.prototype.slice.call(node.attributes).forEach(function (attr) {
+          var name = attr.name.toLowerCase();
+          var value = attr.value || '';
+          if (name.indexOf('on') === 0) node.removeAttribute(attr.name);
+          else if ((name === 'href' || name === 'src' || name === 'xlink:href') && isUnsafeUrl(value)) node.removeAttribute(attr.name);
+          else if (name === 'style' && /(?:expression\s*\(|url\s*\(|javascript:|@import)/i.test(value)) node.removeAttribute(attr.name);
+        });
+      });
+      return doc.body.innerHTML;
+    }
+
+    Object.defineProperty(Element.prototype, 'innerHTML', {
+      configurable: descriptor.configurable,
+      enumerable: descriptor.enumerable,
+      get: descriptor.get,
+      set: function (value) {
+        originalSetter.call(this, sanitizeHtml(value));
+      }
+    });
+  }
+
   function enhancePages() {
     applyBranding();
+    loadGlobalPolish();
     enhanceFlashcardsPage();
     enhanceRet14QuizPage();
     enhanceRet14ExamPage();
@@ -240,6 +303,7 @@
     enhanceUserAreaPages();
   }
 
+  installHtmlSafetyGuards();
   normalizeFlashcardsRoute();
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', enhancePages);
@@ -271,8 +335,18 @@
     document.documentElement.style.visibility = '';
   }
 
+  function isLocalDevBypass() {
+    return /^(localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname) && new URLSearchParams(window.location.search).get('dev') === '1';
+  }
+
   function requireAuth() {
     document.documentElement.style.visibility = 'hidden';
+    if (isLocalDevBypass()) {
+      session = { user: { email: 'dev@student.local' } };
+      reveal();
+      enhancePages();
+      return Promise.resolve(session);
+    }
     try {
       return getClient().auth.getSession().then(function (result) {
         session = result.data && result.data.session;

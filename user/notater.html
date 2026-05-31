@@ -1,1 +1,106 @@
-<!DOCTYPE html><html lang="no"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Notater — Haugnes Flashcards</title><link rel="icon" href="../assets/haugnes-logo-mark.svg"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"><link rel="stylesheet" href="../shared/haugnes-model-pages.css"></head><body><div class="app"><aside class="sidebar"><a class="brand" href="../index.html"><span class="logo-mark"></span><span><span class="brand-title">Haugnes</span><span class="brand-sub">Flashcards</span></span></a><nav class="nav"><a class="nav-link" href="index.html"><span class="nav-ico">⌂</span>Hjem</a><a class="nav-link" href="subjects.html"><span class="nav-ico">▦</span>Mine fag</a><a class="nav-link" href="../ret14/eksamen/"><span class="nav-ico">◈</span>Eksamensanalyse</a><a class="nav-link" href="a-besvarelser.html"><span class="nav-ico">▤</span>A-besvarelser</a><a class="nav-link" href="oppgavebank.html"><span class="nav-ico">▣</span>Oppgavebank</a><a class="nav-link active" href="notater.html"><span class="nav-ico">▥</span>Notater</a><a class="nav-link" href="studieplan.html"><span class="nav-ico">☷</span>Studieplan</a><a class="nav-link" href="settings.html"><span class="nav-ico">⚙</span>Innstillinger</a></nav><div class="side-bottom"><div class="mini-card"><div class="mini-label">Notater</div><div class="mini-number">10 <span>aktive</span></div><div class="mini-bar"><i></i></div></div><div class="user-mini"><div class="avatar" id="sideAvatar">?</div><div><strong id="sideName">Bruker</strong><span>NHH-student</span></div></div></div></aside><main class="main"><div class="mobile-top"><a class="brand" href="../index.html"><span class="logo-mark"></span><span><span class="brand-title">Haugnes</span><span class="brand-sub">Flashcards</span></span></a><button class="icon-btn" onclick="handleLogout()">⎋</button></div><header class="topline"><div class="hello"><div class="breadcrumb"><a href="index.html">Dashboard</a><span>›</span><span>Notater</span></div><h1>Notater</h1><p>Samle fagnotater, eksempler og egne eksamensformuleringer.</p></div><div class="top-actions"><div class="search-mini">⌕ Søk</div><button class="icon-btn">＋</button><div class="avatar-top"><div class="avatar" id="topAvatar">?</div><span id="topName">Bruker</span></div></div></header><section class="hero-panel"><div class="hero-inner"><div><div class="kicker">Egne notater · Pensum</div><h2 class="hero-title">Skriv smartere <span>fagnotater</span>.</h2><p class="hero-copy">Dette er et visuelt skall for notatsiden. Senere kobler vi til lagring, emneknagger og automatisk kobling mot flashcards.</p></div><div class="hero-stats"><div class="hero-stat"><b>10</b><span>notater</span></div><div class="hero-stat"><b>4</b><span>fag</span></div><div class="hero-stat"><b>31</b><span>temaer</span></div></div></div></section><div class="workspace"><section class="split"><aside class="panel"><h2 class="panel-title">Mine notater</h2><div class="note-list"><div class="note-tab active"><strong>Skatteplikt</strong><span>RET14 · sist endret i dag</span></div><div class="note-tab"><strong>Fradragsrett</strong><span>RET14 · juridisk metode</span></div><div class="note-tab"><strong>IS-MP modellen</strong><span>SAM3 · graf og intuisjon</span></div><div class="note-tab"><strong>Ledelse og motivasjon</strong><span>SOL1 · teorioversikt</span></div><div class="note-tab"><strong>Markedssvikt</strong><span>SAM2 · figurer</span></div></div><a class="primary-btn" href="#">+ Nytt notat</a></aside><article class="editor"><div class="kicker">RET14</div><h2>Skatteplikt</h2><p>Et godt notat bør skille tydelig mellom hovedregel, vilkår, unntak og anvendelse på faktum.</p><ul><li>Start med rettslig utgangspunkt.</li><li>Drøft hvert vilkår separat.</li><li>Avslutt med en kort delkonklusjon.</li><li>Bruk samme struktur som i A-besvarelsene.</li></ul></article></section><aside class="panel"><h2 class="panel-title">Forslag</h2><div class="list"><div class="list-item"><span class="rank">1</span><div><strong>Lag flashcards</strong><span>Fra nøkkelbegreper i notatet</span></div><span class="tag">Snart</span></div><div class="list-item"><span class="rank">2</span><div><strong>Koble til tema</strong><span>Fradrag, mva, aksjer</span></div><span class="tag">RET14</span></div><div class="list-item"><span class="rank">3</span><div><strong>Repeter</strong><span>Sett notat i studieplan</span></div><span class="tag">Plan</span></div></div></aside></div></main></div><script src="auth-guard.js"></script><script>function nameFromEmail(e){var n=(e||'student').split('@')[0];return n.charAt(0).toUpperCase()+n.slice(1)}window.onUserAuthorized=function(s){var n=nameFromEmail(s&&s.user&&s.user.email),i=n.charAt(0);['sideName','topName'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=n});['sideAvatar','topAvatar'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=i})}</script></body></html>
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Notater — Haugnes Flashcards</title>
+<link rel="icon" type="image/png" href="../assets/Flashcardslogo.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/haugnes-model-pages.css">
+<style>
+.note-tab{cursor:pointer}
+.note-tab small{display:block;color:#6f86ad;font-size:10px;margin-top:6px}
+.note-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.note-actions .primary-btn,.note-actions button{border:0;cursor:pointer}
+.editor input,.editor textarea,.editor select{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.055);color:#fff;border-radius:14px;padding:12px 13px;margin-bottom:10px;font-size:14px;outline:0}
+.editor textarea{min-height:260px;resize:vertical;line-height:1.6}
+.editor label{display:block;color:#91a5c8;font-size:12px;font-weight:850;margin:10px 0 6px;text-transform:uppercase;letter-spacing:.06em}
+.secondary-btn{height:36px;padding:0 12px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid var(--line)!important;color:#dce6f7;font-size:12px;font-weight:900}
+.danger-btn{height:36px;padding:0 12px;border-radius:12px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.28)!important;color:#fecaca;font-size:12px;font-weight:900}
+.note-meta-row{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}.note-meta-row span{font-size:11px;color:#cbd7ef;background:rgba(255,255,255,.055);border:1px solid var(--line);border-radius:999px;padding:5px 8px}
+.empty-state{padding:20px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.045);color:#c2cee4}
+</style>
+</head>
+<body data-hf-notes-enhanced="1">
+<div class="app">
+  <aside class="sidebar">
+    <a class="brand" href="../index.html"><span class="logo-mark"></span><span><span class="brand-title">Haugnes</span><span class="brand-sub">Flashcards</span></span></a>
+    <nav class="nav">
+      <a class="nav-link" href="index.html"><span class="nav-ico">⌂</span>Hjem</a>
+      <a class="nav-link" href="subjects.html"><span class="nav-ico">▦</span>Mine fag</a>
+      <a class="nav-link" href="../ret14/eksamen/"><span class="nav-ico">◈</span>Eksamensanalyse</a>
+      <a class="nav-link" href="a-besvarelser.html"><span class="nav-ico">▤</span>A-besvarelser</a>
+      <a class="nav-link" href="oppgavebank.html"><span class="nav-ico">▣</span>Oppgavebank</a>
+      <a class="nav-link active" href="notater.html"><span class="nav-ico">▥</span>Notater</a>
+      <a class="nav-link" href="studieplan.html"><span class="nav-ico">☷</span>Studieplan</a>
+      <a class="nav-link" href="settings.html"><span class="nav-ico">⚙</span>Innstillinger</a>
+    </nav>
+    <div class="side-bottom">
+      <div class="mini-card"><div class="mini-label">Notater</div><div class="mini-number" id="noteCount">0 <span>aktive</span></div><div class="mini-bar"><i></i></div></div>
+      <div class="user-mini"><div class="avatar" id="sideAvatar">?</div><div><strong id="sideName">Bruker</strong><span>NHH-student</span></div></div>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="mobile-top"><a class="brand" href="../index.html"><span class="logo-mark"></span><span><span class="brand-title">Haugnes</span><span class="brand-sub">Flashcards</span></span></a><button class="icon-btn" onclick="handleLogout()">⎋</button></div>
+    <header class="topline">
+      <div class="hello"><div class="breadcrumb"><a href="index.html">Dashboard</a><span>›</span><span>Notater</span></div><h1>Notater</h1><p>Samle fagnotater, eksempler og egne eksamensformuleringer.</p></div>
+      <div class="top-actions"><button class="icon-btn" id="topNewNote">＋</button><div class="avatar-top"><div class="avatar" id="topAvatar">?</div><span id="topName">Bruker</span></div></div>
+    </header>
+    <section class="hero-panel">
+      <div class="hero-inner">
+        <div><div class="kicker">Egne notater · Pensum</div><h2 class="hero-title">Hold orden på <span>notatene</span>.</h2><p class="hero-copy">Notatene lagres lokalt i nettleseren, kan filtreres på fag, redigeres direkte og organiseres med emneknagger.</p></div>
+        <div class="hero-stats"><div class="hero-stat"><b id="statNotes">0</b><span>notater</span></div><div class="hero-stat"><b id="statSubjects">0</b><span>fag</span></div><div class="hero-stat"><b id="statEdited">0</b><span>endret i dag</span></div></div>
+      </div>
+    </section>
+    <div class="workspace">
+      <section class="split">
+        <aside class="panel">
+          <h2 class="panel-title">Mine notater</h2>
+          <div class="toolbar" style="display:grid">
+            <div class="select-wrap"><select id="subjectFilter"></select></div>
+            <label class="searchbar"><span>⌕</span><input id="noteSearch" placeholder="Søk i notater..."></label>
+          </div>
+          <div class="note-list" id="noteList"></div>
+          <button class="primary-btn" id="newNoteBtn" type="button">+ Nytt notat</button>
+        </aside>
+        <article class="editor" id="editor"></article>
+      </section>
+      <aside class="panel">
+        <h2 class="panel-title">Organisering</h2>
+        <div class="list" id="tagList"></div>
+      </aside>
+    </div>
+  </main>
+</div>
+<script src="auth-guard.js"></script>
+<script src="../shared/subject-meta.js"></script>
+<script src="../shared/haugnes-study-data.js"></script>
+<script>
+var STORAGE='hf_notes_v2';
+var notes=loadNotes();
+var currentId=notes[0]&&notes[0].id;
+function esc(s){return String(s||'').replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]})}
+function today(){return new Date().toISOString().slice(0,10)}
+function loadNotes(){try{var saved=JSON.parse(localStorage.getItem(STORAGE)||'null');if(Array.isArray(saved)&&saved.length)return saved}catch(e){}return window.HaugnesStudyData.notes().map(function(n){n.updated=today();return n})}
+function saveNotes(){localStorage.setItem(STORAGE,JSON.stringify(notes))}
+function subjects(){var codes=window.HaugnesSubjects?window.HaugnesSubjects.getAll().map(function(s){return s.code}):[];notes.forEach(function(n){if(codes.indexOf(n.subject)===-1)codes.push(n.subject)});return codes}
+function fillSubjectFilter(){var sel=document.getElementById('subjectFilter');var current=sel.value;sel.innerHTML='<option value="">Alle fag</option>'+subjects().map(function(s){return '<option>'+esc(s)+'</option>'}).join('');sel.value=current}
+function filtered(){var q=document.getElementById('noteSearch').value.toLowerCase();var s=document.getElementById('subjectFilter').value;return notes.filter(function(n){var hay=[n.title,n.subject,n.tags,n.body].join(' ').toLowerCase();return(!q||hay.indexOf(q)!==-1)&&(!s||n.subject===s)})}
+function renderList(){var data=filtered();var list=document.getElementById('noteList');list.innerHTML=data.length?data.map(function(n){return '<div class="note-tab '+(n.id===currentId?'active':'')+'" data-id="'+esc(n.id)+'"><strong>'+esc(n.title||'Uten tittel')+'</strong><span>'+esc(n.subject)+' · '+esc(n.tags||'uten tags')+'</span><small>Sist endret '+esc(n.updated||'ukjent')+'</small></div>'}).join(''):'<div class="empty-state">Ingen notater matcher filtrene.</div>';list.querySelectorAll('[data-id]').forEach(function(el){el.onclick=function(){currentId=el.dataset.id;render()}})}
+function renderEditor(){var n=notes.find(function(x){return x.id===currentId});var el=document.getElementById('editor');if(!n){el.innerHTML='<div class="empty-state">Velg eller opprett et notat.</div>';return}el.innerHTML='<label>Tittel</label><input id="editTitle" value="'+esc(n.title)+'"><label>Fag</label><select id="editSubject">'+subjects().map(function(s){return '<option '+(s===n.subject?'selected':'')+'>'+esc(s)+'</option>'}).join('')+'</select><label>Emneknagger</label><input id="editTags" value="'+esc(n.tags||'')+'" placeholder="f.eks. fradrag, metode"><label>Notat</label><textarea id="editBody">'+esc(n.body||'')+'</textarea><div class="note-meta-row"><span>Sist endret '+esc(n.updated||'ukjent')+'</span><span>'+esc((n.body||'').split(/\s+/).filter(Boolean).length)+' ord</span></div><div class="note-actions"><button class="primary-btn" id="saveNote" type="button">Lagre</button><button class="secondary-btn" id="duplicateNote" type="button">Dupliser</button><button class="danger-btn" id="deleteNote" type="button">Slett</button></div>';document.getElementById('saveNote').onclick=saveCurrent;document.getElementById('duplicateNote').onclick=duplicateCurrent;document.getElementById('deleteNote').onclick=deleteCurrent}
+function renderStats(){document.getElementById('statNotes').textContent=notes.length;var noteCount=document.getElementById('noteCount');if(noteCount)noteCount.innerHTML=notes.length+' <span>aktive</span>';document.getElementById('statSubjects').textContent=Array.from(new Set(notes.map(function(n){return n.subject}))).length;document.getElementById('statEdited').textContent=notes.filter(function(n){return n.updated===today()}).length;var tags={};notes.forEach(function(n){String(n.tags||'').split(',').map(function(t){return t.trim()}).filter(Boolean).forEach(function(t){tags[t]=(tags[t]||0)+1})});var rows=Object.keys(tags).sort(function(a,b){return tags[b]-tags[a]}).slice(0,6);document.getElementById('tagList').innerHTML=rows.length?rows.map(function(t,i){return '<div class="list-item"><span class="rank">'+(i+1)+'</span><div><strong>'+esc(t)+'</strong><span>'+tags[t]+' notat</span></div><span class="tag">tag</span></div>'}).join(''):'<div class="empty-state">Legg til tags for å organisere notatene.</div>'}
+function render(){fillSubjectFilter();renderList();renderEditor();renderStats()}
+function saveCurrent(){var n=notes.find(function(x){return x.id===currentId});if(!n)return;n.title=document.getElementById('editTitle').value.trim()||'Uten tittel';n.subject=document.getElementById('editSubject').value;n.tags=document.getElementById('editTags').value.trim();n.body=document.getElementById('editBody').value;n.updated=today();saveNotes();render()}
+function newNote(){var code=(subjects()[0]||'RET14');var n={id:'note-'+Date.now(),title:'Nytt notat',subject:code,tags:'',body:'',updated:today()};notes.unshift(n);currentId=n.id;saveNotes();render()}
+function duplicateCurrent(){var n=notes.find(function(x){return x.id===currentId});if(!n)return;var copy=JSON.parse(JSON.stringify(n));copy.id='note-'+Date.now();copy.title=n.title+' kopi';copy.updated=today();notes.unshift(copy);currentId=copy.id;saveNotes();render()}
+function deleteCurrent(){if(!confirm('Slette dette notatet?'))return;notes=notes.filter(function(n){return n.id!==currentId});currentId=notes[0]&&notes[0].id;saveNotes();render()}
+document.getElementById('newNoteBtn').onclick=newNote;document.getElementById('topNewNote').onclick=newNote;document.getElementById('noteSearch').addEventListener('input',render);document.getElementById('subjectFilter').addEventListener('change',render);
+function nameFromEmail(e){var n=(e||'student').split('@')[0];return n.charAt(0).toUpperCase()+n.slice(1)}
+window.onUserAuthorized=function(s){var n=nameFromEmail(s&&s.user&&s.user.email),i=n.charAt(0);['sideName','topName'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=n});['sideAvatar','topAvatar'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=i})}
+render();
+</script>
+</body>
+</html>

@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SAM3 — Formelquiz</title>
+<link rel="icon" href="../assets/Flashcardslogo.png">
+<link rel="apple-touch-icon" href="../assets/Flashcardslogo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../shared/auth-guard.js"></script>
 <script>try{AuthGuard.requireAuth().then(s=>{if(!s)return;if(AuthGuard.bindUserInfo)AuthGuard.bindUserInfo('userEmailLabel','userChip','userAvatar');});}catch(e){console.warn(e);}</script>
@@ -11,7 +13,7 @@
 <link rel="stylesheet" href="../shared/tool-header-overrides.css?v=1">
 </head>
 <body>
-<header class="topbar"><a class="logo" href="../"><span>📚</span><span>StudieHub</span></a><nav class="crumb"><a href="./">SAM3</a><span class="crumb-sep">›</span><b>Formelquiz</b></nav></header>
+<header class="topbar"><a class="logo" href="../"><span class="logo-mark"></span><span>Haugnes</span></a><nav class="crumb"><a href="./">SAM3</a><span class="crumb-sep">›</span><b>Formelquiz</b></nav></header>
 <section class="hero"><div class="hero-inner"><div class="badge">SAM3 · uten hjelpemidler</div><h1>Formelquiz</h1><p>Øv på de viktigste formlene ved å fylle inn manglende ledd. Åpne figuren for økonomisk intuisjon — eller øv på hva hvert symbol betyr.</p><div class="chips"><span class="chip">Fyll inn ruter</span><span class="chip">Vis figur</span><span class="chip">Symbolquiz</span><span class="chip">Avslutt runde når du vil</span></div></div></section>
 <main class="main"><section class="grid layout">
 <aside class="panel side"><h2>Oversikt</h2><div class="stats"><div class="stat"><b id="statTotal">0</b><span>Formler</span></div><div class="stat"><b id="statRight">0</b><span>Riktig</span></div><div class="stat"><b id="statPct">0%</b><span>Treff</span></div></div><div class="decklist" id="deckList"></div></aside>

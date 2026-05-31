@@ -76,15 +76,15 @@
       icon: 'Σ',
       emblem: '../assets/emblems/MET2.png',
       accent: '#7c3aed',
-      status: 'build',
-      statusText: 'Under bygging',
-      progress: 0,
-      decks: '—',
-      cards: '—',
-      tools: 'Plan',
-      path: '#',
+      status: 'active',
+      statusText: 'MVP',
+      progress: 28,
+      decks: '5',
+      cards: 'Plan',
+      tools: '3',
+      path: '../met2/',
       flashcards: '#',
-      description: 'Planlagt område for metode, statistikk og analyseoppgaver.'
+      description: 'Metode, statistikk, hypotesetesting, konfidensintervall og regresjon.'
     },
     {
       id: 'mat10',
@@ -93,15 +93,95 @@
       icon: '∫',
       emblem: '../assets/emblems/MAT10.png',
       accent: '#0891b2',
-      status: 'build',
-      statusText: 'Under bygging',
-      progress: 0,
-      decks: '—',
-      cards: '—',
-      tools: 'Plan',
-      path: '#',
+      status: 'active',
+      statusText: 'MVP',
+      progress: 34,
+      decks: '6',
+      cards: 'Plan',
+      tools: '3',
+      path: '../mat10/',
       flashcards: '#',
-      description: 'Planlagt område for matematikk, formler og regnetrening.'
+      description: 'Analyse, lineær algebra, formler, regneøkter og eksamensdrill.'
+    },
+    {
+      id: 'sam1a',
+      code: 'SAM1A',
+      name: 'Mikroøkonomi intro',
+      icon: '↗',
+      accent: '#f09828',
+      status: 'active',
+      statusText: 'Ny',
+      progress: 18,
+      decks: '3',
+      cards: 'Plan',
+      tools: '3',
+      path: '../sam1a/',
+      flashcards: '#',
+      description: 'Første semester: læringsmål, markedslikevekt, elastisitet og velferdsanalyse.'
+    },
+    {
+      id: 'met1',
+      code: 'MET1',
+      name: 'Matematikk for økonomer',
+      icon: '%',
+      accent: '#06b6d4',
+      status: 'active',
+      statusText: 'Ny',
+      progress: 22,
+      decks: '3',
+      cards: 'Plan',
+      tools: '3',
+      path: '../met1/',
+      flashcards: '#',
+      description: 'Første semester: rente, nåverdi, annuitet, rekker og formelvalg.'
+    },
+    {
+      id: 'kom1',
+      code: 'KOM1',
+      name: 'Kommunikasjon',
+      icon: '✎',
+      accent: '#e8bc68',
+      status: 'active',
+      statusText: 'Ny',
+      progress: 20,
+      decks: '3',
+      cards: 'Plan',
+      tools: '3',
+      path: '../kom1/',
+      flashcards: '#',
+      description: 'Første semester: rapportstruktur, presentasjon, akademisk språk og refleksjon.'
+    },
+    {
+      id: 'ret1a',
+      code: 'RET1A',
+      name: 'Juridiske emner',
+      icon: '§',
+      accent: '#3b82f6',
+      status: 'exam',
+      statusText: 'Eksamen',
+      progress: 24,
+      decks: '4',
+      cards: 'Plan',
+      tools: '3',
+      path: '../ret1a/',
+      flashcards: '#',
+      description: 'Første semester: avtalerett, selskapsrett, pengekrav og juridisk metode.'
+    },
+    {
+      id: 'bed1',
+      code: 'BED1',
+      name: 'Bedriftsøkonomi',
+      icon: '◆',
+      accent: '#20b97a',
+      status: 'exam',
+      statusText: 'Eksamen',
+      progress: 26,
+      decks: '4',
+      cards: 'Plan',
+      tools: '3',
+      path: '../bed1/',
+      flashcards: '#',
+      description: 'Første semester: kalkyler, resultat, investering, budsjettering og eksamenstrening.'
     }
   ];
 
@@ -119,7 +199,7 @@
       var parsed = raw ? JSON.parse(raw) : null;
       if (Array.isArray(parsed) && parsed.length) return parsed.map(code);
     } catch (e) {}
-    return ['RET14', 'SOL1', 'SAM2', 'SAM3'];
+    return ['RET14', 'SOL1', 'SAM2', 'SAM3', 'MET2', 'MAT10', 'SAM1A', 'MET1', 'KOM1', 'RET1A', 'BED1'];
   }
 
   function getCatalog() {
