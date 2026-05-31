@@ -30,10 +30,12 @@
       '.hf-logo-normalized>img{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;object-position:center center!important;padding:0!important;margin:0!important}',
       '.hf-logo-normalized>img.hf-logo-fallback{padding:8%!important}',
       '.sidebar .brand>.logo-mark.hf-logo-normalized,.mobile-top .brand>.logo-mark.hf-logo-normalized{width:46px!important;height:46px!important;flex:0 0 46px!important;border-radius:14px!important}',
+      '.hf-logo.hf-logo-normalized,.hf-brand>.hf-logo.hf-logo-normalized{width:46px!important;height:46px!important;flex:0 0 46px!important;border-radius:14px!important}',
       '.brand-mark.hf-logo-normalized{width:54px!important;height:54px!important;border-radius:17px!important}',
       '.topbar .logo span:first-child.hf-logo-normalized,.hf-tool-logo.hf-logo-normalized,.haugnes-tool-logo.hf-logo-normalized{width:44px!important;height:44px!important;flex:0 0 44px!important;border-radius:14px!important}',
       '.card>.logo.hf-logo-normalized{width:116px!important;height:116px!important;border-radius:28px!important;margin:0 auto 14px!important}',
       '.verify-icon.hf-logo-normalized{width:74px!important;height:74px!important;border-radius:20px!important;margin:0 auto 14px!important}',
+      '@media(max-width:560px){.hf-logo.hf-logo-normalized,.hf-brand>.hf-logo.hf-logo-normalized{width:40px!important;height:40px!important;flex-basis:40px!important}}',
       '.hf-models-card{border-color:rgba(239,68,68,.34)!important;background:linear-gradient(135deg,rgba(239,68,68,.13),rgba(47,98,255,.07))!important}',
       '.hf-models-card .hf-tool-icon{background:rgba(239,68,68,.16)!important;color:#fecaca!important}'
     ].join('\n');
@@ -102,6 +104,7 @@
     if (/StudieHub/i.test(document.title)) document.title = document.title.replace(/StudieHub/gi, 'Haugnes Flashcards');
     [
       '.logo-mark',
+      '.hf-logo',
       '.brand-mark',
       '.hf-tool-logo',
       '.haugnes-tool-logo',

@@ -1,21 +1,33 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
-  "Vary": "Origin",
-};
+const allowedOrigins = new Set([
+  "https://bhflashcards.no",
+  "https://www.bhflashcards.no",
+  "https://skiloperen05.github.io",
+  "http://localhost:3000",
+  "http://localhost:5173",
+]);
+
+function corsHeaders(req: Request) {
+  const origin = req.headers.get("origin") || "";
+  const allowedOrigin = allowedOrigins.has(origin) ? origin : "https://bhflashcards.no";
+  return {
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "GET, OPTIONS",
+    "Vary": "Origin",
+  };
+}
 
 const ALLOWED_HOST = "cloud.timeedit.net";
 const ALLOWED_PATH_PREFIX = "/nhh/web/student/";
 const MAX_BYTES = 2_000_000;
 
-function json(status: number, body: unknown) {
+function json(req: Request, status: number, body: unknown) {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
-      ...corsHeaders,
+      ...corsHeaders(req),
       "Content-Type": "application/json; charset=utf-8",
       "Cache-Control": "no-store",
     },
@@ -79,11 +91,11 @@ async function limitedText(response: Response) {
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers: corsHeaders });
+    return new Response(null, { status: 204, headers: corsHeaders(req) });
   }
 
   if (req.method !== "GET") {
-    return json(405, { error: "Method not allowed" });
+    return json(req, 405, { error: "Method not allowed" });
   }
 
   let target: URL;
@@ -91,7 +103,7 @@ Deno.serve(async (req: Request) => {
     const reqUrl = new URL(req.url);
     target = validateTarget(reqUrl.searchParams.get("url"));
   } catch (error) {
-    return json(400, { error: error instanceof Error ? error.message : String(error) });
+    return json(req, 400, { error: error instanceof Error ? error.message : String(error) });
   }
 
   try {
@@ -108,13 +120,13 @@ Deno.serve(async (req: Request) => {
     return new Response(body, {
       status: upstream.status,
       headers: {
-        ...corsHeaders,
+        ...corsHeaders(req),
         "Content-Type": allowedContentType(upstream.headers.get("content-type")),
         "Cache-Control": upstream.ok ? "public, max-age=900, stale-while-revalidate=3600" : "no-store",
       },
     });
   } catch (error) {
-    return json(502, {
+    return json(req, 502, {
       error: "Could not fetch TimeEdit data",
       detail: error instanceof Error ? error.message : String(error),
     });
