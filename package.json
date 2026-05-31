@@ -1,0 +1,14 @@
+{
+  "name": "haugnes-flashcards",
+  "private": true,
+  "scripts": {
+    "check": "npm run check:js && npm run check:smoke && npm run check:biome",
+    "check:js": "node scripts/check-js.mjs",
+    "check:smoke": "node scripts/smoke-test.mjs",
+    "check:biome": "biome check .",
+    "format": "biome format --write ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.16"
+  }
+}

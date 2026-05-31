@@ -1,6 +1,6 @@
 const ALLOWED_HOSTS = new Set(['cloud.timeedit.net']);
 const ALLOWED_PATH_PREFIX = '/nhh/web/student/';
-const MAX_CHARS = 2_000_000;
+const MAX_BYTES = 2_000_000;
 const ALLOWED_ORIGINS = new Set([
   'https://bhflashcards.no',
   'https://www.bhflashcards.no',
@@ -37,6 +37,32 @@ function allowedContentType(contentType) {
   return 'text/plain; charset=utf-8';
 }
 
+async function readLimitedText(response) {
+  const reader = response.body && response.body.getReader ? response.body.getReader() : null;
+  if (!reader) {
+    const text = await response.text();
+    return text.slice(0, MAX_BYTES);
+  }
+
+  const chunks = [];
+  let received = 0;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    if (!value) continue;
+
+    received += value.byteLength;
+    if (received > MAX_BYTES) {
+      throw new Error('Response too large');
+    }
+
+    chunks.push(Buffer.from(value));
+  }
+
+  return Buffer.concat(chunks).toString('utf8');
+}
+
 exports.handler = async function handler(event) {
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers: headers(undefined, event.headers && event.headers.origin), body: '' };
@@ -62,7 +88,7 @@ exports.handler = async function handler(event) {
       redirect: 'follow'
     });
 
-    const text = (await upstream.text()).slice(0, MAX_CHARS);
+    const text = await readLimitedText(upstream);
     const contentType = allowedContentType(upstream.headers.get('content-type'));
 
     return {
