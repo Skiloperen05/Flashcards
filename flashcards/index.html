@@ -592,16 +592,17 @@ function renderHome() {
       }
     });
     var isBuiltin = subj.builtin || subj.id === "subj_sol1";
-    html += '<div class="subject-card fade-in" data-id="' + subj.id + '">';
-    html += '<div class="subject-card-header" style="background:linear-gradient(135deg,' + subj.color + ',' + subj.color + 'bb)">';
-    html += '<h3>' + subj.name + '</h3><p>' + decks.length + ' deck · ' + totalCards + ' kort</p></div>';
+    var safeColor = safeCssColor(subj.color);
+    html += '<div class="subject-card fade-in" data-id="' + escAttr(subj.id) + '">';
+    html += '<div class="subject-card-header" style="background:linear-gradient(135deg,' + safeColor + ',' + safeColor + 'bb)">';
+    html += '<h3>' + esc(subj.name) + '</h3><p>' + decks.length + ' deck · ' + totalCards + ' kort</p></div>';
     html += '<div class="subject-card-body"><div class="meta">';
     html += '<span>' + (totalSess > 0 ? 'Øvd ' + totalSess + 'x' : 'Ikke startet') + '</span>';
     if (subj.id === 'ret14') {
       html += '<span>' + (quizAttempts > 0 ? ('Quiz: ' + quizBest + '% best · ' + quizAttempts + ' forsøk') : 'Quiz: Ingen forsøk ennå') + '</span>';
     }
     html += '</div></div>';
-    if (!isBuiltin) html += '<button class="subject-card-del" data-del-id="' + subj.id + '" title="Slett fag">✕</button>';
+    if (!isBuiltin) html += '<button class="subject-card-del" data-del-id="' + escAttr(subj.id) + '" title="Slett fag">✕</button>';
     html += '</div>';
   });
   html += '<div class="subject-card subject-card-add" id="addSubjectCard"><div class="plus">+</div><span>Nytt fag</span></div>';
@@ -644,8 +645,8 @@ function renderDecks() {
     var lastSession = sessions.length > 0 ? sessions[sessions.length-1] : null;
     var pct = 0;
     if (lastSession) { var r = lastSession.results; var t = r.right+r.half+r.wrong; pct = t>0?Math.round(r.right/t*100):0; }
-    html += '<div class="deck-item fade-in" data-deck-id="' + deck.id + '">';
-    html += '<h3>' + deck.title + '</h3><div class="meta"><span>' + deck.cards.length + ' kort</span>';
+    html += '<div class="deck-item fade-in" data-deck-id="' + escAttr(deck.id) + '">';
+    html += '<h3>' + esc(deck.title) + '</h3><div class="meta"><span>' + deck.cards.length + ' kort</span>';
     if (sessions.length > 0) html += '<span>Øvd ' + sessions.length + 'x</span><span style="color:var(--green)">' + pct + '% riktig</span>';
     else html += '<span>Ikke startet</span>';
     html += '</div><div class="progress-bar"><div class="fill" style="width:' + pct + '%"></div></div></div>';
@@ -740,7 +741,7 @@ function renderTopicFilter() {
   var html = '<span class="topic-filter-label">Tema:</span>';
   html += '<button class="topic-btn'+(currentTopic==="all"?" active":"")+'" data-topic="all">Alle</button>';
   topics.forEach(function(t) {
-    html += '<button class="topic-btn'+(currentTopic===t.id?" active":"")+'" data-topic="'+t.id+'">'+t.label+'</button>';
+    html += '<button class="topic-btn'+(currentTopic===t.id?" active":"")+'" data-topic="'+escAttr(t.id)+'">'+esc(t.label)+'</button>';
   });
   row.innerHTML = html;
   row.querySelectorAll(".topic-btn").forEach(function(btn) {
@@ -846,7 +847,7 @@ function showEndScreen() {
   var msg = pct>=80 ? "Veldig bra! Du kan dette stoffet." : pct>=50 ? "Bra innsats! Fortsett å øve." : "Ikke gi opp! Øvelse gjør mester.";
   var did = currentDeck.id;
   var h = '<div style="font-size:44px;margin-bottom:10px">'+emoji+'</div>';
-  h += '<h2>'+currentDeck.title+'</h2><p>'+msg+'</p>';
+  h += '<h2>'+esc(currentDeck.title)+'</h2><p>'+msg+'</p>';
   h += '<div class="end-stats">';
   h += '<div class="end-stat"><div class="num" style="color:var(--green)">'+right+'</div><div class="lbl">Riktig</div></div>';
   h += '<div class="end-stat"><div class="num" style="color:var(--yellow)">'+half+'</div><div class="lbl">Halvveis</div></div>';
@@ -1074,6 +1075,11 @@ function processFile(file) {
 }
 
 function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function escAttr(s) { return esc(s).replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
+function safeCssColor(color) {
+  var value = String(color || "").trim();
+  return /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(value) ? value : "#2563eb";
+}
 
 function parseCSV(text) {
   var lines = text.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n").filter(function(l) { return l.trim(); });
@@ -1209,8 +1215,8 @@ function renderQuizDecks() {
     html = '<p style="color:var(--muted);font-size:13px;padding:20px 0;text-align:center">Ingen quiz-deck ennå. Opprett et nedenfor!</p>';
   }
   decks.forEach(function(deck) {
-    html += '<div class="quiz-deck-item fade-in" data-quiz-id="' + deck.id + '">';
-    html += '<h3>🧠 ' + deck.title + '</h3>';
+    html += '<div class="quiz-deck-item fade-in" data-quiz-id="' + escAttr(deck.id) + '">';
+    html += '<h3>🧠 ' + esc(deck.title) + '</h3>';
     html += '<div class="meta"><span>' + deck.questions.length + ' spørsmål</span></div></div>';
   });
   html += '<button class="quiz-deck-add" id="createQuizDeckBtn"><span style="font-size:20px">+</span> Nytt quiz-deck</button>';
