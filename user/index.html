@@ -250,7 +250,7 @@ function countStats(){var s=getStats(),sess=0,cards=0,q=0,qp=[];Object.values(s)
 function nameFromEmail(email){var username=(email||'student').split('@')[0];return username.charAt(0).toUpperCase()+username.slice(1)}
 function setText(id,val){var el=document.getElementById(id);if(el)el.textContent=val}
 window.onUserAuthorized=function(session){var email=session&&session.user&&session.user.email||'';var name=nameFromEmail(email);var initial=name.charAt(0).toUpperCase();setText('heroName',name);setText('sideName',name);setText('sideAvatar',initial);var stats=countStats();if(stats.cards>0)setText('cardsStat',stats.cards.toLocaleString('no'));if(stats.sessions>0)setText('sessStat',stats.sessions)}
-function handleLogout(){var SUPABASE_URL='https://qnwjhheoekpqqqhevztw.supabase.co';var SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJxfud2poaGVvZWtwcXFxaGV2enR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MTg1NTEsImV4cCI6MjA5MjI5NDU1MX0.gHBvEH-L-zyiW4UnsCxOY2q-HmeIYe5OHSvxhFt7PQ8'.replace('xfud2','nwjh');var sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);sb.auth.signOut().finally(function(){window.location.replace('../login.html')})}
+function handleLogout(){return AuthGuard.logout()}
 </script>
 </body>
 </html>

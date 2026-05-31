@@ -1618,10 +1618,7 @@ function _updateUserChip() {
 }
 
 function handleLogout() {
-  if (!confirm('Er du sikker på at du vil logge ut?')) return;
-  sb.auth.signOut().then(function() {
-    window.location.replace(AuthGuard.getLoginPath());
-  });
+  return AuthGuard.logout('Er du sikker på at du vil logge ut?');
 }
 
 // ==================== INIT ====================
