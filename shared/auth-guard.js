@@ -60,6 +60,8 @@
         else if (id === 'haugnes-subject-access-js' && window.HaugnesSubjectAccess) onload();
         else if (id === 'haugnes-functional-enhancements-js' && window.HaugnesFunctionalEnhancements) onload();
         else if (id === 'haugnes-dashboard-progress-js' && window.HaugnesDashboardProgress) onload();
+        else if (id === 'haugnes-entitlements-js' && window.HaugnesEntitlements) onload();
+        else if (id === 'haugnes-subject-gate-js' && window.HaugnesSubjectGate) onload();
         else existing.addEventListener('load', onload, { once: true });
       }
       return;
@@ -254,6 +256,26 @@
     });
   }
 
+  function loadEntitlements(callback) {
+    addScript('haugnes-entitlements-js', rootRelative('shared/entitlements.js'), function () {
+      if (window.HaugnesEntitlements && typeof window.HaugnesEntitlements.load === 'function') {
+        window.HaugnesEntitlements.load().then(function () {
+          if (callback) callback();
+        }, function () {
+          if (callback) callback();
+        });
+        return;
+      }
+      if (callback) callback();
+    });
+  }
+
+  function loadSubjectGate() {
+    addScript('haugnes-subject-gate-js', rootRelative('shared/subject-gate.js'), function () {
+      if (window.HaugnesSubjectGate && typeof window.HaugnesSubjectGate.gate === 'function') window.HaugnesSubjectGate.gate();
+    });
+  }
+
   function installHtmlSafetyGuards() {
     if (window.__haugnesHtmlSafetyGuardsInstalled) return;
     window.__haugnesHtmlSafetyGuardsInstalled = true;
@@ -296,6 +318,7 @@
   function enhancePages() {
     applyBranding();
     loadGlobalPolish();
+    loadEntitlements(function () { loadSubjectGate(); });
     enhanceFlashcardsPage();
     enhanceRet14QuizPage();
     enhanceRet14ExamPage();

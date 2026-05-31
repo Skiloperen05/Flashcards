@@ -4,6 +4,8 @@
   if (window.__haugnesAnswerLibraryInstalled) return;
   window.__haugnesAnswerLibraryInstalled = true;
 
+  // Display-only catalog (no premium content – just icons, colours, names).
+  // Actual package/resource data is fetched from Supabase and protected by RLS.
   var SUBJECTS = [
     { code: 'RET14', name: 'Skatterett', accent: '#2f62ff', icon: '%', summary: 'Eksamenspakker for skatterett samles her når PDF-er legges ut.' },
     { code: 'SOL1', name: 'Organisasjonsatferd', accent: '#20b97a', icon: '♣', summary: 'Eksamenspakker for organisasjonsatferd samles her når PDF-er legges ut.' },
@@ -18,27 +20,10 @@
     { code: 'BED1', name: 'Bedriftsøkonomi', accent: '#20b97a', icon: '◆', summary: 'Første-semesterpakke for kalkyler, investering, resultat og budsjettering.' }
   ];
 
-  var PACKAGES = [
-    { id: 'ret14-v25', subject: 'RET14', term: 'V25', title: 'Våren 2025', subtitle: 'RET14 Skatterett', description: 'Pakkeplass for eksamen, A-besvarelse og sensorveiledning når dokumentene er publisert.', resources: [] },
-    { id: 'sol1-v25', subject: 'SOL1', term: 'V25', title: 'Våren 2025', subtitle: 'SOL1 Organisasjonsatferd', description: 'A-besvarelse er funnet lokalt i SOL1-mappen. Pakken er klargjort, men PDF-en publiseres ikke offentlig før filen er gjort klar for deling.', localStatus: 'A-besvarelse funnet lokalt', resources: [] },
-    { id: 'sam2-v25', subject: 'SAM2', term: 'V25', title: 'Våren 2025', subtitle: 'SAM2 Mikroøkonomi', description: 'Pakkeplass for eksamen, A-besvarelse og sensorveiledning når dokumentene er publisert.', resources: [] },
-    {
-      id: 'sam3-v25', subject: 'SAM3', term: 'V25', title: 'Våren 2025', subtitle: 'SAM3 Makroøkonomi',
-      description: 'Komplett eksamenspakke med originaloppgave, A-besvarelse og sensorveiledning.',
-      resources: [
-        { id: 'sam3-v25-exam', order: 1, kind: 'Eksamen', title: 'SAM3 skoleeksamen V25', subtitle: 'Original oppgave', desc: 'Original eksamensoppgave for våren 2025. Start her og gjør et eget forsøk før du ser på løsning.', icon: 'E', url: 'https://drive.google.com/file/d/1VKZwcmQF9zGlR2Hwtjy0UnKWlhHEf7_5/view', download: 'https://drive.google.com/uc?export=download&id=1VKZwcmQF9zGlR2Hwtjy0UnKWlhHEf7_5' },
-        { id: 'sam3-v25-answer', order: 2, kind: 'A-besvarelse', title: 'A-besvarelse SAM3 V25', subtitle: 'Makroøkonomi', desc: 'Eksempel på sterk besvarelse. Bruk den etter egen gjennomføring for å sammenligne struktur, modellbruk og drøfting.', icon: 'A', url: 'https://drive.google.com/file/d/1yCI-f4BKMTllsLc5ZMgh6pj0TIA428x5/view', download: 'https://drive.google.com/uc?export=download&id=1yCI-f4BKMTllsLc5ZMgh6pj0TIA428x5' },
-        { id: 'sam3-v25-sensor', order: 3, kind: 'Sensorveiledning', title: 'SAM3 sensorveiledning V25', subtitle: 'Vurderingspunkter', desc: 'Sensorveiledningen viser hva sensor belønner og hvilke momenter som bør være med.', icon: 'S', url: 'https://drive.google.com/file/d/1myk7l12OsR-jZ76am6e-W7iS1u6FNuTy/view', download: 'https://drive.google.com/uc?export=download&id=1myk7l12OsR-jZ76am6e-W7iS1u6FNuTy' }
-      ]
-    },
-    { id: 'met2-v25', subject: 'MET2', term: 'V25', title: 'Våren 2025', subtitle: 'MET2 Metode', description: 'Pakkeplass for eksamen, A-besvarelse og sensorveiledning når dokumentene er publisert.', resources: [] },
-    { id: 'mat10-v25', subject: 'MAT10', term: 'V25', title: 'Våren 2025', subtitle: 'MAT10 Matematikk', description: 'Pakkeplass for eksamen, A-besvarelse og sensorveiledning når dokumentene er publisert.', resources: [] },
-    { id: 'sam1a-h25', subject: 'SAM1A', term: 'H25', title: 'Høsten 2025', subtitle: 'SAM1A Mikroøkonomi intro', description: 'Pakkeplass basert på lokale læringsmål og kompendium. PDF-er publiseres først når de er klargjort for offentlig bruk.', resources: [] },
-    { id: 'met1-h25', subject: 'MET1', term: 'H25', title: 'Høsten 2025', subtitle: 'MET1 Matematikk for økonomer', description: 'Pakkeplass for rente, NNV, annuitet og metodeoppgaver fra lokale filer.', resources: [] },
-    { id: 'kom1-h25', subject: 'KOM1', term: 'H25', title: 'Høsten 2025', subtitle: 'KOM1 Kommunikasjon', description: 'Pakkeplass for rapporter, presentasjoner og refleksjonstekster som kan bli skrivekort.', resources: [] },
-    { id: 'ret1a-h25', subject: 'RET1A', term: 'H25', title: 'Høsten 2025', subtitle: 'RET1A Juridiske emner', description: 'Pakkeplass for eksamensøving, teorioppgaver og juridisk metode fra første semester.', resources: [] },
-    { id: 'bed1-h25', subject: 'BED1', term: 'H25', title: 'Høsten 2025', subtitle: 'BED1 Bedriftsøkonomi', description: 'Pakkeplass for gamle eksamener, gruppeøvinger og regnetrening fra BED1.', resources: [] }
-  ];
+  var PACKAGES = [];
+  var packagesLoaded = false;
+  var packagesPromise = null;
+  var lastLoadError = null;
 
   var state = { subject: null, packageId: null, query: '' };
 
@@ -46,9 +31,42 @@
   function esc(s) { return String(s || '').replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
   function code(value) { return String(value || '').toUpperCase().replace(/[\s-]+/g, ''); }
   function readJson(key, fallback) { try { var raw = window.localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; } }
-  function enabledCodes() { return window.HaugnesSubjectAccess ? window.HaugnesSubjectAccess.getSelected() : readJson('hf_enabled_subjects', ['RET14', 'SOL1', 'SAM2', 'SAM3', 'MET2', 'MAT10', 'SAM1A', 'MET1', 'KOM1', 'RET1A', 'BED1']).map(code); }
-  function enabledSubjects() { var enabled = enabledCodes(); return SUBJECTS.filter(function (s) { return enabled.indexOf(s.code) !== -1; }); }
-  function enabledPackages() { var enabled = enabledCodes(); return PACKAGES.filter(function (p) { return enabled.indexOf(p.subject) !== -1; }); }
+
+  function entitledCodes() {
+    if (window.HaugnesEntitlements && typeof window.HaugnesEntitlements.getCodes === 'function') {
+      var owned = window.HaugnesEntitlements.getCodes();
+      if (window.HaugnesEntitlements.isAdmin && window.HaugnesEntitlements.isAdmin()) {
+        return SUBJECTS.map(function (s) { return s.code; });
+      }
+      return owned;
+    }
+    return [];
+  }
+
+  function selectedCodes() {
+    if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.getSelected === 'function') {
+      return window.HaugnesSubjectAccess.getSelected();
+    }
+    return readJson('hf_enabled_subjects', SUBJECTS.map(function (s) { return s.code; })).map(code);
+  }
+
+  function availableCodes() {
+    var owned = entitledCodes();
+    var selected = selectedCodes();
+    if (!owned.length) return [];
+    return selected.filter(function (c) { return owned.indexOf(c) !== -1; });
+  }
+
+  function enabledSubjects() {
+    var available = availableCodes();
+    return SUBJECTS.filter(function (s) { return available.indexOf(s.code) !== -1; });
+  }
+
+  function enabledPackages() {
+    var available = availableCodes();
+    return PACKAGES.filter(function (p) { return available.indexOf(p.subject) !== -1; });
+  }
+
   function subjectByCode(c) { return SUBJECTS.find(function (s) { return s.code === code(c); }); }
   function packagesForSubject(c) { return enabledPackages().filter(function (p) { return p.subject === code(c); }); }
   function packageById(id) { return enabledPackages().find(function (p) { return p.id === id; }); }
@@ -58,12 +76,78 @@
   function answerCount() { return allResources().filter(function (r) { return r.kind === 'A-besvarelse'; }).length; }
   function summary() { return { subjects: enabledSubjects().length, packages: enabledPackages().length, publishedPackages: publishedPackages().length, plannedPackages: plannedPackages().length, resources: allResources().length, answers: answerCount() }; }
 
+  function loadPackages(force) {
+    if (packagesLoaded && !force) return Promise.resolve(PACKAGES);
+    if (packagesPromise && !force) return packagesPromise;
+
+    packagesPromise = (function () {
+      if (!window.HaugnesEntitlements || !window.AuthGuard || typeof window.AuthGuard.getClient !== 'function') {
+        return Promise.resolve([]);
+      }
+      return window.HaugnesEntitlements.load().then(function () {
+        var sb;
+        try { sb = window.AuthGuard.getClient(); }
+        catch (e) { return []; }
+        return Promise.all([
+          sb.from('answer_packages').select('id,subject_code,term,title,subtitle,description,local_status,sort_order').order('sort_order'),
+          sb.from('answer_resources').select('id,package_id,kind,title,subtitle,description,icon,url,download_url,order_index').order('order_index')
+        ]).then(function (results) {
+          var pkgRes = results[0];
+          var resRes = results[1];
+          if (pkgRes && pkgRes.error) lastLoadError = pkgRes.error;
+          if (resRes && resRes.error) lastLoadError = resRes.error;
+          var packages = (pkgRes && pkgRes.data ? pkgRes.data : []);
+          var resources = (resRes && resRes.data ? resRes.data : []);
+          return packages.map(function (p) {
+            return {
+              id: p.id,
+              subject: code(p.subject_code),
+              term: p.term,
+              title: p.title,
+              subtitle: p.subtitle,
+              description: p.description || '',
+              localStatus: p.local_status || null,
+              resources: resources
+                .filter(function (r) { return r.package_id === p.id; })
+                .map(function (r) {
+                  return {
+                    id: r.id,
+                    order: r.order_index || 0,
+                    kind: r.kind,
+                    title: r.title,
+                    subtitle: r.subtitle || '',
+                    desc: r.description || '',
+                    icon: r.icon || '',
+                    url: r.url,
+                    download: r.download_url || r.url
+                  };
+                })
+                .sort(function (a, b) { return (a.order || 0) - (b.order || 0); })
+            };
+          });
+        });
+      }).then(function (packages) {
+        PACKAGES = packages;
+        packagesLoaded = true;
+        return PACKAGES;
+      }).catch(function (e) {
+        lastLoadError = e;
+        PACKAGES = [];
+        packagesLoaded = true;
+        return PACKAGES;
+      });
+    })();
+
+    packagesPromise.then(function () { packagesPromise = null; }, function () { packagesPromise = null; });
+    return packagesPromise;
+  }
+
   function syncLegacyGlobals() {
     window.answers = allResources().map(function (r, index) {
       var subject = subjectByCode(r.subject) || SUBJECTS[0];
-      return { course: r.subject, icon: subject.icon, color: subject.accent, term: r.term, title: r.title, subtitle: r.subtitle, type: r.kind.toLowerCase(), desc: r.desc, meta: [r.kind, 'PDF', r.term], popular: index + 1, url: r.url, download: r.download };
+      return { course: r.subject, icon: subject.icon, color: subject.accent, term: r.term, title: r.title, subtitle: r.subtitle, type: (r.kind || '').toLowerCase(), desc: r.desc, meta: [r.kind, 'PDF', r.term], popular: index + 1, url: r.url, download: r.download };
     });
-    window.HaugnesAnswerLibrary = { subjects: enabledSubjects(), packages: enabledPackages(), resources: allResources(), summary: summary, render: render };
+    window.HaugnesAnswerLibrary = { subjects: enabledSubjects(), packages: enabledPackages(), resources: allResources(), summary: summary, render: render, reload: function () { return loadPackages(true).then(function () { render(); }); } };
   }
 
   function injectStyles() {
@@ -120,7 +204,7 @@
     if (heading) heading.textContent = 'Eksamensarkiv';
     if (intro) intro.textContent = 'Fag → eksamenspakker → PDF-er som faktisk ligger ute.';
     if (heroTitle) heroTitle.innerHTML = 'Finn riktig <span>eksamenspakke</span>.';
-    if (heroCopy) heroCopy.textContent = 'Arkivet følger fagene brukeren har valgt. Fag uten publiserte PDF-er får en egen pakkeplass, men viser ikke falske dokumenter.';
+    if (heroCopy) heroCopy.textContent = 'Arkivet viser kun fag du har låst opp i Butikken.';
     if (stats[0]) stats[0].textContent = s.resources;
     if (stats[1]) stats[1].textContent = s.packages;
     if (stats[2]) stats[2].textContent = s.answers;
@@ -130,14 +214,23 @@
   }
 
   function setHash(subject, packageId) { var hash = subject ? '#/' + subject.toLowerCase() + (packageId ? '/' + packageId.replace(subject.toLowerCase() + '-', '') : '') : ''; if (window.location.hash !== hash) window.location.hash = hash; else route(); }
-  function parseHash() { var parts = window.location.hash.replace(/^#\/?/, '').split('/').filter(Boolean); state.subject = parts[0] ? parts[0].toUpperCase() : null; state.packageId = state.subject && parts[1] ? state.subject.toLowerCase() + '-' + parts[1] : null; if (state.subject && enabledCodes().indexOf(state.subject) === -1) { state.subject = null; state.packageId = null; } }
+  function parseHash() { var parts = window.location.hash.replace(/^#\/?/, '').split('/').filter(Boolean); state.subject = parts[0] ? parts[0].toUpperCase() : null; state.packageId = state.subject && parts[1] ? state.subject.toLowerCase() + '-' + parts[1] : null; if (state.subject && availableCodes().indexOf(state.subject) === -1) { state.subject = null; state.packageId = null; } }
   function breadcrumb() { var html = '<div class="hf-answer-breadcrumb"><button type="button" data-route="home">Fag</button>'; if (state.subject) html += '<span>›</span><button type="button" data-route="subject" data-subject="' + esc(state.subject) + '">' + esc(state.subject) + '</button>'; if (state.packageId) { var pack = packageById(state.packageId); html += '<span>›</span><span>' + esc(pack ? pack.title : 'Pakke') + '</span>'; } return html + '</div>'; }
 
+  function renderEmptyState() {
+    var rootHref = (window.AuthGuard && typeof window.AuthGuard.getRootPath === 'function')
+      ? window.AuthGuard.getRootPath().replace(/\/$/, '/') + 'user/butikk.html'
+      : 'butikk.html';
+    return breadcrumb() + '<div class="hf-empty-panel"><strong>Ingen fag låst opp ennå.</strong><br>'
+      + 'Gå til <a href="' + esc(rootHref) + '" style="color:#9eb7ff;font-weight:900">Butikken</a> for å låse opp et fag (gratis), så vises pakker, A-besvarelser og sensorveiledninger her.</div>';
+  }
+
   function renderSubjects() {
+    if (!entitledCodes().length) return renderEmptyState();
     var s = summary();
     var q = state.query.toLowerCase().trim();
     var subjects = enabledSubjects().filter(function (subject) { return !q || (subject.code + ' ' + subject.name + ' ' + subject.summary).toLowerCase().indexOf(q) !== -1; });
-    if (!subjects.length) return breadcrumb() + '<div class="hf-empty-panel">Ingen valgte fag matcher søket. Endre fagvalg på Mine fag-siden.</div>';
+    if (!subjects.length) return breadcrumb() + '<div class="hf-empty-panel">Ingen valgte fag matcher søket. Endre fagvalg på Mine fag-siden eller lås opp nye fag i Butikken.</div>';
     return breadcrumb() + '<div class="hf-answer-toolbar"><input class="hf-answer-search" id="hfAnswerSearch" type="search" placeholder="Søk i valgte fag..." value="' + esc(state.query) + '"><span class="hf-answer-muted">' + s.subjects + ' valgte fag · ' + s.packages + ' pakker · ' + s.resources + ' PDF-er</span></div><div class="hf-subject-grid">' + subjects.map(function (subject) {
       var packs = packagesForSubject(subject.code);
       var count = packs.reduce(function (sum, p) { return sum + p.resources.length; }, 0);
@@ -148,7 +241,7 @@
 
   function renderSubject() {
     var subject = subjectByCode(state.subject);
-    if (!subject || enabledCodes().indexOf(subject.code) === -1) return renderSubjects();
+    if (!subject || availableCodes().indexOf(subject.code) === -1) return renderSubjects();
     var packs = packagesForSubject(subject.code);
     return breadcrumb() + '<div class="hf-answer-toolbar"><div><strong style="color:#fff">' + subject.code + ' · ' + subject.name + '</strong><div class="hf-answer-muted">Velg semester/eksamenspakke. Pakker uten PDF-er er tydelig markert.</div></div><button class="hf-secondary" type="button" data-route="home">Alle fag</button></div><div class="hf-package-list">' + packs.map(function (p) {
       var live = p.resources.length > 0;
@@ -180,6 +273,7 @@
     host.innerHTML = '<div class="hf-answer-shell">' + (state.packageId ? renderPackage() : state.subject ? renderSubject() : renderSubjects()) + '</div>';
     renderSide(); bind();
   }
+
   function bind() {
     document.querySelectorAll('[data-subject]').forEach(function (el) { el.addEventListener('click', function () { setHash(el.getAttribute('data-subject')); }); });
     document.querySelectorAll('[data-package]').forEach(function (el) { el.addEventListener('click', function () { setHash(state.subject, el.getAttribute('data-package')); }); });
@@ -187,9 +281,25 @@
     document.querySelectorAll('[data-route="subject"]').forEach(function (el) { el.addEventListener('click', function () { state.query = ''; setHash(el.getAttribute('data-subject') || state.subject); }); });
     var search = document.getElementById('hfAnswerSearch'); if (search) search.addEventListener('input', function () { state.query = search.value || ''; render(); });
   }
+
   function route() { parseHash(); render(); }
+
   function install() {
-    if (!isPage()) return; injectStyles(); syncLegacyGlobals(); window.render = render; window.renderPopular = renderSide; route(); window.addEventListener('hashchange', route); window.addEventListener('haugnes:subject-access-changed', route); window.setTimeout(route, 120);
+    if (!isPage()) return;
+    injectStyles();
+    syncLegacyGlobals();
+    window.render = render;
+    window.renderPopular = renderSide;
+    // First paint (likely empty until fetch completes)
+    route();
+    // Trigger DB fetch, then re-render
+    loadPackages().then(function () { route(); });
+    window.addEventListener('hashchange', route);
+    window.addEventListener('haugnes:subject-access-changed', route);
+    window.addEventListener('haugnes:entitlements-changed', function () { loadPackages(true).then(route); });
+    window.setTimeout(route, 120);
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install); else install();
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
+  else install();
 })(window, document);

@@ -39,6 +39,14 @@
 
   function catalog() { return rawCatalog(); }
 
+  function entitledSet() {
+    if (window.HaugnesEntitlements && typeof window.HaugnesEntitlements.isLoaded === 'function' && window.HaugnesEntitlements.isLoaded()) {
+      if (window.HaugnesEntitlements.isAdmin && window.HaugnesEntitlements.isAdmin()) return null; // null = unrestricted
+      return window.HaugnesEntitlements.getCodes();
+    }
+    return null;
+  }
+
   function getSelected() {
     var selected = readJson(STORAGE_KEY, null);
     if (!Array.isArray(selected) || !selected.length) selected = DEFAULT_CODES;
@@ -50,7 +58,11 @@
     }
     var available = catalog().map(function (s) { return code(s.code || s.id); });
     var value = selected.map(code).filter(function (item, index, arr) { return item && arr.indexOf(item) === index && (!available.length || available.indexOf(item) !== -1); });
-    return value.length ? value : DEFAULT_CODES.slice();
+    if (!value.length) value = DEFAULT_CODES.slice();
+    // Hard cap: cannot select subjects the user hasn't paid/claimed
+    var owned = entitledSet();
+    if (owned === null) return value; // admin or entitlements not yet loaded
+    return value.filter(function (c) { return owned.indexOf(c) !== -1; });
   }
 
   function setSelected(codes) {
@@ -277,6 +289,9 @@
   window.addEventListener('haugnes:subject-access-changed', function () {
     refreshSubjectPage();
     filterVisibleDom();
+  });
+  window.addEventListener('haugnes:entitlements-changed', function () {
+    enhanceCurrentPage();
   });
 
   window.HaugnesSubjectAccess = {
