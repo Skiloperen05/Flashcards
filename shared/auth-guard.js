@@ -62,6 +62,7 @@
         else if (id === 'haugnes-dashboard-progress-js' && window.HaugnesDashboardProgress) onload();
         else if (id === 'haugnes-entitlements-js' && window.HaugnesEntitlements) onload();
         else if (id === 'haugnes-subject-gate-js' && window.HaugnesSubjectGate) onload();
+        else if (id === 'haugnes-admin-preview-toggle-js' && window.HaugnesAdminPreviewToggle) onload();
         else existing.addEventListener('load', onload, { once: true });
       }
       return;
@@ -276,6 +277,12 @@
     });
   }
 
+  function loadAdminPreviewToggle() {
+    addScript('haugnes-admin-preview-toggle-js', rootRelative('shared/admin-preview-toggle.js'), function () {
+      if (window.HaugnesAdminPreviewToggle && typeof window.HaugnesAdminPreviewToggle.update === 'function') window.HaugnesAdminPreviewToggle.update();
+    });
+  }
+
   function installHtmlSafetyGuards() {
     if (window.__haugnesHtmlSafetyGuardsInstalled) return;
     window.__haugnesHtmlSafetyGuardsInstalled = true;
@@ -318,7 +325,7 @@
   function enhancePages() {
     applyBranding();
     loadGlobalPolish();
-    loadEntitlements(function () { loadSubjectGate(); });
+    loadEntitlements(function () { loadSubjectGate(); loadAdminPreviewToggle(); });
     enhanceFlashcardsPage();
     enhanceRet14QuizPage();
     enhanceRet14ExamPage();
