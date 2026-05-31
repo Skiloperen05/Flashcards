@@ -254,6 +254,45 @@
     });
   }
 
+  function installHtmlSafetyGuards() {
+    if (window.__haugnesHtmlSafetyGuardsInstalled) return;
+    window.__haugnesHtmlSafetyGuardsInstalled = true;
+
+    var descriptor = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
+    if (!descriptor || typeof descriptor.set !== 'function' || typeof DOMParser === 'undefined') return;
+    var originalSetter = descriptor.set;
+
+    function isUnsafeUrl(value) {
+      return /^\s*(?:javascript|data):/i.test(String(value || ''));
+    }
+
+    function sanitizeHtml(html) {
+      var doc = new DOMParser().parseFromString(String(html), 'text/html');
+      doc.querySelectorAll('script,iframe,object,embed,meta,base,link[rel="import"]').forEach(function (node) {
+        node.remove();
+      });
+      doc.body.querySelectorAll('*').forEach(function (node) {
+        Array.prototype.slice.call(node.attributes).forEach(function (attr) {
+          var name = attr.name.toLowerCase();
+          var value = attr.value || '';
+          if (name.indexOf('on') === 0) node.removeAttribute(attr.name);
+          else if ((name === 'href' || name === 'src' || name === 'xlink:href') && isUnsafeUrl(value)) node.removeAttribute(attr.name);
+          else if (name === 'style' && /(?:expression\s*\(|url\s*\(|javascript:|@import)/i.test(value)) node.removeAttribute(attr.name);
+        });
+      });
+      return doc.body.innerHTML;
+    }
+
+    Object.defineProperty(Element.prototype, 'innerHTML', {
+      configurable: descriptor.configurable,
+      enumerable: descriptor.enumerable,
+      get: descriptor.get,
+      set: function (value) {
+        originalSetter.call(this, sanitizeHtml(value));
+      }
+    });
+  }
+
   function enhancePages() {
     applyBranding();
     loadGlobalPolish();
@@ -264,6 +303,7 @@
     enhanceUserAreaPages();
   }
 
+  installHtmlSafetyGuards();
   normalizeFlashcardsRoute();
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', enhancePages);
