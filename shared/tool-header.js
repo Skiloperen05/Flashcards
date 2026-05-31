@@ -61,7 +61,8 @@
   function shouldRun() {
     if (isUserPage() || isLoginOrFrontPage()) return false;
     if (document.body && document.body.classList.contains('haugnes-app')) return false;
-    return /(ret14|sol1|sam2|sam3|met2|mat10|sam1a|met1|kom1|ret1a|bed1|flashcards)\//.test(path());
+    if (/\/flashcards\//.test(path())) return false;
+    return /(ret14|sol1|sam2|sam3|met2|mat10|sam1a|met1|kom1|ret1a|bed1)\//.test(path());
   }
 
   function injectStyles() {
@@ -75,7 +76,8 @@
       '.hf-tool-wordmark{display:grid;line-height:1}.hf-tool-wordmark strong{font-size:22px;letter-spacing:.18em;color:#fff}.hf-tool-wordmark span{font-size:11px;letter-spacing:.42em;color:#ffd98f;margin-top:6px;font-weight:950}',
       '.hf-tool-crumb{display:flex;align-items:center;gap:10px;min-width:0;color:#99abc8;font-size:14px;font-weight:900;white-space:nowrap}',
       '.hf-tool-crumb a{color:#aebfff;text-decoration:none}.hf-tool-crumb a:hover{color:#fff}.hf-tool-crumb b{color:#fff;font-weight:950}.hf-tool-sep{opacity:.55}',
-      '.topbar.hf-replaced,.haugnes-tool-nav.hf-replaced{display:none!important}',
+      '.hf-replaced:not(.hf-tool-header),.topbar.hf-replaced,.haugnes-tool-nav.hf-replaced{display:none!important}',
+      'body:has(.hf-tool-header) .haugnes-tool-nav{display:none!important}',
       'body:has(.hf-tool-header) .topbar:not(.hf-tool-header){display:none!important}',
       '@media(max-width:760px){.hf-tool-header{height:auto;min-height:72px;padding:12px 16px;align-items:flex-start;flex-direction:column}.hf-tool-wordmark strong{font-size:18px}.hf-tool-wordmark span{font-size:9px}.hf-tool-crumb{font-size:12px;flex-wrap:wrap;white-space:normal}}'
     ].join('\n');

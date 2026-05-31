@@ -1,9 +1,17 @@
 const ALLOWED_HOSTS = new Set(['cloud.timeedit.net']);
 const ALLOWED_PATH_PREFIX = '/nhh/web/student/';
 const MAX_BYTES = 2_000_000;
+const ALLOWED_ORIGINS = new Set([
+  'https://bhflashcards.no',
+  'https://www.bhflashcards.no',
+  'https://skiloperen05.github.io',
+  'http://localhost:3000',
+  'http://localhost:5173'
+]);
 
 function setCors(res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const origin = res.req && res.req.headers ? res.req.headers.origin : '';
+  res.setHeader('Access-Control-Allow-Origin', ALLOWED_ORIGINS.has(origin) ? origin : 'https://bhflashcards.no');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Vary', 'Origin');

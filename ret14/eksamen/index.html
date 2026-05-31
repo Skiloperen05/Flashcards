@@ -78,9 +78,10 @@ body.app-loading footer { display: none; }
 <body class="app-loading">
 <div class="loading-screen" id="loadingScreen">Laster inn…</div>
 <header>
-  <h1>RET14 eksamensradar</h1>
-  <div class="subtitle">Visuell oversikt over tidligere eksamener/sensorveiledninger og kontrollert temamatrise. Bruk søk, filtre og sortering for å finne hva som er hyppigst, hva som trender, og hva som bør prioriteres først.</div>
+  <h1 id="pageTitle">RET14 eksamensradar</h1>
+  <div class="subtitle" id="pageSubtitle">Visuell oversikt over tidligere eksamener/sensorveiledninger og kontrollert temamatrise. Bruk søk, filtre og sortering for å finne hva som er hyppigst, hva som trender, og hva som bør prioriteres først.</div>
   <div class="toolbar">
+    <select id="subjectSelect"><option value="ret14">RET14</option><option value="sol1">SOL1</option><option value="sam2">SAM2</option><option value="sam3">SAM3</option><option value="met2">MET2</option><option value="mat10">MAT10</option></select>
     <input id="search" placeholder="Søk i tema, lovhjemler eller vurdering …"/>
     <select id="category"><option value="">Alle kategorier</option></select>
     <select id="priority"><option value="">Alle prioriteter</option><option>Høy</option><option>Middels</option><option>Lav</option></select>
@@ -131,11 +132,20 @@ body.app-loading footer { display: none; }
 </main>
 <footer>Bygget fra RET14_eksamensanalyse_kontrollert_2026.xlsx. Tallene er en eksamensradar, ikke en garanti.</footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../../shared/haugnes-study-data.js"></script>
 <script>
 (function(){
   var SB_URL="https://qnwjhheoekpqqqhevztw.supabase.co";
   var SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFud2poaGVvZWtwcXFxaGV2enR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MTg1NTEsImV4cCI6MjA5MjI5NDU1MX0.gHBvEH-L-zyiW4UnsCxOY2q-HmeIYe5OHSvxhFt7PQ8";
+  var localDev=/^(localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname)&&new URLSearchParams(window.location.search).get("dev")==="1";
   var _sb=window.supabase.createClient(SB_URL,SB_KEY);
+  if(localDev){
+    window._sb=_sb;
+    document.body.classList.remove("app-loading");
+    var devLoading=document.getElementById("loadingScreen");
+    if(devLoading) devLoading.remove();
+    return;
+  }
   _sb.auth.getSession().then(function(r){
     var session=r.data&&r.data.session;
     if(!session){
@@ -265,10 +275,125 @@ function renderLaws() {
 
 function escapeHtml(s) { return String(s||"").replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m])); }
 
+let activeSubject = "ret14";
+function activeAnalysis() {
+  if (activeSubject === "ret14") return null;
+  return window.HaugnesStudyData && window.HaugnesStudyData.analysisFor(activeSubject);
+}
+function topicFromRow(row, index, analysis) {
+  const count = row[3] || Math.max(3, 9 - index);
+  const topic = {
+    "Kategori": analysis.code + " · Eksamensradar",
+    "Tema": row[0],
+    "Lovhjemler": "",
+    "Antall funn": count,
+    "Andel av 21": count / 10,
+    "Forekomst i eksamener": "Syntetisk fagprioritet",
+    "Trend 2022–2025": row[4] || "Delvis",
+    "Prioritet": row[2],
+    "Min vurdering": row[1],
+    "Kildegrunnlag": "Appens fagstruktur og prioriterte øvingsdata"
+  };
+  topic.score = score(topic);
+  topic.occSet = examCodes.slice(0, Math.min(examCodes.length, count));
+  return topic;
+}
+function activeTopics() {
+  const analysis = activeAnalysis();
+  if (!analysis) return TOPICS;
+  return analysis.topics.map(function(row, index) { return topicFromRow(row, index, analysis); });
+}
+function activeExams() {
+  const analysis = activeAnalysis();
+  if (!analysis) return EXAMS;
+  return analysis.topics.map(function(row, index) {
+    return {
+      Eksamen: analysis.code + " " + (index + 1),
+      Kildetype: "Prioritert øving",
+      "Hovedtema identifisert": row[0],
+      "Hva bør du passe på": row[1],
+      Kilde: "Haugnes fagdata"
+    };
+  });
+}
+function activeLaws() {
+  const analysis = activeAnalysis();
+  if (!analysis) return LAWS;
+  return analysis.topics.map(function(row) {
+    return {
+      Lovhjemmel: row[0],
+      Innhold: row[1],
+      Prioritet: row[2],
+      Kommentar: row[4] === "Ja" ? "Nyere trend i denne fagmodellen." : "Bør repeteres etter kjerneområdene."
+    };
+  });
+}
+function setSubject(value) {
+  activeSubject = value || "ret14";
+  const analysis = activeAnalysis();
+  document.getElementById("pageTitle").textContent = analysis ? analysis.code + " eksamensanalyse" : "RET14 eksamensradar";
+  document.getElementById("pageSubtitle").textContent = analysis ? analysis.summary : "Visuell oversikt over tidligere eksamener/sensorveiledninger og kontrollert temamatrise. Bruk søk, filtre og sortering for å finne hva som er hyppigst, hva som trender, og hva som bør prioriteres først.";
+  document.getElementById("search").value = "";
+  document.getElementById("category").value = "";
+  document.getElementById("priority").value = "";
+  trendOnly = false;
+  document.getElementById("trendBtn").classList.remove("active");
+  fillFilters();
+  renderAll();
+  renderExams();
+  renderLaws();
+}
+function filtered() {
+  const q=norm(document.getElementById("search").value);
+  const cat=document.getElementById("category").value;
+  const pri=document.getElementById("priority").value;
+  return activeTopics().filter(t => {
+    const hay = norm([t.Kategori,t.Tema,t.Lovhjemler,t["Min vurdering"],t["Kildegrunnlag"]].join(" "));
+    return (!q || hay.includes(q)) && (!cat || t.Kategori===cat) && (!pri || t.Prioritet===pri) && (!trendOnly || hasTrend(t));
+  });
+}
+function fillFilters() {
+  const cats=[...new Set(activeTopics().map(t=>t.Kategori).filter(Boolean))].sort();
+  const sel=document.getElementById("category");
+  sel.innerHTML = '<option value="">Alle kategorier</option>';
+  cats.forEach(c=>{ const o=document.createElement("option"); o.textContent=c; o.value=c; sel.appendChild(o); });
+}
+function renderKPIs(data) {
+  const topics = activeTopics();
+  document.getElementById("kpiExams").textContent=activeExams().length;
+  document.getElementById("kpiTopics").textContent=topics.length;
+  document.getElementById("kpiHigh").textContent=topics.filter(t=>priorityClass(t.Prioritet)==="high").length;
+  document.getElementById("kpiTrend").textContent=topics.filter(hasTrend).length;
+}
+function renderPriority(data) {
+  const box=document.getElementById("priorityList"); box.innerHTML="";
+  activeTopics().sort((a,b)=>b.score-a.score).slice(0,8).forEach(t=>{
+    const el=document.createElement("div"); el.className="priority-item";
+    el.innerHTML=`<div><h3>${escapeHtml(t.Tema)}</h3><p>${escapeHtml(t.Lovhjemler || t.Kategori)} · ${t["Antall funn"]} prioritetspoeng</p></div><span class="badge ${priorityClass(t.Prioritet)}">${escapeHtml(t.Prioritet)}${hasTrend(t)?" · trend":""}</span>`;
+    box.appendChild(el);
+  });
+}
+function renderExams() {
+  const box=document.getElementById("examCards"); box.innerHTML="";
+  activeExams().forEach(e=>{
+    const el=document.createElement("div"); el.className="exam";
+    el.innerHTML=`<h3>${escapeHtml(e.Eksamen)}</h3><div class="pillrow"><span class="badge">${escapeHtml(e.Kildetype||"")}</span></div><p><strong>Hovedtema:</strong> ${escapeHtml(e["Hovedtema identifisert"])}</p><p><strong>Pass på:</strong> ${escapeHtml(e["Hva bør du passe på"])}</p>`;
+    box.appendChild(el);
+  });
+}
+function renderLaws() {
+  const box=document.getElementById("lawGrid"); box.innerHTML="";
+  activeLaws().forEach(l=>{
+    const el=document.createElement("div"); el.className="law";
+    el.innerHTML=`<b>${escapeHtml(l.Lovhjemmel)}</b><div>${escapeHtml(l.Innhold)}</div><div class="pillrow"><span class="badge ${priorityClass(l.Prioritet)}">${escapeHtml(l.Prioritet)}</span></div><small>${escapeHtml(l.Kommentar)}</small>`;
+    box.appendChild(el);
+  });
+}
 function renderAll() {
   const data=filtered();
   renderKPIs(data); renderPriority(data); renderBars(data); renderHeatmap(data); renderTable(data);
 }
+document.getElementById("subjectSelect").addEventListener("change", e=>setSubject(e.target.value));
 document.getElementById("search").addEventListener("input", renderAll);
 document.getElementById("category").addEventListener("change", renderAll);
 document.getElementById("priority").addEventListener("change", renderAll);

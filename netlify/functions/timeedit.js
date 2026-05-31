@@ -1,10 +1,17 @@
 const ALLOWED_HOSTS = new Set(['cloud.timeedit.net']);
 const ALLOWED_PATH_PREFIX = '/nhh/web/student/';
 const MAX_CHARS = 2_000_000;
+const ALLOWED_ORIGINS = new Set([
+  'https://bhflashcards.no',
+  'https://www.bhflashcards.no',
+  'https://skiloperen05.github.io',
+  'http://localhost:3000',
+  'http://localhost:5173'
+]);
 
-function headers(contentType = 'application/json; charset=utf-8') {
+function headers(contentType = 'application/json; charset=utf-8', origin = '') {
   return {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': ALLOWED_ORIGINS.has(origin) ? origin : 'https://bhflashcards.no',
     'Access-Control-Allow-Methods': 'GET,OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': contentType,
@@ -32,18 +39,18 @@ function allowedContentType(contentType) {
 
 exports.handler = async function handler(event) {
   if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 204, headers: headers(), body: '' };
+    return { statusCode: 204, headers: headers(undefined, event.headers && event.headers.origin), body: '' };
   }
 
   if (event.httpMethod !== 'GET') {
-    return { statusCode: 405, headers: headers(), body: JSON.stringify({ error: 'Method not allowed' }) };
+    return { statusCode: 405, headers: headers(undefined, event.headers && event.headers.origin), body: JSON.stringify({ error: 'Method not allowed' }) };
   }
 
   let target;
   try {
     target = validateTarget(event.queryStringParameters && event.queryStringParameters.url);
   } catch (error) {
-    return { statusCode: 400, headers: headers(), body: JSON.stringify({ error: error.message }) };
+    return { statusCode: 400, headers: headers(undefined, event.headers && event.headers.origin), body: JSON.stringify({ error: error.message }) };
   }
 
   try {
@@ -60,7 +67,7 @@ exports.handler = async function handler(event) {
 
     return {
       statusCode: upstream.status,
-      headers: Object.assign(headers(contentType), {
+      headers: Object.assign(headers(contentType, event.headers && event.headers.origin), {
         'Cache-Control': upstream.ok ? 'public, max-age=900, stale-while-revalidate=3600' : 'no-store'
       }),
       body: text
@@ -68,7 +75,7 @@ exports.handler = async function handler(event) {
   } catch (error) {
     return {
       statusCode: 502,
-      headers: headers(),
+      headers: headers(undefined, event.headers && event.headers.origin),
       body: JSON.stringify({ error: 'Could not fetch TimeEdit data', detail: error.message })
     };
   }
