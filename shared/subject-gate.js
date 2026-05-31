@@ -80,4 +80,5 @@
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', gate);
   else gate();
+  window.addEventListener('haugnes:entitlements-changed', gate);
 })(window, document);
