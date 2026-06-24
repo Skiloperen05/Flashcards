@@ -249,6 +249,8 @@ values
    'Pakkeplass for eksamen, A-besvarelse og sensorveiledning når dokumentene er publisert.', null, 30),
   ('sam3-v25',   'SAM3',  'V25', 'Våren 2025', 'SAM3 Makroøkonomi',
    'Komplett eksamenspakke med originaloppgave, A-besvarelse og sensorveiledning.', null, 40),
+  ('sam3-v26',   'SAM3',  'V26', 'Våren 2026', 'SAM3 Makroøkonomi',
+   'Komplett eksamenspakke med originaloppgave, A-besvarelse og sensorveiledning.', null, 41),
   ('met2-v25',   'MET2',  'V25', 'Våren 2025', 'MET2 Metode',
    'Pakkeplass for eksamen, A-besvarelse og sensorveiledning når dokumentene er publisert.', null, 50),
   ('mat10-v25',  'MAT10', 'V25', 'Våren 2025', 'MAT10 Matematikk',
@@ -265,7 +267,7 @@ values
    'Pakkeplass for gamle eksamener, gruppeøvinger og regnetrening fra BED1.', null, 110)
 on conflict (id) do nothing;
 
--- Seed: SAM3 V25 resources (the only ones with published PDFs today)
+-- Seed: SAM3 resources with published PDFs
 insert into public.answer_resources (id, package_id, kind, title, subtitle, description, icon, url, download_url, order_index)
 values
   ('sam3-v25-exam',   'sam3-v25', 'Eksamen', 'SAM3 skoleeksamen V25', 'Original oppgave',
@@ -282,8 +284,26 @@ values
    2),
   ('sam3-v25-sensor', 'sam3-v25', 'Sensorveiledning', 'SAM3 sensorveiledning V25', 'Vurderingspunkter',
    'Sensorveiledningen viser hva sensor belønner og hvilke momenter som bør være med.',
+  'S',
+  'https://drive.google.com/file/d/1myk7l12OsR-jZ76am6e-W7iS1u6FNuTy/view',
+  'https://drive.google.com/uc?export=download&id=1myk7l12OsR-jZ76am6e-W7iS1u6FNuTy',
+   3),
+  ('sam3-v26-exam',   'sam3-v26', 'Eksamen', 'SAM3 skoleeksamen V26', 'Original oppgave',
+   'Original eksamensoppgave for våren 2026. Start her og gjør et eget forsøk før du ser på løsning.',
+   'E',
+   '../sam3/eksamenspakker/v26/sam3-skoleeksamen-v26.pdf',
+   '../sam3/eksamenspakker/v26/sam3-skoleeksamen-v26.pdf',
+   1),
+  ('sam3-v26-answer', 'sam3-v26', 'A-besvarelse', 'A-besvarelse SAM3 V26', 'Makroøkonomi',
+   'Eksempel på sterk besvarelse. Bruk den etter egen gjennomføring for å sammenligne struktur, modellbruk og drøfting.',
+   'A',
+   '../sam3/eksamenspakker/v26/sam3-a-besvarelse-v26.pdf',
+   '../sam3/eksamenspakker/v26/sam3-a-besvarelse-v26.pdf',
+   2),
+  ('sam3-v26-sensor', 'sam3-v26', 'Sensorveiledning', 'SAM3 sensorveiledning V26', 'Vurderingspunkter',
+   'Sensorveiledningen viser hva sensor belønner og hvilke momenter som bør være med.',
    'S',
-   'https://drive.google.com/file/d/1myk7l12OsR-jZ76am6e-W7iS1u6FNuTy/view',
-   'https://drive.google.com/uc?export=download&id=1myk7l12OsR-jZ76am6e-W7iS1u6FNuTy',
+   '../sam3/eksamenspakker/v26/sam3-sensorveiledning-v26.pdf',
+   '../sam3/eksamenspakker/v26/sam3-sensorveiledning-v26.pdf',
    3)
 on conflict (id) do nothing;

@@ -234,8 +234,8 @@
     if (selected.indexOf('SAM3') === -1) return;
     var item = document.createElement('a');
     item.className = 'focus-item';
-    item.href = '../sam3/';
-    item.innerHTML = '<span><strong>SAM3 V25-pakke</strong><span>Eksamen, sensorveiledning og A-besvarelse</span></span><span class="tag">PDF</span>';
+    item.href = 'a-besvarelser.html#/sam3/v26';
+    item.innerHTML = '<span><strong>SAM3 V26-pakke</strong><span>Eksamen, sensorveiledning og A-besvarelse</span></span><span class="tag">PDF</span>';
     list.appendChild(item);
   }
 
