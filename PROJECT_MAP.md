@@ -49,7 +49,8 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 
 - `sam3/`: SAM3 Makroøkonomi hub, flashcards, formula quiz, mock exam, models, model PDFs, and exam radar.
 - `sam3/eksamenspakker/`: local SAM3 exam package PDFs. Current known package: `v26/` with exam, A-besvarelse, and sensorveiledning PDFs.
-- `sam2/`: SAM2 Mikroøkonomi hub, exam radar, oppgaver, and clickable task bank.
+- `sam2/`: SAM2 Mikroøkonomi hub, memoar, exam radar, oppgaver, and clickable task bank.
+- `sam2/memoar/`: SAM2 memoar page plus downloadable source DOCX (`SAM2-memoar.docx`). First SAM2 unlock redirects to `sam2/?memoar=ny`.
 - `ret14/`: RET14 Skatterett hub, exam radar, pensum, quiz, and progress.
 - `sol1/`: SOL1 subject pages and flashcard data.
 - `sam1a/`, `met1/`, `kom1/`, `ret1a/`, `bed1/`, `mat10/`, `met2/`: MVP or planned subject hubs.

@@ -182,7 +182,7 @@ function render(){
     var has=admin||owned.indexOf(s.code)!==-1;
     var status=has?'<span class="status-pill owned">Låst opp</span>':'<span class="status-pill available">Tilgjengelig</span>';
     var cta=has
-      ? '<a class="shop-cta secondary" href="'+(s.code==='SOL1'?'../sol1/':s.code==='SAM3'?'../sam3/':s.code==='RET14'?'../ret14/':'../flashcards/?subject='+s.code.toLowerCase())+'">Åpne fag →</a>'
+      ? '<a class="shop-cta secondary" href="'+subjectHome(s.code, false)+'">Åpne fag →</a>'
       : '<button class="shop-cta" data-claim="'+esc(s.code)+'"><span class="spinner"></span><span class="cta-text">Lås opp gratis</span></button>';
     return '<article class="shop-card" style="--accent:'+esc(s.accent)+'">'
       + '<div class="shop-top"><span class="shop-icon">'+esc(s.icon)+'</span>'+status+'</div>'
@@ -210,8 +210,10 @@ var SUBJECT_HOMES = {
   KOM1: '../kom1/', RET1A: '../ret1a/', BED1: '../bed1/'
 };
 
-function subjectHome(code){
-  return SUBJECT_HOMES[code] || ('../flashcards/?subject=' + code.toLowerCase());
+function subjectHome(code, firstUnlock){
+  var home = SUBJECT_HOMES[code] || ('../flashcards/?subject=' + code.toLowerCase());
+  if (firstUnlock && code === 'SAM2') return home + '?memoar=ny';
+  return home;
 }
 
 function bind(){
@@ -225,8 +227,8 @@ function bind(){
       window.HaugnesEntitlements.claim(code).then(function(){
         var lockedFag = (getQuery('fag') || '').toUpperCase();
         var cameFromLock = (getQuery('reason') || '').toLowerCase() === 'lock';
-        if (cameFromLock && lockedFag === code){
-          window.location.href = subjectHome(code);
+        if (code === 'SAM2' || (cameFromLock && lockedFag === code)){
+          window.location.href = subjectHome(code, true);
           return;
         }
         render();

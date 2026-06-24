@@ -25,6 +25,7 @@
   <nav class="hf-nav" aria-label="Navigasjon">
     <a href="../user/index.html">Dashboard</a>
     <a href="../flashcards/">Alle flashcards</a>
+    <a href="memoar/">Memoar</a>
     <a class="primary" href="eksamen/">Åpne radar</a>
   </nav>
 </header>
@@ -38,6 +39,7 @@
       <div class="hf-tabbar">
         <a class="active" href="./">Oversikt</a>
         <a href="eksamen/">Eksamensradar</a>
+        <a href="memoar/">Memoar</a>
         <a href="oppgaver-klikkbar/">Oppgaveprioritering</a>
         <a href="oppgaver/">Oppgaver</a>
         <a href="#materiale">Materiale</a>
@@ -73,6 +75,10 @@
         <p class="hf-section-copy">SAM2 bør øves gjennom oppgaver, figurer og modellvalg. Start med prioriterte oppgaver, bruk radaren for å se hvilke temaer som hører sammen.</p>
       </div>
       <div class="hf-card-grid">
+        <a class="hf-tool-card" style="--accent:#e8bc68" href="memoar/">
+          <div class="hf-tool-top"><div class="hf-tool-icon">M</div><span class="hf-status">Memoar</span></div>
+          <div class="hf-tool-body"><h3>SAM2 memoar</h3><p>En kort startguide som forklarer hvorfor faget kan føles tungt i starten, og hvordan du bør jobbe med oppgaveboken mot eksamen.</p><div class="hf-tool-foot"><span>Åpne →</span><span>2 memoarer</span></div></div>
+        </a>
         <a class="hf-tool-card" style="--accent:#f09828" href="eksamen/">
           <div class="hf-tool-top"><div class="hf-tool-icon">📡</div><span class="hf-status">Tilgjengelig</span></div>
           <div class="hf-tool-body"><h3>Eksamensradar</h3><p>Prioriteringsradar for SAM2: rangerer temaer etter eksamensverdi, regneteknisk risiko, modellbruk og typiske kombinasjoner.</p><div class="hf-tool-foot"><span>Åpne →</span><span>24 temaer</span></div></div>
@@ -102,13 +108,64 @@
     </div>
     <aside class="hf-subject-aside">
       <section class="hf-info-card"><h3>Fremgang</h3><div style="display:flex;align-items:center;gap:18px"><div class="hf-score"><strong>65%</strong></div><div><strong style="display:block;color:#08172f;font-size:18px">24 / 66</strong><span style="color:#65738d;font-size:13px">oppgaver prioritert</span></div></div></section>
-      <section class="hf-info-card"><h3>Snarveier</h3><div class="hf-priority"><a href="../user/index.html" style="color:#2f62ff;text-decoration:none;font-weight:900">Dashboard</a><span>→</span></div><div class="hf-priority"><a href="eksamen/" style="color:#2f62ff;text-decoration:none;font-weight:900">Eksamensradar</a><span>→</span></div><div class="hf-priority"><a href="oppgaver/" style="color:#2f62ff;text-decoration:none;font-weight:900">Oppgavebank</a><span>→</span></div></section>
+      <section class="hf-info-card"><h3>Snarveier</h3><div class="hf-priority"><a href="memoar/" style="color:#2f62ff;text-decoration:none;font-weight:900">SAM2 memoar</a><span>→</span></div><div class="hf-priority"><a href="../user/index.html" style="color:#2f62ff;text-decoration:none;font-weight:900">Dashboard</a><span>→</span></div><div class="hf-priority"><a href="eksamen/" style="color:#2f62ff;text-decoration:none;font-weight:900">Eksamensradar</a><span>→</span></div><div class="hf-priority"><a href="oppgaver/" style="color:#2f62ff;text-decoration:none;font-weight:900">Oppgavebank</a><span>→</span></div></section>
     </aside>
   </div>
 </main>
+<div class="hf-sam2-memo-modal" id="sam2MemoModal" aria-hidden="true">
+  <div class="hf-sam2-memo-dialog" role="dialog" aria-modal="true" aria-labelledby="sam2MemoTitle">
+    <button class="hf-sam2-memo-close" type="button" data-close-sam2-memo aria-label="Lukk memoar">×</button>
+    <div class="hf-kicker">Velkommen til SAM2</div>
+    <h2 id="sam2MemoTitle">Start med memoaret</h2>
+    <p>Før du går løs på oppgavene: SAM2 kan føles abstrakt i starten, særlig konsumentteorien. Poenget er ikke å forstå alt med én gang, men å kjenne igjen modellene og gjøre oppgavene fortløpende.</p>
+    <p>Memoaret ligger alltid tilgjengelig som verktøy og i sidepanelet senere.</p>
+    <div class="hf-sam2-memo-actions">
+      <a class="hf-btn" href="memoar/" data-open-sam2-memo>Åpne memoaret →</a>
+      <button class="hf-secondary-btn" type="button" data-close-sam2-memo>Fortsett til SAM2</button>
+    </div>
+  </div>
+</div>
 <footer class="hf-footer"><div class="hf-shell"><a href="../user/index.html">← Tilbake til dashboard</a></div></footer>
 <script src="../shared/subject-page-data.js"></script>
 <script src="../shared/subject-resources.js"></script>
 <script src="../shared/subject-page-enhancements.js"></script>
+<script>
+(function () {
+  var key = 'haugnes_sam2_memoar_seen';
+  var modal = document.getElementById('sam2MemoModal');
+  if (!modal) return;
+
+  function shouldShow() {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('memoar') === 'ny') return true;
+    try { return window.localStorage.getItem(key) !== '1'; } catch (e) { return false; }
+  }
+
+  function close() {
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden', 'true');
+    try { window.localStorage.setItem(key, '1'); } catch (e) {}
+  }
+
+  if (shouldShow()) {
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+  modal.querySelectorAll('[data-close-sam2-memo]').forEach(function (button) {
+    button.addEventListener('click', close);
+  });
+  modal.querySelectorAll('[data-open-sam2-memo]').forEach(function (link) {
+    link.addEventListener('click', function () {
+      try { window.localStorage.setItem(key, '1'); } catch (e) {}
+    });
+  });
+  modal.addEventListener('click', function (event) {
+    if (event.target === modal) close();
+  });
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && modal.classList.contains('show')) close();
+  });
+})();
+</script>
 </body>
 </html>

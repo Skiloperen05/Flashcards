@@ -5,6 +5,7 @@
     kompendium: 'Kompendium',
     formelark: 'Formelark',
     eksamen: 'Eksamen',
+    memoar: 'Memoar',
     a_besvarelse: 'A-besvarelse',
     sensorveiledning: 'Sensorveiledning',
     annet: 'Annet'
@@ -22,6 +23,7 @@
       { type: 'a_besvarelse', title: 'A-besvarelser', description: 'Kobles til beskyttet eksamensarkiv når dokumentene er klare for deling.', status: 'coming', href: '../user/a-besvarelser.html#/sol1' }
     ],
     sam2: [
+      { type: 'memoar', title: 'SAM2 memoar', description: 'To korte startmemoarer om forventninger til faget og hvordan du bør jobbe mot eksamen.', status: 'available', href: '../sam2/memoar/' },
       { type: 'eksamen', title: 'Eksamensradar', description: 'Prioritering av mikrotemaer, oppgavetyper og modellvalg.', status: 'available', href: '../sam2/eksamen/' },
       { type: 'kompendium', title: 'Oppgaver og figurer', description: 'Oppgaveprioritering og klikkbar oppgavetrening.', status: 'available', href: '../sam2/oppgaver-klikkbar/' },
       { type: 'a_besvarelse', title: 'A-besvarelser', description: 'Kobles til beskyttet eksamensarkiv når dokumentene er klare for deling.', status: 'coming', href: '../user/a-besvarelser.html#/sam2' }
