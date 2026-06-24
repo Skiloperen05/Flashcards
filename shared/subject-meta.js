@@ -277,4 +277,20 @@
     findById: findById,
     getFlashcardSubjectId: getFlashcardSubjectId
   };
+
+  function loadRatingAdminEditor() {
+    if (!/\/user\/subjects\.html$/.test(window.location.pathname)) return;
+    if (document.getElementById('haugnes-rating-admin-js')) return;
+    var current = document.currentScript || Array.prototype.slice.call(document.scripts).filter(function (script) {
+      return /shared\/subject-meta\.js(?:\?|$)/.test(script.src || '');
+    }).pop();
+    var script = document.createElement('script');
+    script.id = 'haugnes-rating-admin-js';
+    script.defer = true;
+    script.src = current && current.src ? new URL('haugnes-rating-admin.js', current.src).href : '../shared/haugnes-rating-admin.js';
+    document.head.appendChild(script);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadRatingAdminEditor);
+  else loadRatingAdminEditor();
 })(window);
