@@ -378,6 +378,53 @@
     ['Beslutning', 'Skriv anbefaling og økonomisk begrunnelse.', 'Svar']
   ];
 
+  var memos = {
+    mat10: {
+      intro: 'MAT10 handler om å kjenne igjen riktig matematisk metode raskt og skrive ryddig nok til at regningen blir kontrollerbar.',
+      exam: 'Eksamen er typisk regnetung, med høy verdi i metodevalg, mellomregning og kort tolkning av svaret.',
+      studyAdvice: 'Start med formelark og korte metodekort før du bruker oppgavebanken til mer sammenhengende regneøkter.'
+    },
+    met2: {
+      intro: 'MET2 samler metode, statistikk og presis tolkning av usikkerhet, tester og regresjon.',
+      exam: 'Eksamen belønner både riktig fremgangsmåte og presist språk om p-verdi, konfidensintervall og regresjonsoutput.',
+      studyAdvice: 'Bruk begrepskort først, deretter oppgaver der du velger test og skriver konklusjon i kontekst.'
+    },
+    sam1a: {
+      intro: 'SAM1A er grunnmuren i mikro: marked, elastisitet, velferd og markedssvikt forklart med enkle modeller.',
+      exam: 'Eksamen krever ofte at figur, begrep og kort forklaring henger sammen i samme svar.',
+      studyAdvice: 'Begynn med læringsmålene, tren på standardskift i figurer, og bruk hurtigkort for å låse begrepene.'
+    },
+    met1: {
+      intro: 'MET1 handler om rente, nåverdi, annuitet og økonomisk matematikk der tid og kontantstrøm må holdes ryddig.',
+      exam: 'Eksamen tester typisk formelvalg, periodeforståelse og evnen til å konkludere fra tallene.',
+      studyAdvice: 'Start med rente- og NNV-kort, og bruk formelark som sjekkliste før lengre regneoppgaver.'
+    },
+    kom1: {
+      intro: 'KOM1 samler rapportskriving, presentasjon og akademisk kommunikasjon til praktiske skrivegrep.',
+      exam: 'Vurderingen handler ofte om struktur, presisjon, refleksjon og tydelig kobling mellom problemstilling og argumentasjon.',
+      studyAdvice: 'Bruk siden som skriveverksted: bygg disposisjon, øv på analyseavsnitt og repeter overganger før levering.'
+    },
+    ret1a: {
+      intro: 'RET1A handler om juridisk metode i praksis: finne rettsregel, drøfte vilkår og bruke faktum presist.',
+      exam: 'Eksamen belønner ryddig struktur, tydelige delkonklusjoner og konkret subsumsjon fremfor lange generelle utlegninger.',
+      studyAdvice: 'Tren først på metodekortene, deretter på gamle oppgaver med samme faste drøftingsmal.'
+    },
+    bed1: {
+      intro: 'BED1 samler kalkyler, resultat, investering og budsjettering i beslutninger som må regnes og forklares.',
+      exam: 'Eksamen er ofte poengtung på standardoppsett, riktige kostnadsbegreper og en kort økonomisk anbefaling.',
+      studyAdvice: 'Start med begreper og formler, gå videre til korte regnedriller, og avslutt med gamle eksamensoppgaver.'
+    }
+  };
+
+  Object.keys(pages).forEach(function (id) {
+    pages[id].id = id;
+    pages[id].memo = memos[id] || {
+      intro: pages[id].lead,
+      exam: 'Eksamensmemoet er klart for fagspesifikk tekst. Bruk denne plassen til form, vurdering og typiske oppgavetyper.',
+      studyAdvice: 'Bruk verktøyene i rekkefølge: oversikt, kort øving, oppgaver og til slutt eksamensrettet repetisjon.'
+    };
+  });
+
   window.HaugnesSubjectPages = {
     get: function (id) {
       return pages[String(id || '').toLowerCase()] || null;
