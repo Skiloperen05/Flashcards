@@ -69,10 +69,10 @@
       progress: 0,
       decks: '24',
       cards: '66',
-      tools: '3',
+      tools: '4',
       path: '../sam2/',
       flashcards: '../sam2/oppgaver-klikkbar/',
-      description: 'Oppgaveprioritering, eksamensradar, figurer og modellvalg.'
+      description: 'Memoar, oppgaveprioritering, eksamensradar, figurer og modellvalg.'
     }, 'semester2', 20),
     withCategory({
       id: 'sam3',

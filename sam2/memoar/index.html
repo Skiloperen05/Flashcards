@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SAM2 memoar — Haugnes Flashcards</title>
+<link rel="icon" href="../../assets/haugnes-logo-mark.svg">
+<link rel="apple-touch-icon" href="../../assets/haugnes-logo-mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../shared/haugnes-theme.css">
+<link rel="stylesheet" href="../../shared/haugnes-subject.css">
+<link rel="stylesheet" href="../../shared/haugnes-sam2.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../../shared/auth-guard.js"></script>
+<script>AuthGuard.requireAuth();</script>
+</head>
+<body class="haugnes-app">
+<header class="hf-shell hf-topbar">
+  <a class="hf-brand" href="../../user/index.html">
+    <span class="hf-logo"></span>
+    <span><span class="hf-brand-title">Haugnes</span><span class="hf-brand-sub">Flashcards</span></span>
+  </a>
+  <nav class="hf-nav" aria-label="Navigasjon">
+    <a href="../../user/index.html">Dashboard</a>
+    <a href="../">SAM2</a>
+    <a class="primary" href="../oppgaver-klikkbar/">Start oppgaver</a>
+  </nav>
+</header>
+
+<main class="hf-main">
+  <article class="hf-shell hf-sam2-memo-page">
+    <div class="hf-kicker">SAM2 · Memoar</div>
+    <h1 class="hf-title">SAM2 <span>memoar</span></h1>
+    <p class="hf-lead">To korte fagmemoarer for å gi riktig forventning til faget og en ryddig arbeidsmåte mot eksamen.</p>
+    <div class="hf-hero-actions">
+      <a class="hf-btn" href="../oppgaver-klikkbar/">Gå til oppgaveprioritering →</a>
+      <a class="hf-secondary-btn" href="SAM2-memoar.docx" download>Last ned original</a>
+    </div>
+
+    <section class="hf-sam2-memo-body">
+      <div class="hf-info-card hf-sam2-memo-note">
+        <span>1</span>
+        <h2>SAM2 — Ikke mist motet i starten</h2>
+        <p>SAM2 bygger på læreboken og oppgaveboken til Kjetil Bjorvatn, som også foreleser i faget. Faget er delt inn i fire hoveddeler: konsumentteori, produsentteori, markedsteori, og markedsmakt og strategi. De ulike kapitlene følger i stor grad forelesningene, noe som gjør det mulig å jobbe ganske strukturert gjennom semesteret.</p>
+        <p>Det viktigste å vite tidlig er at første del, konsumentteorien, kan oppleves som den tyngste faglig. Den er abstrakt, modellbasert og kan føles lite intuitiv. Mange av forutsetningene i faget kan også virke kunstige eller urealistiske, og det gjør at SAM2 i perioder kan føles mer "uforståelig" enn det egentlig er.</p>
+        <p>Derfor bør man ikke miste motet etter de første forelesningene. Faget blir mer håndterbart når man begynner å kjenne igjen modellene, skjønner hva oppgavene spør etter, og ser hvordan samme type resonnement går igjen.</p>
+      </div>
+
+      <div class="hf-info-card hf-sam2-memo-note">
+        <span>2</span>
+        <h2>SAM2 — Slik bør du jobbe mot eksamen</h2>
+        <p>Det viktigste studietipset i SAM2 er enkelt, men lite glamorøst: gjør oppgavene i oppgaveboken fortløpende. Foreleser uttrykker eksplisitt at eksamen baserer seg på oppgavene i oppgaveboken, og derfor bør oppgavene knyttet til hver forelesning være hovedprioriteten gjennom semesteret.</p>
+        <p>Dette kan være dørgende kjedelig, men det gjør eksamensperioden betydelig lettere. Hvis du venter med oppgaveboken til slutten, blir faget fort tungt og abstrakt. Hvis du derimot gjør oppgavene underveis, lærer du både modellene, språkføringen og hvilke typer resonnementer som forventes.</p>
+        <p>I korte trekk klarer man seg relativt godt i SAM2 dersom man behersker oppgavene i oppgaveboken. Samtidig er det verdt å være forberedt på at eksamen kan overraske. Våren 2026 var preget av en curveball som gjorde eksamen vanskeligere enn tidligere. Likevel er oppgaveboken fortsatt det klart viktigste stedet å legge innsatsen.</p>
+      </div>
+    </section>
+  </article>
+</main>
+<footer class="hf-footer"><div class="hf-shell"><a href="../">← Tilbake til SAM2</a></div></footer>
+</body>
+</html>
