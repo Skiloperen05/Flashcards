@@ -44,6 +44,27 @@
       <button class="filter-btn" type="button" data-filter="electives">Valgfag</button>
     </div>
   </div>
+  <section class="ranking-panel" aria-labelledby="rankingTitle">
+    <div class="ranking-copy">
+      <span>Fagrangering</span>
+      <h2 id="rankingTitle">Se Haugnes-vurderingen først, og bidra med din egen.</h2>
+      <p>Hvert fag vurderes på arbeidsmengde, relevans, eksamen, pensum og verdi fra forelesningene. Egen vurdering kan senere brukes inn i et fellessnitt.</p>
+    </div>
+    <div class="ranking-controls">
+      <label class="sort-label" for="subjectSort">Sorter etter</label>
+      <select class="sort-select" id="subjectSort">
+        <option value="default">Semester</option>
+        <option value="haugnes-desc">Haugnes: høyest score</option>
+        <option value="haugnes-asc">Haugnes: lavest score</option>
+        <option value="community-desc">Fellessnitt</option>
+        <option value="personal-desc">Din vurdering</option>
+        <option value="workload-desc">Haugnes: mest arbeid</option>
+        <option value="examDifficulty-desc">Haugnes: vanskeligst eksamen</option>
+        <option value="relevance-desc">Haugnes: mest relevant</option>
+      </select>
+    </div>
+    <div class="ranking-list" id="rankingList"></div>
+  </section>
   <div class="subject-groups" id="subjectsGrid"></div>
   <div class="empty-note" id="emptyNote">Fant ingen fag som matcher søket.</div>
 </main>
@@ -52,19 +73,186 @@
 <script>
 var SUBJECTS = window.HaugnesSubjects ? window.HaugnesSubjects.getAll() : [];
 var currentFilter = 'all';
+var RATINGS_KEY = 'hf_subject_ratings_v1';
+var CRITERIA = [
+  { key: 'workload', label: 'Arbeidsmengde', low: 'Lite', high: 'Mye' },
+  { key: 'relevance', label: 'Relevans', low: 'Lav', high: 'Høy' },
+  { key: 'examDifficulty', label: 'Eksamen', low: 'Lett', high: 'Vanskelig' },
+  { key: 'curriculum', label: 'Pensum', low: 'Lite', high: 'Mye' },
+  { key: 'lectureValue', label: 'Forelesninger', low: 'Lav verdi', high: 'Høy verdi' }
+];
+var HAUGNES_RATINGS = {
+  ret14: { workload: 4, relevance: 5, examDifficulty: 4, curriculum: 4, lectureValue: 3, verdict: 'Høy praktisk verdi, men krever presis metode og jevn drilling.' },
+  subj_sol1: { workload: 3, relevance: 4, examDifficulty: 3, curriculum: 3, lectureValue: 4, verdict: 'Mye handler om å forstå teoriene godt nok til å bruke dem i case.' },
+  sam2: { workload: 4, relevance: 4, examDifficulty: 5, curriculum: 4, lectureValue: 3, verdict: 'Eksamen kan bli tung hvis modellvalg og figurer ikke sitter tidlig.' },
+  sam3: { workload: 4, relevance: 4, examDifficulty: 4, curriculum: 5, lectureValue: 3, verdict: 'Stort modellfag der oversikt og sammenhenger teller mer enn enkeltdetaljer.' },
+  met2: { workload: 4, relevance: 4, examDifficulty: 4, curriculum: 4, lectureValue: 3, verdict: 'Blir langt lettere når hypotesetesting og regresjon kobles til oppgavetyper.' },
+  mat10: { workload: 4, relevance: 3, examDifficulty: 4, curriculum: 4, lectureValue: 3, verdict: 'Regnetrening slår passiv lesing. Formler må brukes, ikke bare gjenkjennes.' },
+  sam1a: { workload: 3, relevance: 4, examDifficulty: 3, curriculum: 3, lectureValue: 4, verdict: 'Godt grunnlagsfag der elastisitet og velferdsanalyse bør sitte tidlig.' },
+  met1: { workload: 3, relevance: 4, examDifficulty: 3, curriculum: 3, lectureValue: 3, verdict: 'Rente, nåverdi og rekker gir mye igjen hvis du øver jevnt.' },
+  kom1: { workload: 2, relevance: 3, examDifficulty: 2, curriculum: 2, lectureValue: 3, verdict: 'Mest verdifullt når struktur og akademisk språk omsettes i egne tekster.' },
+  ret1a: { workload: 4, relevance: 4, examDifficulty: 4, curriculum: 4, lectureValue: 3, verdict: 'Juridisk metode er nøkkelen. Det er lett å kunne temaet uten å svare godt.' },
+  bed1: { workload: 4, relevance: 5, examDifficulty: 4, curriculum: 4, lectureValue: 3, verdict: 'Praktisk og viktig fag, men krever mengdetrening på oppgavetyper.' }
+};
+var COMMUNITY_RATINGS = {};
+var ratings = readRatings();
+var currentSort = 'default';
+var currentFilteredSubjects = SUBJECTS.slice();
+
+function readRatings(){
+  var raw = '';
+  try {
+    raw = window.localStorage.getItem(RATINGS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (_e) {
+    return {};
+  }
+}
+
+function saveRatings(){
+  try { window.localStorage.setItem(RATINGS_KEY, JSON.stringify(ratings)); } catch (_e) {}
+}
+
+function escapeHtml(value){
+  return String(value || '').replace(/[&<>"']/g, function(ch){
+    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+  });
+}
+
+function getSubjectRating(subjectId){
+  return ratings[subjectId] || {};
+}
+
+function getHaugnesRating(subjectId){
+  return HAUGNES_RATINGS[subjectId] || {};
+}
+
+function getCommunityRating(subjectId){
+  return COMMUNITY_RATINGS[subjectId] || {};
+}
+
+function getCriterionValue(subjectId, key){
+  var value = Number(getSubjectRating(subjectId)[key]);
+  return value >= 1 && value <= 5 ? value : 0;
+}
+
+function getHaugnesCriterionValue(subjectId, key){
+  var value = Number(getHaugnesRating(subjectId)[key]);
+  return value >= 1 && value <= 5 ? value : 0;
+}
+
+function scoreValues(values){
+  var total = 0;
+  var count = 0;
+  CRITERIA.forEach(function(criterion){
+    var value = Number(values[criterion.key]);
+    if (value < 1 || value > 5) value = 0;
+    if (value) {
+      total += value;
+      count += 1;
+    }
+  });
+  return count ? Math.round((total / count) * 10) / 10 : 0;
+}
+
+function scoreSubject(subjectId){
+  return scoreValues(getSubjectRating(subjectId));
+}
+
+function scoreHaugnes(subjectId){
+  return scoreValues(getHaugnesRating(subjectId));
+}
+
+function scoreCommunity(subjectId){
+  return scoreValues(getCommunityRating(subjectId));
+}
+
+function ratedCount(subjectId){
+  return CRITERIA.filter(function(criterion){ return getCriterionValue(subjectId, criterion.key); }).length;
+}
+
+function ratingSummary(subjectId){
+  var score = scoreSubject(subjectId);
+  var count = ratedCount(subjectId);
+  return count ? score.toFixed(1).replace('.', ',') + ' / 5' : 'Ikke vurdert';
+}
+
+function formatScore(score){
+  return score ? score.toFixed(1).replace('.', ',') : '—';
+}
 
 function cardHtml(s){
   var isDisabled = s.path === '#';
   var hasFlashcards = s.flashcards && s.flashcards !== '#';
   var description = s.description || s.desc || '';
+  var rating = getSubjectRating(s.id);
+  var score = scoreSubject(s.id);
+  var scoreText = ratingSummary(s.id);
+  var haugnesRating = getHaugnesRating(s.id);
+  var haugnesScore = scoreHaugnes(s.id);
+  var communityScore = scoreCommunity(s.id);
+  var communityText = communityScore ? formatScore(communityScore) : 'Ikke nok svar';
+  var verdict = haugnesRating.verdict || 'Vurdering kommer.';
+  var officialMetrics = CRITERIA.map(function(criterion){
+    return '<div class="official-metric"><span>'+criterion.label+'</span><b>'+formatScore(getHaugnesCriterionValue(s.id, criterion.key))+'</b></div>';
+  }).join('');
+  var criteriaHtml = CRITERIA.map(function(criterion){
+    var value = getCriterionValue(s.id, criterion.key) || 3;
+    return '<label class="rating-row"><span class="rating-row-head"><b>'+criterion.label+'</b><strong data-rating-value="'+s.id+'-'+criterion.key+'">'+value+'</strong></span>'
+      + '<input type="range" min="1" max="5" step="1" value="'+value+'" data-subject="'+s.id+'" data-rating="'+criterion.key+'">'
+      + '<span class="rating-scale"><small>'+criterion.low+'</small><small>'+criterion.high+'</small></span></label>';
+  }).join('');
+  var note = rating.note || '';
   return '<article class="subject-card" data-status="'+s.status+'" data-search="'+(s.code+' '+s.name+' '+description).toLowerCase()+'" style="--accent:'+s.accent+';--p:'+s.progress+'%">'
     + '<div class="subject-top"><div class="subject-icon">'+(s.emblem?'<img class="emblem-img" src="'+s.emblem+'" alt="" onerror="this.remove()">':'')+'<span class="emblem-fallback">'+s.icon+'</span></div><span class="status '+(s.status==='active'?'active':'')+'">'+s.statusText+'</span></div>'
     + '<div class="subject-code">'+s.code+'</div><div class="subject-name">'+s.name+'</div>'
     + '<p class="subject-desc">'+description+'</p>'
+    + '<section class="official-rating"><div class="official-rating-head"><span>Haugnes-vurdering</span><strong>'+formatScore(haugnesScore)+'</strong></div>'
+    + '<p>'+escapeHtml(verdict)+'</p><div class="official-grid">'+officialMetrics+'</div>'
+    + '<div class="rating-comparison"><span>Fellessnitt: <b>'+communityText+'</b></span><span>Din vurdering: <b data-rating-summary="'+s.id+'">'+scoreText+'</b></span></div></section>'
+    + '<details class="rating-box"><summary><span>Gi din vurdering</span><b data-rating-summary="'+s.id+'">'+scoreText+'</b></summary>'
+    + '<div class="rating-total"><span>Din samlede score</span><strong data-rating-total="'+s.id+'">'+formatScore(score)+'</strong></div>'
+    + '<div class="rating-fields">'+criteriaHtml+'</div>'
+    + '<label class="rating-note"><span>Kort notat</span><textarea rows="2" data-subject="'+s.id+'" data-rating-note placeholder="Din kommentar til faget">'+escapeHtml(note)+'</textarea></label>'
+    + '<button class="clear-rating" type="button" data-clear-rating="'+s.id+'">Nullstill din vurdering</button></details>'
     + '<div class="metrics"><div class="metric"><b>'+s.decks+'</b><span>Deck</span></div><div class="metric"><b>'+s.cards+'</b><span>Innhold</span></div><div class="metric"><b>'+s.tools+'</b><span>Verktøy</span></div></div>'
     + '<div class="progress-labels"><span>Progresjon</span><b>'+s.progress+'%</b></div><div class="bar"><i></i></div>'
     + '<div class="card-actions"><a class="card-btn primary" href="'+s.path+'">'+(isDisabled?'Kommer senere':'Åpne fag')+'</a><a class="card-btn secondary" href="'+(hasFlashcards?s.flashcards:s.path)+'">'+(hasFlashcards?'Start øving':'Se plan')+'</a></div>'
     + '</article>';
+}
+
+function sortedSubjects(list){
+  var sorted = list.slice();
+  if (currentSort === 'default') return sorted;
+  sorted.sort(function(a, b){
+    if (currentSort === 'haugnes-desc') return scoreHaugnes(b.id) - scoreHaugnes(a.id) || a.code.localeCompare(b.code);
+    if (currentSort === 'haugnes-asc') return scoreHaugnes(a.id) - scoreHaugnes(b.id) || a.code.localeCompare(b.code);
+    if (currentSort === 'community-desc') return scoreCommunity(b.id) - scoreCommunity(a.id) || scoreHaugnes(b.id) - scoreHaugnes(a.id) || a.code.localeCompare(b.code);
+    if (currentSort === 'personal-desc') return scoreSubject(b.id) - scoreSubject(a.id) || scoreHaugnes(b.id) - scoreHaugnes(a.id) || a.code.localeCompare(b.code);
+    var parts = currentSort.split('-');
+    var key = parts[0];
+    var dir = parts[1] === 'asc' ? 1 : -1;
+    var delta = getHaugnesCriterionValue(a.id, key) - getHaugnesCriterionValue(b.id, key);
+    return delta ? delta * dir : a.code.localeCompare(b.code);
+  });
+  return sorted;
+}
+
+function renderRankingList(list){
+  var ranked = list.filter(function(subject){ return scoreHaugnes(subject.id); })
+    .sort(function(a, b){ return scoreHaugnes(b.id) - scoreHaugnes(a.id) || a.code.localeCompare(b.code); })
+    .slice(0, 5);
+  var target = document.getElementById('rankingList');
+  if (!ranked.length) {
+    target.innerHTML = '<div class="ranking-empty">Haugnes-vurderinger kommer snart.</div>';
+    return;
+  }
+  target.innerHTML = ranked.map(function(subject, index){
+    var score = formatScore(scoreHaugnes(subject.id));
+    var rating = getHaugnesRating(subject.id);
+    var note = rating.verdict ? '<small>'+escapeHtml(rating.verdict)+'</small>' : '';
+    return '<div class="ranking-item"><b>#'+(index + 1)+'</b><span><strong>'+subject.code+'</strong>'+escapeHtml(subject.name)+note+'</span><em>'+score+'</em></div>';
+  }).join('');
 }
 
 function renderSubjects(){
@@ -76,13 +264,25 @@ function renderSubjects(){
     var matchesSearch = !q || hay.indexOf(q) !== -1;
     return matchesFilter && matchesSearch;
   });
+  currentFilteredSubjects = filtered;
+  var displaySubjects = sortedSubjects(filtered);
   var groups = window.HaugnesSubjects && typeof window.HaugnesSubjects.groupByCategory === 'function'
-    ? window.HaugnesSubjects.groupByCategory(filtered)
-    : [{ id: 'all', label: 'Fag', subjects: filtered }];
+    ? (currentSort === 'default' ? window.HaugnesSubjects.groupByCategory(displaySubjects) : [{ id: 'ranked', label: 'Rangert visning', subjects: displaySubjects }])
+    : [{ id: 'all', label: 'Fag', subjects: displaySubjects }];
   document.getElementById('subjectsGrid').innerHTML = groups.map(function(group){
     return '<section class="subject-group" data-category="'+group.id+'"><div class="subject-group-head"><div><span>'+group.subjects.length+' fag</span><h2>'+group.label+'</h2></div></div><div class="subjects-grid">'+group.subjects.map(cardHtml).join('')+'</div></section>';
   }).join('');
   document.getElementById('emptyNote').style.display = filtered.length ? 'none' : 'block';
+  renderRankingList(filtered);
+}
+
+function refreshRatingReadout(subjectId){
+  var summaries = document.querySelectorAll('[data-rating-summary="'+subjectId+'"]');
+  var total = document.querySelector('[data-rating-total="'+subjectId+'"]');
+  var score = scoreSubject(subjectId);
+  summaries.forEach(function(summary){ summary.textContent = ratingSummary(subjectId); });
+  if (total) total.textContent = formatScore(score);
+  renderRankingList(currentFilteredSubjects);
 }
 
 document.querySelectorAll('.filter-btn').forEach(function(btn){
@@ -95,6 +295,40 @@ document.querySelectorAll('.filter-btn').forEach(function(btn){
 });
 
 document.getElementById('subjectSearch').addEventListener('input', renderSubjects);
+document.getElementById('subjectSort').addEventListener('change', function(event){
+  currentSort = event.target.value;
+  renderSubjects();
+});
+document.getElementById('subjectsGrid').addEventListener('input', function(event){
+  var subjectId = event.target.getAttribute('data-subject');
+  var key = event.target.getAttribute('data-rating');
+  var valueTarget;
+  if (subjectId && key) {
+    ratings[subjectId] = ratings[subjectId] || {};
+    ratings[subjectId][key] = Number(event.target.value);
+    saveRatings();
+    valueTarget = document.querySelector('[data-rating-value="'+subjectId+'-'+key+'"]');
+    if (valueTarget) valueTarget.textContent = event.target.value;
+    refreshRatingReadout(subjectId);
+  }
+  if (subjectId && event.target.hasAttribute('data-rating-note')) {
+    ratings[subjectId] = ratings[subjectId] || {};
+    ratings[subjectId].note = event.target.value.trim();
+    saveRatings();
+    renderRankingList(currentFilteredSubjects);
+  }
+});
+document.getElementById('subjectsGrid').addEventListener('change', function(event){
+  if (currentSort === 'default') return;
+  if (event.target.getAttribute('data-subject') && event.target.getAttribute('data-rating')) renderSubjects();
+});
+document.getElementById('subjectsGrid').addEventListener('click', function(event){
+  var subjectId = event.target.getAttribute('data-clear-rating');
+  if (!subjectId) return;
+  delete ratings[subjectId];
+  saveRatings();
+  renderSubjects();
+});
 window.onUserAuthorized = function(){ renderSubjects(); };
 renderSubjects();
 </script>
