@@ -75,7 +75,7 @@ svg{display:block}
 .section-title{display:flex;align-items:center;justify-content:space-between;margin:2px 0 -6px}
 .section-title h2{font-size:21px;letter-spacing:-.04em}
 .section-title a{font-size:13px;color:#9db4ff;font-weight:850}
-.subjects{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.subjects{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.dashboard-subject-groups{grid-template-columns:1fr}.dashboard-subject-group{display:grid;gap:13px}.dashboard-subject-group-head{display:flex;align-items:end;justify-content:space-between;gap:12px}.dashboard-subject-group-head h3{font-size:17px;letter-spacing:-.035em}.dashboard-subject-group-head span{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--muted);font-size:12px;font-weight:850}.dashboard-subject-group-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .subject-card{position:relative;overflow:hidden;display:flex;flex-direction:column;padding:18px;border-radius:20px;background:linear-gradient(180deg,rgba(15,43,92,.94),rgba(8,25,56,.94));border:1px solid var(--line);box-shadow:0 16px 34px rgba(0,0,0,.22);transition:transform .18s,border-color .18s}
 .subject-card:hover{transform:translateY(-4px);border-color:var(--line2)}
 .subject-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:13px}
@@ -135,7 +135,7 @@ svg{display:block}
 .icon-btn{width:42px;height:42px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.055);color:#dce6f7;display:grid;place-items:center;cursor:pointer;font-size:18px}
 
 @media(max-width:1180px){.app{grid-template-columns:1fr}.sidebar{display:none}.mobile-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.dashboard{grid-template-columns:1fr}}
-@media(max-width:760px){.subjects{grid-template-columns:1fr}.today-stats{grid-template-columns:1fr}.primary-row{display:grid}}
+@media(max-width:760px){.subjects,.dashboard-subject-group-grid{grid-template-columns:1fr}.today-stats{grid-template-columns:1fr}.primary-row{display:grid}}
 @media(max-width:680px){.main{padding:16px}.panel-inner{padding:18px}}
 </style>
 </head>

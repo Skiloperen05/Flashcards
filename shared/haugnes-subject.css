@@ -12,6 +12,10 @@
 .hf-priority span{font-size:12px;color:#8fa5ca}
 .hf-priority a{color:#9eb7ff!important}
 .hf-source-grid,.hf-learning-suite{margin-top:16px}
+.hf-memo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:0 0 16px}
+.hf-memo-card{min-height:146px;border-color:rgba(126,162,255,.18);background:linear-gradient(180deg,rgba(16,47,104,.78),rgba(8,25,57,.94))}
+.hf-memo-card span{display:inline-flex;margin-bottom:10px;padding:5px 9px;border-radius:999px;background:rgba(47,98,255,.14);border:1px solid rgba(126,162,255,.24);color:#b8c9ff;font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.08em}
+.hf-memo-card p{margin:0;color:#d6e0f2;font-size:13px;line-height:1.65}
 .hf-learning-suite{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 .hf-learning-suite .hf-info-card:first-child{grid-column:1/-1}
 .hf-source-card{border-color:rgba(232,188,104,.18)}
@@ -35,6 +39,20 @@
 .hf-formula-card{border-color:rgba(123,161,255,.20)}
 .hf-radar-card{border-color:rgba(232,188,104,.20)}
 .hf-material-card{border-color:rgba(32,185,122,.20)}
+.hf-resource-panel{margin-top:16px;border-color:rgba(126,162,255,.20)}
+.hf-resource-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 14px}
+.hf-resource-tab{height:34px;padding:0 12px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);color:#cbd7ef;font:900 12px Lora,Georgia,serif;cursor:pointer}
+.hf-resource-tab.active{background:linear-gradient(135deg,var(--subject-accent,#2f62ff),#4b7dff);color:#fff;border-color:rgba(255,255,255,.16);box-shadow:0 12px 26px color-mix(in srgb,var(--subject-accent,#2f62ff),transparent 70%)}
+.hf-resource-list{display:grid;gap:10px}
+.hf-resource-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px;border-radius:18px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09)}
+.hf-resource-item em{display:block;font-style:normal;color:#f1d38a;font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.hf-resource-item strong{display:block;color:#fff;font-size:14px;line-height:1.35}
+.hf-resource-item p{margin:5px 0 0;color:#aebddd;font-size:12px;line-height:1.55}
+.hf-resource-action{display:grid;gap:8px;justify-items:end}
+.hf-resource-action b{display:inline-flex;height:27px;align-items:center;padding:0 9px;border-radius:999px;font-size:10.5px;font-weight:950;border:1px solid rgba(255,255,255,.10)}
+.hf-resource-action b.ready{background:rgba(32,185,122,.14);border-color:rgba(32,185,122,.28);color:#b9f6d7}
+.hf-resource-action b.soon{background:rgba(232,188,104,.12);border-color:rgba(232,188,104,.22);color:#ffd98f}
+.hf-resource-action a,.hf-resource-action span{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:0 11px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#fff;text-decoration:none;font-size:12px;font-weight:900}
 .hf-practice-card{border-color:rgba(123,161,255,.22)}
 .hf-practice-list{display:grid;gap:10px}
 .hf-flip-card{width:100%;min-height:128px;text-align:left;padding:15px;border-radius:18px;border:1px solid rgba(255,255,255,.12);background:linear-gradient(135deg,rgba(123,161,255,.10),rgba(255,255,255,.045));color:#fff;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.08);transition:transform .16s ease,border-color .16s ease,background .16s ease}
@@ -50,4 +68,4 @@
 .hf-subject-aside .hf-info-card strong[style]{color:#fff!important}
 .hf-subject-aside .hf-info-card span[style]{color:#8fa5ca!important}
 .hf-subject-aside .hf-stat[style]{background:rgba(255,255,255,.06)!important;color:#fff!important;border:1px solid rgba(255,255,255,.10)!important}
-@media(max-width:980px){.hf-subject-layout{grid-template-columns:1fr}.hf-source-item,.hf-learning-suite,.hf-radar-row{grid-template-columns:1fr}.hf-learning-suite .hf-info-card:first-child{grid-column:auto}.hf-radar-row b{text-align:left}}
+@media(max-width:980px){.hf-subject-layout{grid-template-columns:1fr}.hf-source-item,.hf-learning-suite,.hf-radar-row,.hf-memo-grid,.hf-resource-item{grid-template-columns:1fr}.hf-learning-suite .hf-info-card:first-child{grid-column:auto}.hf-radar-row b{text-align:left}.hf-resource-action{justify-items:start}}

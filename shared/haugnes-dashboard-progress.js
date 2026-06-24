@@ -100,6 +100,13 @@
     return '<a class="subject-card" style="--accent:' + subject.accent + ';--pct:' + pct + '" href="' + subjectHref(subject) + '"><div class="subject-top"><span class="subject-icon">' + emblem + '<span class="emblem-fallback">' + subject.icon + '</span></span><span class="dots">⋮</span></div><div class="subject-code">' + subject.code + '</div><div class="subject-name">' + subject.name + '</div><div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">' + pct + '%</div></div><div class="ring-sub">' + sub + '</div>' + cta + '</a>';
   }
 
+  function groupedCardsHtml(subjects) {
+    if (!window.HaugnesSubjects || typeof window.HaugnesSubjects.groupByCategory !== 'function') return subjects.map(cardHtml).join('');
+    return window.HaugnesSubjects.groupByCategory(subjects).map(function (group) {
+      return '<section class="dashboard-subject-group"><div class="dashboard-subject-group-head"><h3>' + esc(group.label) + '</h3><span>' + group.subjects.length + ' fag</span></div><div class="dashboard-subject-group-grid">' + group.subjects.map(cardHtml).join('') + '</div></section>';
+    }).join('');
+  }
+
   function setTodayStats(summary) {
     var cards = document.querySelectorAll('#today .big-stat');
     if (!cards.length) return;
@@ -167,7 +174,8 @@
     var summary = aggregateStats(active);
     var grid = document.querySelector('.subjects');
     if (grid) {
-      grid.innerHTML = active.length ? active.map(cardHtml).join('') : '<div class="panel"><div class="panel-inner">Velg fag på Mine fag-siden for å fylle dashboardet.</div></div>';
+      grid.classList.toggle('dashboard-subject-groups', !!active.length);
+      grid.innerHTML = active.length ? groupedCardsHtml(active) : '<div class="panel"><div class="panel-inner">Velg fag på Mine fag-siden for å fylle dashboardet.</div></div>';
       if (!grid.dataset.hfBound) {
         grid.dataset.hfBound = '1';
         grid.addEventListener('click', function (event) {

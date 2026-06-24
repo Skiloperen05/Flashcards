@@ -38,12 +38,13 @@
     <input class="searchbox" id="subjectSearch" placeholder="Søk etter fag, kode eller verktøy..." autocomplete="off">
     <div class="filter-row" aria-label="Filtrer fag">
       <button class="filter-btn active" type="button" data-filter="all">Alle</button>
-      <button class="filter-btn" type="button" data-filter="active">Aktive</button>
-      <button class="filter-btn" type="button" data-filter="exam">Eksamen</button>
-      <button class="filter-btn" type="button" data-filter="build">Planlagt</button>
+      <button class="filter-btn" type="button" data-filter="semester1">1. semester</button>
+      <button class="filter-btn" type="button" data-filter="semester2">2. semester</button>
+      <button class="filter-btn" type="button" data-filter="semester4">4. semester</button>
+      <button class="filter-btn" type="button" data-filter="electives">Valgfag</button>
     </div>
   </div>
-  <div class="subjects-grid" id="subjectsGrid"></div>
+  <div class="subject-groups" id="subjectsGrid"></div>
   <div class="empty-note" id="emptyNote">Fant ingen fag som matcher søket.</div>
 </main>
 <script src="../shared/subject-meta.js"></script>
@@ -70,11 +71,17 @@ function renderSubjects(){
   var q = (document.getElementById('subjectSearch').value || '').toLowerCase().trim();
   var filtered = SUBJECTS.filter(function(s){
     var description = s.description || s.desc || '';
-    var matchesFilter = currentFilter === 'all' || s.status === currentFilter;
-    var matchesSearch = !q || (s.code+' '+s.name+' '+description).toLowerCase().indexOf(q) !== -1;
+    var hay = (s.code+' '+s.name+' '+description+' '+(s.categoryLabel || '')).toLowerCase();
+    var matchesFilter = currentFilter === 'all' || s.categoryId === currentFilter;
+    var matchesSearch = !q || hay.indexOf(q) !== -1;
     return matchesFilter && matchesSearch;
   });
-  document.getElementById('subjectsGrid').innerHTML = filtered.map(cardHtml).join('');
+  var groups = window.HaugnesSubjects && typeof window.HaugnesSubjects.groupByCategory === 'function'
+    ? window.HaugnesSubjects.groupByCategory(filtered)
+    : [{ id: 'all', label: 'Fag', subjects: filtered }];
+  document.getElementById('subjectsGrid').innerHTML = groups.map(function(group){
+    return '<section class="subject-group" data-category="'+group.id+'"><div class="subject-group-head"><div><span>'+group.subjects.length+' fag</span><h2>'+group.label+'</h2></div></div><div class="subjects-grid">'+group.subjects.map(cardHtml).join('')+'</div></section>';
+  }).join('');
   document.getElementById('emptyNote').style.display = filtered.length ? 'none' : 'block';
 }
 

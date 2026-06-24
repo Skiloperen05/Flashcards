@@ -27,6 +27,20 @@
     }).join('') + '</section>';
   }
 
+  function memoHtml(memo) {
+    if (!memo) return '';
+    return '<section class="hf-memo-grid" id="memo">'
+      + memoCard('Kort intro', memo.intro)
+      + memoCard('Eksamen', memo.exam)
+      + memoCard('Slik bruker du siden', memo.studyAdvice)
+      + '</section>';
+  }
+
+  function memoCard(title, text) {
+    if (!text) return '';
+    return '<article class="hf-info-card hf-memo-card"><span>' + esc(title) + '</span><p>' + esc(text) + '</p></article>';
+  }
+
   function listCard(title, items, className, id) {
     if (!items || !items.length) return '';
     return '<section class="hf-info-card ' + esc(className || '') + '"' + (id ? ' id="' + esc(id) + '"' : '') + '><h3>' + esc(title) + '</h3>' + items.map(function (item) {
@@ -54,6 +68,29 @@
     return '<div id="learningSuite" class="hf-learning-suite">' + html + '</div>';
   }
 
+  function resourcesHtml(page) {
+    var api = window.HaugnesSubjectResources;
+    var resources = page.resources || (api && typeof api.forSubject === 'function' ? api.forSubject(page.id || page.code) : []);
+    if (!resources || !resources.length) return '';
+    var labels = api && api.typeLabels || {};
+    var tabs = unique(resources.map(function (resource) { return resource.type || 'annet'; })).map(function (type, index) {
+      return '<button class="hf-resource-tab ' + (index === 0 ? 'active' : '') + '" type="button" data-resource-filter="' + esc(type) + '">' + esc(labels[type] || type) + '</button>';
+    }).join('');
+    return '<section class="hf-info-card hf-resource-panel" id="ressurser"><div class="hf-card-heading"><h3>Ressurser</h3><span>Kompendium · formelark · eksamen</span></div>'
+      + '<div class="hf-resource-tabs"><button class="hf-resource-tab active" type="button" data-resource-filter="all">Alle</button>' + tabs + '</div>'
+      + '<div class="hf-resource-list">' + resources.map(function (resource) {
+        var available = resource.status === 'available' && resource.href;
+        var tag = labels[resource.type] || resource.type || 'Ressurs';
+        var status = resource.status === 'available' ? 'Tilgjengelig' : 'Kommer';
+        var action = available ? '<a href="' + esc(resource.href) + '">Åpne →</a>' : '<span>Kommer</span>';
+        return '<article class="hf-resource-item" data-resource-type="' + esc(resource.type || 'annet') + '"><div><em>' + esc(tag) + '</em><strong>' + esc(resource.title) + '</strong><p>' + esc(resource.description || '') + '</p></div><div class="hf-resource-action"><b class="' + (available ? 'ready' : 'soon') + '">' + esc(status) + '</b>' + action + '</div></article>';
+      }).join('') + '</div></section>';
+  }
+
+  function unique(items) {
+    return items.filter(function (item, index, arr) { return item && arr.indexOf(item) === index; });
+  }
+
   function practiceHtml(practice) {
     if (!practice || !practice.cards || !practice.cards.length) return '';
     return '<section class="hf-info-card hf-practice-card" id="hurtigkort"><div class="hf-card-heading"><h3>Hurtigkort</h3><span>' + esc(practice.label || 'Øving') + '</span></div><p class="hf-card-copy">' + esc(practice.intro || '') + '</p><div class="hf-practice-list">' + practice.cards.map(function (card, index) {
@@ -65,6 +102,8 @@
     var tabbar = document.querySelector('.hf-tabbar');
     if (!tabbar) return;
     if (page.compendium) tabbar.insertAdjacentHTML('beforeend', '<a href="#kompendium">Kompendium</a>');
+    if (page.memo) tabbar.insertAdjacentHTML('beforeend', '<a href="#memo">Memo</a>');
+    tabbar.insertAdjacentHTML('beforeend', '<a href="#ressurser">Ressurser</a>');
     if (page.examRadar) tabbar.insertAdjacentHTML('beforeend', '<a href="#eksamensradar">Eksamensradar</a>');
     if (page.formulaSheet) tabbar.insertAdjacentHTML('beforeend', '<a href="#formelark">Formelark</a>');
     if (page.canvasMaterials) tabbar.insertAdjacentHTML('beforeend', '<a href="#materiale">Materiale</a>');
@@ -87,6 +126,20 @@
     });
   }
 
+  function bindResources() {
+    document.querySelectorAll('.hf-resource-tab').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var panel = button.closest('.hf-resource-panel');
+        if (!panel) return;
+        var filter = button.getAttribute('data-resource-filter');
+        panel.querySelectorAll('.hf-resource-tab').forEach(function (tab) { tab.classList.toggle('active', tab === button); });
+        panel.querySelectorAll('.hf-resource-item').forEach(function (item) {
+          item.style.display = filter === 'all' || item.getAttribute('data-resource-type') === filter ? '' : 'none';
+        });
+      });
+    });
+  }
+
   function render(page) {
     document.title = page.code + ' ' + page.name + ' — Haugnes Flashcards';
     document.body.style.setProperty('--subject-accent', page.accent);
@@ -102,8 +155,16 @@
     document.getElementById('planList').innerHTML = page.plan.map(planHtml).join('');
     addLearningTabs(page);
     var planHost = document.getElementById('planList').closest('.hf-wide-grid');
+    if (planHost && page.memo && !document.getElementById('memo')) {
+      planHost.insertAdjacentHTML('beforebegin', memoHtml(page.memo));
+    }
     if (planHost && page.sources && !document.getElementById('sourceCard')) {
       planHost.insertAdjacentHTML('afterend', '<div id="sourceCard" class="hf-source-grid">' + sourcesHtml(page.sources) + '</div>');
+    }
+    if (planHost && !document.getElementById('ressurser')) {
+      var resourceAnchor = document.getElementById('sourceCard') || planHost;
+      resourceAnchor.insertAdjacentHTML('afterend', resourcesHtml(page));
+      bindResources();
     }
     if (planHost && (page.compendium || page.examRadar || page.formulaSheet || page.canvasMaterials || page.practice || page.examChecklist) && !document.getElementById('learningSuite')) {
       var sourceCard = document.getElementById('sourceCard');

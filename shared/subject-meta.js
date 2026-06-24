@@ -1,6 +1,28 @@
 (function (window) {
+  var categories = [
+    { id: 'semester1', label: 'Første semester', shortLabel: '1. semester', order: 10 },
+    { id: 'semester2', label: 'Andre semester', shortLabel: '2. semester', order: 20 },
+    { id: 'semester4', label: 'Fjerde semester', shortLabel: '4. semester', order: 40 },
+    { id: 'electives', label: 'Valgfag', shortLabel: 'Valgfag', order: 90 }
+  ];
+
+  var categoryById = categories.reduce(function (out, category) {
+    out[category.id] = category;
+    return out;
+  }, {});
+
+  function withCategory(subject, categoryId, sortOrder) {
+    var category = categoryById[categoryId] || categories[0];
+    subject.categoryId = category.id;
+    subject.categoryLabel = category.label;
+    subject.categoryShortLabel = category.shortLabel;
+    subject.categoryOrder = category.order;
+    subject.sortOrder = sortOrder;
+    return subject;
+  }
+
   var subjects = [
-    {
+    withCategory({
       id: 'ret14',
       code: 'RET14',
       name: 'Skatterett',
@@ -16,8 +38,8 @@
       path: '../ret14/',
       flashcards: '../flashcards/?subject=ret14',
       description: 'Skatt, fradrag, aksjer, personinntekt, arv og eksamensanalyse.'
-    },
-    {
+    }, 'electives', 20),
+    withCategory({
       id: 'subj_sol1',
       aliases: ['sol1'],
       code: 'SOL1',
@@ -34,8 +56,8 @@
       path: '../sol1/',
       flashcards: '../flashcards/?subject=subj_sol1',
       description: 'Begreper, teorier, modeller, caseforståelse og teoriskriving.'
-    },
-    {
+    }, 'semester2', 30),
+    withCategory({
       id: 'sam2',
       code: 'SAM2',
       name: 'Mikroøkonomi',
@@ -51,8 +73,8 @@
       path: '../sam2/',
       flashcards: '../sam2/oppgaver-klikkbar/',
       description: 'Oppgaveprioritering, eksamensradar, figurer og modellvalg.'
-    },
-    {
+    }, 'semester2', 20),
+    withCategory({
       id: 'sam3',
       code: 'SAM3',
       name: 'Makroøkonomi',
@@ -68,8 +90,8 @@
       path: '../sam3/',
       flashcards: '../sam3/flashcards.html',
       description: 'Makromodeller, formler, quiz, eksamensradar og mock-eksamen.'
-    },
-    {
+    }, 'semester4', 10),
+    withCategory({
       id: 'met2',
       code: 'MET2',
       name: 'Metode',
@@ -85,8 +107,8 @@
       path: '../met2/',
       flashcards: '../flashcards/?subject=met2',
       description: 'Metode, statistikk, hypotesetesting, konfidensintervall og regresjon.'
-    },
-    {
+    }, 'semester2', 10),
+    withCategory({
       id: 'mat10',
       code: 'MAT10',
       name: 'Matematikk',
@@ -102,8 +124,8 @@
       path: '../mat10/',
       flashcards: '../flashcards/?subject=mat10',
       description: 'Analyse, lineær algebra, formler, regneøkter og eksamensdrill.'
-    },
-    {
+    }, 'electives', 10),
+    withCategory({
       id: 'sam1a',
       code: 'SAM1A',
       name: 'Mikroøkonomi intro',
@@ -118,8 +140,8 @@
       path: '../sam1a/',
       flashcards: '../flashcards/?subject=sam1a',
       description: 'Første semester: læringsmål, markedslikevekt, elastisitet og velferdsanalyse.'
-    },
-    {
+    }, 'semester1', 30),
+    withCategory({
       id: 'met1',
       code: 'MET1',
       name: 'Matematikk for økonomer',
@@ -134,8 +156,8 @@
       path: '../met1/',
       flashcards: '../flashcards/?subject=met1',
       description: 'Første semester: rente, nåverdi, annuitet, rekker og formelvalg.'
-    },
-    {
+    }, 'semester1', 20),
+    withCategory({
       id: 'kom1',
       code: 'KOM1',
       name: 'Kommunikasjon',
@@ -150,8 +172,8 @@
       path: '../kom1/',
       flashcards: '../flashcards/?subject=kom1',
       description: 'Første semester: rapportstruktur, presentasjon, akademisk språk og refleksjon.'
-    },
-    {
+    }, 'semester1', 50),
+    withCategory({
       id: 'ret1a',
       code: 'RET1A',
       name: 'Juridiske emner',
@@ -166,8 +188,8 @@
       path: '../ret1a/',
       flashcards: '../flashcards/?subject=ret1a',
       description: 'Første semester: avtalerett, selskapsrett, pengekrav og juridisk metode.'
-    },
-    {
+    }, 'semester1', 10),
+    withCategory({
       id: 'bed1',
       code: 'BED1',
       name: 'Bedriftsøkonomi',
@@ -182,7 +204,7 @@
       path: '../bed1/',
       flashcards: '../flashcards/?subject=bed1',
       description: 'Første semester: kalkyler, resultat, investering, budsjettering og eksamenstrening.'
-    }
+    }, 'semester1', 40)
   ];
 
   function clone(value) {
@@ -203,14 +225,34 @@
   }
 
   function getCatalog() {
-    return clone(subjects);
+    return clone(subjects).sort(sortSubjects);
   }
 
   function getAll() {
     var selected = selectedCodes();
     return clone(subjects.filter(function (subject) {
       return selected.indexOf(code(subject.code)) !== -1;
-    }));
+    })).sort(sortSubjects);
+  }
+
+  function sortSubjects(a, b) {
+    return (a.categoryOrder - b.categoryOrder) || (a.sortOrder - b.sortOrder) || String(a.code).localeCompare(String(b.code));
+  }
+
+  function getCategories() {
+    return clone(categories);
+  }
+
+  function groupByCategory(list) {
+    var subjectsToGroup = (list || getAll()).slice().sort(sortSubjects);
+    return getCategories().map(function (category) {
+      return {
+        id: category.id,
+        label: category.label,
+        shortLabel: category.shortLabel,
+        subjects: subjectsToGroup.filter(function (subject) { return subject.categoryId === category.id; })
+      };
+    }).filter(function (group) { return group.subjects.length; });
   }
 
   function findById(id) {
@@ -230,6 +272,8 @@
     getAll: getAll,
     getCatalog: getCatalog,
     getAllOriginal: getCatalog,
+    getCategories: getCategories,
+    groupByCategory: groupByCategory,
     findById: findById,
     getFlashcardSubjectId: getFlashcardSubjectId
   };

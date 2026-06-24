@@ -34,6 +34,9 @@
     @media(max-width:1240px){.container{width:min(var(--wide),calc(100% - 80px))}.landing::before{width:min(58vw,940px);background-size:auto min(86vh,880px)}.nav{gap:24px}.hero-content{width:min(620px,49vw)}h1{font-size:clamp(52px,5.7vw,70px)}.feature{padding:4px 19px}.subjects{grid-template-columns:1.2fr repeat(4,1fr)}}
     @media(max-width:980px){.landing::before{width:100%;background-size:cover;background-position:58% top;opacity:.72;-webkit-mask-image:none;mask-image:none}.landing::after{background:linear-gradient(90deg,rgba(2,7,20,.96),rgba(2,7,20,.72)),linear-gradient(180deg,rgba(2,7,20,.22),rgba(2,7,20,.9))}.topbar{height:auto;padding:24px 0}.nav a:not(.nav-login){display:none}.hero-content{width:100%;max-width:650px}.trust-grid{grid-template-columns:repeat(2,1fr)}.features{grid-template-columns:repeat(2,1fr);gap:18px}.feature{border-right:0}.subjects{grid-template-columns:repeat(2,1fr)}.subject-intro{grid-column:1/-1}.below-grid{grid-template-columns:1fr}.section-head,.cta,.footer-row{display:block}.section-copy,.cta .btn{margin-top:16px}}
     @media(max-width:650px){.container{width:min(var(--wide),calc(100% - 34px))}.landing::before{background-size:auto 74vh;background-position:60% top}.brand-mark{width:46px;height:46px}.brand-title{font-size:18px}.brand-sub{font-size:8px}.hero-content{padding-top:50px}.eyebrow{font-size:10px}h1{font-size:43px}.lead{font-size:17px}.hero-actions{display:grid}.btn{width:100%}.trust-grid,.features,.subjects{grid-template-columns:1fr}.feature-strip{padding:18px}.subject-panel{padding:12px}.section{padding:56px 0}.cta{padding:22px}.cta h2{font-size:24px}}
+    .landing-subject-groups{grid-column:2/-1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.landing-category{min-height:204px;padding:18px;border-radius:13px;background:linear-gradient(180deg,rgba(13,35,78,.94),rgba(5,18,43,.98));border:1px solid rgba(255,255,255,.1);box-shadow:0 18px 42px rgba(0,0,0,.3)}.landing-category h3{font-size:16px;margin-bottom:12px}.landing-category-list{display:grid;gap:9px}.landing-mini-subject{display:grid;gap:3px;padding:10px;border-radius:12px;background:rgba(255,255,255,.055);border-left:3px solid var(--accent);transition:.18s}.landing-mini-subject:hover{transform:translateY(-2px);background:rgba(255,255,255,.08)}.landing-mini-subject strong{font-size:14px}.landing-mini-subject span{font-size:11.5px;color:#aebddd;line-height:1.35}
+    @media(max-width:980px){.landing-subject-groups{grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:650px){.landing-subject-groups{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -61,7 +64,7 @@
       <article class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v6h5"/></svg></div><div><h3>Spaced repetition</h3><p>Øv smartere med intervaller som gir bedre langtidshukommelse.</p></div></article>
       <article class="feature"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19h16"/><path d="M7 16v-4"/><path d="M12 16V8"/><path d="M17 16V5"/><path d="m15 7 2-2 2 2"/></svg></div><div><h3>Fremgang & statistikk</h3><p>Følg med på progresjonen din og se hva du mestrer.</p></div></article>
     </div></section>
-    <section class="subject-panel" id="fag" aria-label="Aktive fag"><div class="subjects">
+    <section class="subject-panel" id="fag" aria-label="Aktive fag"><div class="subjects" id="landingSubjects">
       <div class="subject-intro"><div><small>Aktive fag</small><h2>Øv med de mest populære fagene</h2><p>Flere fag kommer jevnlig!</p></div><a href="login.html" data-login-next="user/subjects.html">Se alle fag <span>→</span></a></div>
       <a class="subject" style="--accent:#2f62ff;--glow:rgba(47,98,255,.42)" href="login.html" data-login-next="ret14/"><div class="subject-top"><span class="subject-icon"><img class="emblem-img" src="assets/emblems/RET14.png" alt="" onerror="this.remove()"><span class="emblem-fallback">%</span></span></div><div class="code-row"><span class="code">RET14</span><span class="pill">4 verktøy</span></div><p class="desc">Skatterett — personinntekt, aksjer, avskrivning, fradrag og eiendom.</p><div class="dots"><i></i><i></i><i></i><i></i></div><span class="arrow">→</span></a>
       <a class="subject" style="--accent:#20b97a;--glow:rgba(32,185,122,.42)" href="login.html" data-login-next="sol1/"><div class="subject-top"><span class="subject-icon"><img class="emblem-img" src="assets/emblems/SOL1.png" alt="" onerror="this.remove()"><span class="emblem-fallback"><svg viewBox="0 0 24 24" fill="#fff"><path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm7 0a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM3 19c0-3 2.7-5 6-5s6 2 6 5v1H3v-1Zm13.6-5c2.1.3 3.4 2 3.4 4v2h-3v-1c0-1.9-.7-3.6-1.8-4.8.5-.1.9-.2 1.4-.2Z"/></svg></span></span></div><div class="code-row"><span class="code">SOL1</span><span class="pill">5 verktøy</span></div><p class="desc">Organisasjonsatferd — individ, gruppe, ledelse og organisasjonsdesign.</p><div class="dots"><i></i><i></i><i></i><i></i></div><span class="arrow">→</span></a>
@@ -72,6 +75,23 @@
 </div>
 <section class="section" id="om-oss"><div class="container"><div class="section-head"><div><div class="kicker">Haugnes Flashcards</div><h2>Én mørk premium studieapp — ikke en samling løse sider.</h2></div><p class="section-copy">Inngangssiden skal føles som samme produkt som dashboard, Mine fag, flashcards, eksamensanalyse og oppgavebank.</p></div><div class="below-grid"><article class="below-card"><b>139</b><h3>Kort i aktiv rotasjon</h3><p>Flashcards organiseres rundt fag, eksamensrelevans og neste anbefalte økt.</p></article><article class="below-card"><b>84%</b><h3>Fremgang synliggjort</h3><p>Dashboardet viser hva du har jobbet med, hva du bør repetere og hvor du bør fortsette.</p></article><article class="below-card"><b>12</b><h3>Dagers streak</h3><p>Små daglige økter gjør det enklere å holde jevn progresjon gjennom semesteret.</p></article></div><div class="cta" id="start"><div><div class="kicker" style="color:#ffd98f">Kom i gang</div><h2>Start gratis og bygg økter rundt fagene dine.</h2></div><a class="btn btn-primary" href="login.html" data-login-next="user/index.html">Kom i gang gratis <span>→</span></a></div></div></section>
 <footer class="footer"><div class="container footer-row"><div class="footer-brand">Haugnes Flashcards</div><div>Redesignet for en mer moderne og oversiktlig studieplattform.</div></div></footer>
+<script src="shared/subject-meta.js"></script>
+<script>
+(function(){
+  if (!window.HaugnesSubjects || typeof window.HaugnesSubjects.groupByCategory !== 'function') return;
+  var host = document.getElementById('landingSubjects');
+  if (!host) return;
+  var groups = window.HaugnesSubjects.groupByCategory(window.HaugnesSubjects.getCatalog());
+  function loginNext(path){ return 'login.html?next=' + encodeURIComponent(new URL(path.replace(/^\.\.\//, ''), window.location.href).href); }
+  function esc(value){ return String(value == null ? '' : value).replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; }); }
+  host.innerHTML = '<div class="subject-intro"><div><small>Fag etter semester</small><h2>Finn riktig fag raskere</h2><p>Fagene er nå samlet i semester og valgfag.</p></div><a href="' + loginNext('user/subjects.html') + '">Se alle fag <span>→</span></a></div>'
+    + '<div class="landing-subject-groups">' + groups.map(function(group){
+      return '<section class="landing-category"><h3>' + esc(group.label) + '</h3><div class="landing-category-list">' + group.subjects.map(function(subject){
+        return '<a class="landing-mini-subject" style="--accent:' + esc(subject.accent) + '" href="' + loginNext(subject.path || 'user/subjects.html') + '"><strong>' + esc(subject.code) + '</strong><span>' + esc(subject.name) + '</span></a>';
+      }).join('') + '</div></section>';
+    }).join('') + '</div>';
+})();
+</script>
 <script>(function(){var origin=window.location.href;document.querySelectorAll('[data-login-next]').forEach(function(link){var next=new URL(link.getAttribute('data-login-next'),origin).href;link.href='login.html?next='+encodeURIComponent(next);});})();</script>
 </body>
 </html>
