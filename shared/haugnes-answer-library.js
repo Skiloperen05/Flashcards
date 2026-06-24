@@ -10,7 +10,7 @@
     { code: 'RET14', name: 'Skatterett', accent: '#2f62ff', icon: '%', summary: 'Eksamenspakker for skatterett samles her når PDF-er legges ut.' },
     { code: 'SOL1', name: 'Organisasjonsatferd', accent: '#20b97a', icon: '♣', summary: 'Eksamenspakker for organisasjonsatferd samles her når PDF-er legges ut.' },
     { code: 'SAM2', name: 'Mikroøkonomi', accent: '#f09828', icon: '◔', summary: 'Eksamenspakker for mikroøkonomi samles her når PDF-er legges ut.' },
-    { code: 'SAM3', name: 'Makroøkonomi', accent: '#ef4444', icon: '↗', summary: 'V25-pakken ligger ute med original eksamen, A-besvarelse og sensorveiledning.' },
+    { code: 'SAM3', name: 'Makroøkonomi', accent: '#ef4444', icon: '↗', summary: 'V25- og V26-pakkene ligger ute med original eksamen, A-besvarelse og sensorveiledning.' },
     { code: 'MET2', name: 'Metode', accent: '#7c3aed', icon: 'Σ', summary: 'Eksamenspakker for metode samles her når PDF-er legges ut.' },
     { code: 'MAT10', name: 'Matematikk', accent: '#0891b2', icon: '∫', summary: 'Eksamenspakker for matematikk samles her når PDF-er legges ut.' },
     { code: 'SAM1A', name: 'Mikroøkonomi intro', accent: '#f09828', icon: '↗', summary: 'Første-semesterpakke for læringsmål, kompendium og eksamensrelevante modeller.' },

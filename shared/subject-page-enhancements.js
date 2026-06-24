@@ -28,7 +28,7 @@
     sam3: {
       intro: 'SAM3 handler om makromodeller, politikk og økonomiske sjokk forklart med tydelige mekanismer.',
       exam: 'Eksamen belønner modellvalg, forklaring av skift og kobling til pengepolitikk, finanspolitikk eller åpen økonomi.',
-      studyAdvice: 'Repeter begreper med flashcards, lås formlene med formelquiz, og bruk V25-flyten som eksamensnær trening.'
+      studyAdvice: 'Repeter begreper med flashcards, lås formlene med formelquiz, og bruk V26-flyten som eksamensnær trening.'
     },
     subj_sol1: {
       intro: 'SOL1 samler organisasjonsatferd, ledelse, motivasjon, grupper og beslutninger i teorier som må brukes på case.',

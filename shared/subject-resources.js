@@ -30,7 +30,7 @@
       { type: 'formelark', title: 'Formelark', description: 'Formler og makromodeller samlet for rask repetisjon.', status: 'available', href: '../sam3/formelark.html' },
       { type: 'kompendium', title: 'Sentrale modeller', description: 'Solow, Romer, IS-MP, Phillips, AS-AD og åpen økonomi.', status: 'available', href: '../sam3/sentrale-modeller.html' },
       { type: 'eksamen', title: 'Eksamensradar', description: 'Makroøkonomiske temaer og modellkoblinger fra tidligere eksamener.', status: 'available', href: '../sam3/eksamensradar-v3.html' },
-      { type: 'a_besvarelse', title: 'SAM3 V25-pakke', description: 'Eksamen, A-besvarelse og sensorveiledning ligger i beskyttet eksamensarkiv.', status: 'available', href: '../user/a-besvarelser.html#/sam3/sam3-v25' }
+      { type: 'a_besvarelse', title: 'SAM3 V26-pakke', description: 'Eksamen, A-besvarelse og sensorveiledning ligger i beskyttet eksamensarkiv.', status: 'available', href: '../user/a-besvarelser.html#/sam3/v26' }
     ],
     met2: [
       { type: 'kompendium', title: 'Metodekompendium', description: 'Plass for samlet metodeoversikt fra notater, forelesning og oppgaver.', status: 'coming' },
