@@ -264,6 +264,8 @@
       '.popular-item',
       '.focus-item',
       '.subject-row',
+      '.event',
+      '.list-item',
       '.course-card',
       '[data-course]',
       '[data-fag]'

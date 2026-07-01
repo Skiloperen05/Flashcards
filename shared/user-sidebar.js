@@ -54,7 +54,7 @@
     { id: 'flashcards', label: 'Alle flashcards', href: 'flashcards/', icon: 'flashcards' },
     { id: 'tasks', label: 'Oppgavebank', href: 'user/oppgavebank.html', icon: 'tasks' },
     { id: 'answers', label: 'A-besvarelser', href: 'user/a-besvarelser.html', icon: 'answers' },
-    { id: 'exam', label: 'Eksamensanalyse', href: 'ret14/eksamen/', icon: 'exam' },
+    { id: 'exam', label: 'Eksamensanalyse', href: 'user/eksamensanalyse.html', icon: 'exam' },
     { id: 'notes', label: 'Notater', href: 'user/notater.html', icon: 'notes' },
     { id: 'stats', label: 'Statistikk', href: 'user/progress.html', icon: 'stats' },
     { id: 'achievements', label: 'Prestasjoner', href: 'user/achievements.html', icon: 'achievements' },
@@ -72,7 +72,7 @@
     if (/\/flashcards\//.test(path)) return 'flashcards';
     if (page === 'oppgavebank.html') return 'tasks';
     if (page === 'a-besvarelser.html') return 'answers';
-    if (/\/ret14\/eksamen\//.test(path)) return 'exam';
+    if (page === 'eksamensanalyse.html' || /\/ret14\/eksamen\//.test(path)) return 'exam';
     if (page === 'notater.html') return 'notes';
     if (page === 'progress.html') return 'stats';
     if (page === 'achievements.html') return 'achievements';
