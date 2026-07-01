@@ -146,6 +146,7 @@
       if (result.error) {
         var msg = String(result.error.message || '');
         // Already-owned (duplicate key) is treated as success
+        if (/row-level security|policy|violates/i.test(msg)) throw new Error('Du kan bare låse opp ett gratis fag. Neste fag kjøpes i Butikken.');
         if (!/duplicate|unique/i.test(msg)) throw result.error;
       }
       return load({ force: true });

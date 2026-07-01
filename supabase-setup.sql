@@ -116,9 +116,19 @@ create table if not exists public.subject_entitlements (
   user_id      uuid not null references auth.users(id) on delete cascade,
   subject_code text not null,
   source       text not null default 'free',
+  stripe_checkout_session_id text,
+  stripe_customer_id text,
+  amount_paid integer,
+  currency text,
   granted_at   timestamptz not null default now(),
   unique (user_id, subject_code)
 );
+
+alter table public.subject_entitlements
+  add column if not exists stripe_checkout_session_id text,
+  add column if not exists stripe_customer_id text,
+  add column if not exists amount_paid integer,
+  add column if not exists currency text;
 
 alter table public.subject_entitlements enable row level security;
 
@@ -129,15 +139,22 @@ create policy "Users read own entitlements"
   to authenticated
   using ((select auth.uid()) = user_id);
 
--- Initial free-trial paywall: users may insert their own free entitlement.
--- When real payment is added, tighten this so only service-role inserts
--- (e.g. Stripe webhook) succeed. The read policy stays the same.
+-- First free subject: users may insert one free entitlement themselves.
+-- Paid entitlements are inserted by trusted server code, e.g. the Stripe webhook
+-- using the Supabase service-role key.
 drop policy if exists "Users claim free entitlement" on public.subject_entitlements;
 create policy "Users claim free entitlement"
   on public.subject_entitlements
   for insert
   to authenticated
-  with check ((select auth.uid()) = user_id and source = 'free');
+  with check (
+    (select auth.uid()) = user_id
+    and source = 'free'
+    and not exists (
+      select 1 from public.subject_entitlements existing
+      where existing.user_id = (select auth.uid())
+    )
+  );
 
 drop policy if exists "Users release own entitlement" on public.subject_entitlements;
 create policy "Users release own entitlement"
