@@ -30,6 +30,7 @@
     var icons = {
       home: '<svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg>',
       subjects: '<svg viewBox="0 0 24 24"><path d="M12 6.5C10.5 5 7.5 4.5 4.5 5v13c3-.5 6 0 7.5 1.5 1.5-1.5 4.5-2 7.5-1.5V5c-3-.5-6 0-7.5 1.5z"/><path d="M12 6.5V20"/></svg>',
+      shop: '<svg viewBox="0 0 24 24"><path d="M5 9.5 6.2 4h11.6L19 9.5"/><path d="M6 10v9.5h12V10"/><path d="M9 14h6"/></svg>',
       focus: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6"/></svg>',
       plan: '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M8 3.5v3M16 3.5v3M4 9h16M8 13h2M12 13h2M16 13h1M8 16h2M12 16h2"/></svg>',
       flashcards: '<svg viewBox="0 0 24 24"><rect x="4" y="7" width="13" height="13" rx="2"/><path d="M8 3.5h10A1.5 1.5 0 0 1 19.5 5v10"/></svg>',
@@ -47,6 +48,7 @@
   var MENU = [
     { id: 'home', label: 'Hjem', href: 'user/index.html', icon: 'home' },
     { id: 'subjects', label: 'Mine fag', href: 'user/subjects.html', icon: 'subjects' },
+    { id: 'shop', label: 'Butikk', href: 'user/butikk.html', icon: 'shop' },
     { id: 'plan', label: 'Studieplan', href: 'user/studieplan.html', icon: 'plan' },
     { id: 'focus', label: 'Fokus for i dag', href: 'user/index.html#today', icon: 'focus' },
     { id: 'flashcards', label: 'Alle flashcards', href: 'flashcards/', icon: 'flashcards' },
@@ -65,6 +67,7 @@
     if (page === 'index.html' && window.location.hash === '#today') return 'focus';
     if (page === 'index.html') return 'home';
     if (page === 'subjects.html') return 'subjects';
+    if (page === 'butikk.html') return 'shop';
     if (page === 'studieplan.html') return 'plan';
     if (/\/flashcards\//.test(path)) return 'flashcards';
     if (page === 'oppgavebank.html') return 'tasks';
