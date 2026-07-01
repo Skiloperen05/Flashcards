@@ -40,6 +40,7 @@ a{text-decoration:none;color:inherit}button,input,select{font-family:inherit}
 .hello p{font-size:15px;color:#c2cee4;margin-top:5px}
 .notice{display:none;margin-bottom:16px;padding:14px 18px;border-radius:16px;background:rgba(232,188,104,.10);border:1px solid rgba(232,188,104,.30);color:#ffd98f;font-size:13.5px;font-weight:800}
 .notice.show{display:block}
+.notice.success{background:rgba(32,185,122,.10);border-color:rgba(32,185,122,.32);color:#a8f1cf}
 .hero-panel{position:relative;overflow:hidden;border-radius:var(--radius);border:1px solid var(--line2);background:linear-gradient(135deg,rgba(13,38,86,.93),rgba(7,22,50,.96));box-shadow:var(--shadow);margin-bottom:18px}
 .hero-inner{position:relative;z-index:1;padding:24px;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:20px;align-items:center}
 .kicker{display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border-radius:999px;background:rgba(47,98,255,.15);border:1px solid rgba(95,136,255,.32);color:#b8c9ff;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
@@ -58,12 +59,15 @@ a{text-decoration:none;color:inherit}button,input,select{font-family:inherit}
 .status-pill{height:28px;padding:0 11px;border-radius:999px;font-size:11px;font-weight:900;display:inline-flex;align-items:center;letter-spacing:.04em}
 .status-pill.owned{background:rgba(32,185,122,.16);border:1px solid rgba(32,185,122,.32);color:#a8f1cf}
 .status-pill.available{background:rgba(232,188,104,.13);border:1px solid rgba(232,188,104,.30);color:#ffd98f}
+.status-pill.loading{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#cbd7ef}
 .shop-title{position:relative;z-index:1;font-size:19px;font-weight:900;letter-spacing:-.035em}
 .shop-sub{position:relative;z-index:1;font-size:12.5px;color:#9fb1d2;font-weight:800}
 .shop-desc{position:relative;z-index:1;font-size:13px;color:#bdc9df;line-height:1.55;flex:1}
 .shop-price{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;margin-top:4px}
 .price-tag{font-size:22px;font-weight:900;letter-spacing:-.03em;color:#fff}
 .price-tag .currency{font-size:12px;color:var(--muted);font-weight:700;margin-left:5px}
+.price-tag.included{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:850;color:#a8f1cf}
+.price-tag.included::before{content:"✓";width:20px;height:20px;display:grid;place-items:center;border-radius:50%;background:rgba(32,185,122,.16);border:1px solid rgba(32,185,122,.34);font-size:11px}
 .shop-cta{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:9px;height:44px;border-radius:13px;background:linear-gradient(135deg,#2657e9,#3e72ff);color:#fff;font-size:13.5px;font-weight:900;border:0;cursor:pointer;transition:transform .15s,filter .15s}
 .shop-cta:hover:not(:disabled){transform:translateY(-1px)}
 .shop-cta:disabled{cursor:default;background:rgba(255,255,255,.08);color:#cbd7ef}
@@ -151,7 +155,6 @@ var SUBJECTS = [
 ];
 
 var SUBJECT_PRICE_LABEL = '49 kr';
-var FIRST_FREE_LABEL = 'Gratis første fag';
 
 function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});}
 function getQuery(name){return new URLSearchParams(window.location.search).get(name);}
@@ -161,22 +164,53 @@ function showLockNotice(){
   var reason=(getQuery('reason')||'').toLowerCase();
   var subject=(getQuery('fag')||'').toUpperCase();
   var payment=(getQuery('payment')||'').toLowerCase();
+  var n=document.getElementById('lockNotice');
   if (payment==='success' && subject){
-    var success=document.getElementById('lockNotice');
-    success.textContent='Betaling registrert for '+subject+'. Tilgangen aktiveres straks Stripe har bekreftet kjøpet.';
-    success.classList.add('show');
+    n.textContent='Betalingen for '+subject+' er registrert. Aktiverer tilgangen din …';
+    n.classList.add('success','show');
     return;
   }
   if (payment==='cancel' && subject){
-    var cancel=document.getElementById('lockNotice');
-    cancel.textContent='Betalingen for '+subject+' ble avbrutt. Du kan prøve igjen når du er klar.';
-    cancel.classList.add('show');
+    n.textContent='Betalingen for '+subject+' ble avbrutt. Ingenting er trukket — du kan prøve igjen når du er klar.';
+    n.classList.add('show');
     return;
   }
   if (reason!=='lock'||!subject) return;
-  var n=document.getElementById('lockNotice');
   n.textContent='Du må låse opp '+subject+' i Butikken for å åpne fagets verktøy.';
   n.classList.add('show');
+}
+
+// After Stripe redirects back with payment=success, the entitlement is granted
+// asynchronously by the webhook. Poll until it shows up so the user does not
+// have to reload the page manually.
+function watchPaymentActivation(){
+  var subject=(getQuery('fag')||'').toUpperCase();
+  if ((getQuery('payment')||'').toLowerCase()!=='success' || !subject) return;
+  var n=document.getElementById('lockNotice');
+  var attempts=0;
+  function check(){
+    var ent=window.HaugnesEntitlements;
+    if (!ent || typeof ent.load!=='function') return done(false);
+    if (ent.isLoaded() && (ent.getCodes().indexOf(subject)!==-1 || (ent.hasBypass&&ent.hasBypass()))) return done(true);
+    if (attempts>=15) return done(false);
+    attempts++;
+    ent.load({ force:true }).catch(function(){}).then(function(){
+      if (ent.isLoaded() && ent.getCodes().indexOf(subject)!==-1) return done(true);
+      window.setTimeout(check, 3000);
+    });
+  }
+  function done(active){
+    if (active){
+      n.textContent=subject+' er låst opp! Du har nå full tilgang til faget.';
+      n.classList.add('success','show');
+    } else {
+      n.classList.remove('success');
+      n.textContent='Betalingen for '+subject+' behandles fortsatt. Tilgangen dukker opp her om et lite øyeblikk — last siden på nytt om den lar vente på seg.';
+      n.classList.add('show');
+    }
+    render();
+  }
+  check();
 }
 
 function render(){
@@ -185,9 +219,9 @@ function render(){
   var ent=window.HaugnesEntitlements;
   var entReady=!!(ent && ent.isLoaded());
   var owned=entReady ? ent.getCodes() : [];
-  var admin=!!(ent && ent.effectiveAdmin && ent.effectiveAdmin());
-  var canClaimFree=entReady && !admin && owned.length===0;
-  var ownedCount=admin?SUBJECTS.length:owned.length;
+  var bypass=!!(ent && ent.hasBypass && ent.hasBypass());
+  var canClaimFree=entReady && !bypass && owned.length===0;
+  var ownedCount=bypass?SUBJECTS.length:owned.length;
   document.getElementById('statOwned').textContent=ownedCount;
   document.getElementById('statAvailable').textContent=Math.max(0, SUBJECTS.length-ownedCount);
   document.getElementById('statTotal').textContent=SUBJECTS.length;
@@ -195,10 +229,13 @@ function render(){
   if (!SUBJECTS.length){empty.style.display='block';grid.innerHTML='';return;}
   empty.style.display='none';
   grid.innerHTML=SUBJECTS.map(function(s){
-    var has=admin||owned.indexOf(s.code)!==-1;
-    var status=!entReady?'<span class="status-pill available">Laster</span>':has?'<span class="status-pill owned">Låst opp</span>':'<span class="status-pill available">Tilgjengelig</span>';
-    var price=canClaimFree?FIRST_FREE_LABEL:SUBJECT_PRICE_LABEL;
-    var currency=canClaimFree?'for nye brukere':'per fag';
+    var has=bypass||owned.indexOf(s.code)!==-1;
+    var status=!entReady?'<span class="status-pill loading">Laster…</span>':has?'<span class="status-pill owned">Låst opp</span>':'<span class="status-pill available">Tilgjengelig</span>';
+    var priceHtml=has
+      ? '<span class="price-tag included">Inkludert i tilgangen din</span>'
+      : canClaimFree
+        ? '<span class="price-tag">Gratis<span class="currency">første fag · deretter '+esc(SUBJECT_PRICE_LABEL)+'</span></span>'
+        : '<span class="price-tag">'+esc(SUBJECT_PRICE_LABEL)+'<span class="currency">per fag · engangsbeløp</span></span>';
     var cta=!entReady
       ? '<button class="shop-cta" disabled><span class="spinner"></span><span class="cta-text">Laster tilgang…</span></button>'
       : has
@@ -211,7 +248,7 @@ function render(){
       + '<div class="shop-title">'+esc(s.code)+' · '+esc(s.name)+'</div>'
       + '<div class="shop-sub">Tilgang til alt innhold i faget</div>'
       + '<p class="shop-desc">'+esc(s.summary)+'</p>'
-      + '<div class="shop-price"><span class="price-tag">'+esc(price)+'<span class="currency">'+esc(currency)+'</span></span></div>'
+      + '<div class="shop-price">'+priceHtml+'</div>'
       + cta
       + '<div class="shop-error" data-error="'+esc(s.code)+'"></div>'
       + '</article>';
@@ -261,6 +298,9 @@ function bind(){
           window.location.href = subjectHome(code, true);
           return;
         }
+        var n = document.getElementById('lockNotice');
+        n.textContent = code + ' er låst opp! Du har nå full tilgang til faget.';
+        n.classList.add('success','show');
         render();
       }).catch(function(e){
         setLoading(btn, false, 'Lås opp gratis', 'Låser opp…');
@@ -330,10 +370,11 @@ window.onUserAuthorized = function(session){
       function whenEntitlementsReady(){
         if (window.HaugnesEntitlements && window.HaugnesEntitlements.isLoaded()){
           render();
+          watchPaymentActivation();
           return;
         }
         if (window.HaugnesEntitlements && typeof window.HaugnesEntitlements.load === 'function'){
-          window.HaugnesEntitlements.load().then(render).catch(render);
+          window.HaugnesEntitlements.load().then(function(){ render(); watchPaymentActivation(); }).catch(render);
           return;
         }
         window.setTimeout(whenEntitlementsReady, 30);
