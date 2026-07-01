@@ -117,9 +117,9 @@ a{text-decoration:none;color:inherit}button,input,select{font-family:inherit}
     <section class="hero-panel">
       <div class="hero-inner">
         <div>
-          <div class="kicker">Per-fag-tilgang · Beta</div>
+          <div class="kicker">Per-fag-tilgang · Stripe</div>
           <h2 class="hero-title">Lås opp <span>fagene</span> du jobber med.</h2>
-          <p class="hero-copy">I beta er alle fag <strong>gratis å låse opp</strong> mens vi tester flyten. Når betaling rulles ut, beholder du fagene du allerede har låst opp.</p>
+          <p class="hero-copy">Nye brukere får <strong>ett fag gratis</strong> for å teste appen. Etterpå låses hvert fag opp separat for 49 kr via Stripe.</p>
         </div>
         <div class="hero-stats">
           <div class="hero-stat"><b id="statOwned">0</b><span>låst opp</span></div>
@@ -150,7 +150,8 @@ var SUBJECTS = [
   { code: 'BED1', name: 'Bedriftsøkonomi', accent: '#20b97a', icon: '◆', summary: 'Kalkyler, investering, resultat og budsjettering.' }
 ];
 
-var BETA_PRICE_LABEL = 'Gratis';
+var SUBJECT_PRICE_LABEL = '49 kr';
+var FIRST_FREE_LABEL = 'Gratis første fag';
 
 function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});}
 function getQuery(name){return new URLSearchParams(window.location.search).get(name);}
@@ -159,6 +160,19 @@ function nameFromEmail(email){var u=(email||'student').split('@')[0];return u.ch
 function showLockNotice(){
   var reason=(getQuery('reason')||'').toLowerCase();
   var subject=(getQuery('fag')||'').toUpperCase();
+  var payment=(getQuery('payment')||'').toLowerCase();
+  if (payment==='success' && subject){
+    var success=document.getElementById('lockNotice');
+    success.textContent='Betaling registrert for '+subject+'. Tilgangen aktiveres straks Stripe har bekreftet kjøpet.';
+    success.classList.add('show');
+    return;
+  }
+  if (payment==='cancel' && subject){
+    var cancel=document.getElementById('lockNotice');
+    cancel.textContent='Betalingen for '+subject+' ble avbrutt. Du kan prøve igjen når du er klar.';
+    cancel.classList.add('show');
+    return;
+  }
   if (reason!=='lock'||!subject) return;
   var n=document.getElementById('lockNotice');
   n.textContent='Du må låse opp '+subject+' i Butikken for å åpne fagets verktøy.';
@@ -169,8 +183,10 @@ function render(){
   var grid=document.getElementById('shopGrid');
   var empty=document.getElementById('emptyState');
   var ent=window.HaugnesEntitlements;
-  var owned=ent && ent.isLoaded() ? ent.getCodes() : [];
+  var entReady=!!(ent && ent.isLoaded());
+  var owned=entReady ? ent.getCodes() : [];
   var admin=ent && ent.isAdmin && ent.isAdmin();
+  var canClaimFree=entReady && !admin && owned.length===0;
   var ownedCount=admin?SUBJECTS.length:owned.length;
   document.getElementById('statOwned').textContent=ownedCount;
   document.getElementById('statAvailable').textContent=Math.max(0, SUBJECTS.length-ownedCount);
@@ -180,16 +196,22 @@ function render(){
   empty.style.display='none';
   grid.innerHTML=SUBJECTS.map(function(s){
     var has=admin||owned.indexOf(s.code)!==-1;
-    var status=has?'<span class="status-pill owned">Låst opp</span>':'<span class="status-pill available">Tilgjengelig</span>';
-    var cta=has
+    var status=!entReady?'<span class="status-pill available">Laster</span>':has?'<span class="status-pill owned">Låst opp</span>':'<span class="status-pill available">Tilgjengelig</span>';
+    var price=canClaimFree?FIRST_FREE_LABEL:SUBJECT_PRICE_LABEL;
+    var currency=canClaimFree?'for nye brukere':'per fag';
+    var cta=!entReady
+      ? '<button class="shop-cta" disabled><span class="spinner"></span><span class="cta-text">Laster tilgang…</span></button>'
+      : has
       ? '<a class="shop-cta secondary" href="'+subjectHome(s.code, false)+'">Åpne fag →</a>'
-      : '<button class="shop-cta" data-claim="'+esc(s.code)+'"><span class="spinner"></span><span class="cta-text">Lås opp gratis</span></button>';
+      : canClaimFree
+        ? '<button class="shop-cta" data-claim="'+esc(s.code)+'"><span class="spinner"></span><span class="cta-text">Lås opp gratis</span></button>'
+        : '<button class="shop-cta" data-buy="'+esc(s.code)+'"><span class="spinner"></span><span class="cta-text">Kjøp med Stripe</span></button>';
     return '<article class="shop-card" style="--accent:'+esc(s.accent)+'">'
       + '<div class="shop-top"><span class="shop-icon">'+esc(s.icon)+'</span>'+status+'</div>'
       + '<div class="shop-title">'+esc(s.code)+' · '+esc(s.name)+'</div>'
       + '<div class="shop-sub">Tilgang til alt innhold i faget</div>'
       + '<p class="shop-desc">'+esc(s.summary)+'</p>'
-      + '<div class="shop-price"><span class="price-tag">'+esc(BETA_PRICE_LABEL)+'<span class="currency">i beta</span></span></div>'
+      + '<div class="shop-price"><span class="price-tag">'+esc(price)+'<span class="currency">'+esc(currency)+'</span></span></div>'
       + cta
       + '<div class="shop-error" data-error="'+esc(s.code)+'"></div>'
       + '</article>';
@@ -197,11 +219,11 @@ function render(){
   bind();
 }
 
-function setLoading(btn, on){
+function setLoading(btn, on, idleText, loadingText){
   btn.disabled = on;
   btn.classList.toggle('loading', on);
   var label = btn.querySelector('.cta-text');
-  if (label) label.textContent = on ? 'Låser opp…' : 'Lås opp gratis';
+  if (label) label.textContent = on ? loadingText : idleText;
 }
 
 var SUBJECT_HOMES = {
@@ -223,7 +245,15 @@ function bind(){
       var errBox = document.querySelector('[data-error="'+code+'"]');
       if (errBox){ errBox.classList.remove('show'); errBox.textContent=''; }
       if (!window.HaugnesEntitlements){ return; }
-      setLoading(btn, true);
+      if (window.HaugnesEntitlements.getCodes().length > 0){
+        if (errBox){
+          errBox.textContent = 'Du har allerede brukt gratis-faget ditt. Neste fag kjøpes med Stripe.';
+          errBox.classList.add('show');
+        }
+        render();
+        return;
+      }
+      setLoading(btn, true, 'Lås opp gratis', 'Låser opp…');
       window.HaugnesEntitlements.claim(code).then(function(){
         var lockedFag = (getQuery('fag') || '').toUpperCase();
         var cameFromLock = (getQuery('reason') || '').toLowerCase() === 'lock';
@@ -233,9 +263,42 @@ function bind(){
         }
         render();
       }).catch(function(e){
-        setLoading(btn, false);
+        setLoading(btn, false, 'Lås opp gratis', 'Låser opp…');
         if (errBox){
           errBox.textContent = (e && e.message) ? e.message : 'Kunne ikke låse opp. Prøv igjen.';
+          errBox.classList.add('show');
+        }
+      });
+    });
+  });
+  document.querySelectorAll('[data-buy]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var code = btn.getAttribute('data-buy');
+      var errBox = document.querySelector('[data-error="'+code+'"]');
+      if (errBox){ errBox.classList.remove('show'); errBox.textContent=''; }
+      var session = window.AuthGuard && window.AuthGuard.getSession ? window.AuthGuard.getSession() : null;
+      var token = session && session.access_token;
+      if (!token){
+        if (errBox){
+          errBox.textContent = 'Du må være logget inn for å kjøpe fag.';
+          errBox.classList.add('show');
+        }
+        return;
+      }
+      setLoading(btn, true, 'Kjøp med Stripe', 'Sender til Stripe…');
+      fetch('/.netlify/functions/create-stripe-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer '+token },
+        body: JSON.stringify({ subjectCode: code })
+      }).then(function(res){
+        return res.json().then(function(data){ return { ok: res.ok, data: data }; });
+      }).then(function(result){
+        if (!result.ok || !result.data || !result.data.url) throw new Error(result.data && result.data.error || 'Kunne ikke starte betaling.');
+        window.location.href = result.data.url;
+      }).catch(function(e){
+        setLoading(btn, false, 'Kjøp med Stripe', 'Sender til Stripe…');
+        if (errBox){
+          errBox.textContent = (e && e.message) ? e.message : 'Kunne ikke starte Stripe-betaling.';
           errBox.classList.add('show');
         }
       });

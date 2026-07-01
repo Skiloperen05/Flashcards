@@ -1,9 +1,22 @@
+[build]
+  publish = "."
+
 [functions]
   directory = "netlify/functions"
 
 [[redirects]]
   from = "/api/timeedit"
   to = "/.netlify/functions/timeedit"
+  status = 200
+
+[[redirects]]
+  from = "/api/create-stripe-checkout"
+  to = "/.netlify/functions/create-stripe-checkout"
+  status = 200
+
+[[redirects]]
+  from = "/api/stripe-webhook"
+  to = "/.netlify/functions/stripe-webhook"
   status = 200
 
 [[headers]]

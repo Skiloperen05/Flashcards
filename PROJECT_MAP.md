@@ -1,6 +1,6 @@
 # Project Map
 
-Last updated: 2026-06-24
+Last updated: 2026-07-01
 
 Purpose: make future app changes faster by documenting the stable entry points, data sources, and search paths. Update this file whenever a change moves, renames, adds, or removes app-facing functionality.
 
@@ -21,12 +21,13 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Supabase setup/schema seed reference: `supabase-setup.sql`.
 - Supabase Edge Functions: `supabase/functions/`.
 - Netlify config and functions: `netlify.toml`, `netlify/functions/`.
+- Stripe checkout/webhook functions: `netlify/functions/create-stripe-checkout.js`, `netlify/functions/stripe-webhook.js`.
 
 ## User Pages
 
 - Dashboard: `user/index.html`.
 - Subject management: `user/subjects.html`.
-- Shop/entitlement claiming: `user/butikk.html`.
+- Shop/entitlement claiming and Stripe checkout entry: `user/butikk.html`.
 - A-besvarelser / eksamensarkiv shell: `user/a-besvarelser.html`.
 - Oppgavebank shell: `user/oppgavebank.html`.
 - Study plan shell: `user/studieplan.html`.
@@ -80,11 +81,11 @@ Typical package IDs:
 - Schema/source-of-truth file: `supabase-setup.sql`.
 - Key content tables:
   - `profiles`
-  - `user_subject_entitlements`
-  - `subject_access_claims`
+  - `subject_entitlements`
   - `answer_packages`
   - `answer_resources`
 - RLS/entitlement helper: `public.has_subject_entitlement(text)`.
+- Payment model: first user-claimed free subject is inserted client-side with `source = 'free'`; paid subjects are inserted by the Stripe webhook with `source = 'stripe'` and optional Stripe session/customer/payment metadata.
 - Rule from repo policy: DB schema changes must be mirrored in `supabase-setup.sql`.
 
 ## Build And Checks
