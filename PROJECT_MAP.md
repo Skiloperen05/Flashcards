@@ -13,6 +13,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 ## App Shape
 
 - Static web app deployed from this repository.
+- Deployment: `bhflashcards.no` is served by GitHub Pages (no serverless functions). The same repo also deploys to Netlify (`bhflashcards.netlify.app`), which hosts the Netlify functions. Client code that calls `/.netlify/functions/*` must use the absolute Netlify origin when the page is not served from Netlify/localhost (see `functionsBase()` in `user/butikk.html`).
 - Main public landing page: `index.html`.
 - Login/auth entry: `login.html`.
 - Authenticated user pages: `user/`.
@@ -84,7 +85,7 @@ Typical package IDs:
   - `subject_entitlements`
   - `answer_packages`
   - `answer_resources`
-- RLS/entitlement helper: `public.has_subject_entitlement(text)`.
+- RLS/entitlement helpers: `public.has_subject_entitlement(text)`, `public.has_any_entitlement()` (security definer; required because the free-claim insert policy cannot query `subject_entitlements` directly without infinite RLS recursion).
 - Payment model: first user-claimed free subject is inserted client-side with `source = 'free'`; paid subjects are inserted by the Stripe webhook with `source = 'stripe'` and optional Stripe session/customer/payment metadata.
 - Rule from repo policy: DB schema changes must be mirrored in `supabase-setup.sql`.
 
