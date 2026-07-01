@@ -142,6 +142,25 @@ create policy "Users read own entitlements"
 -- First free subject: users may insert one free entitlement themselves.
 -- Paid entitlements are inserted by trusted server code, e.g. the Stripe webhook
 -- using the Supabase service-role key.
+-- NOTE: the "no existing entitlements" check must live in a security definer
+-- function. Querying subject_entitlements directly inside its own policy makes
+-- Postgres abort every insert with "infinite recursion detected in policy".
+create or replace function public.has_any_entitlement()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+  select exists (
+    select 1 from public.subject_entitlements
+    where user_id = (select auth.uid())
+  );
+$$;
+
+revoke execute on function public.has_any_entitlement() from public, anon;
+grant execute on function public.has_any_entitlement() to authenticated;
+
 drop policy if exists "Users claim free entitlement" on public.subject_entitlements;
 create policy "Users claim free entitlement"
   on public.subject_entitlements
@@ -150,10 +169,7 @@ create policy "Users claim free entitlement"
   with check (
     (select auth.uid()) = user_id
     and source = 'free'
-    and not exists (
-      select 1 from public.subject_entitlements existing
-      where existing.user_id = (select auth.uid())
-    )
+    and not public.has_any_entitlement()
   );
 
 drop policy if exists "Users release own entitlement" on public.subject_entitlements;
