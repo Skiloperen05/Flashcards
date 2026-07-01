@@ -181,6 +181,20 @@ function formatScore(score){
   return score ? score.toFixed(1).replace('.', ',') : '—';
 }
 
+function hasNoOwnedSubjects(){
+  return !!(window.HaugnesEntitlements
+    && window.HaugnesEntitlements.isLoaded
+    && window.HaugnesEntitlements.isLoaded()
+    && window.HaugnesEntitlements.hasBypass
+    && !window.HaugnesEntitlements.hasBypass()
+    && window.HaugnesEntitlements.getCodes
+    && !window.HaugnesEntitlements.getCodes().length);
+}
+
+function noOwnedSubjectsHtml(){
+  return '<strong>Du har ingen fag i Mine fag ennå.</strong><span>Gå til Butikk for å kjøpe et fag. Når kjøpet er fullført, dukker faget opp her automatisk.</span><a href="butikk.html">Gå til Butikk</a>';
+}
+
 function cardHtml(s){
   var isDisabled = s.path === '#';
   var hasFlashcards = s.flashcards && s.flashcards !== '#';
@@ -256,6 +270,14 @@ function renderRankingList(list){
 }
 
 function renderSubjects(){
+  if (hasNoOwnedSubjects()) {
+    currentFilteredSubjects = [];
+    document.getElementById('subjectsGrid').innerHTML = '';
+    document.getElementById('emptyNote').innerHTML = noOwnedSubjectsHtml();
+    document.getElementById('emptyNote').style.display = 'block';
+    renderRankingList([]);
+    return;
+  }
   var q = (document.getElementById('subjectSearch').value || '').toLowerCase().trim();
   var filtered = SUBJECTS.filter(function(s){
     var description = s.description || s.desc || '';
@@ -272,6 +294,7 @@ function renderSubjects(){
   document.getElementById('subjectsGrid').innerHTML = groups.map(function(group){
     return '<section class="subject-group" data-category="'+group.id+'"><div class="subject-group-head"><div><span>'+group.subjects.length+' fag</span><h2>'+group.label+'</h2></div></div><div class="subjects-grid">'+group.subjects.map(cardHtml).join('')+'</div></section>';
   }).join('');
+  document.getElementById('emptyNote').textContent = 'Fant ingen fag som matcher søket.';
   document.getElementById('emptyNote').style.display = filtered.length ? 'none' : 'block';
   renderRankingList(filtered);
 }

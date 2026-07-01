@@ -50,7 +50,9 @@
 
   function getSelected() {
     var selected = readJson(STORAGE_KEY, null);
-    if (!Array.isArray(selected) || !selected.length) selected = DEFAULT_CODES;
+    var owned = entitledSet();
+    if (Array.isArray(owned) && !owned.length) return [];
+    if (!Array.isArray(selected) || !selected.length) selected = Array.isArray(owned) ? owned.slice() : DEFAULT_CODES;
     if (!readJson(CORE_ONLY_KEY, false) && selected.map(code).sort().join(',') === CORE_CODES.slice().sort().join(',')) selected = DEFAULT_CODES.slice();
     if (!readJson(MIGRATION_KEY, false)) {
       var compactSelected = selected.map(code).sort().join(',');
@@ -59,9 +61,7 @@
     }
     var available = catalog().map(function (s) { return code(s.code || s.id); });
     var value = selected.map(code).filter(function (item, index, arr) { return item && arr.indexOf(item) === index && (!available.length || available.indexOf(item) !== -1); });
-    if (!value.length) value = DEFAULT_CODES.slice();
     // Hard cap: cannot select subjects the user hasn't paid/claimed
-    var owned = entitledSet();
     if (owned === null) return value; // admin or entitlements not yet loaded
     return value.filter(function (c) { return owned.indexOf(c) !== -1; });
   }
@@ -69,7 +69,8 @@
   function setSelected(codes) {
     var available = catalog().map(function (s) { return code(s.code || s.id); });
     var value = (codes || []).map(code).filter(function (item, index, arr) { return item && arr.indexOf(item) === index && (!available.length || available.indexOf(item) !== -1); });
-    if (!value.length) value = DEFAULT_CODES.slice(0, 1);
+    var owned = entitledSet();
+    if (Array.isArray(owned)) value = value.filter(function (c) { return owned.indexOf(c) !== -1; });
     writeJson(CORE_ONLY_KEY, value.slice().sort().join(',') === CORE_CODES.slice().sort().join(','));
     writeJson(STORAGE_KEY, value);
     patchIntegrations();
@@ -112,14 +113,12 @@
       var allowed = getSelected();
       var selected = originalGet ? originalGet(fallback || allowed) : allowed;
       var filtered = (selected || []).map(code).filter(function (item) { return allowed.indexOf(item) !== -1; });
-      if (!filtered.length) filtered = allowed.slice(0, 1);
       if (originalSet) originalSet(filtered);
       return filtered;
     };
     api.setSelectedSubjects = function (codes) {
       var allowed = getSelected();
       var filtered = (codes || []).map(code).filter(function (item) { return allowed.indexOf(item) !== -1; });
-      if (!filtered.length) filtered = allowed.slice(0, 1);
       return originalSet ? originalSet(filtered) : filtered;
     };
   }
@@ -140,6 +139,7 @@
       '.hf-access-actions{display:flex;gap:8px;flex-wrap:wrap}.hf-access-actions button{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);color:#cbd7ef;border-radius:11px;padding:8px 10px;font:850 11px Lora,Georgia,serif;cursor:pointer}',
       '.hf-access-grid{display:flex;gap:9px;flex-wrap:wrap}.hf-access-pill{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);color:#b9c7df;border-radius:999px;padding:9px 11px;font:900 12px Lora,Georgia,serif;cursor:pointer;display:inline-flex;gap:7px;align-items:center}',
       '.hf-access-pill.active{background:linear-gradient(135deg,#245cff,#4b7dff);border-color:rgba(126,162,255,.44);color:#fff}.hf-access-dot{width:9px;height:9px;border-radius:50%;background:var(--accent,#2f62ff)}',
+      '.hf-access-shop{display:inline-flex;align-items:center;justify-content:center;min-height:38px;margin-top:12px;padding:0 13px;border-radius:12px;background:linear-gradient(135deg,#245cff,#4b7dff);color:#fff;font:900 12px Lora,Georgia,serif;box-shadow:0 12px 28px rgba(47,98,255,.28)}',
       '.hf-subject-hidden-by-access{display:none!important}',
       '.hf-access-empty{padding:16px;border-radius:18px;background:rgba(255,255,255,.035);border:1px dashed rgba(126,162,255,.25);color:#aebddd;font:850 13px/1.5 Lora,Georgia,serif;margin-top:12px}'
     ].join('\n');
@@ -148,7 +148,12 @@
 
   function panelHtml() {
     var selected = getSelected();
+    var owned = entitledSet();
     var subjects = catalog();
+    if (Array.isArray(owned)) subjects = subjects.filter(function (subject) { return owned.indexOf(code(subject.code || subject.id)) !== -1; });
+    if (Array.isArray(owned) && !owned.length) {
+      return '<section class="hf-access-panel" id="hfSubjectAccessPanel"><div class="hf-access-head"><div><strong>Mine fag</strong><span>Du eier ingen fag ennå. Gå til Butikk for å kjøpe et fag, så vises det her automatisk.</span><a class="hf-access-shop" href="butikk.html">Gå til Butikk</a></div></div></section>';
+    }
     return '<section class="hf-access-panel" id="hfSubjectAccessPanel"><div class="hf-access-head"><div><strong>Mine fag</strong><span>Velg hvilke fag du vil ha synlig i dashboard, studieplan, eksamensarkiv og andre oversikter.</span></div><div class="hf-access-actions"><button type="button" data-access-all>Velg alle</button><button type="button" data-access-core>Kjernefag</button></div></div><div class="hf-access-grid">' + subjects.map(function (subject) {
       var c = code(subject.code || subject.id);
       return '<button type="button" class="hf-access-pill ' + (selected.indexOf(c) !== -1 ? 'active' : '') + '" data-access-subject="' + esc(c) + '" style="--accent:' + esc(subject.accent || '#2f62ff') + '"><span class="hf-access-dot"></span>' + esc(c) + ' · ' + esc(subject.name || subject.label || '') + '</button>';
@@ -273,6 +278,7 @@
   function enhanceCurrentPage() {
     patchIntegrations();
     mountControls();
+    renderControls();
     filterVisibleDom();
     refreshSubjectPage();
   }

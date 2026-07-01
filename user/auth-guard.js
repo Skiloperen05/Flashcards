@@ -134,7 +134,7 @@
         + '<div class="subject-code">' + subject.code + '</div><div class="subject-name">' + subject.name + '</div>'
         + '<div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">' + (subject.progress || 0) + '%</div></div>'
         + '<div class="ring-sub">Ikke startet ennå</div><span class="subject-cta">Start øving</span></a>';
-    }).join('') || '<div class="panel"><div class="panel-inner">Velg fag på Mine fag-siden for å fylle dashboardet.</div></div>';
+    }).join('') || '<div class="panel"><div class="panel-inner">Du har ingen fag i Mine fag ennå. <a href="butikk.html">Gå til Butikk</a> for å kjøpe et fag.</div></div>';
     var sectionLink = document.querySelector('#mine-fag a');
     if (sectionLink) { sectionLink.href = 'subjects.html'; sectionLink.textContent = 'Administrer fag →'; }
   }
