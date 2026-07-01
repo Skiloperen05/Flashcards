@@ -5,6 +5,13 @@ const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || [
   'gHBvEH' + '-L-zyiW4' + 'UnsCxOY2q' + '-HmeIYe5' + 'OHSvxhFt7PQ8'
 ].join('.');
 
+// Per-subject price overrides in øre. Stripe's minimum charge for NOK is
+// 3.00 kr, so test prices cannot go below 300.
+// TEMPORARY: SAM2 is set to 3 kr for a live end-to-end payment test.
+const SUBJECT_PRICE_ORE_OVERRIDES = {
+  SAM2: 300
+};
+
 const SUBJECTS = {
   RET14: 'Skatterett',
   SOL1: 'Organisasjonsatferd',
@@ -110,7 +117,7 @@ exports.handler = async function handler(event) {
     params.set('mode', 'payment');
     params.set('line_items[0][quantity]', '1');
     params.set('line_items[0][price_data][currency]', 'nok');
-    params.set('line_items[0][price_data][unit_amount]', String(Number(process.env.SUBJECT_PRICE_NOK_ORE || 4900)));
+    params.set('line_items[0][price_data][unit_amount]', String(SUBJECT_PRICE_ORE_OVERRIDES[subjectCode] || Number(process.env.SUBJECT_PRICE_NOK_ORE || 4900)));
     params.set('line_items[0][price_data][product_data][name]', `${subjectCode} · ${subjectName}`);
     params.set('line_items[0][price_data][product_data][description]', 'Tilgang til alt innhold i faget på Haugnes Flashcards.');
     params.set('success_url', `${baseUrl}/user/butikk.html?payment=success&fag=${encodeURIComponent(subjectCode)}&session_id={CHECKOUT_SESSION_ID}`);
