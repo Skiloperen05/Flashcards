@@ -35,7 +35,7 @@
   function entitledCodes() {
     if (window.HaugnesEntitlements && typeof window.HaugnesEntitlements.getCodes === 'function') {
       var owned = window.HaugnesEntitlements.getCodes();
-      if (window.HaugnesEntitlements.isAdmin && window.HaugnesEntitlements.isAdmin()) {
+      if (window.HaugnesEntitlements.effectiveAdmin && window.HaugnesEntitlements.effectiveAdmin()) {
         return SUBJECTS.map(function (s) { return s.code; });
       }
       return owned;

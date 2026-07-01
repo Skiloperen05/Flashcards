@@ -185,7 +185,7 @@ function render(){
   var ent=window.HaugnesEntitlements;
   var entReady=!!(ent && ent.isLoaded());
   var owned=entReady ? ent.getCodes() : [];
-  var admin=ent && ent.isAdmin && ent.isAdmin();
+  var admin=!!(ent && ent.effectiveAdmin && ent.effectiveAdmin());
   var canClaimFree=entReady && !admin && owned.length===0;
   var ownedCount=admin?SUBJECTS.length:owned.length;
   document.getElementById('statOwned').textContent=ownedCount;
