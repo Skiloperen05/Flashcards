@@ -29,6 +29,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Dashboard: `user/index.html`.
 - Subject management: `user/subjects.html`.
 - Shop/entitlement claiming and Stripe checkout entry: `user/butikk.html`.
+- Exam analysis hub (all subjects, entitlement-aware): `user/eksamensanalyse.html`. Cards are built from `shared/subject-meta.js` + the `eksamen` resources in `shared/subject-resources.js`; the sidebar "Eksamensanalyse" item points here (was previously hardcoded to `ret14/eksamen/`).
 - A-besvarelser / eksamensarkiv shell: `user/a-besvarelser.html`.
 - Oppgavebank shell: `user/oppgavebank.html`.
 - Study plan shell: `user/studieplan.html`.

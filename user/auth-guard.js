@@ -2,6 +2,7 @@
   var SHARED_SCRIPT = '../shared/auth-guard.js';
   var MODEL_PAGES = {
     'butikk.html': { label: 'Butikk', icon: '⚷', subtitle: 'Lås opp fag' },
+    'eksamensanalyse.html': { label: 'Eksamensanalyse', icon: '◈', subtitle: 'Temaer som går igjen' },
     'a-besvarelser.html': { label: 'A-besvarelser', icon: '▤', subtitle: 'Se sterke tidligere svar' },
     'oppgavebank.html': { label: 'Oppgavebank', icon: '▣', subtitle: 'Øv på eksamensnære oppgaver' },
     'notater.html': { label: 'Notater', icon: '▥', subtitle: 'Samle egne fagnotater' },
@@ -164,7 +165,7 @@
     var page = currentUserPage();
     var nav = document.querySelector('.sidebar .nav, nav.nav');
     if (nav) {
-      var insertionAnchor = nav.querySelector('a[href="../ret14/eksamen/"]') || nav.querySelector('a[href="subjects.html"]') || nav.querySelector('a[href="progress.html"]');
+      var insertionAnchor = nav.querySelector('a[href="eksamensanalyse.html"]') || nav.querySelector('a[href="../ret14/eksamen/"]') || nav.querySelector('a[href="subjects.html"]') || nav.querySelector('a[href="progress.html"]');
       Object.keys(MODEL_PAGES).forEach(function (href) {
         if (nav.querySelector('a[href="' + href + '"]')) return;
         var link = createNavLink(href, MODEL_PAGES[href], page === href);
