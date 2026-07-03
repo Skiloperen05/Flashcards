@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Memoarer — Haugnes Flashcards</title>
+<link rel="icon" href="../assets/haugnes-logo-mark.svg">
+<link rel="apple-touch-icon" href="../assets/haugnes-logo-mark.svg">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#06142d;--panel:#0b2148;--panel2:#102b5a;--card:#0f2a5c;--card2:#0a1d43;--line:rgba(255,255,255,.11);--line2:rgba(126,162,255,.20);--text:#f8fbff;--muted:#91a5c8;--soft:#cbd7ef;--blue:#2f62ff;--blue2:#6f96ff;--gold:#e8bc68;--green:#20b97a;--orange:#f09828;--red:#ef4444;--shadow:0 24px 60px rgba(0,0,0,.30);--radius:22px;--radius2:16px}
+html{scroll-behavior:smooth}body{font-family:'Lora',Georgia,'Times New Roman',serif;background:radial-gradient(circle at 18% 12%,rgba(47,98,255,.18),transparent 25%),radial-gradient(circle at 82% 5%,rgba(232,188,104,.11),transparent 24%),linear-gradient(180deg,#06142d,#071835 56%,#06142d);color:var(--text);min-height:100vh;overflow-x:hidden}a{text-decoration:none;color:inherit}button,input,select{font-family:inherit}.app{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100vh}.sidebar{position:sticky;top:0;height:100vh;padding:22px 18px;background:linear-gradient(180deg,rgba(4,16,38,.96),rgba(7,23,51,.96));border-right:1px solid var(--line);display:flex;flex-direction:column;gap:22px}.brand{display:flex;align-items:center;gap:12px;padding:0 6px 12px;color:#fff}.logo-mark{width:46px;height:46px;border-radius:14px;background:#0b244e url('../assets/haugnes-logo-mark.svg') center/78% no-repeat;border:1px solid rgba(255,255,255,.14);box-shadow:0 14px 30px rgba(0,0,0,.28);flex:0 0 46px}.brand-title{font-size:20px;font-weight:850;letter-spacing:.22em;text-transform:uppercase;line-height:1}.brand-sub{font-size:9px;font-weight:900;letter-spacing:.44em;text-transform:uppercase;color:var(--gold);margin-top:5px}.nav{display:grid;gap:7px}.nav-link{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:14px;color:#c6d3eb;font-size:14px;font-weight:750;transition:background .18s ease,color .18s ease,transform .18s ease}.nav-link:hover{background:rgba(255,255,255,.06);color:#fff;transform:translateX(2px)}.nav-link.active{background:linear-gradient(135deg,#2455ef,#3f73ff);color:#fff;box-shadow:0 12px 26px rgba(47,98,255,.28)}.nav-ico{width:20px;text-align:center}.side-bottom{margin-top:auto}.streak-card{padding:17px;border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.035));border:1px solid var(--line)}.streak-label{font-size:12px;color:var(--muted);font-weight:750}.streak-number{font-size:33px;font-weight:900;letter-spacing:-.06em;margin:4px 0}.streak-number span{font-size:13px;color:var(--muted);letter-spacing:0;font-weight:750}.streak-bar{height:8px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden}.streak-bar i{display:block;width:72%;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),#ff8b33)}.user-mini{margin-top:14px;display:flex;align-items:center;gap:10px;padding:11px;border-radius:18px;background:rgba(255,255,255,.05);border:1px solid var(--line)}.avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#2f62ff,#e8bc68);font-weight:900;color:#fff}.user-mini strong{display:block;font-size:13px}.user-mini span{display:block;color:var(--muted);font-size:11px;margin-top:1px}.main{min-width:0;padding:22px 26px 34px}.topline{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:18px}.breadcrumb{display:flex;align-items:center;gap:8px;color:#9fb0cf;font-size:13px;font-weight:750;margin-bottom:7px}.breadcrumb a{color:#b8c9ee}.hello h1{font-size:32px;line-height:1.05;letter-spacing:-.045em}.hello p{font-size:15px;color:#c2cee4;margin-top:5px}.top-actions{display:flex;align-items:center;gap:12px}.icon-btn{width:42px;height:42px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.055);color:#dce6f7;display:grid;place-items:center;cursor:pointer}.avatar-top{display:flex;align-items:center;gap:10px;padding:4px 10px 4px 4px;border-radius:999px;background:rgba(255,255,255,.055);border:1px solid var(--line)}.avatar-top .avatar{width:34px;height:34px}.avatar-top span{font-size:13px;font-weight:850}.hero-panel{position:relative;overflow:hidden;border-radius:var(--radius);border:1px solid var(--line2);background:linear-gradient(135deg,rgba(13,38,86,.93),rgba(7,22,50,.96));box-shadow:var(--shadow);margin-bottom:18px}.hero-panel::before{content:"";position:absolute;right:-70px;top:-90px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(47,98,255,.25),transparent 68%)}.hero-panel::after{content:"";position:absolute;left:28%;top:-140px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(232,188,104,.10),transparent 62%)}.hero-inner{position:relative;z-index:1;padding:24px;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:20px;align-items:center}.kicker{display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border-radius:999px;background:rgba(47,98,255,.15);border:1px solid rgba(95,136,255,.32);color:#b8c9ff;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}.hero-title{font-size:38px;line-height:1.02;letter-spacing:-.05em;font-weight:900}.hero-title span{color:var(--gold)}.hero-copy{margin-top:10px;max-width:680px;color:#b9c7df;font-size:15px;line-height:1.65}.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.hero-stat{padding:14px;border-radius:16px;background:rgba(255,255,255,.055);border:1px solid var(--line)}.hero-stat b{font-size:25px;font-weight:900;letter-spacing:-.05em}.hero-stat span{display:block;margin-top:5px;color:var(--muted);font-size:11px;font-weight:750}.workspace{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:18px}.side-col{display:grid;gap:14px;align-content:start}.side-panel{border-radius:var(--radius);background:linear-gradient(180deg,rgba(14,39,84,.90),rgba(8,26,58,.94));border:1px solid var(--line);box-shadow:var(--shadow);padding:18px}.side-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px}.side-head h2{font-size:17px;letter-spacing:-.035em}.popular-list{display:grid;gap:9px}.popular-item{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:10px;padding:11px;border-radius:15px;background:rgba(255,255,255,.045);border:1px solid var(--line)}.rank{width:28px;height:28px;border-radius:10px;background:rgba(47,98,255,.16);display:grid;place-items:center;color:#aecaef;font-weight:900;font-size:12px}.popular-item strong{display:block;font-size:12.5px}.popular-item span{display:block;color:#8fa5ca;font-size:10.5px;margin-top:1px}.pop-tag{font-size:10.5px;font-weight:900;padding:5px 7px;border-radius:999px;background:rgba(232,188,104,.12);color:#ffd98f}.mobile-top{display:none}
+@media(max-width:1320px){.hero-inner{grid-template-columns:1fr}.hero-stats{max-width:520px}.workspace{grid-template-columns:1fr}.side-col{grid-template-columns:1fr 1fr}}
+@media(max-width:980px){.app{grid-template-columns:1fr}.sidebar{display:none}.main{padding:16px}.mobile-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.topline{display:none}.side-col{grid-template-columns:1fr}.hero-title{font-size:32px}.hero-stats{grid-template-columns:1fr 1fr 1fr}}
+@media(max-width:620px){.hero-stats{grid-template-columns:1fr}.hero-inner{padding:18px}.brand-title{font-size:17px;letter-spacing:.16em}.brand-sub{letter-spacing:.28em}.logo-mark{width:40px;height:40px}.avatar-top span{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <a class="brand" href="../index.html"><span class="logo-mark"></span><span><span class="brand-title">Haugnes</span><span class="brand-sub">Flashcards</span></span></a>
+    <nav class="nav" aria-label="Brukermeny">
+      <a class="nav-link" href="index.html"><span class="nav-ico">⌂</span>Hjem</a>
+      <a class="nav-link" href="subjects.html"><span class="nav-ico">▦</span>Mine fag</a>
+      <a class="nav-link" href="butikk.html"><span class="nav-ico">⚷</span>Butikk</a>
+      <a class="nav-link" href="a-besvarelser.html"><span class="nav-ico">▤</span>A-besvarelser</a>
+      <a class="nav-link active" href="memoarer.html"><span class="nav-ico">✎</span>Memoarer</a>
+      <a class="nav-link" href="eksamensanalyse.html"><span class="nav-ico">◈</span>Eksamensanalyse</a>
+      <a class="nav-link" href="progress.html"><span class="nav-ico">▥</span>Statistikk</a>
+      <a class="nav-link" href="../flashcards/"><span class="nav-ico">▱</span>Alle flashcards</a>
+    </nav>
+    <div class="side-bottom">
+      <div class="streak-card"><div class="streak-label">Streak</div><div class="streak-number">12 <span>dager 🔥</span></div><div class="streak-bar"><i></i></div></div>
+      <div class="user-mini"><div class="avatar" id="sideAvatar">?</div><div><strong id="sideName">Bruker</strong><span>NHH-student</span></div></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="mobile-top"><a class="brand" href="../index.html"><span class="logo-mark"></span><span><span class="brand-title">Haugnes</span><span class="brand-sub">Flashcards</span></span></a><button class="icon-btn" onclick="handleLogout()">⎋</button></div>
+
+    <header class="topline">
+      <div class="hello"><div class="breadcrumb"><a href="index.html">Dashboard</a><span>›</span><span>Memoarer</span></div><h1>Memoarer</h1><p>Personlige oppsummeringer av arbeidsmåte, fallgruver og eksamensfokus per fag.</p></div>
+      <div class="top-actions"><button class="icon-btn" title="Varsler">🔔</button><div class="avatar-top"><div class="avatar" id="topAvatar">?</div><span id="topName">Bruker</span></div></div>
+    </header>
+
+    <section class="hero-panel">
+      <div class="hero-inner">
+        <div><div class="kicker">Erfaring · Arbeidsmåte</div><h2 class="hero-title">Lær av <span>memoarene</span>.</h2><p class="hero-copy">Memoarene forteller hvordan hvert fag faktisk bør angripes: hva som funker, hva som pleier å gå galt, og hva du bør prioritere før eksamen.</p></div>
+        <div class="hero-stats"><div class="hero-stat"><b>0</b><span>memoarer</span></div><div class="hero-stat"><b>0</b><span>fag</span></div><div class="hero-stat"><b>0</b><span>publisert her</span></div></div>
+      </div>
+    </section>
+
+    <div class="workspace">
+      <section id="memoLibraryHost"></section>
+
+      <aside class="side-col">
+        <section class="side-panel"><div class="side-head"><h2>Publiserte memoarer</h2></div><div class="popular-list"></div></section>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<script src="auth-guard.js"></script>
+<script>
+function nameFromEmail(email){var username=(email||'student').split('@')[0];return username.charAt(0).toUpperCase()+username.slice(1)}
+window.onUserAuthorized=function(session){var email=session&&session.user&&session.user.email||'';var name=nameFromEmail(email);var initial=name.charAt(0).toUpperCase();['sideName','topName'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=name});['sideAvatar','topAvatar'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=initial})}
+function handleLogout(){return AuthGuard.logout()}
+</script>
+</body>
+</html>
