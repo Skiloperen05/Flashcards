@@ -7,6 +7,8 @@ const root = join(here, '..');
 const inputPath = join(root, 'data', 'learning-content.json');
 const outputPath = join(root, 'shared', 'learning-content.js');
 const checkOnly = process.argv.includes('--check');
+const V1_MIN_CARDS = 25;
+const V1_MIN_QUESTIONS = 8;
 
 function fail(message) {
   throw new Error(message);
@@ -58,6 +60,7 @@ function validate(data) {
   const errors = [];
   if (!hasText(data.version)) errors.push('Katalogen mangler version');
   if (!hasText(data.updatedAt)) errors.push('Katalogen mangler updatedAt');
+  if (data.v1 && typeof data.v1 !== 'object') errors.push('v1 må være et objekt');
   if (!Array.isArray(data.subjects)) errors.push('subjects må være en liste');
   if (!Array.isArray(data.sources)) errors.push('sources må være en liste');
   if (!data.decks || typeof data.decks !== 'object' || Array.isArray(data.decks)) errors.push('decks må være et fagindeksert objekt');
@@ -169,7 +172,30 @@ function validate(data) {
     if (!Number.isFinite(Number(recommendation.minutes))) errors.push(`recommendations.${subject} mangler gyldig minutes`);
   });
 
+  data.subjects.forEach((subject) => {
+    if (subject.qualityStatus !== 'exam_ready') return;
+    const decks = data.decks[subject.id] || [];
+    const cardCount = decks.reduce((sum, deck) => sum + ((deck.cards || []).length), 0);
+    const questionCount = data.questions.filter((question) => subjectKey(question.subject, aliases) === subject.id).length;
+    const formulaCount = (keyedMapLookup(data.formulaItems, subject, aliases) || []).length;
+    const pathCount = (keyedMapLookup(data.learningPaths, subject, aliases) || []).length;
+    const analysis = keyedMapLookup(data.examAnalyses, subject, aliases);
+    const memo = keyedMapLookup(data.memos, subject, aliases);
+    const recommendation = keyedMapLookup(data.recommendations, subject, aliases);
+    if (cardCount < V1_MIN_CARDS) errors.push(`${subject.code} er exam_ready, men har bare ${cardCount}/${V1_MIN_CARDS} kort`);
+    if (questionCount < V1_MIN_QUESTIONS) errors.push(`${subject.code} er exam_ready, men har bare ${questionCount}/${V1_MIN_QUESTIONS} oppgaver`);
+    if (formulaCount < 3) errors.push(`${subject.code} er exam_ready, men mangler metodeark/formelark med minst 3 punkter`);
+    if (pathCount < 3) errors.push(`${subject.code} er exam_ready, men mangler læringssti`);
+    if (!analysis || !hasArray(analysis.topics)) errors.push(`${subject.code} er exam_ready, men mangler eksamensradar`);
+    if (!memo) errors.push(`${subject.code} er exam_ready, men mangler fagmemo`);
+    if (!recommendation) errors.push(`${subject.code} er exam_ready, men mangler anbefalt neste økt`);
+  });
+
   return errors;
+}
+
+function keyedMapLookup(map, subject, aliases) {
+  return map[subject.id] || map[subject.code] || map[aliasKey(subject.code)] || map[subjectKey(subject.code, aliases)] || null;
 }
 
 function runtimeSource(data) {
@@ -353,6 +379,9 @@ function runtimeSource(data) {
         id: 'memo-' + key(memoKey),
         title: (subject ? subject.code : subjectCode(memoKey)) + ' memo',
         subject: subject ? subject.code : subjectCode(memoKey),
+        topic: 'Arbeidsmåte',
+        questionType: 'memo',
+        source: 'learning_catalog',
         tags: 'memo, arbeidsmate',
         body: memo.intro + '\\n\\n' + memo.studyAdvice
       };
@@ -431,6 +460,26 @@ function runtimeSource(data) {
     });
   }
 
+  function kickerForPage(subject) {
+    if (subject.qualityStatus === 'exam_ready') return 'Eksamensklar V1';
+    if (subject.stage === 'rich') return 'Plattformklar fagpakke';
+    if (subject.stage === 'mvp_gap') return 'MVP-løft';
+    return 'Strukturert fagmal';
+  }
+
+  function progressForPage(subject) {
+    if (subject.qualityStatus === 'exam_ready') return '100%';
+    if (subject.stage === 'rich') return '62%';
+    if (subject.stage === 'ready_for_import') return '42%';
+    if (subject.stage === 'mvp_gap') return '34%';
+    return '28%';
+  }
+
+  function statusForPage(subject) {
+    if (subject.qualityStatus === 'exam_ready') return 'Eksamensklar';
+    return subject.stage === 'rich' ? 'Aktiv' : 'Bygges';
+  }
+
   function pageFor(value) {
     var subject = subjectFor(value);
     if (!subject) return null;
@@ -443,9 +492,9 @@ function runtimeSource(data) {
       id: subject.id,
       code: subject.code,
       name: subject.name,
-      kicker: subject.stage === 'rich' ? 'Plattformklar fagpakke' : subject.stage === 'mvp_gap' ? 'MVP-løft' : 'Strukturert fagmal',
+      kicker: kickerForPage(subject),
       accent: subject.accent,
-      progress: subject.stage === 'rich' ? '62%' : subject.stage === 'ready_for_import' ? '42%' : subject.stage === 'mvp_gap' ? '34%' : '28%',
+      progress: progressForPage(subject),
       lead: subject.lead,
       toolProfile: subject.toolProfile,
       qualityStatus: subject.qualityStatus,
@@ -453,7 +502,7 @@ function runtimeSource(data) {
       preferredStudyMethod: subject.preferredStudyMethod,
       personalNotes: subject.personalNotes,
       personalWarnings: subject.personalWarnings,
-      stats: [[String(sources.length), 'kilder'], [String(cards || decks.length), cards ? 'kort fra katalogen' : 'kortpakker'], [subject.stage === 'rich' ? 'Aktiv' : 'Bygges', 'plattform']],
+      stats: [[String(sources.length), 'kilder'], [String(cards || decks.length), cards ? 'kort fra katalogen' : 'kortpakker'], [statusForPage(subject), 'V1-status']],
       tools: toolsForPage(subject),
       topics: topicsForPage(subject),
       plan: (path.length ? path : [
@@ -482,6 +531,7 @@ function runtimeSource(data) {
   window.HaugnesLearningContent = {
     version: data.version,
     updatedAt: data.updatedAt,
+    v1: clone(data.v1 || null),
     subjects: clone(data.subjects),
     sources: clone(data.sources),
     decks: clone(data.decks),

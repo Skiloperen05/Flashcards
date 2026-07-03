@@ -56,15 +56,19 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Generated browser contract: `shared/learning-content.js`.
 - Generator and validator: `scripts/generate-learning-content.mjs`.
 - Local source scanner for PDF/DOCX/PPTX/TXT/HTML/XLSX metadata: `scripts/import-learning-sources.mjs`.
+- Generated local source indexes use `data/*.generated.json` and are gitignored because they may include local file paths/snippets.
 - Public contract name: `window.HaugnesLearningContent`.
 - Contract fields: `subjects`, `sources`, `decks`, `questions`, `examAnalyses`, `formulaItems`, `learningPaths`, `memos`, `recommendations`.
 - Subject catalog entries include the active personalization fields `toolProfile`, `primaryTools`, `qualityStatus`, `qualityTarget`, `personalNotes`, `personalWarnings`, and `preferredStudyMethod`.
+- V1 planning field: top-level `v1` stores the shared V1 target and marks deep subject content as pending joint build.
 - Source entries include `sourceRole` so Canvas exports, personal notes, memoarer, protected exam packs, local exercises, spreadsheets, and owned assignments can be treated differently by imports and UI.
 - Contract helpers include `sourcesFor`, `decksFor`, `questionsFor`, `analysisFor`, `formulaItemsFor`, `learningPathFor`, `toolsFor`, `qualityFor`, `personalMemoFor`, `sourceRolesFor`, `memoFor`, `recommendationFor`, `notes`, and `pageFor`.
+- V1 content rule: subjects can keep `qualityTarget: "exam_ready"` while content is pending; any subject actually marked `qualityStatus: "exam_ready"` must validate with at least 25 catalog cards, 8 catalog questions, a memo, a recommendation, a learning path, method/formula items, and exam radar.
 - Active integration points:
   - `shared/haugnes-study-data.js` merges generated decks/questions/notes with legacy manual data.
   - `shared/subject-page-data.js` supplements or creates fagsider from `pageFor` and lets catalog `primaryTools`/personal study guidance drive the main subject-tool grid.
   - `shared/subject-page-renderer.js` renders personal arbeidsmåte/fallgruver from the generated catalog inside the learning suite.
+  - `shared/subject-meta.js` decorates subject cards from catalog quality/counts when `shared/learning-content.js` is available.
   - `shared/haugnes-dashboard-progress.js` reads catalog recommendations before legacy fallback.
   - `shared/auth-guard.js` injects `shared/learning-content.js` for user pages.
 - Rights rule: local Canvas/course files remain private source metadata until explicitly reviewed for publication.

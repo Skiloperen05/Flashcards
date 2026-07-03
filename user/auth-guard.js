@@ -42,7 +42,7 @@
     var existing = document.getElementById(id);
     if (existing) {
       if (onload) {
-        if ((id === 'haugnes-subject-meta-js' && window.HaugnesSubjects) || (id === 'haugnes-subject-access-js' && window.HaugnesSubjectAccess) || (id === 'timeedit-fetch-proxy-js' && window.HaugnesTimeEditProxy) || (id === 'nhh-schedule-api-js' && window.NHHScheduleAPI) || (id === 'nhh-schedule-normalizer-js' && window.NHHScheduleAPI && window.NHHScheduleAPI.normalizeEvents) || (id === 'nhh-strict-course-filter-js' && window.NHHScheduleAPI && window.NHHScheduleAPI.strictCourseFilter) || (id === 'haugnes-studyplan-js' && window.HaugnesStudyplan) || (id === 'haugnes-answer-library-js' && window.__haugnesAnswerLibraryInstalled)) onload();
+        if ((id === 'haugnes-learning-content-js' && window.HaugnesLearningContent) || (id === 'haugnes-subject-meta-js' && window.HaugnesSubjects) || (id === 'haugnes-subject-access-js' && window.HaugnesSubjectAccess) || (id === 'timeedit-fetch-proxy-js' && window.HaugnesTimeEditProxy) || (id === 'nhh-schedule-api-js' && window.NHHScheduleAPI) || (id === 'nhh-schedule-normalizer-js' && window.NHHScheduleAPI && window.NHHScheduleAPI.normalizeEvents) || (id === 'nhh-strict-course-filter-js' && window.NHHScheduleAPI && window.NHHScheduleAPI.strictCourseFilter) || (id === 'haugnes-studyplan-js' && window.HaugnesStudyplan) || (id === 'haugnes-answer-library-js' && window.__haugnesAnswerLibraryInstalled)) onload();
         else existing.addEventListener('load', onload, { once: true });
       }
       return;
@@ -86,12 +86,22 @@
     document.head.appendChild(style);
   }
 
+  function loadLearningContent(onload) {
+    if (window.HaugnesLearningContent) {
+      if (onload) onload();
+      return;
+    }
+    addScript('haugnes-learning-content-js', '../shared/learning-content.js', onload);
+  }
+
   function loadSubjectMeta(onload) {
     if (window.HaugnesSubjects) {
       if (onload) onload();
       return;
     }
-    addScript('haugnes-subject-meta-js', '../shared/subject-meta.js', onload);
+    loadLearningContent(function () {
+      addScript('haugnes-subject-meta-js', '../shared/subject-meta.js', onload);
+    });
   }
 
   function loadSubjectAccess(onload) {

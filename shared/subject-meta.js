@@ -211,6 +211,10 @@
     return JSON.parse(JSON.stringify(value));
   }
 
+  function learningContent() {
+    return window.HaugnesLearningContent || null;
+  }
+
   function code(value) {
     return String(value || '').toUpperCase().replace(/[\s-]+/g, '');
   }
@@ -224,15 +228,38 @@
     return ['RET14', 'SOL1', 'SAM2', 'SAM3', 'MET2', 'MAT10', 'SAM1A', 'MET1', 'KOM1', 'RET1A', 'BED1'];
   }
 
+  function decorateSubject(subject) {
+    var learning = learningContent();
+    if (!learning || typeof learning.qualityFor !== 'function' || typeof learning.toolsFor !== 'function') return subject;
+    var quality = learning.qualityFor(subject.id || subject.code);
+    if (!quality) return subject;
+    var tools = learning.toolsFor(subject.id || subject.code) || [];
+    subject.qualityStatus = quality.status;
+    subject.qualityTarget = quality.target;
+    subject.decks = String(quality.deckCount || subject.decks);
+    subject.cards = String(quality.cardCount || subject.cards);
+    subject.tools = String(tools.length || subject.tools);
+    if (quality.status === 'exam_ready') {
+      subject.status = 'active';
+      subject.statusText = 'Eksamensklar';
+      subject.progress = 100;
+    }
+    return subject;
+  }
+
+  function decorateSubjects(list) {
+    return list.map(decorateSubject);
+  }
+
   function getCatalog() {
-    return clone(subjects).sort(sortSubjects);
+    return decorateSubjects(clone(subjects)).sort(sortSubjects);
   }
 
   function getAll() {
     var selected = selectedCodes();
-    return clone(subjects.filter(function (subject) {
+    return decorateSubjects(clone(subjects.filter(function (subject) {
       return selected.indexOf(code(subject.code)) !== -1;
-    })).sort(sortSubjects);
+    }))).sort(sortSubjects);
   }
 
   function sortSubjects(a, b) {
@@ -260,7 +287,7 @@
     var subject = subjects.find(function (s) {
       return s.id.toLowerCase() === needle || s.code.toLowerCase() === needle || (s.aliases || []).some(function (alias) { return alias.toLowerCase() === needle; });
     });
-    return subject ? clone(subject) : null;
+    return subject ? decorateSubject(clone(subject)) : null;
   }
 
   function getFlashcardSubjectId(id) {

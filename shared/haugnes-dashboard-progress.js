@@ -12,8 +12,13 @@
     SOL1: { title: 'Motivasjon og ledelse i SOL1', sub: 'Fokus på teori', cards: 32, minutes: 25, href: '../flashcards/?subject=subj_sol1' },
     SAM2: { title: 'Konsumentteori i SAM2', sub: 'Fokus på modell', cards: 24, minutes: 25, href: '../sam2/oppgaver-klikkbar/' },
     SAM3: { title: 'Makromodeller i SAM3', sub: 'Fokus på eksamen', cards: 31, minutes: 25, href: '../sam3/flashcards.html' },
-    MET2: { title: 'MET2 er planlagt', sub: 'Fagområde kommer', cards: 0, minutes: 0, href: 'subjects.html', planned: true },
-    MAT10: { title: 'MAT10 er planlagt', sub: 'Fagområde kommer', cards: 0, minutes: 0, href: 'subjects.html', planned: true }
+    MET2: { title: 'Testvalg og tolkning i MET2', sub: 'Fokus på metode', cards: 27, minutes: 30, href: '../flashcards/?subject=met2' },
+    MAT10: { title: 'Formelvalg i MAT10', sub: 'Fokus på regnedrill', cards: 27, minutes: 30, href: '../flashcards/?subject=mat10' },
+    BED1: { title: 'Kalkyle og beslutning i BED1', sub: 'Fokus på regneoppsett', cards: 27, minutes: 30, href: '../flashcards/?subject=bed1' },
+    SAM1A: { title: 'Markedskryss i SAM1A', sub: 'Fokus på figur', cards: 27, minutes: 25, href: '../flashcards/?subject=sam1a' },
+    MET1: { title: 'Tidslinje i MET1', sub: 'Fokus på rente', cards: 27, minutes: 25, href: '../flashcards/?subject=met1' },
+    KOM1: { title: 'Analyseavsnitt i KOM1', sub: 'Fokus på skriving', cards: 27, minutes: 25, href: '../flashcards/?subject=kom1' },
+    RET1A: { title: 'Vilkår og subsumsjon i RET1A', sub: 'Fokus på metode', cards: 27, minutes: 25, href: '../flashcards/?subject=ret1a' }
   };
 
   var tries = {};
@@ -35,6 +40,11 @@
     if (lower.indexOf('sam3') !== -1) return 'sam3';
     if (lower.indexOf('met2') !== -1) return 'met2';
     if (lower.indexOf('mat10') !== -1) return 'mat10';
+    if (lower.indexOf('bed1') !== -1) return 'bed1';
+    if (lower.indexOf('sam1a') !== -1) return 'sam1a';
+    if (lower.indexOf('met1') !== -1) return 'met1';
+    if (lower.indexOf('kom1') !== -1) return 'kom1';
+    if (lower.indexOf('ret1a') !== -1) return 'ret1a';
     return lower;
   }
 

@@ -3,6 +3,7 @@ node_modules/
 dist/
 build/
 coverage/
+data/*.generated.json
 .env
 .env.*
 .DS_Store
