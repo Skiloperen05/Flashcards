@@ -155,15 +155,7 @@ var SUBJECTS = [
 ];
 
 var SUBJECT_PRICE_LABEL = '49 kr';
-
-// Netlify functions only exist on the Netlify deployment. The public domain
-// (bhflashcards.no) is served from GitHub Pages, so calls there must go
-// cross-origin to the Netlify site (CORS is configured for these origins).
-function functionsBase(){
-  var host = window.location.hostname;
-  if (/\.netlify\.app$/i.test(host) || /^(localhost|127\.0\.0\.1|\[::1\])$/.test(host)) return '';
-  return 'https://bhflashcards.netlify.app';
-}
+var STRIPE_CHECKOUT_FUNCTION_URL = 'https://qnwjhheoekpqqqhevztw.supabase.co/functions/v1/create-stripe-checkout';
 
 function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});}
 function getQuery(name){return new URLSearchParams(window.location.search).get(name);}
@@ -335,7 +327,7 @@ function bind(){
         return;
       }
       setLoading(btn, true, 'Kjøp med Stripe', 'Sender til Stripe…');
-      fetch(functionsBase() + '/.netlify/functions/create-stripe-checkout', {
+      fetch(STRIPE_CHECKOUT_FUNCTION_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer '+token },
         body: JSON.stringify({ subjectCode: code })
