@@ -31,6 +31,66 @@ const subjectHints = [
 
 const readableExts = new Set(['.pdf', '.doc', '.docx', '.pptx', '.txt', '.md', '.html', '.htm', '.csv', '.xlsx', '.xls', '.rtf']);
 const directTextExts = new Set(['.txt', '.md', '.html', '.htm', '.csv', '.rtf']);
+const v1SourceRoles = ['canvas_lecture', 'personal_notes', 'personal_memo', 'exam_archive', 'sensor_guide', 'answer_example', 'exercise_pack', 'spreadsheet', 'owned_assignment'];
+const rolePriority = ['personal_memo', 'personal_notes', 'canvas_lecture', 'exercise_pack', 'sensor_guide', 'exam_archive', 'spreadsheet', 'owned_assignment', 'answer_example'];
+
+const subjectBlueprints = {
+  RET14: {
+    methods: ['Hjemmel', 'Vilkår', 'Subsumsjon', 'Beregning'],
+    questions: ['Fradrag', 'Aksjer', 'Personinntekt', 'Tidfesting', 'MVA'],
+    radar: ['Fradrag', 'Aksjer og fritaksmetode', 'Personinntekt', 'Tidfesting']
+  },
+  SOL1: {
+    methods: ['Teorivalg', 'Casekobling', 'Drøfting', 'Eksempelsvar'],
+    questions: ['Motivasjon', 'Team', 'Ledelse', 'Beslutninger', 'Kultur'],
+    radar: ['Teorivalg', 'Casekobling', 'Drøfting', 'Ledelse']
+  },
+  SAM3: {
+    methods: ['Modellvalg', 'Figur/skift', 'Formel', 'Eksamensflyt'],
+    questions: ['IS-MP', 'AS-AD', 'Solow', 'Phillips', 'Åpen økonomi'],
+    radar: ['IS-MP', 'AS-AD', 'Solow', 'Åpen økonomi']
+  },
+  MAT10: {
+    methods: ['Formelvalg', 'Definisjonsområde', 'Mellomregning', 'Kontroll'],
+    questions: ['Derivasjon', 'Integrasjon', 'Matriser', 'Taylor', 'Optimering'],
+    radar: ['Derivasjon og optimering', 'Integrasjon', 'Lineær algebra', 'Taylor']
+  },
+  MET2: {
+    methods: ['Testvalg', 'P-verdi', 'Konfidensintervall', 'Regresjonstolkning'],
+    questions: ['Hypotesetest', 'Konfidensintervall', 'Regresjon', 'Utvalg', 'Sannsynlighet'],
+    radar: ['Hypotesetesting', 'Konfidensintervall', 'Regresjon', 'Utvalg']
+  },
+  BED1: {
+    methods: ['Kalkyle', 'Tabelloppsett', 'Fasitkontroll', 'Beslutning'],
+    questions: ['Produktkalkulasjon', 'Investering', 'Budsjett', 'Resultat', 'Relevante kostnader'],
+    radar: ['Produktkalkulasjon', 'Investering', 'Budsjett og resultat', 'Beslutning']
+  },
+  SAM2: {
+    methods: ['Figur først', 'Modellvalg', 'Velferd', 'Komparativ statikk'],
+    questions: ['Konsumentteori', 'Produsentteori', 'Markedssvikt', 'Monopol', 'Spillteori'],
+    radar: ['Konsumentteori', 'Markedssvikt', 'Velferdsanalyse', 'Markedsmakt']
+  },
+  SAM1A: {
+    methods: ['Markedskryss', 'Elastisitet', 'Velferd', 'Markedssvikt'],
+    questions: ['Markedslikevekt', 'Elastisitet', 'Regulering', 'Skatt', 'Eksternaliteter'],
+    radar: ['Markedslikevekt', 'Elastisitet', 'Velferd', 'Markedssvikt']
+  },
+  MET1: {
+    methods: ['Tidslinje', 'Nåverdi', 'Annuitet', 'Renteperiode'],
+    questions: ['Nåverdi', 'Annuitet', 'Effektiv rente', 'Rekker', 'Lån'],
+    radar: ['Nåverdi', 'Annuitet', 'Effektiv rente', 'Rekker']
+  },
+  KOM1: {
+    methods: ['Problemstilling', 'Analyseavsnitt', 'Argumentasjon', 'Presentasjon'],
+    questions: ['Rapportstruktur', 'Kildebruk', 'Drøfting', 'Språk', 'Muntlig presentasjon'],
+    radar: ['Problemstilling', 'Analyseavsnitt', 'Drøfting', 'Presentasjon']
+  },
+  RET1A: {
+    methods: ['Rettsregel', 'Vilkår', 'Subsumsjon', 'Delkonklusjon'],
+    questions: ['Avtalerett', 'Pengekrav', 'Selskapsrett', 'Juridisk metode', 'Tolkning'],
+    radar: ['Juridisk metode', 'Avtalerett', 'Pengekrav', 'Selskapsrett']
+  }
+};
 
 function valueAfter(flag) {
   const index = args.indexOf(flag);
@@ -86,6 +146,20 @@ function inferType(ext, filePath) {
   return 'document';
 }
 
+function inferSourceRole(ext, filePath, type) {
+  const lower = filePath.toLowerCase();
+  if (type === 'answer_example') return 'answer_example';
+  if (type === 'sensor_guide') return 'sensor_guide';
+  if (type === 'exam') return 'exam_archive';
+  if (type === 'memo') return 'personal_memo';
+  if (type === 'spreadsheet') return 'spreadsheet';
+  if (lower.includes('innlevering') || lower.includes('rapport') || lower.includes('presentasjon') || lower.includes('submission')) return 'owned_assignment';
+  if (type === 'exercise') return 'exercise_pack';
+  if (type === 'lecture' || type === 'slides' || lower.includes('canvas') || lower.includes('foreles')) return 'canvas_lecture';
+  if (ext === '.doc' || ext === '.docx' || ext === '.txt' || ext === '.md' || ext === '.rtf') return 'personal_notes';
+  return 'personal_notes';
+}
+
 function inferTopics(filePath) {
   const lower = filePath.toLowerCase();
   const topics = [
@@ -101,6 +175,32 @@ function inferTopics(filePath) {
     ['modell', ['modell', 'is-mp', 'solow', 'as-ad', 'phillips']]
   ];
   return topics.filter(([, hints]) => hints.some((hint) => lower.includes(hint))).map(([topic]) => topic);
+}
+
+function suggestedUseForRole(role, subject, topics) {
+  const topicText = topics && topics.length ? ` Tema: ${topics.join(', ')}.` : '';
+  const uses = {
+    canvas_lecture: 'Kilde for metodekort, fagmemo og begrepsforklaringer.',
+    personal_notes: 'Prioritert kilde for personlig arbeidsmåte, fallgruver og kort.',
+    personal_memo: 'Førstekilde for onboarding, anbefalt økt og personlige fallgruver.',
+    exam_archive: 'Kilde for eksamensradar, oppgavetyper og beskyttet eksamensflyt.',
+    sensor_guide: 'Kilde for sjekklister, poengkriterier og eksamensnær kvalitetssikring.',
+    answer_example: 'Brukes kun som beskyttet sammenligning etter eget forsøk.',
+    exercise_pack: 'Kilde for oppgavebank, regnedrill og eksamensnære økter.',
+    spreadsheet: 'Kilde for fasitkontroll, regneoppsett og scenariooppgaver.',
+    owned_assignment: 'Kilde for skrivekort, strukturmaler og presentasjonsdrill.'
+  };
+  return `${subject}: ${uses[role] || 'Kilde for manuell vurdering.'}${topicText}`;
+}
+
+function reviewStatusForRole(role) {
+  if (role === 'answer_example' || role === 'sensor_guide' || role === 'exam_archive') return 'protected_review_required';
+  return 'manual_quality_review';
+}
+
+function publishPolicyForRole(role) {
+  if (role === 'answer_example' || role === 'sensor_guide' || role === 'exam_archive') return 'metadata_only_until_explicit_clearance';
+  return 'derived_content_only';
 }
 
 function cleanSnippet(text) {
@@ -172,21 +272,107 @@ function extractSnippet(file, ext) {
 
 function makeRecord(item) {
   const subject = inferSubject(item.absolute);
+  const type = inferType(item.ext, item.absolute);
+  const topics = inferTopics(item.absolute);
+  const sourceRole = inferSourceRole(item.ext, item.absolute, type);
   return {
     id: `${subject.toLowerCase()}-${basename(item.absolute).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 80)}`,
     subject,
     title: basename(item.absolute, item.ext),
-    type: inferType(item.ext, item.absolute),
+    type,
+    sourceRole,
     extension: item.ext.replace(/^\./, ''),
     sourcePath: relative('/Users/birkhaugnes', item.absolute),
     bytes: item.stats.size,
     modifiedAt: item.stats.mtime.toISOString(),
-    topics: inferTopics(item.absolute),
+    topics,
     rights: subject === 'UNKNOWN' ? 'needs_review' : 'local_private_source',
     status: subject === 'UNKNOWN' ? 'needs_subject_review' : 'candidate',
-    suggestedUse: 'Metadataimport. Vurder manuelt for kort, oppgaver, memo eller eksamensradar.',
+    reviewStatus: subject === 'UNKNOWN' ? 'needs_subject_review' : reviewStatusForRole(sourceRole),
+    publishPolicy: publishPolicyForRole(sourceRole),
+    suggestedUse: suggestedUseForRole(sourceRole, subject, topics),
     textSnippet: extractSnippet(item.absolute, item.ext)
   };
+}
+
+function groupBySubject(records) {
+  const grouped = {};
+  records.forEach((record) => {
+    if (!grouped[record.subject]) grouped[record.subject] = [];
+    grouped[record.subject].push(record);
+  });
+  return grouped;
+}
+
+function countBy(items, field) {
+  return items.reduce((acc, item) => {
+    const key = item[field] || 'unknown';
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
+}
+
+function curatedSources(records) {
+  return records
+    .slice()
+    .sort((a, b) => {
+      const roleScore = rolePriority.indexOf(a.sourceRole) - rolePriority.indexOf(b.sourceRole);
+      if (roleScore) return roleScore;
+      if ((b.topics || []).length !== (a.topics || []).length) return (b.topics || []).length - (a.topics || []).length;
+      return new Date(b.modifiedAt) - new Date(a.modifiedAt);
+    })
+    .slice(0, 12)
+    .map((record) => ({
+      id: record.id,
+      title: record.title,
+      sourceRole: record.sourceRole,
+      type: record.type,
+      sourcePath: record.sourcePath,
+      topics: record.topics,
+      reviewStatus: record.reviewStatus,
+      publishPolicy: record.publishPolicy,
+      suggestedUse: record.suggestedUse
+    }));
+}
+
+function contentProposal(subject, records) {
+  const blueprint = subjectBlueprints[subject] || { methods: [], questions: [], radar: [] };
+  const sourceRoles = countBy(records, 'sourceRole');
+  return {
+    targetQuality: 'exam_ready',
+    deckTargets: blueprint.methods.map((method, index) => ({
+      title: `${subject} ${method}`,
+      targetCards: index === 0 ? 10 : 8,
+      sourceRoles: Object.keys(sourceRoles).slice(0, 4),
+      status: 'needs_manual_review'
+    })),
+    questionTargets: blueprint.questions.map((topic) => ({
+      topic,
+      targetQuestions: 2,
+      status: 'needs_manual_review'
+    })),
+    methodSheet: blueprint.methods.map((method) => [method, `Lag kontrollpunkt og eksamenssjekk for ${method}.`, subject]),
+    examRadarTopics: blueprint.radar.map((topic, index) => [topic, 'Prioriteres fra lokale kilder og tidligere eksamensmønstre.', index < 2 ? 'Høy' : 'Middels']),
+    rightsNote: 'Publiser bare bearbeidede kort/oppgaver. Rå Canvas-, sensor- og A-besvarelsesfiler holdes private.'
+  };
+}
+
+function subjectPackages(records) {
+  const grouped = groupBySubject(records);
+  return Object.keys(grouped)
+    .filter((subject) => subject !== 'UNKNOWN')
+    .sort()
+    .map((subject) => {
+      const items = grouped[subject];
+      return {
+        subject,
+        recordCount: items.length,
+        sourceRoles: countBy(items, 'sourceRole'),
+        fileTypes: countBy(items, 'type'),
+        curatedSources: curatedSources(items),
+        contentProposal: contentProposal(subject, items)
+      };
+    });
 }
 
 const files = [];
@@ -195,7 +381,9 @@ const records = files.slice(0, limit || files.length).map(makeRecord);
 const payload = {
   generatedAt: new Date().toISOString(),
   roots: scanRoots,
+  v1SourceRoles,
   count: records.length,
+  subjectPackages: subjectPackages(records),
   records
 };
 

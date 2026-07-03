@@ -4,8 +4,22 @@
 
   var payload = {
   "data": {
-    "version": "2026.07-personal-platform-v2",
+    "version": "2026.07-v1-platform-ready",
     "updatedAt": "2026-07-03",
+    "v1": {
+      "status": "content_pending_joint_build",
+      "targetQualityStatus": "exam_ready",
+      "minCardsPerSubject": 25,
+      "minQuestionsPerSubject": 8,
+      "requiredPerSubject": [
+        "memo",
+        "personalWarnings",
+        "examRadar",
+        "methodSheet",
+        "recommendation"
+      ],
+      "note": "Fagene har plattform, kilder og mål klart. Dyp faglig innholdsbygging gjøres senere sammen med bruker."
+    },
     "subjects": [
       {
         "id": "ret14",
@@ -153,7 +167,7 @@
         "defaultHref": "../sam3/",
         "flashcardsHref": "../sam3/flashcards.html",
         "toolProfile": "macro_model",
-        "qualityStatus": "exam_ready",
+        "qualityStatus": "usable",
         "qualityTarget": "exam_ready",
         "preferredStudyMethod": "Velg modell først, tegn mekanismen, lås formelen, og bruk deretter eksamenspakken til å sammenligne struktur med sensor.",
         "personalNotes": {
@@ -2499,6 +2513,9 @@
         id: 'memo-' + key(memoKey),
         title: (subject ? subject.code : subjectCode(memoKey)) + ' memo',
         subject: subject ? subject.code : subjectCode(memoKey),
+        topic: 'Arbeidsmåte',
+        questionType: 'memo',
+        source: 'learning_catalog',
         tags: 'memo, arbeidsmate',
         body: memo.intro + '\n\n' + memo.studyAdvice
       };
@@ -2577,6 +2594,26 @@
     });
   }
 
+  function kickerForPage(subject) {
+    if (subject.qualityStatus === 'exam_ready') return 'Eksamensklar V1';
+    if (subject.stage === 'rich') return 'Plattformklar fagpakke';
+    if (subject.stage === 'mvp_gap') return 'MVP-løft';
+    return 'Strukturert fagmal';
+  }
+
+  function progressForPage(subject) {
+    if (subject.qualityStatus === 'exam_ready') return '100%';
+    if (subject.stage === 'rich') return '62%';
+    if (subject.stage === 'ready_for_import') return '42%';
+    if (subject.stage === 'mvp_gap') return '34%';
+    return '28%';
+  }
+
+  function statusForPage(subject) {
+    if (subject.qualityStatus === 'exam_ready') return 'Eksamensklar';
+    return subject.stage === 'rich' ? 'Aktiv' : 'Bygges';
+  }
+
   function pageFor(value) {
     var subject = subjectFor(value);
     if (!subject) return null;
@@ -2589,9 +2626,9 @@
       id: subject.id,
       code: subject.code,
       name: subject.name,
-      kicker: subject.stage === 'rich' ? 'Plattformklar fagpakke' : subject.stage === 'mvp_gap' ? 'MVP-løft' : 'Strukturert fagmal',
+      kicker: kickerForPage(subject),
       accent: subject.accent,
-      progress: subject.stage === 'rich' ? '62%' : subject.stage === 'ready_for_import' ? '42%' : subject.stage === 'mvp_gap' ? '34%' : '28%',
+      progress: progressForPage(subject),
       lead: subject.lead,
       toolProfile: subject.toolProfile,
       qualityStatus: subject.qualityStatus,
@@ -2599,7 +2636,7 @@
       preferredStudyMethod: subject.preferredStudyMethod,
       personalNotes: subject.personalNotes,
       personalWarnings: subject.personalWarnings,
-      stats: [[String(sources.length), 'kilder'], [String(cards || decks.length), cards ? 'kort fra katalogen' : 'kortpakker'], [subject.stage === 'rich' ? 'Aktiv' : 'Bygges', 'plattform']],
+      stats: [[String(sources.length), 'kilder'], [String(cards || decks.length), cards ? 'kort fra katalogen' : 'kortpakker'], [statusForPage(subject), 'V1-status']],
       tools: toolsForPage(subject),
       topics: topicsForPage(subject),
       plan: (path.length ? path : [
@@ -2628,6 +2665,7 @@
   window.HaugnesLearningContent = {
     version: data.version,
     updatedAt: data.updatedAt,
+    v1: clone(data.v1 || null),
     subjects: clone(data.subjects),
     sources: clone(data.sources),
     decks: clone(data.decks),

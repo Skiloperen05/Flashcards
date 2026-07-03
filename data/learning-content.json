@@ -1,6 +1,14 @@
 {
-  "version": "2026.07-personal-platform-v2",
+  "version": "2026.07-v1-platform-ready",
   "updatedAt": "2026-07-03",
+  "v1": {
+    "status": "content_pending_joint_build",
+    "targetQualityStatus": "exam_ready",
+    "minCardsPerSubject": 25,
+    "minQuestionsPerSubject": 8,
+    "requiredPerSubject": ["memo", "personalWarnings", "examRadar", "methodSheet", "recommendation"],
+    "note": "Fagene har plattform, kilder og mål klart. Dyp faglig innholdsbygging gjøres senere sammen med bruker."
+  },
   "subjects": [
     {
       "id": "ret14",
@@ -70,7 +78,7 @@
       "defaultHref": "../sam3/",
       "flashcardsHref": "../sam3/flashcards.html",
       "toolProfile": "macro_model",
-      "qualityStatus": "exam_ready",
+      "qualityStatus": "usable",
       "qualityTarget": "exam_ready",
       "preferredStudyMethod": "Velg modell først, tegn mekanismen, lås formelen, og bruk deretter eksamenspakken til å sammenligne struktur med sensor.",
       "personalNotes": {
