@@ -107,6 +107,7 @@
               subtitle: p.subtitle,
               description: p.description || '',
               localStatus: p.local_status || null,
+              sortOrder: p.sort_order || 0,
               resources: resources
                 .filter(function (r) { return r.package_id === p.id; })
                 .map(function (r) {
@@ -272,6 +273,7 @@
     var host = document.querySelector('.workspace > section') || document.getElementById('answerLibraryHost'); if (!host) return;
     host.innerHTML = '<div class="hf-answer-shell">' + (state.packageId ? renderPackage() : state.subject ? renderSubject() : renderSubjects()) + '</div>';
     renderSide(); bind();
+    try { window.dispatchEvent(new CustomEvent('haugnes:answer-library-rendered', { detail: { subject: state.subject, packageId: state.packageId } })); } catch (e) {}
   }
 
   function bind() {
@@ -284,10 +286,23 @@
 
   function route() { parseHash(); render(); }
 
+  function loadAdminTools() {
+    if (document.getElementById('haugnes-answer-admin-js')) return;
+    var base = (window.AuthGuard && typeof window.AuthGuard.getRootPath === 'function')
+      ? window.AuthGuard.getRootPath().replace(/\/$/, '/')
+      : '../';
+    var script = document.createElement('script');
+    script.id = 'haugnes-answer-admin-js';
+    script.src = base + 'shared/haugnes-answer-admin.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+
   function install() {
     if (!isPage()) return;
     injectStyles();
     syncLegacyGlobals();
+    loadAdminTools();
     window.render = render;
     window.renderPopular = renderSide;
     // First paint (likely empty until fetch completes)

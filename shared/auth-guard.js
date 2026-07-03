@@ -64,6 +64,7 @@
         else if (id === 'haugnes-entitlements-js' && window.HaugnesEntitlements) onload();
         else if (id === 'haugnes-subject-gate-js' && window.HaugnesSubjectGate) onload();
         else if (id === 'haugnes-admin-preview-toggle-js' && window.HaugnesAdminPreviewToggle) onload();
+        else if (id === 'haugnes-user-sidebar-js' && window.HaugnesUserSidebar) onload();
         else existing.addEventListener('load', onload, { once: true });
       }
       return;
@@ -257,6 +258,9 @@
     });
     addScript('haugnes-tool-header-js', rootRelative('shared/tool-header.js'), function () {
       if (window.HaugnesToolHeader && typeof window.HaugnesToolHeader.run === 'function') window.HaugnesToolHeader.run();
+    });
+    addScript('haugnes-user-sidebar-js', rootRelative('shared/user-sidebar.js'), function () {
+      if (window.HaugnesUserSidebar && typeof window.HaugnesUserSidebar.run === 'function') window.HaugnesUserSidebar.run();
     });
   }
 

@@ -51,6 +51,10 @@ alter table public.profiles enable row level security;
 
 -- ------------------------------------------------------------
 -- 2. Global admin-managed content
+--    Known keys used by the app:
+--    - 'flashcards_custom_data' (flashcards/index.html admin decks)
+--    - 'published_memos' (user/memoarer.html; shape:
+--      {"memos":[{id,subject_code,title,summary,body,link,updated_at}]})
 -- ------------------------------------------------------------
 create table if not exists public.admin_content (
   key        text primary key,

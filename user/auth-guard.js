@@ -4,6 +4,7 @@
     'butikk.html': { label: 'Butikk', icon: '⚷', subtitle: 'Lås opp fag' },
     'eksamensanalyse.html': { label: 'Eksamensanalyse', icon: '◈', subtitle: 'Temaer som går igjen' },
     'a-besvarelser.html': { label: 'A-besvarelser', icon: '▤', subtitle: 'Se sterke tidligere svar' },
+    'memoarer.html': { label: 'Memoarer', icon: '✎', subtitle: 'Arbeidsmåter og fallgruver per fag' },
     'oppgavebank.html': { label: 'Oppgavebank', icon: '▣', subtitle: 'Øv på eksamensnære oppgaver' },
     'notater.html': { label: 'Notater', icon: '▥', subtitle: 'Samle egne fagnotater' },
     'studieplan.html': { label: 'Studieplan', icon: '☷', subtitle: 'Planlegg ukens økter' },
@@ -42,7 +43,7 @@
     var existing = document.getElementById(id);
     if (existing) {
       if (onload) {
-        if ((id === 'haugnes-subject-meta-js' && window.HaugnesSubjects) || (id === 'haugnes-subject-access-js' && window.HaugnesSubjectAccess) || (id === 'timeedit-fetch-proxy-js' && window.HaugnesTimeEditProxy) || (id === 'nhh-schedule-api-js' && window.NHHScheduleAPI) || (id === 'nhh-schedule-normalizer-js' && window.NHHScheduleAPI && window.NHHScheduleAPI.normalizeEvents) || (id === 'nhh-strict-course-filter-js' && window.NHHScheduleAPI && window.NHHScheduleAPI.strictCourseFilter) || (id === 'haugnes-studyplan-js' && window.HaugnesStudyplan) || (id === 'haugnes-answer-library-js' && window.__haugnesAnswerLibraryInstalled)) onload();
+        if ((id === 'haugnes-subject-meta-js' && window.HaugnesSubjects) || (id === 'haugnes-subject-access-js' && window.HaugnesSubjectAccess) || (id === 'timeedit-fetch-proxy-js' && window.HaugnesTimeEditProxy) || (id === 'nhh-schedule-api-js' && window.NHHScheduleAPI) || (id === 'nhh-schedule-normalizer-js' && window.NHHScheduleAPI && window.NHHScheduleAPI.normalizeEvents) || (id === 'nhh-strict-course-filter-js' && window.NHHScheduleAPI && window.NHHScheduleAPI.strictCourseFilter) || (id === 'haugnes-studyplan-js' && window.HaugnesStudyplan) || (id === 'haugnes-answer-library-js' && window.__haugnesAnswerLibraryInstalled) || (id === 'haugnes-memo-library-js' && window.__haugnesMemoLibraryInstalled)) onload();
         else existing.addEventListener('load', onload, { once: true });
       }
       return;
@@ -231,6 +232,13 @@
     });
   }
 
+  function loadMemoLibrary() {
+    if (currentUserPage() !== 'memoarer.html') return;
+    loadSubjectAccess(function () {
+      addScript('haugnes-memo-library-js', '../shared/haugnes-memo-library.js');
+    });
+  }
+
   function runEnhancements() {
     addPageStylesheet();
     installNavVisibilityStyles();
@@ -241,6 +249,7 @@
       enhanceAchievementsPage();
       loadStudyplanTools();
       loadAnswerLibrary();
+      loadMemoLibrary();
       if (currentUserPage() === 'index.html') renderDashboardSubjects();
     });
   }
