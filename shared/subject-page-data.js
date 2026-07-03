@@ -416,6 +416,59 @@
     }
   };
 
+  function learningContent() {
+    return window.HaugnesLearningContent || null;
+  }
+
+  function pageKey(id) {
+    var learning = learningContent();
+    if (learning && typeof learning.key === 'function') return learning.key(id);
+    var value = String(id || '').toLowerCase();
+    if (value === 'sol1') return 'subj_sol1';
+    return value;
+  }
+
+  function mergeRows(first, second) {
+    var seen = {};
+    return (first || []).concat(second || []).filter(function (row) {
+      var key = String((row && (row.id || row.title || row[0])) || '') + '|' + String((row && (row.description || row[1])) || '');
+      if (seen[key]) return false;
+      seen[key] = true;
+      return true;
+    });
+  }
+
+  function mergeGeneratedPage(existing, generated) {
+    if (!existing) return generated;
+    if (!generated) return existing;
+    var merged = Object.assign({}, generated, existing);
+    merged.memo = existing.memo || generated.memo;
+    merged.sources = mergeRows(existing.sources, generated.sources);
+    merged.canvasMaterials = mergeRows(existing.canvasMaterials, generated.canvasMaterials);
+    merged.formulaSheet = mergeRows(existing.formulaSheet, generated.formulaSheet);
+    merged.examChecklist = mergeRows(existing.examChecklist, generated.examChecklist);
+    merged.resources = mergeRows(existing.resources, generated.resources);
+    merged.examRadar = existing.examRadar || generated.examRadar;
+    merged.practice = existing.practice || generated.practice;
+    merged.plan = existing.plan || generated.plan;
+    merged.next = existing.next || generated.next;
+    return merged;
+  }
+
+  function applyLearningCatalogPages() {
+    var learning = learningContent();
+    if (!learning || !Array.isArray(learning.subjects) || typeof learning.pageFor !== 'function') return;
+    learning.subjects.forEach(function (subject) {
+      var generated = learning.pageFor(subject.id);
+      if (!generated || !generated.id) return;
+      var id = pageKey(generated.id);
+      pages[id] = mergeGeneratedPage(pages[id], generated);
+      if (id === 'subj_sol1') pages.sol1 = Object.assign({}, pages[id], { id: 'sol1' });
+    });
+  }
+
+  applyLearningCatalogPages();
+
   Object.keys(pages).forEach(function (id) {
     pages[id].id = id;
     pages[id].memo = memos[id] || {
@@ -427,7 +480,10 @@
 
   window.HaugnesSubjectPages = {
     get: function (id) {
-      return pages[String(id || '').toLowerCase()] || null;
+      var key = pageKey(id);
+      if (pages[key]) return pages[key];
+      var learning = learningContent();
+      return learning && typeof learning.pageFor === 'function' ? learning.pageFor(id) : null;
     }
   };
 })(window);

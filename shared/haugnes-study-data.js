@@ -3,6 +3,21 @@
     return JSON.parse(JSON.stringify(value));
   }
 
+  function learningContent() {
+    return window.HaugnesLearningContent || null;
+  }
+
+  function mergeById(primary, secondary) {
+    var seen = {};
+    return (primary || []).concat(secondary || []).filter(function (item) {
+      var id = item && item.id;
+      if (!id) return true;
+      if (seen[id]) return false;
+      seen[id] = true;
+      return true;
+    });
+  }
+
   var flashcardDecks = {
     sam2: [
       {
@@ -287,19 +302,27 @@
   }
 
   function decksFor(id) {
-    return clone(flashcardDecks[subjectKey(id)] || []);
+    var learning = learningContent();
+    var generated = learning && typeof learning.decksFor === 'function' ? learning.decksFor(id) : [];
+    return clone(mergeById(generated, flashcardDecks[subjectKey(id)] || []));
   }
 
   function questions() {
-    return clone(questionBank);
+    var learning = learningContent();
+    var generated = learning && Array.isArray(learning.questions) ? learning.questions : [];
+    return clone(mergeById(generated, questionBank));
   }
 
   function analysisFor(id) {
-    return clone(examAnalysis[subjectKey(id)] || null);
+    var learning = learningContent();
+    var generated = learning && typeof learning.analysisFor === 'function' ? learning.analysisFor(id) : null;
+    return clone(generated || examAnalysis[subjectKey(id)] || null);
   }
 
   function notes() {
-    return clone(noteSeeds);
+    var learning = learningContent();
+    var generated = learning && typeof learning.notes === 'function' ? learning.notes() : [];
+    return clone(mergeById(generated, noteSeeds));
   }
 
   window.HaugnesStudyData = {

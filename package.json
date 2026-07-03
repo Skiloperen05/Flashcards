@@ -2,9 +2,11 @@
   "name": "haugnes-flashcards",
   "private": true,
   "scripts": {
-    "check": "npm run check:js && npm run check:smoke && npm run check:biome",
+    "check": "npm run check:js && npm run check:smoke && npm run check:learning && npm run check:biome",
     "check:js": "node scripts/check-js.mjs",
     "check:smoke": "node scripts/smoke-test.mjs",
+    "learning:generate": "node scripts/generate-learning-content.mjs",
+    "check:learning": "node scripts/generate-learning-content.mjs --check",
     "check:biome": "biome check .",
     "format": "biome format --write ."
   },

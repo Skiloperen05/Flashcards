@@ -140,6 +140,9 @@
     var pool = (subjects || []).filter(function (subject) { return !isPlanned(subject); });
     var subject = summary.weakest && summary.weakest.subject ? summary.weakest.subject : pool[0];
     if (!subject) return null;
+    var learning = window.HaugnesLearningContent;
+    var catalogRec = learning && typeof learning.recommendationFor === 'function' ? learning.recommendationFor(subject.code || subject.id) : null;
+    if (catalogRec) return Object.assign({ subject: subject }, catalogRec);
     var rec = RECOMMENDATIONS[subject.code] || { title: subject.code + ' · ' + subject.name, sub: 'Fokus på valgt fag', cards: 20, minutes: 25, href: flashcardHref(subject) };
     return Object.assign({ subject: subject }, rec);
   }
@@ -152,7 +155,9 @@
       panel.innerHTML = '<div class="rec-head"><div class="isq isq-purple">+</div><div><div class="rec-title">Neste anbefaling</div><div class="rec-sub">Velg et aktivt fag</div></div></div><h3>Ingen aktiv anbefaling ennå</h3><div class="rec-meta"><span>Velg et fag med innhold</span></div><a class="start-btn" href="subjects.html" style="height:44px">Administrer fag →</a>';
       return;
     }
-    panel.innerHTML = '<div class="rec-head"><div class="isq isq-purple"><svg viewBox="0 0 24 24"><path d="M12 4v16M7 20h10"/><path d="M5 8h14"/><path d="M5 8l-2.2 4.5a2.2 2.2 0 0 0 4.4 0z"/><path d="M19 8l-2.2 4.5a2.2 2.2 0 0 0 4.4 0z"/><circle cx="12" cy="5" r="1.3"/></svg></div><div><div class="rec-title">Neste anbefaling</div><div class="rec-sub">' + esc(rec.sub) + '</div></div></div><h3>' + esc(rec.title) + '</h3><div class="rec-meta"><span><svg viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V20.5H7z"/><path d="M14 3.5V8h4"/></svg>' + (rec.cards ? rec.cards + ' kort' : 'Planlagt') + '</span><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>' + (rec.minutes ? '≈ ' + rec.minutes + ' min' : 'Kommer') + '</span></div><a class="start-btn" href="' + esc(rec.href) + '" style="height:44px">' + (rec.planned ? 'Se fag →' : 'Start nå →') + '</a>';
+    var cardsLabel = rec.cards ? rec.cards + ' kort' : (rec.planned ? 'Planlagt' : 'Økt');
+    var minutesLabel = rec.minutes ? '≈ ' + rec.minutes + ' min' : (rec.planned ? 'Kommer' : 'Fleksibel');
+    panel.innerHTML = '<div class="rec-head"><div class="isq isq-purple"><svg viewBox="0 0 24 24"><path d="M12 4v16M7 20h10"/><path d="M5 8h14"/><path d="M5 8l-2.2 4.5a2.2 2.2 0 0 0 4.4 0z"/><path d="M19 8l-2.2 4.5a2.2 2.2 0 0 0 4.4 0z"/><circle cx="12" cy="5" r="1.3"/></svg></div><div><div class="rec-title">Neste anbefaling</div><div class="rec-sub">' + esc(rec.sub) + '</div></div></div><h3>' + esc(rec.title) + '</h3><div class="rec-meta"><span><svg viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V20.5H7z"/><path d="M14 3.5V8h4"/></svg>' + esc(cardsLabel) + '</span><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>' + esc(minutesLabel) + '</span></div><a class="start-btn" href="' + esc(rec.href) + '" style="height:44px">' + (rec.planned ? 'Se fag →' : 'Start nå →') + '</a>';
   }
 
   function setWeakestArea(subjects, summary) {

@@ -96,6 +96,11 @@ var HAUGNES_RATINGS = {
 };
 var COMMUNITY_RATINGS = {};
 var ratings = readRatings();
+var ratingsRemoteLoaded = false;
+var ratingsRemoteSaveTimer = null;
+var ratingsRemoteSaving = false;
+var ratingsRemoteDirty = false;
+var ratingsUserId = null;
 var currentSort = 'default';
 var currentFilteredSubjects = SUBJECTS.slice();
 
@@ -103,14 +108,138 @@ function readRatings(){
   var raw = '';
   try {
     raw = window.localStorage.getItem(RATINGS_KEY);
-    return raw ? JSON.parse(raw) : {};
+    return normalizeRatings(raw ? JSON.parse(raw) : {});
   } catch (_e) {
     return {};
   }
 }
 
-function saveRatings(){
+function saveRatings(options){
   try { window.localStorage.setItem(RATINGS_KEY, JSON.stringify(ratings)); } catch (_e) {}
+  if (!options || !options.localOnly) scheduleRemoteRatingsSave();
+}
+
+function normalizeRatings(value){
+  var out = {};
+  if (!value || typeof value !== 'object') return out;
+  Object.keys(value).forEach(function(subjectId){
+    var source = value[subjectId];
+    var target = {};
+    if (!source || typeof source !== 'object') return;
+    CRITERIA.forEach(function(criterion){
+      var score = Number(source[criterion.key]);
+      if (score >= 1 && score <= 5) target[criterion.key] = score;
+    });
+    if (typeof source.note === 'string' && source.note.trim()) target.note = source.note.trim();
+    if (source.updatedAt) target.updatedAt = String(source.updatedAt);
+    if (Object.keys(target).length) out[subjectId] = target;
+  });
+  return out;
+}
+
+function isEmptyRating(value){
+  return !value || !CRITERIA.some(function(criterion){ return Number(value[criterion.key]) >= 1 && Number(value[criterion.key]) <= 5; })
+    && !(typeof value.note === 'string' && value.note.trim());
+}
+
+function stampRating(subjectId){
+  ratings[subjectId] = ratings[subjectId] || {};
+  ratings[subjectId].updatedAt = new Date().toISOString();
+}
+
+function mergeRatingSets(remoteRatings, localRatings){
+  var remote = normalizeRatings(remoteRatings);
+  var local = normalizeRatings(localRatings);
+  var merged = {};
+  Object.keys(remote).concat(Object.keys(local)).forEach(function(subjectId){
+    if (merged[subjectId]) return;
+    var remoteRating = remote[subjectId];
+    var localRating = local[subjectId];
+    if (!remoteRating) merged[subjectId] = localRating;
+    else if (!localRating) merged[subjectId] = remoteRating;
+    else {
+      var remoteTime = Date.parse(remoteRating.updatedAt || '') || 0;
+      var localTime = Date.parse(localRating.updatedAt || '') || 0;
+      merged[subjectId] = localTime >= remoteTime ? localRating : remoteRating;
+    }
+  });
+  Object.keys(merged).forEach(function(subjectId){
+    if (isEmptyRating(merged[subjectId])) delete merged[subjectId];
+  });
+  return merged;
+}
+
+function ratingsEqual(a, b){
+  return JSON.stringify(normalizeRatings(a)) === JSON.stringify(normalizeRatings(b));
+}
+
+function getRemoteContext(){
+  if (!window.AuthGuard || typeof window.AuthGuard.getClient !== 'function' || typeof window.AuthGuard.getSession !== 'function') return null;
+  var session = window.AuthGuard.getSession();
+  if (!session || !session.user || !session.user.id || session.user.email === 'dev@student.local') return null;
+  try { return { sb: window.AuthGuard.getClient(), userId: session.user.id }; }
+  catch (_e) { return null; }
+}
+
+function scheduleRemoteRatingsSave(){
+  ratingsRemoteDirty = true;
+  if (!ratingsRemoteLoaded || !ratingsUserId) return;
+  clearTimeout(ratingsRemoteSaveTimer);
+  ratingsRemoteSaveTimer = setTimeout(saveRatingsRemote, 450);
+}
+
+function saveRatingsRemote(){
+  var context = getRemoteContext();
+  if (!context || !ratingsRemoteDirty) return;
+  if (ratingsRemoteSaving) {
+    clearTimeout(ratingsRemoteSaveTimer);
+    ratingsRemoteSaveTimer = setTimeout(saveRatingsRemote, 700);
+    return;
+  }
+  ratingsRemoteSaving = true;
+  ratingsRemoteDirty = false;
+  return context.sb.from('user_custom_data').select('data').eq('user_id', context.userId).maybeSingle().then(function(result){
+    var data = result && result.data && result.data.data && typeof result.data.data === 'object' ? result.data.data : {};
+    data.subjectRatings = normalizeRatings(ratings);
+    return context.sb.from('user_custom_data').upsert({
+      user_id: context.userId,
+      data: data,
+      updated_at: new Date().toISOString()
+    });
+  }).then(function(result){
+    if (result && result.error) throw result.error;
+  }).catch(function(){
+    ratingsRemoteDirty = true;
+  }).finally(function(){
+    ratingsRemoteSaving = false;
+    if (ratingsRemoteDirty) scheduleRemoteRatingsSave();
+  });
+}
+
+function loadRatingsRemote(session){
+  var context = getRemoteContext();
+  if (!context || !session || !session.user) {
+    ratingsRemoteLoaded = true;
+    return Promise.resolve();
+  }
+  ratingsUserId = context.userId;
+  return context.sb.from('user_custom_data').select('data').eq('user_id', context.userId).maybeSingle().then(function(result){
+    var data = result && result.data && result.data.data && typeof result.data.data === 'object' ? result.data.data : {};
+    var remoteRatings = data.subjectRatings || data.subject_ratings || {};
+    var merged = mergeRatingSets(remoteRatings, readRatings());
+    var changedLocal = !ratingsEqual(ratings, merged);
+    var changedRemote = !ratingsEqual(remoteRatings, merged);
+    ratings = merged;
+    ratingsRemoteLoaded = true;
+    saveRatings({ localOnly: true });
+    if (changedLocal) renderSubjects();
+    if (changedRemote) {
+      ratingsRemoteDirty = true;
+      saveRatingsRemote();
+    }
+  }).catch(function(){
+    ratingsRemoteLoaded = true;
+  });
 }
 
 function escapeHtml(value){
@@ -329,6 +458,7 @@ document.getElementById('subjectsGrid').addEventListener('input', function(event
   if (subjectId && key) {
     ratings[subjectId] = ratings[subjectId] || {};
     ratings[subjectId][key] = Number(event.target.value);
+    stampRating(subjectId);
     saveRatings();
     valueTarget = document.querySelector('[data-rating-value="'+subjectId+'-'+key+'"]');
     if (valueTarget) valueTarget.textContent = event.target.value;
@@ -337,6 +467,7 @@ document.getElementById('subjectsGrid').addEventListener('input', function(event
   if (subjectId && event.target.hasAttribute('data-rating-note')) {
     ratings[subjectId] = ratings[subjectId] || {};
     ratings[subjectId].note = event.target.value.trim();
+    stampRating(subjectId);
     saveRatings();
     renderRankingList(currentFilteredSubjects);
   }
@@ -352,7 +483,10 @@ document.getElementById('subjectsGrid').addEventListener('click', function(event
   saveRatings();
   renderSubjects();
 });
-window.onUserAuthorized = function(){ renderSubjects(); };
+window.onUserAuthorized = function(session){
+  renderSubjects();
+  loadRatingsRemote(session).then(function(){ renderSubjects(); });
+};
 renderSubjects();
 </script>
 </body>

@@ -94,17 +94,18 @@
     var mainColumn = document.querySelector('.hf-subject-layout > div:first-child');
     if (!mainColumn) return;
     var firstWideGrid = mainColumn.querySelector('.hf-wide-grid');
+    var resourcePanel = resourcesHtml(id);
     if (firstWideGrid && memo && !document.getElementById('memo')) {
       firstWideGrid.insertAdjacentHTML('beforebegin', memoHtml(memo));
     }
     var cta = mainColumn.querySelector('.hf-cta');
-    if (cta && !document.getElementById('ressurser')) {
-      cta.insertAdjacentHTML('beforebegin', resourcesHtml(id));
+    if (cta && resourcePanel && !document.getElementById('ressurser')) {
+      cta.insertAdjacentHTML('beforebegin', resourcePanel);
       bindResources();
     }
     var tabbar = document.querySelector('.hf-tabbar');
     if (tabbar && !tabbar.querySelector('a[href="#memo"]')) tabbar.insertAdjacentHTML('beforeend', '<a href="#memo">Memo</a>');
-    if (tabbar && !tabbar.querySelector('a[href="#ressurser"]')) tabbar.insertAdjacentHTML('beforeend', '<a href="#ressurser">Ressurser</a>');
+    if (tabbar && resourcePanel && !tabbar.querySelector('a[href="#ressurser"]')) tabbar.insertAdjacentHTML('beforeend', '<a href="#ressurser">Ressurser</a>');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
