@@ -10,6 +10,7 @@ const SUPABASE_ANON_KEY =
     'gHBvEH' + '-L-zyiW4' + 'UnsCxOY2q' + '-HmeIYe5' + 'OHSvxhFt7PQ8',
   ].join('.');
 const DEFAULT_SITE_URL = 'https://bhflashcards.no';
+const DEFAULT_PRICE_NOK_ORE = 4900;
 
 const SUBJECTS: Record<string, string> = {
   RET14: 'Skatterett',
@@ -25,17 +26,14 @@ const SUBJECTS: Record<string, string> = {
   BED1: 'Bedriftsøkonomi',
 };
 
-// TEMPORARY: SAM2 and SAM3 have swapped links for a live payment test.
-// The ...3F602 link (created for SAM2) charges the 3 kr test price and the
-// ...3F603 link (created for SAM3) charges the normal 49 kr. Entitlements
-// are still granted for the right subject because the webhook reads the
-// subject from client_reference_id, but the Stripe checkout page shows the
-// product name of the link. Swap back after the test.
+// Fallback when no Stripe secret key is configured. These links have their
+// price baked in on the Stripe side, so per-subject prices in subject_prices
+// only take effect through the dynamic Checkout Session flow below.
 const PAYMENT_LINKS: Record<string, string> = {
   RET14: 'https://buy.stripe.com/eVq00k2M0bjBdWSd9s3F600',
   SOL1: 'https://buy.stripe.com/14AbJ286k1J14mi2uO3F601',
-  SAM2: 'https://buy.stripe.com/cNi5kE3Q40EX062glE3F603',
-  SAM3: 'https://buy.stripe.com/4gM4gAdqEdrJdWS6L43F602',
+  SAM2: 'https://buy.stripe.com/4gM4gAdqEdrJdWS6L43F602',
+  SAM3: 'https://buy.stripe.com/cNi5kE3Q40EX062glE3F603',
   MET2: 'https://buy.stripe.com/cNibJ272g5Zh6uq8Tc3F604',
   MAT10: 'https://buy.stripe.com/6oUeVe72g0EX7yu5H03F605',
   SAM1A: 'https://buy.stripe.com/8x2bJ29ao3R94mifhA3F606',
@@ -79,6 +77,11 @@ function corsHeaders(req: Request) {
     'Content-Type': 'application/json; charset=utf-8',
     Vary: 'Origin',
   };
+}
+
+function siteUrl(req: Request) {
+  const origin = req.headers.get('origin') || '';
+  return isAllowedOrigin(origin) ? origin : DEFAULT_SITE_URL;
 }
 
 function json(req: Request, status: number, body: unknown) {
@@ -141,6 +144,38 @@ function adminHeaders() {
   return headers;
 }
 
+async function privateConfig(key: string) {
+  const params = new URLSearchParams({ key: `eq.${key}`, select: 'value', limit: '1' });
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/app_private_config?${params.toString()}`, {
+    headers: adminHeaders(),
+  });
+
+  if (!response.ok) return null;
+  const rows = await response.json();
+  const value = Array.isArray(rows) && rows[0]?.value;
+  return value ? String(value) : null;
+}
+
+async function stripeSecretKey() {
+  return Deno.env.get('STRIPE_SECRET_KEY') || (await privateConfig('STRIPE_SECRET_KEY'));
+}
+
+async function subjectPriceOre(subjectCode: string) {
+  const params = new URLSearchParams({
+    subject_code: `eq.${subjectCode}`,
+    select: 'price_nok_ore',
+    limit: '1',
+  });
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/subject_prices?${params.toString()}`, {
+    headers: adminHeaders(),
+  });
+
+  if (!response.ok) return DEFAULT_PRICE_NOK_ORE;
+  const rows = await response.json();
+  const price = Array.isArray(rows) && Number(rows[0]?.price_nok_ore);
+  return price && price > 0 ? price : DEFAULT_PRICE_NOK_ORE;
+}
+
 async function isEntitled(userId: string, subjectCode: string) {
   const params = new URLSearchParams({
     user_id: `eq.${userId}`,
@@ -157,9 +192,55 @@ async function isEntitled(userId: string, subjectCode: string) {
   return Array.isArray(rows) && rows.length > 0;
 }
 
-function paymentLinkUrl(user: { id?: string; email?: string }, subjectCode: string) {
-  if (!user.id) throw new Error('Kunne ikke lese bruker.');
+async function createCheckoutSession(
+  req: Request,
+  secretKey: string,
+  user: { id: string; email?: string },
+  subjectCode: string,
+  subjectName: string,
+) {
+  const baseUrl = siteUrl(req);
+  const priceOre = await subjectPriceOre(subjectCode);
 
+  const params = new URLSearchParams();
+  params.set('mode', 'payment');
+  params.set('line_items[0][quantity]', '1');
+  params.set('line_items[0][price_data][currency]', 'nok');
+  params.set('line_items[0][price_data][unit_amount]', String(priceOre));
+  params.set('line_items[0][price_data][product_data][name]', `${subjectCode} · ${subjectName}`);
+  params.set(
+    'line_items[0][price_data][product_data][description]',
+    'Tilgang til alt innhold i faget på Haugnes Flashcards.',
+  );
+  params.set(
+    'success_url',
+    `${baseUrl}/user/butikk.html?payment=success&fag=${encodeURIComponent(subjectCode)}&session_id={CHECKOUT_SESSION_ID}`,
+  );
+  params.set('cancel_url', `${baseUrl}/user/butikk.html?payment=cancel&fag=${encodeURIComponent(subjectCode)}`);
+  params.set('client_reference_id', `${user.id}__${subjectCode}`);
+  if (user.email) params.set('customer_email', user.email);
+  params.set('metadata[user_id]', user.id);
+  params.set('metadata[subject_code]', subjectCode);
+  params.set('metadata[source]', 'stripe');
+
+  const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${secretKey}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: params,
+  });
+
+  const session = await response.json();
+  if (!response.ok || !session?.url) {
+    throw new Error(session?.error?.message || 'Kunne ikke starte betaling.');
+  }
+
+  return String(session.url);
+}
+
+function paymentLinkUrl(user: { id: string; email?: string }, subjectCode: string) {
   const link = PAYMENT_LINKS[subjectCode];
   if (!link) throw new Error('Stripe-lenke mangler for faget.');
 
@@ -194,7 +275,12 @@ Deno.serve(async (req: Request) => {
       return json(req, 409, { error: 'Du har allerede låst opp dette faget.' });
     }
 
-    return json(req, 200, { url: paymentLinkUrl(user, subjectCode) });
+    const secretKey = await stripeSecretKey();
+    const url = secretKey
+      ? await createCheckoutSession(req, secretKey, user, subjectCode, subjectName)
+      : paymentLinkUrl(user, subjectCode);
+
+    return json(req, 200, { url });
   } catch (error) {
     return json(req, 400, { error: error instanceof Error ? error.message : 'Kunne ikke starte betaling.' });
   }
