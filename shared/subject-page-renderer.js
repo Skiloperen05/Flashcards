@@ -68,9 +68,14 @@
     return '<div id="learningSuite" class="hf-learning-suite">' + html + '</div>';
   }
 
+  function pageResources(page) {
+    var api = window.HaugnesSubjectResources;
+    return page.resources || (api && typeof api.forSubject === 'function' ? api.forSubject(page.id || page.code) : []);
+  }
+
   function resourcesHtml(page) {
     var api = window.HaugnesSubjectResources;
-    var resources = page.resources || (api && typeof api.forSubject === 'function' ? api.forSubject(page.id || page.code) : []);
+    var resources = pageResources(page);
     if (!resources || !resources.length) return '';
     var labels = api && api.typeLabels || {};
     var tabs = unique(resources.map(function (resource) { return resource.type || 'annet'; })).map(function (type, index) {
@@ -103,7 +108,7 @@
     if (!tabbar) return;
     if (page.compendium) tabbar.insertAdjacentHTML('beforeend', '<a href="#kompendium">Kompendium</a>');
     if (page.memo) tabbar.insertAdjacentHTML('beforeend', '<a href="#memo">Memo</a>');
-    tabbar.insertAdjacentHTML('beforeend', '<a href="#ressurser">Ressurser</a>');
+    if (pageResources(page).length) tabbar.insertAdjacentHTML('beforeend', '<a href="#ressurser">Ressurser</a>');
     if (page.examRadar) tabbar.insertAdjacentHTML('beforeend', '<a href="#eksamensradar">Eksamensradar</a>');
     if (page.formulaSheet) tabbar.insertAdjacentHTML('beforeend', '<a href="#formelark">Formelark</a>');
     if (page.canvasMaterials) tabbar.insertAdjacentHTML('beforeend', '<a href="#materiale">Materiale</a>');

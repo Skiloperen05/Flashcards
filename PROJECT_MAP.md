@@ -1,6 +1,6 @@
 # Project Map
 
-Last updated: 2026-07-01
+Last updated: 2026-07-03
 
 Purpose: make future app changes faster by documenting the stable entry points, data sources, and search paths. Update this file whenever a change moves, renames, adds, or removes app-facing functionality.
 
@@ -28,6 +28,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 
 - Dashboard: `user/index.html`.
 - Subject management: `user/subjects.html`.
+- Personal subject ratings on `user/subjects.html` use `localStorage` key `hf_subject_ratings_v1` as a cache and sync to `user_custom_data.data.subjectRatings` after auth.
 - Shop/entitlement claiming and Stripe checkout entry: `user/butikk.html`.
 - Exam analysis hub (all subjects, entitlement-aware): `user/eksamensanalyse.html`. Cards are built from `shared/subject-meta.js` + the `eksamen` resources in `shared/subject-resources.js`; the sidebar "Eksamensanalyse" item points here (was previously hardcoded to `ret14/eksamen/`).
 - A-besvarelser / eksamensarkiv shell: `user/a-besvarelser.html`.
@@ -41,12 +42,29 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Auth/session/client bootstrap: `shared/auth-guard.js`.
 - Entitlements and subject access: `shared/entitlements.js`, `shared/subject-access.js`, `shared/subject-gate.js`.
 - Subject metadata: `shared/subject-meta.js`.
+- Generated learning content contract: `shared/learning-content.js` exposes `window.HaugnesLearningContent`.
 - Subject page rendering/data/enhancements: `shared/subject-page-renderer.js`, `shared/subject-page-data.js`, `shared/subject-page-enhancements.js`, `shared/subject-resources.js`.
 - Dashboard dynamic progress/recommendations and some legacy SAM3 package pointers: `shared/haugnes-dashboard-progress.js`.
 - A-besvarelser / eksamensarkiv dynamic package UI: `shared/haugnes-answer-library.js`.
 - User sidebar normalization: `shared/user-sidebar.js`.
 - TimeEdit/NHH schedule integration: `shared/timeedit-fetch-proxy.js`, `shared/nhh-schedule-api.js`, `shared/nhh-schedule-normalizer.js`, `shared/nhh-strict-course-filter.js`, `shared/haugnes-studyplan.js`.
 - Flashcard session shared logic: `shared/haugnes-flashcard-session.js`, `shared/haugnes-flashcards-structure.js`.
+
+## Learning Content Platform
+
+- Editable source catalog: `data/learning-content.json`.
+- Generated browser contract: `shared/learning-content.js`.
+- Generator and validator: `scripts/generate-learning-content.mjs`.
+- Local source scanner for PDF/DOCX/PPTX/TXT/HTML/XLSX metadata: `scripts/import-learning-sources.mjs`.
+- Public contract name: `window.HaugnesLearningContent`.
+- Contract fields: `subjects`, `sources`, `decks`, `questions`, `examAnalyses`, `formulaItems`, `learningPaths`, `memos`, `recommendations`.
+- Contract helpers include `sourcesFor`, `decksFor`, `questionsFor`, `analysisFor`, `formulaItemsFor`, `learningPathFor`, `memoFor`, `recommendationFor`, `notes`, and `pageFor`.
+- Active integration points:
+  - `shared/haugnes-study-data.js` merges generated decks/questions/notes with legacy manual data.
+  - `shared/subject-page-data.js` supplements or creates fagsider from `pageFor`.
+  - `shared/haugnes-dashboard-progress.js` reads catalog recommendations before legacy fallback.
+  - `shared/auth-guard.js` injects `shared/learning-content.js` for user pages.
+- Rights rule: local Canvas/course files remain private source metadata until explicitly reviewed for publication.
 
 ## Subject Areas
 
@@ -58,6 +76,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - `sol1/`: SOL1 subject pages and flashcard data.
 - `sam1a/`, `met1/`, `kom1/`, `ret1a/`, `bed1/`, `mat10/`, `met2/`: MVP or planned subject hubs.
 - `flashcards/`: generic flashcard app entry.
+- Flashcard admin/custom content in `flashcards/index.html` is loaded from Supabase `admin_content` key `flashcards_custom_data`, with `localStorage` key `fc_custom_data` as cache/fallback.
 
 ## A-besvarelser / Exam Packages
 
@@ -84,6 +103,8 @@ Typical package IDs:
 - Key content tables:
   - `profiles`
   - `subject_entitlements`
+  - `admin_content`
+  - `user_custom_data`
   - `answer_packages`
   - `answer_resources`
 - RLS/entitlement helpers: `public.has_subject_entitlement(text)`, `public.has_any_entitlement()` (security definer; required because the free-claim insert policy cannot query `subject_entitlements` directly without infinite RLS recursion).
@@ -94,6 +115,8 @@ Typical package IDs:
 
 - JS check: `npm run check:js`.
 - Smoke check: `npm run check:smoke`.
+- Learning content validation: `npm run check:learning`.
+- Regenerate learning contract after editing `data/learning-content.json`: `npm run learning:generate`.
 - Full check: `npm run check`.
 - Known repo policy: `biome check` has preexisting failures and should not block unless the task specifically concerns Biome cleanup.
 
@@ -103,6 +126,8 @@ Typical package IDs:
   `rg -n "answer_packages|answer_resources|HaugnesAnswerLibrary|a-besvarelser" .`
 - Find subject metadata or access logic:
   `rg -n "HaugnesSubjects|HaugnesSubjectAccess|subject-meta|subject-access" shared user`
+- Find generated learning content usage:
+  `rg -n "HaugnesLearningContent|learning-content|check:learning|learning:generate" data shared scripts user flashcards`
 - Find SAM3 package references:
   `rg -n "sam3-v|SAM3 V|eksamenspakker|A-besvarelse SAM3|sensorveiledning" .`
 - Find injected scripts:

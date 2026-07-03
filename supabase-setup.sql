@@ -6,11 +6,11 @@
 -- ============================================================
 
 -- ------------------------------------------------------------
--- 1. Per-user storage (custom subjects, stats)
+-- 1. Per-user storage (custom subjects, subject ratings, stats)
 -- ------------------------------------------------------------
 create table if not exists user_custom_data (
   user_id    uuid primary key references auth.users(id) on delete cascade,
-  data       jsonb not null default '{"subjects":[],"decks":{}}'::jsonb,
+  data       jsonb not null default '{"subjects":[],"decks":{},"subjectRatings":{}}'::jsonb,
   updated_at timestamptz not null default now()
 );
 
@@ -40,8 +40,44 @@ create policy "Users manage own stats"
   using  ((select auth.uid()) = user_id)
   with check ((select auth.uid()) = user_id);
 
+create table if not exists public.profiles (
+  id        uuid primary key references auth.users(id) on delete cascade,
+  email     text,
+  is_admin  boolean not null default false,
+  is_friend boolean not null default false
+);
+
+alter table public.profiles enable row level security;
+
 -- ------------------------------------------------------------
--- 2. Profiles + admin flag
+-- 2. Global admin-managed content
+-- ------------------------------------------------------------
+create table if not exists public.admin_content (
+  key        text primary key,
+  content    jsonb not null default '{}'::jsonb,
+  updated_by uuid references auth.users(id) on delete set null,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.admin_content enable row level security;
+
+drop policy if exists "Authenticated users read admin content" on public.admin_content;
+create policy "Authenticated users read admin content"
+  on public.admin_content
+  for select
+  to authenticated
+  using (true);
+
+drop policy if exists "Admins manage admin content" on public.admin_content;
+create policy "Admins manage admin content"
+  on public.admin_content
+  for all
+  to authenticated
+  using (exists (select 1 from public.profiles where id = (select auth.uid()) and is_admin = true))
+  with check (exists (select 1 from public.profiles where id = (select auth.uid()) and is_admin = true));
+
+-- ------------------------------------------------------------
+-- 3. Profiles + admin flag
 -- ------------------------------------------------------------
 create or replace function public.handle_new_user()
 returns trigger
@@ -109,7 +145,7 @@ begin
 end $$;
 
 -- ------------------------------------------------------------
--- 3. Subject entitlements (paywall – per-subject ownership)
+-- 4. Subject entitlements (paywall – per-subject ownership)
 -- ------------------------------------------------------------
 create table if not exists public.subject_entitlements (
   id           bigserial primary key,
@@ -202,7 +238,7 @@ revoke execute on function public.has_subject_entitlement(text) from public, ano
 grant execute on function public.has_subject_entitlement(text) to authenticated;
 
 -- ------------------------------------------------------------
--- 4. A-besvarelser (premium content metadata)
+-- 5. A-besvarelser (premium content metadata)
 --    Rows are only readable for users with entitlement on the package's
 --    subject. PDF URLs are therefore not exposed in any client bundle.
 -- ------------------------------------------------------------
