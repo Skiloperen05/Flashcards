@@ -25,11 +25,17 @@ const SUBJECTS: Record<string, string> = {
   BED1: 'Bedriftsøkonomi',
 };
 
+// TEMPORARY: SAM2 and SAM3 have swapped links for a live payment test.
+// The ...3F602 link (created for SAM2) charges the 3 kr test price and the
+// ...3F603 link (created for SAM3) charges the normal 49 kr. Entitlements
+// are still granted for the right subject because the webhook reads the
+// subject from client_reference_id, but the Stripe checkout page shows the
+// product name of the link. Swap back after the test.
 const PAYMENT_LINKS: Record<string, string> = {
   RET14: 'https://buy.stripe.com/eVq00k2M0bjBdWSd9s3F600',
   SOL1: 'https://buy.stripe.com/14AbJ286k1J14mi2uO3F601',
-  SAM2: 'https://buy.stripe.com/4gM4gAdqEdrJdWS6L43F602',
-  SAM3: 'https://buy.stripe.com/cNi5kE3Q40EX062glE3F603',
+  SAM2: 'https://buy.stripe.com/cNi5kE3Q40EX062glE3F603',
+  SAM3: 'https://buy.stripe.com/4gM4gAdqEdrJdWS6L43F602',
   MET2: 'https://buy.stripe.com/cNibJ272g5Zh6uq8Tc3F604',
   MAT10: 'https://buy.stripe.com/6oUeVe72g0EX7yu5H03F605',
   SAM1A: 'https://buy.stripe.com/8x2bJ29ao3R94mifhA3F606',

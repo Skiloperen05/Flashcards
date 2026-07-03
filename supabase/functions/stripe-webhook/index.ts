@@ -141,8 +141,11 @@ async function grantEntitlement(session: Record<string, unknown>) {
   const metadata = (session.metadata || {}) as Record<string, unknown>;
   const clientReference = String(session.client_reference_id || '');
   const [referenceUserId, referenceSubjectCode] = clientReference.split('__');
-  const subjectCode = code(metadata.subject_code || referenceSubjectCode);
-  const userId = String(metadata.user_id || referenceUserId || '');
+  // client_reference_id is set per purchase by create-stripe-checkout and
+  // identifies the subject the buyer actually chose; payment-link metadata
+  // is static per link, so it only serves as a fallback.
+  const subjectCode = code(referenceSubjectCode || metadata.subject_code);
+  const userId = String(referenceUserId || metadata.user_id || '');
 
   if (!subjectCode || !userId) throw new Error('Stripe-session mangler entitlement-metadata.');
 
