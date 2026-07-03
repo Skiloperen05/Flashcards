@@ -75,16 +75,35 @@ function validate(data) {
 
   data.subjects.forEach((subject, index) => {
     pushMissing(errors, `subjects[${index}]`, subject, ['id', 'code', 'name', 'accent', 'lead', 'sourceSummary', 'defaultHref', 'flashcardsHref']);
+    pushMissing(errors, `subjects[${index}]`, subject, ['toolProfile', 'qualityStatus', 'qualityTarget', 'preferredStudyMethod']);
     if (subjectIds.has(subject.id) && data.subjects.filter((item) => item.id === subject.id).length > 1) errors.push(`Duplisert fag-id: ${subject.id}`);
+    if (!hasArray(subject.primaryTools)) errors.push(`subjects[${index}] mangler primaryTools`);
+    (subject.primaryTools || []).forEach((tool, toolIndex) => {
+      pushMissing(errors, `subjects[${index}].primaryTools[${toolIndex}]`, tool, ['icon', 'title', 'description', 'status', 'href']);
+    });
+    if (!subject.personalNotes || typeof subject.personalNotes !== 'object' || Array.isArray(subject.personalNotes)) {
+      errors.push(`subjects[${index}] mangler personalNotes`);
+    } else {
+      pushMissing(errors, `subjects[${index}].personalNotes`, subject.personalNotes, ['summary']);
+      if (!hasArray(subject.personalNotes.sourceIds)) errors.push(`subjects[${index}].personalNotes mangler sourceIds`);
+      if (!hasArray(subject.personalNotes.useInApp)) errors.push(`subjects[${index}].personalNotes mangler useInApp`);
+    }
+    if (!hasArray(subject.personalWarnings)) errors.push(`subjects[${index}] mangler personalWarnings`);
   });
 
   data.sources.forEach((source, index) => {
-    pushMissing(errors, `sources[${index}]`, source, ['id', 'subject', 'title', 'type', 'sourcePath', 'rights', 'status', 'suggestedUse']);
+    pushMissing(errors, `sources[${index}]`, source, ['id', 'subject', 'title', 'type', 'sourceRole', 'sourcePath', 'rights', 'status', 'suggestedUse']);
     if (source.id) {
       if (sourceIds.has(source.id)) errors.push(`Duplisert kilde-id: ${source.id}`);
       sourceIds.add(source.id);
     }
     if (source.subject && !subjectIds.has(subjectKey(source.subject, aliases))) errors.push(`sources[${index}] peker til ukjent fag: ${source.subject}`);
+  });
+
+  data.subjects.forEach((subject, index) => {
+    ((subject.personalNotes && subject.personalNotes.sourceIds) || []).forEach((sourceId) => {
+      if (!sourceIds.has(sourceId)) errors.push(`subjects[${index}].personalNotes peker til ukjent kilde: ${sourceId}`);
+    });
   });
 
   Object.entries(data.decks).forEach(([subject, decks]) => {
@@ -241,6 +260,83 @@ function runtimeSource(data) {
     };
   }
 
+  function toolsFor(value) {
+    var subject = subjectFor(value);
+    return clone(subject && subject.primaryTools ? subject.primaryTools : []);
+  }
+
+  function roleLabel(role) {
+    var labels = {
+      canvas_lecture: 'Canvas',
+      canvas_export: 'Canvas-eksport',
+      exam_archive: 'Eksamen/sensor',
+      protected_exam_pack: 'Beskyttet eksamenspakke',
+      exam_and_method_notes: 'Eksamen + metode',
+      canvas_and_spreadsheet: 'Canvas + regneark',
+      personal_notes: 'Egne notater',
+      personal_memo: 'Memoar',
+      canvas_and_exam: 'Canvas + eksamen',
+      local_exercise_pack: 'Lokale oppgaver',
+      owned_assignment: 'Egne innleveringer',
+      canvas_and_personal_notes: 'Canvas + egne notater'
+    };
+    return labels[role] || role || 'Kilde';
+  }
+
+  function sourceRolesFor(value) {
+    var subject = subjectFor(value);
+    var sources = sourcesFor(value);
+    var roles = {};
+    sources.forEach(function (source) {
+      var role = source.sourceRole || 'unknown';
+      roles[role] = (roles[role] || 0) + 1;
+    });
+    return {
+      code: subject ? subject.code : subjectCode(value),
+      roles: roles,
+      sources: sources.map(function (source) {
+        return {
+          id: source.id,
+          title: source.title,
+          role: source.sourceRole,
+          roleLabel: roleLabel(source.sourceRole),
+          status: source.status,
+          suggestedUse: source.suggestedUse
+        };
+      })
+    };
+  }
+
+  function qualityFor(value) {
+    var subject = subjectFor(value);
+    if (!subject) return null;
+    var decks = decksFor(subject.id);
+    var cards = decks.reduce(function (sum, deck) { return sum + (deck.cards || []).length; }, 0);
+    return {
+      code: subject.code,
+      status: subject.qualityStatus,
+      target: subject.qualityTarget,
+      stage: subject.stage,
+      sourceSummary: subject.sourceSummary,
+      sourceCount: sourcesFor(subject.id).length,
+      deckCount: decks.length,
+      cardCount: cards,
+      questionCount: questionsFor(subject.id).length
+    };
+  }
+
+  function personalMemoFor(value) {
+    var subject = subjectFor(value);
+    if (!subject) return null;
+    return {
+      code: subject.code,
+      memo: memoFor(subject.id),
+      preferredStudyMethod: subject.preferredStudyMethod,
+      notes: clone(subject.personalNotes || null),
+      warnings: clone(subject.personalWarnings || [])
+    };
+  }
+
   function recommendationFor(value) {
     var subject = subjectFor(value);
     var recommendation = keyedLookup(data.recommendations, value);
@@ -289,6 +385,11 @@ function runtimeSource(data) {
   }
 
   function toolsForPage(subject) {
+    if (subject.primaryTools && subject.primaryTools.length) {
+      return subject.primaryTools.map(function (tool) {
+        return [tool.icon, tool.title, tool.description, tool.status, tool.href, tool.accent || subject.accent];
+      });
+    }
     return [
       ['▦', 'Fagmemo', 'Kort arbeidsmåte, eksamensform og beste start for faget.', 'Start', '#memo', subject.accent],
       ['✓', 'Flashcards', 'Korte kort fra katalogen og eksisterende fagpakker.', 'Kort', subject.flashcardsHref, subject.accent],
@@ -299,13 +400,13 @@ function runtimeSource(data) {
 
   function sourceRowsForPage(subject) {
     return sourcesFor(subject.id).slice(0, 5).map(function (source) {
-      return [source.title, source.suggestedUse];
+      return [source.title, roleLabel(source.sourceRole) + ': ' + source.suggestedUse];
     });
   }
 
   function canvasRowsForPage(subject) {
     return sourcesFor(subject.id).slice(0, 5).map(function (source) {
-      return [source.title, source.sourcePath + ' · ' + source.status, source.type];
+      return [source.title, roleLabel(source.sourceRole) + ' · ' + source.sourcePath + ' · ' + source.status, source.type];
     });
   }
 
@@ -346,6 +447,12 @@ function runtimeSource(data) {
       accent: subject.accent,
       progress: subject.stage === 'rich' ? '62%' : subject.stage === 'ready_for_import' ? '42%' : subject.stage === 'mvp_gap' ? '34%' : '28%',
       lead: subject.lead,
+      toolProfile: subject.toolProfile,
+      qualityStatus: subject.qualityStatus,
+      qualityTarget: subject.qualityTarget,
+      preferredStudyMethod: subject.preferredStudyMethod,
+      personalNotes: subject.personalNotes,
+      personalWarnings: subject.personalWarnings,
       stats: [[String(sources.length), 'kilder'], [String(cards || decks.length), cards ? 'kort fra katalogen' : 'kortpakker'], [subject.stage === 'rich' ? 'Aktiv' : 'Bygges', 'plattform']],
       tools: toolsForPage(subject),
       topics: topicsForPage(subject),
@@ -399,6 +506,10 @@ function runtimeSource(data) {
     analysisFor: analysisFor,
     formulaItemsFor: formulaItemsFor,
     learningPathFor: learningPathFor,
+    toolsFor: toolsFor,
+    qualityFor: qualityFor,
+    personalMemoFor: personalMemoFor,
+    sourceRolesFor: sourceRolesFor,
     memoFor: memoFor,
     recommendationFor: recommendationFor,
     notes: function () { return clone(notes()); },

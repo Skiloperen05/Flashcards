@@ -41,6 +41,16 @@
     return '<article class="hf-info-card hf-memo-card"><span>' + esc(title) + '</span><p>' + esc(text) + '</p></article>';
   }
 
+  function personalHtml(page) {
+    var rows = [];
+    if (page.preferredStudyMethod) rows.push(['Arbeidsmåte', page.preferredStudyMethod, 'Fra notater']);
+    if (page.personalNotes && page.personalNotes.summary) rows.push(['Kildebruk', page.personalNotes.summary, 'Canvas/notater']);
+    (page.personalWarnings || []).slice(0, 4).forEach(function (warning) {
+      rows.push(['Fallgruve', warning, 'Sjekk']);
+    });
+    return listCard('Personlig arbeidsmåte', rows, 'hf-personal-card', 'personlig');
+  }
+
   function listCard(title, items, className, id) {
     if (!items || !items.length) return '';
     return '<section class="hf-info-card ' + esc(className || '') + '"' + (id ? ' id="' + esc(id) + '"' : '') + '><h3>' + esc(title) + '</h3>' + items.map(function (item) {
@@ -59,6 +69,7 @@
   function learningHtml(page) {
     var html = '';
     html += listCard('Kompendium og oversikt', page.compendium, 'hf-compendium-card', 'kompendium');
+    html += personalHtml(page);
     html += examRadarHtml(page.examRadar);
     html += listCard('Formelark og metoder', page.formulaSheet, 'hf-formula-card', 'formelark');
     html += listCard('Canvas- og filgrunnlag', page.canvasMaterials, 'hf-material-card', 'materiale');
@@ -108,6 +119,7 @@
     if (!tabbar) return;
     if (page.compendium) tabbar.insertAdjacentHTML('beforeend', '<a href="#kompendium">Kompendium</a>');
     if (page.memo) tabbar.insertAdjacentHTML('beforeend', '<a href="#memo">Memo</a>');
+    if (page.preferredStudyMethod || (page.personalWarnings && page.personalWarnings.length)) tabbar.insertAdjacentHTML('beforeend', '<a href="#personlig">Personlig</a>');
     if (pageResources(page).length) tabbar.insertAdjacentHTML('beforeend', '<a href="#ressurser">Ressurser</a>');
     if (page.examRadar) tabbar.insertAdjacentHTML('beforeend', '<a href="#eksamensradar">Eksamensradar</a>');
     if (page.formulaSheet) tabbar.insertAdjacentHTML('beforeend', '<a href="#formelark">Formelark</a>');
@@ -171,7 +183,7 @@
       resourceAnchor.insertAdjacentHTML('afterend', resourcesHtml(page));
       bindResources();
     }
-    if (planHost && (page.compendium || page.examRadar || page.formulaSheet || page.canvasMaterials || page.practice || page.examChecklist) && !document.getElementById('learningSuite')) {
+    if (planHost && (page.compendium || page.preferredStudyMethod || (page.personalWarnings && page.personalWarnings.length) || page.examRadar || page.formulaSheet || page.canvasMaterials || page.practice || page.examChecklist) && !document.getElementById('learningSuite')) {
       var sourceCard = document.getElementById('sourceCard');
       (sourceCard || planHost).insertAdjacentHTML('afterend', learningHtml(page));
       bindPractice(page);

@@ -4,8 +4,8 @@
 
   var payload = {
   "data": {
-    "version": "2026.07-platform-v1",
-    "updatedAt": "2026-07-02",
+    "version": "2026.07-personal-platform-v2",
+    "updatedAt": "2026-07-03",
     "subjects": [
       {
         "id": "ret14",
@@ -17,7 +17,62 @@
         "lead": "Skatt, fradrag, aksjer, personinntekt, arv, lovhjemler og eksamensanalyse.",
         "sourceSummary": "Stort lokalt grunnlag med forelesninger, eksamener, sensorveiledninger og A-besvarelser.",
         "defaultHref": "../ret14/",
-        "flashcardsHref": "../flashcards/?subject=ret14"
+        "flashcardsHref": "../flashcards/?subject=ret14",
+        "toolProfile": "legal_method",
+        "qualityStatus": "usable",
+        "qualityTarget": "exam_ready",
+        "preferredStudyMethod": "Start hver økt med ett tema i lovkartet, løs en kort caseoppgave, og avslutt med sensor-sjekk av hjemmel, vilkår og konklusjon.",
+        "personalNotes": {
+          "summary": "Egne RET14-notater om formuesskatt, foretaksmodellen og fradrag brukes til å gjøre faget hjemmelstyrt, ikke bare pensumstyrt.",
+          "sourceIds": [
+            "ret14-lectures",
+            "ret14-exams"
+          ],
+          "useInApp": [
+            "Lovkart med hjemmel og unntak",
+            "Drøftingskort fra sensorpunkter",
+            "Korte kontrollspørsmål før case"
+          ]
+        },
+        "personalWarnings": [
+          "Ikke start med generell teori før hjemmel og vilkår er identifisert.",
+          "Skill hovedregel, unntak og beregning i egne avsnitt.",
+          "Bruk A-besvarelser etter eget forsøk, ikke som første lesing."
+        ],
+        "primaryTools": [
+          {
+            "icon": "§",
+            "title": "Lovkart",
+            "description": "Hjemler, vilkår og unntak fra egne RET14-notater og Canvas-forelesninger.",
+            "status": "Kjerne",
+            "href": "#kompendium",
+            "accent": "#2f62ff"
+          },
+          {
+            "icon": "✓",
+            "title": "Hjemmelkort",
+            "description": "Korte kort for fradrag, aksjer, personinntekt, tidfesting og formue.",
+            "status": "Kort",
+            "href": "../flashcards/?subject=ret14",
+            "accent": "#20b97a"
+          },
+          {
+            "icon": "▣",
+            "title": "Eksamenscase",
+            "description": "Gamle eksamener og sensorpunkt brukes som korte drøftingsøkter.",
+            "status": "Oppgaver",
+            "href": "../user/oppgavebank.html?subject=RET14",
+            "accent": "#e8bc68"
+          },
+          {
+            "icon": "◈",
+            "title": "Sensor-sjekk",
+            "description": "Sjekk egen struktur mot sensor og A-besvarelse når rettigheter tillater det.",
+            "status": "Radar",
+            "href": "#eksamensradar",
+            "accent": "#3b82f6"
+          }
+        ]
       },
       {
         "id": "subj_sol1",
@@ -29,7 +84,62 @@
         "lead": "Begreper, teorier, modeller, caseforståelse og teoriskriving.",
         "sourceSummary": "Sterkt strukturert fag med forelesningsnotater, kompendium, case og eksisterende kortpakker.",
         "defaultHref": "../sol1/",
-        "flashcardsHref": "../flashcards/?subject=subj_sol1"
+        "flashcardsHref": "../flashcards/?subject=subj_sol1",
+        "toolProfile": "case_theory",
+        "qualityStatus": "usable",
+        "qualityTarget": "exam_ready",
+        "preferredStudyMethod": "Les ett teorikort, skriv en kort casekobling, og avslutt med å forklare hvorfor akkurat denne teorien passer situasjonen.",
+        "personalNotes": {
+          "summary": "Forelesningsnotatene og casefilene brukes som hovedkilde for teorivalg, casekobling og korte teorisvar.",
+          "sourceIds": [
+            "sol1-notes",
+            "sol1-exam-pack"
+          ],
+          "useInApp": [
+            "Teorikart med begrep og modell",
+            "Casekort med valg av teori",
+            "Skriveøvelser for teoridel"
+          ]
+        },
+        "personalWarnings": [
+          "Ikke pugge teorier løsrevet fra case.",
+          "Forklar mekanismen i teorien før du bruker fagord.",
+          "Sammenlign med A-besvarelse først etter at du har skrevet et eget svar."
+        ],
+        "primaryTools": [
+          {
+            "icon": "◎",
+            "title": "Teorikart",
+            "description": "Begrep, modeller og forskerlogikk fra SOL1-notatene.",
+            "status": "Kjerne",
+            "href": "#kompendium",
+            "accent": "#20b97a"
+          },
+          {
+            "icon": "▣",
+            "title": "Caseøving",
+            "description": "Velg teori, koble til faktum og skriv kort drøfting.",
+            "status": "Case",
+            "href": "../user/oppgavebank.html?subject=SOL1",
+            "accent": "#2f62ff"
+          },
+          {
+            "icon": "✓",
+            "title": "Teorikort",
+            "description": "Flashcards for motivasjon, team, beslutning, ledelse og organisasjonskultur.",
+            "status": "Kort",
+            "href": "../flashcards/?subject=subj_sol1",
+            "accent": "#e8bc68"
+          },
+          {
+            "icon": "✎",
+            "title": "Teoriskriving",
+            "description": "Skriv korte teorisvar før eksempelsvar og sensor brukes.",
+            "status": "Skrive",
+            "href": "#sjekkliste",
+            "accent": "#14b8a6"
+          }
+        ]
       },
       {
         "id": "sam3",
@@ -41,7 +151,62 @@
         "lead": "Makromodeller, formler, quiz, eksamensradar, mock-eksamen og modellforklaring.",
         "sourceSummary": "Svært stort Canvas-grunnlag med forelesninger, eksamenssett, sensorveiledninger og A-besvarelser.",
         "defaultHref": "../sam3/",
-        "flashcardsHref": "../sam3/flashcards.html"
+        "flashcardsHref": "../sam3/flashcards.html",
+        "toolProfile": "macro_model",
+        "qualityStatus": "exam_ready",
+        "qualityTarget": "exam_ready",
+        "preferredStudyMethod": "Velg modell først, tegn mekanismen, lås formelen, og bruk deretter eksamenspakken til å sammenligne struktur med sensor.",
+        "personalNotes": {
+          "summary": "Canvas-eksporten, formeloversikten og V26-pakken gjør SAM3 egnet for modellbygger, formelquiz og hel eksamensflyt.",
+          "sourceIds": [
+            "sam3-canvas",
+            "sam3-v26-pack"
+          ],
+          "useInApp": [
+            "Modellvalg før oppgaver",
+            "Formelquiz for symboler",
+            "Løs-sammenlign-sensor eksamensflyt"
+          ]
+        },
+        "personalWarnings": [
+          "Ikke forklar politikk før modellen er valgt.",
+          "Tegn skift og mekanisme før du skriver tekst.",
+          "Skill kort og lang sikt når sjokk analyseres."
+        ],
+        "primaryTools": [
+          {
+            "icon": "◒",
+            "title": "Modellbygger",
+            "description": "Solow, IS-MP, AS-AD, Phillips og åpen økonomi koblet til Canvas- og modellark.",
+            "status": "Modell",
+            "href": "../sam3/sentrale-modeller.html",
+            "accent": "#ef4444"
+          },
+          {
+            "icon": "Σ",
+            "title": "Formelquiz",
+            "description": "Symboler, sammenhenger og økonomisk tolkning fra formeloversikten.",
+            "status": "Quiz",
+            "href": "../sam3/formelquiz.html",
+            "accent": "#2f62ff"
+          },
+          {
+            "icon": "✓",
+            "title": "Makrokort",
+            "description": "Korte kort fra eksisterende SAM3-pakke og læringskatalog.",
+            "status": "Kort",
+            "href": "../sam3/flashcards.html",
+            "accent": "#e8bc68"
+          },
+          {
+            "icon": "◈",
+            "title": "Eksamensflyt",
+            "description": "Løs selv, sammenlign med A-besvarelse og sjekk sensor.",
+            "status": "Eksamen",
+            "href": "../sam3/mock-eksamen.html",
+            "accent": "#20b97a"
+          }
+        ]
       },
       {
         "id": "mat10",
@@ -53,7 +218,61 @@
         "lead": "Analyse, lineær algebra, formler, regneøkter og eksamensdrill.",
         "sourceSummary": "Komplett lokal Canvas-eksport med kompendium og mange sensorveiledninger.",
         "defaultHref": "../mat10/",
-        "flashcardsHref": "../flashcards/?subject=mat10"
+        "flashcardsHref": "../flashcards/?subject=mat10",
+        "toolProfile": "calculation_drill",
+        "qualityStatus": "usable",
+        "qualityTarget": "exam_ready",
+        "preferredStudyMethod": "Start med å kjenne igjen oppgavetype, skriv metode før regning, og bruk sensorveiledningene til å se hvilke mellomsteg som gir poeng.",
+        "personalNotes": {
+          "summary": "MAT10-formelhefte, Taylor-notater og Canvas-sensorer brukes til metodevalg, formelbank og regnedrill.",
+          "sourceIds": [
+            "mat10-canvas"
+          ],
+          "useInApp": [
+            "Formelbank før oppgaver",
+            "Regnedrill sortert etter oppgavetype",
+            "Sensorpoeng fra mellomregning"
+          ]
+        },
+        "personalWarnings": [
+          "Ikke begynn å regne før metode og definisjonsområde er klart.",
+          "Skriv mellomregning selv når svaret virker åpenbart.",
+          "Kontroller randpunkter, fortegn og enheter før konklusjon."
+        ],
+        "primaryTools": [
+          {
+            "icon": "∫",
+            "title": "Formelbank",
+            "description": "Derivasjon, integrasjon, Taylor, matriser og lineære systemer fra Canvas og egne filer.",
+            "status": "Formel",
+            "href": "#formelark",
+            "accent": "#0891b2"
+          },
+          {
+            "icon": "ƒ",
+            "title": "Regneøkter",
+            "description": "Korte drilløkter der én oppgavetype trenes om gangen.",
+            "status": "Oppgaver",
+            "href": "../user/oppgavebank.html?subject=MAT10",
+            "accent": "#2f62ff"
+          },
+          {
+            "icon": "◈",
+            "title": "Sensorpoeng",
+            "description": "Sensorveiledninger brukes til å gjøre mellomsteg og kontrollspørsmål tydelige.",
+            "status": "Radar",
+            "href": "#eksamensradar",
+            "accent": "#e8bc68"
+          },
+          {
+            "icon": "✓",
+            "title": "Metodekort",
+            "description": "Flashcards for når og hvorfor en metode skal brukes.",
+            "status": "Kort",
+            "href": "../flashcards/?subject=mat10",
+            "accent": "#20b97a"
+          }
+        ]
       },
       {
         "id": "met2",
@@ -65,7 +284,61 @@
         "lead": "Metode, statistikk, hypotesetesting, konfidensintervall og regresjon.",
         "sourceSummary": "Lokale sensorveiledninger og metodeoppskrifter finnes; faget trenger strukturert import.",
         "defaultHref": "../met2/",
-        "flashcardsHref": "../flashcards/?subject=met2"
+        "flashcardsHref": "../flashcards/?subject=met2",
+        "toolProfile": "statistical_interpretation",
+        "qualityStatus": "seed",
+        "qualityTarget": "exam_ready",
+        "preferredStudyMethod": "Drill begrep først, velg test fra oppgavetekst, og skriv alltid konklusjonen i vanlig språk med riktig statistisk betingelse.",
+        "personalNotes": {
+          "summary": "P-verdi-oppskrift og MET2-sensorer brukes til å prioritere testvalg, tolkning og regresjonsspråk.",
+          "sourceIds": [
+            "met2-downloads"
+          ],
+          "useInApp": [
+            "Hypotesetest-flyt",
+            "P-verdi og KI-tolkningskort",
+            "Regresjonsoutput med språkmal"
+          ]
+        },
+        "personalWarnings": [
+          "Ikke si at p-verdien er sannsynligheten for at nullhypotesen er sann.",
+          "Ikke konkluder uten kontekst og parameter.",
+          "Skill statistisk signifikans fra praktisk betydning."
+        ],
+        "primaryTools": [
+          {
+            "icon": "?",
+            "title": "Testvalg",
+            "description": "Velg metode fra datatype, parameter, antakelser og H1.",
+            "status": "Oppgaver",
+            "href": "../user/oppgavebank.html?subject=MET2&topic=Hypotesetest",
+            "accent": "#7c3aed"
+          },
+          {
+            "icon": "Σ",
+            "title": "Begrepskort",
+            "description": "Estimator, standardfeil, p-verdi, KI og signifikans forklart presist.",
+            "status": "Kort",
+            "href": "../flashcards/?subject=met2",
+            "accent": "#2f62ff"
+          },
+          {
+            "icon": "β",
+            "title": "Regresjonslab",
+            "description": "Tolk koeffisienter, usikkerhet, R2 og forutsetninger.",
+            "status": "Lab",
+            "href": "../user/oppgavebank.html?subject=MET2&topic=Regresjon",
+            "accent": "#e8bc68"
+          },
+          {
+            "icon": "◈",
+            "title": "Sensor-språk",
+            "description": "Sensorveiledninger gjøres om til formuleringer du kan bruke på eksamen.",
+            "status": "Radar",
+            "href": "#eksamensradar",
+            "accent": "#20b97a"
+          }
+        ]
       },
       {
         "id": "bed1",
@@ -77,7 +350,61 @@
         "lead": "Kalkyler, resultat, investering, budsjettering og eksamenstrening.",
         "sourceSummary": "Lokale forelesninger, gruppeøvinger, Excel-filer og eksamensnært materiale finnes.",
         "defaultHref": "../bed1/",
-        "flashcardsHref": "../flashcards/?subject=bed1"
+        "flashcardsHref": "../flashcards/?subject=bed1",
+        "toolProfile": "business_calculation",
+        "qualityStatus": "seed",
+        "qualityTarget": "exam_ready",
+        "preferredStudyMethod": "Sett opp tabell før du regner, avgjør hvilken beslutning tallene skal støtte, og skriv en kort økonomisk anbefaling til slutt.",
+        "personalNotes": {
+          "summary": "BED1-forelesninger, gruppeøvinger og Excel-ark brukes til kalkyledrill, fasitkontroll og scenariooppgaver.",
+          "sourceIds": [
+            "bed1-materials"
+          ],
+          "useInApp": [
+            "Kalkylekort",
+            "Regneoppsett med tabell",
+            "Excel-baserte kontrolloppgaver"
+          ]
+        },
+        "personalWarnings": [
+          "Ikke bland historiske kostnader inn i relevante beslutninger.",
+          "Skriv oppsett før detaljregning.",
+          "Avslutt med anbefaling, ikke bare tall."
+        ],
+        "primaryTools": [
+          {
+            "icon": "◆",
+            "title": "Kalkylekort",
+            "description": "Bidrag, selvkost, ABC og relevante kostnader som beslutningskort.",
+            "status": "Kort",
+            "href": "../flashcards/?subject=bed1",
+            "accent": "#20b97a"
+          },
+          {
+            "icon": "▥",
+            "title": "Regneoppsett",
+            "description": "Tabeller for kalkyler, resultat, investering og budsjett.",
+            "status": "Oppgaver",
+            "href": "../user/oppgavebank.html?subject=BED1",
+            "accent": "#2f62ff"
+          },
+          {
+            "icon": "▦",
+            "title": "Excel-fasit",
+            "description": "Lokale regneark brukes som grunnlag for fasitkontroll der det er egnet.",
+            "status": "Kontroll",
+            "href": "#materiale",
+            "accent": "#e8bc68"
+          },
+          {
+            "icon": "◈",
+            "title": "Eksamensløp",
+            "description": "Gamle oppgaver prioriteres etter poengtunge standardoppsett.",
+            "status": "Radar",
+            "href": "#eksamensradar",
+            "accent": "#14b8a6"
+          }
+        ]
       },
       {
         "id": "sam2",
@@ -89,7 +416,61 @@
         "lead": "Konsumentteori, produsentteori, markedsteori, markedsmakt og strategi.",
         "sourceSummary": "Memoar, oppgaveprioritering og noe lokalt materiale er klart; flere kort og regnequiz mangler.",
         "defaultHref": "../sam2/",
-        "flashcardsHref": "../sam2/oppgaver-klikkbar/"
+        "flashcardsHref": "../sam2/oppgaver-klikkbar/",
+        "toolProfile": "micro_model",
+        "qualityStatus": "usable",
+        "qualityTarget": "exam_ready",
+        "preferredStudyMethod": "Bruk memoaret som start, tegn modellen før regning, og tren jevnt fra oppgaveboken i stedet for å vente til slutten.",
+        "personalNotes": {
+          "summary": "SAM2-memoaret styrer onboarding og arbeidsmåte: faget føles tungt først, men blir bedre med gjentatte modeller og oppgaver.",
+          "sourceIds": [
+            "sam2-memo"
+          ],
+          "useInApp": [
+            "Memo først på fagsiden",
+            "Figurkort før regning",
+            "Oppgavebok som daglig øving"
+          ]
+        },
+        "personalWarnings": [
+          "Ikke hopp rett til regning uten figur.",
+          "Konsumentteori trenger flere korte repetisjoner.",
+          "Oppgaveboken må brukes fortløpende, ikke bare som eksamenslesing."
+        ],
+        "primaryTools": [
+          {
+            "icon": "▦",
+            "title": "Memoar",
+            "description": "Personlig arbeidsmåte og forventningsstyring fra SAM2-memoaret.",
+            "status": "Start",
+            "href": "../sam2/memoar/",
+            "accent": "#f09828"
+          },
+          {
+            "icon": "◒",
+            "title": "Figurdrill",
+            "description": "Konsument, produsent, marked, monopol og spill tegnes før regning.",
+            "status": "Modell",
+            "href": "#hurtigkort",
+            "accent": "#2f62ff"
+          },
+          {
+            "icon": "✓",
+            "title": "Oppgavebok",
+            "description": "Klikkbar oppgavebank brukes som hovedvei mot eksamen.",
+            "status": "Oppgaver",
+            "href": "../sam2/oppgaver-klikkbar/",
+            "accent": "#20b97a"
+          },
+          {
+            "icon": "◈",
+            "title": "Eksamensradar",
+            "description": "Tema prioriteres etter memoar, eksamensfiler og oppgavetyper.",
+            "status": "Radar",
+            "href": "#eksamensradar",
+            "accent": "#e8bc68"
+          }
+        ]
       },
       {
         "id": "sam1a",
@@ -101,7 +482,61 @@
         "lead": "Markedslikevekt, elastisitet, velferd, markedssvikt og læringsmål.",
         "sourceSummary": "Kompendium og eksamensfiler er funnet og bør bli første kort- og oppgavepakke.",
         "defaultHref": "../sam1a/",
-        "flashcardsHref": "../flashcards/?subject=sam1a"
+        "flashcardsHref": "../flashcards/?subject=sam1a",
+        "toolProfile": "intro_micro_model",
+        "qualityStatus": "seed",
+        "qualityTarget": "exam_ready",
+        "preferredStudyMethod": "Gjør hvert læringsmål om til ett kontrollspørsmål, tegn figuren, og forklar endringen med ord før du løser oppgaver.",
+        "personalNotes": {
+          "summary": "Kompendium, læringsmål og eksamensfiler brukes til å bygge grunnkurskort med figur, begrep og kort tolkning.",
+          "sourceIds": [
+            "sam1a-materials"
+          ],
+          "useInApp": [
+            "Læringsmål til kort",
+            "Markedskryss og elastisitet som figurdrill",
+            "Grunnkursoppgaver med kort forklaring"
+          ]
+        },
+        "personalWarnings": [
+          "Ikke lever en figur uten tekstforklaring.",
+          "Skill skift i kurve fra bevegelse langs kurven.",
+          "Bruk velferdsbegrep når oppgaven ber om effekt."
+        ],
+        "primaryTools": [
+          {
+            "icon": "↗",
+            "title": "Læringsmål",
+            "description": "Hvert læringsmål blir kontrollspørsmål og kort.",
+            "status": "Start",
+            "href": "#kompendium",
+            "accent": "#f09828"
+          },
+          {
+            "icon": "◒",
+            "title": "Modellkort",
+            "description": "Markedskryss, elastisitet, overskudd og markedssvikt.",
+            "status": "Modell",
+            "href": "#hurtigkort",
+            "accent": "#2f62ff"
+          },
+          {
+            "icon": "✓",
+            "title": "Oppgavebank",
+            "description": "Grunnkursoppgaver med figur, begrep og tolkning.",
+            "status": "Oppgaver",
+            "href": "../user/oppgavebank.html?subject=SAM1A",
+            "accent": "#20b97a"
+          },
+          {
+            "icon": "◈",
+            "title": "Eksamensradar",
+            "description": "Prioriterer tema der figur og forklaring ofte henger sammen.",
+            "status": "Radar",
+            "href": "#eksamensradar",
+            "accent": "#e8bc68"
+          }
+        ]
       },
       {
         "id": "met1",
@@ -113,7 +548,61 @@
         "lead": "Rente, nåverdi, annuitet, rekker og økonomisk matematikk.",
         "sourceSummary": "NNV- og renteoppgaver finnes lokalt og kan bli regnedrill med fasitkontroll.",
         "defaultHref": "../met1/",
-        "flashcardsHref": "../flashcards/?subject=met1"
+        "flashcardsHref": "../flashcards/?subject=met1",
+        "toolProfile": "finance_math",
+        "qualityStatus": "seed",
+        "qualityTarget": "exam_ready",
+        "preferredStudyMethod": "Tegn tidslinje først, plasser kontantstrømmene, velg formel etter tidspunkt, og kontroller at rente og periode matcher.",
+        "personalNotes": {
+          "summary": "NNV- og renteoppgavene brukes til korte regnedriller der formelvalg og tidsskala er viktigere enn lange forklaringer.",
+          "sourceIds": [
+            "met1-materials"
+          ],
+          "useInApp": [
+            "Tidslinjekort",
+            "NNV- og annuitetsdrill",
+            "Fasitkontroll for renteperioder"
+          ]
+        },
+        "personalWarnings": [
+          "Ikke bland årsrente og perioderente.",
+          "Ikke sammenlign kontantstrømmer på ulike tidspunkt.",
+          "Oppgi alltid tidspunktet svaret gjelder for."
+        ],
+        "primaryTools": [
+          {
+            "icon": "%",
+            "title": "Tidslinje",
+            "description": "Plasser kontantstrømmer før formelvalg.",
+            "status": "Start",
+            "href": "#kompendium",
+            "accent": "#06b6d4"
+          },
+          {
+            "icon": "∑",
+            "title": "Formelvalg",
+            "description": "Nåverdi, sluttverdi, annuitet, rekker og effektiv rente.",
+            "status": "Formel",
+            "href": "#formelark",
+            "accent": "#2f62ff"
+          },
+          {
+            "icon": "✓",
+            "title": "NNV-drill",
+            "description": "Korte oppgaver fra lokale NNV- og rentefiler.",
+            "status": "Oppgaver",
+            "href": "../user/oppgavebank.html?subject=MET1",
+            "accent": "#e8bc68"
+          },
+          {
+            "icon": "◈",
+            "title": "Fasitkontroll",
+            "description": "Kontroller rente, periode, avrunding og beslutning.",
+            "status": "Sjekk",
+            "href": "#sjekkliste",
+            "accent": "#20b97a"
+          }
+        ]
       },
       {
         "id": "kom1",
@@ -125,7 +614,61 @@
         "lead": "Rapportstruktur, presentasjon, akademisk språk og refleksjon.",
         "sourceSummary": "Innleveringer, presentasjoner og datasett finnes og bør bli skrivekort og maler.",
         "defaultHref": "../kom1/",
-        "flashcardsHref": "../flashcards/?subject=kom1"
+        "flashcardsHref": "../flashcards/?subject=kom1",
+        "toolProfile": "communication_workshop",
+        "qualityStatus": "seed",
+        "qualityTarget": "exam_ready",
+        "preferredStudyMethod": "Lag problemstilling og disposisjon før skriving, bygg avsnitt med påstand og belegg, og avslutt med språkvask mot vurderingskriteriene.",
+        "personalNotes": {
+          "summary": "Egne rapporter og presentasjoner brukes som eksempelbank for struktur, avsnitt, drøfting og muntlig formidling.",
+          "sourceIds": [
+            "kom1-materials"
+          ],
+          "useInApp": [
+            "Rapportmal fra egne innleveringer",
+            "Skrivekort for analyseavsnitt",
+            "Presentasjonsdrill for slideflyt"
+          ]
+        },
+        "personalWarnings": [
+          "Ikke start å skrive før problemstillingen styrer avsnittene.",
+          "Ikke legg inn belegg uten å forklare hvorfor det svarer på spørsmålet.",
+          "Konklusjonen skal svare, ikke åpne nye tema."
+        ],
+        "primaryTools": [
+          {
+            "icon": "✎",
+            "title": "Rapportmal",
+            "description": "Problemstilling, metode, analyse, drøfting og konklusjon fra egne innleveringer.",
+            "status": "Mal",
+            "href": "#kompendium",
+            "accent": "#e8bc68"
+          },
+          {
+            "icon": "▣",
+            "title": "Skrivekort",
+            "description": "Påstand, belegg, forklaring, overgang og konklusjon.",
+            "status": "Kort",
+            "href": "../flashcards/?subject=kom1",
+            "accent": "#2f62ff"
+          },
+          {
+            "icon": "◒",
+            "title": "Presentasjon",
+            "description": "Muntlig struktur, slideøkonomi og overgang mellom hovedpoeng.",
+            "status": "Muntlig",
+            "href": "#materiale",
+            "accent": "#20b97a"
+          },
+          {
+            "icon": "✓",
+            "title": "Leveringssjekk",
+            "description": "Språk, kilder, problemstilling og rød tråd før innlevering.",
+            "status": "Sjekk",
+            "href": "#sjekkliste",
+            "accent": "#14b8a6"
+          }
+        ]
       },
       {
         "id": "ret1a",
@@ -137,7 +680,61 @@
         "lead": "Avtalerett, selskapsrett, pengekrav og juridisk metode.",
         "sourceSummary": "Forelesninger, manduksjon og øvingsfiler finnes og bør bli disposisjonskort.",
         "defaultHref": "../ret1a/",
-        "flashcardsHref": "../flashcards/?subject=ret1a"
+        "flashcardsHref": "../flashcards/?subject=ret1a",
+        "toolProfile": "legal_method_seed",
+        "qualityStatus": "seed",
+        "qualityTarget": "exam_ready",
+        "preferredStudyMethod": "Finn rettsregel og vilkår først, bruk faktum aktivt under hvert vilkår, og skriv delkonklusjoner før samlet svar.",
+        "personalNotes": {
+          "summary": "Avtalerett-manus, rettskildelære, manduksjon og eksamensøving brukes til disposisjonskort og juridisk metodebank.",
+          "sourceIds": [
+            "ret1a-materials"
+          ],
+          "useInApp": [
+            "Rettsregel- og vilkårskort",
+            "Subsumsjonsøving fra gamle oppgaver",
+            "Disposisjonsmal for eksamen"
+          ]
+        },
+        "personalWarnings": [
+          "Ikke hopp over rettsregelen før faktum drøftes.",
+          "Ta ett vilkår om gangen.",
+          "Konkluder kort underveis, ikke bare helt til slutt."
+        ],
+        "primaryTools": [
+          {
+            "icon": "§",
+            "title": "Rettsregel",
+            "description": "Hjemmel, vilkår og unntak fra forelesninger og egne notater.",
+            "status": "Kjerne",
+            "href": "#kompendium",
+            "accent": "#3b82f6"
+          },
+          {
+            "icon": "✓",
+            "title": "Vilkårskort",
+            "description": "Korte kort for avtalerett, pengekrav, selskapsrett og metode.",
+            "status": "Kort",
+            "href": "../flashcards/?subject=ret1a",
+            "accent": "#20b97a"
+          },
+          {
+            "icon": "▣",
+            "title": "Eksamensbank",
+            "description": "Gamle oppgaver sortert etter tema og drøftingstype.",
+            "status": "Oppgaver",
+            "href": "../user/oppgavebank.html?subject=RET1A",
+            "accent": "#e8bc68"
+          },
+          {
+            "icon": "◈",
+            "title": "Disposisjon",
+            "description": "Problemstilling, rettsregel, subsumsjon og konklusjon som fast svarmal.",
+            "status": "Metode",
+            "href": "#sjekkliste",
+            "accent": "#2f62ff"
+          }
+        ]
       }
     ],
     "sources": [
@@ -146,6 +743,7 @@
         "subject": "RET14",
         "title": "RET14 eksamener og sensorveiledninger",
         "type": "exam_archive",
+        "sourceRole": "exam_archive",
         "sourcePath": "Studier/NHH/RET14 Skatterett/Eksamensoppgaver og sensorveiledninger",
         "term": "2012-2025",
         "topics": [
@@ -164,6 +762,7 @@
         "subject": "RET14",
         "title": "RET14 forelesninger Canvas",
         "type": "lecture_pack",
+        "sourceRole": "canvas_lecture",
         "sourcePath": "Studier/NHH/RET14 Skatterett/Forelesninger Canvas",
         "term": "2025",
         "topics": [
@@ -181,6 +780,7 @@
         "subject": "SOL1",
         "title": "SOL1 forelesningsnotater",
         "type": "notes",
+        "sourceRole": "personal_notes",
         "sourcePath": "Studier/NHH/SOL1 Psykologi og ledelse/forelesningsnotater_sol1_v2.docx",
         "term": "2026",
         "topics": [
@@ -199,6 +799,7 @@
         "subject": "SOL1",
         "title": "SOL1 eksamen, sensor og A-besvarelse",
         "type": "exam_pack",
+        "sourceRole": "exam_archive",
         "sourcePath": "Studier/NHH/SOL1 Psykologi og ledelse/course_files_export-*",
         "term": "V25-V26",
         "topics": [
@@ -215,6 +816,7 @@
         "subject": "SAM3",
         "title": "SAM3 Canvas-eksport",
         "type": "canvas_export",
+        "sourceRole": "canvas_export",
         "sourcePath": "Studier/NHH/SAM3 Makroøkonomi/SAM3- canvas",
         "term": "2020-2026",
         "topics": [
@@ -233,6 +835,7 @@
         "subject": "SAM3",
         "title": "SAM3 V26 eksamenspakke",
         "type": "exam_pack",
+        "sourceRole": "protected_exam_pack",
         "sourcePath": "sam3/eksamenspakker/v26",
         "term": "V26",
         "topics": [
@@ -249,6 +852,7 @@
         "subject": "MAT10",
         "title": "MAT10 Canvas-eksport",
         "type": "canvas_export",
+        "sourceRole": "canvas_export",
         "sourcePath": "Studier/NHH/MAT10/MAT10-V26-Analyse-og-line-r-algebra-*/viewer/files",
         "term": "V26",
         "topics": [
@@ -267,6 +871,7 @@
         "subject": "MET2",
         "title": "MET2 sensorveiledninger og metodeoppskrifter",
         "type": "exam_archive",
+        "sourceRole": "exam_and_method_notes",
         "sourcePath": "Downloads/EksamenMET2*Sensorveiledning.pdf + P-verdi oppskrift MET2.pdf",
         "term": "H22-V25",
         "topics": [
@@ -284,6 +889,7 @@
         "subject": "BED1",
         "title": "BED1A forelesninger, oppgaver og regneark",
         "type": "mixed_materials",
+        "sourceRole": "canvas_and_spreadsheet",
         "sourcePath": "Studier/NHH/BED1A",
         "term": "H25",
         "topics": [
@@ -301,6 +907,7 @@
         "subject": "SAM2",
         "title": "SAM2 memoar",
         "type": "memo",
+        "sourceRole": "personal_memo",
         "sourcePath": "Downloads/SAM2 memoar.docx",
         "term": "V26",
         "topics": [
@@ -318,6 +925,7 @@
         "subject": "SAM1A",
         "title": "SAM1A kompendium og eksamener",
         "type": "mixed_materials",
+        "sourceRole": "canvas_and_exam",
         "sourcePath": "Studier/NHH/SAM1A",
         "term": "H24-H25",
         "topics": [
@@ -335,6 +943,7 @@
         "subject": "MET1",
         "title": "MET1 NNV og rente",
         "type": "exercise_pack",
+        "sourceRole": "local_exercise_pack",
         "sourcePath": "Studier/NHH/MET1/MET1 NNV, og rente oppgaver.pdf",
         "term": "V25",
         "topics": [
@@ -352,6 +961,7 @@
         "subject": "KOM1",
         "title": "KOM1 rapporter og presentasjoner",
         "type": "assignment_pack",
+        "sourceRole": "owned_assignment",
         "sourcePath": "Studier/NHH/KOM1",
         "term": "H25",
         "topics": [
@@ -369,6 +979,7 @@
         "subject": "RET1A",
         "title": "RET1A forelesninger og eksamensoving",
         "type": "mixed_materials",
+        "sourceRole": "canvas_and_personal_notes",
         "sourcePath": "Studier/NHH/RET1A",
         "term": "H25",
         "topics": [
@@ -383,6 +994,87 @@
       }
     ],
     "decks": {
+      "ret14": [
+        {
+          "id": "ret14-platform-hjemmel",
+          "title": "RET14 hjemmel og drøfting",
+          "status": "personal_seed",
+          "sourceIds": [
+            "ret14-lectures",
+            "ret14-exams"
+          ],
+          "cards": [
+            {
+              "q": "Hva er første steg i en RET14-drøftelse?",
+              "a": "Finn relevant hjemmel, skill hovedregel fra unntak, og gjør vilkårene eksplisitte før faktum brukes.",
+              "topic": "juridisk-metode",
+              "tag": "Hjemmel",
+              "source": "RET14 Canvas og egne notater"
+            },
+            {
+              "q": "Hvordan bør en skatterettslig beregning presenteres?",
+              "a": "Vis regelgrunnlag, mellomregning og kort konklusjon. Beregningen må henge sammen med vilkårsdrøftelsen.",
+              "topic": "beregning",
+              "tag": "Sensor",
+              "source": "RET14 sensorveiledninger"
+            }
+          ]
+        }
+      ],
+      "subj_sol1": [
+        {
+          "id": "sol1-platform-case-teori",
+          "title": "SOL1 teori til case",
+          "status": "personal_seed",
+          "sourceIds": [
+            "sol1-notes",
+            "sol1-exam-pack"
+          ],
+          "cards": [
+            {
+              "q": "Hva gjør et SOL1-svar sterkt?",
+              "a": "Det velger relevant teori, forklarer mekanismen i teorien og kobler den konkret til casefaktum.",
+              "topic": "case",
+              "tag": "Teorivalg",
+              "source": "SOL1 forelesningsnotater"
+            },
+            {
+              "q": "Hva bør du unngå når du bruker organisasjonsteori på case?",
+              "a": "Unngå å liste teori uten analyse. Hvert begrep må forklare noe konkret i situasjonen.",
+              "topic": "teoriskriving",
+              "tag": "Case",
+              "source": "SOL1 case- og eksamensfiler"
+            }
+          ]
+        }
+      ],
+      "sam3": [
+        {
+          "id": "sam3-platform-modellvalg",
+          "title": "SAM3 modellvalg og mekanisme",
+          "status": "exam_ready_seed",
+          "sourceIds": [
+            "sam3-canvas",
+            "sam3-v26-pack"
+          ],
+          "cards": [
+            {
+              "q": "Hva er første valg i en SAM3-oppgave?",
+              "a": "Velg modellen som passer sjokket eller spørsmålet, for eksempel IS-MP, AS-AD, Solow, Phillips eller åpen økonomi.",
+              "topic": "modellvalg",
+              "tag": "Modell",
+              "source": "SAM3 Canvas-eksport"
+            },
+            {
+              "q": "Hvordan bruker du V26-pakken best?",
+              "a": "Løs oppgaven først, sammenlign med A-besvarelsen, og bruk sensorveiledningen til å hente konkrete forbedringspunkt.",
+              "topic": "eksamen",
+              "tag": "Eksamensflyt",
+              "source": "SAM3 V26 eksamenspakke"
+            }
+          ]
+        }
+      ],
       "sam2": [
         {
           "id": "sam2-platform-modellvalg",
@@ -486,6 +1178,110 @@
             }
           ]
         }
+      ],
+      "sam1a": [
+        {
+          "id": "sam1a-platform-figur",
+          "title": "SAM1A figur og begrep",
+          "status": "personal_seed",
+          "sourceIds": [
+            "sam1a-materials"
+          ],
+          "cards": [
+            {
+              "q": "Hva må alltid være med når du tegner et markedskryss?",
+              "a": "Akser, tilbud, etterspørsel, likevekt og en kort tekst som forklarer skift eller bevegelse.",
+              "topic": "markedslikevekt",
+              "tag": "Figur",
+              "source": "SAM1A kompendium og eksamensfiler"
+            },
+            {
+              "q": "Hva er forskjellen på skift i kurve og bevegelse langs kurve?",
+              "a": "Et skift skyldes en annen faktor enn egen pris. Bevegelse langs kurven skyldes endret egen pris.",
+              "topic": "marked",
+              "tag": "Begrep",
+              "source": "SAM1A læringsmål"
+            }
+          ]
+        }
+      ],
+      "met1": [
+        {
+          "id": "met1-platform-tidslinje",
+          "title": "MET1 tidslinje og formelvalg",
+          "status": "personal_seed",
+          "sourceIds": [
+            "met1-materials"
+          ],
+          "cards": [
+            {
+              "q": "Hva bør du gjøre før du velger formel i MET1?",
+              "a": "Tegn tidslinje, plasser alle kontantstrømmer og marker hvilket tidspunkt svaret skal gjelde for.",
+              "topic": "tidslinje",
+              "tag": "Metode",
+              "source": "MET1 NNV og rente"
+            },
+            {
+              "q": "Hva er vanlig feil i renteoppgaver?",
+              "a": "Å blande årsrente og perioderente, eller bruke feil antall perioder i diskonteringen.",
+              "topic": "rente",
+              "tag": "Kontroll",
+              "source": "MET1 NNV og rente"
+            }
+          ]
+        }
+      ],
+      "kom1": [
+        {
+          "id": "kom1-platform-skriving",
+          "title": "KOM1 rapport og presentasjon",
+          "status": "personal_seed",
+          "sourceIds": [
+            "kom1-materials"
+          ],
+          "cards": [
+            {
+              "q": "Hva skal en god problemstilling gjøre?",
+              "a": "Den skal avgrense analysen og gjøre det tydelig hva hvert avsnitt skal bidra til å svare på.",
+              "topic": "problemstilling",
+              "tag": "Skriving",
+              "source": "KOM1 egne innleveringer"
+            },
+            {
+              "q": "Hvordan bygges et sterkt analyseavsnitt?",
+              "a": "Start med påstand, legg inn belegg, forklar hvorfor belegget betyr noe, og koble tilbake til problemstillingen.",
+              "topic": "analyseavsnitt",
+              "tag": "Rapport",
+              "source": "KOM1 rapporter og presentasjoner"
+            }
+          ]
+        }
+      ],
+      "ret1a": [
+        {
+          "id": "ret1a-platform-metode",
+          "title": "RET1A juridisk metode",
+          "status": "personal_seed",
+          "sourceIds": [
+            "ret1a-materials"
+          ],
+          "cards": [
+            {
+              "q": "Hva er fast rekkefølge i en juridisk drøftelse?",
+              "a": "Problemstilling, rettsregel, vilkår, subsumsjon og konklusjon.",
+              "topic": "juridisk-metode",
+              "tag": "Metode",
+              "source": "RET1A forelesninger og egne notater"
+            },
+            {
+              "q": "Hvordan bør flere vilkår behandles?",
+              "a": "Ta ett vilkår om gangen, bruk konkrete fakta under hvert vilkår, og skriv delkonklusjon før samlet konklusjon.",
+              "topic": "subsumsjon",
+              "tag": "Vilkår",
+              "source": "RET1A eksamensøving"
+            }
+          ]
+        }
       ]
     },
     "questions": [
@@ -551,6 +1347,118 @@
           "Identifiser parameter",
           "Velg test",
           "Begrunn med data og antakelser"
+        ]
+      },
+      {
+        "id": "platform-sol1-casekobling",
+        "subject": "SOL1",
+        "title": "Teori til case",
+        "source": "SOL1 forelesningsnotater",
+        "topic": "Case",
+        "difficulty": "Middels",
+        "minutes": 25,
+        "exam": true,
+        "prompt": "Velg én teori fra notatene og bruk den til å forklare et konkret problem i case. Skriv først teori, deretter casekobling.",
+        "checklist": [
+          "Velg relevant teori",
+          "Forklar mekanismen",
+          "Koble til konkret faktum"
+        ]
+      },
+      {
+        "id": "platform-bed1-kalkyleoppsett",
+        "subject": "BED1",
+        "title": "Kalkyleoppsett før regning",
+        "source": "BED1A forelesninger og regneark",
+        "topic": "Produktkalkulasjon",
+        "difficulty": "Middels",
+        "minutes": 30,
+        "exam": true,
+        "prompt": "Sett opp en bidrags- eller selvkostkalkyle i tabell før du regner, og avslutt med en kort anbefaling.",
+        "checklist": [
+          "Velg kalkyletype",
+          "Sett opp tabell",
+          "Skriv økonomisk anbefaling"
+        ]
+      },
+      {
+        "id": "platform-sam2-figurforst",
+        "subject": "SAM2",
+        "title": "Figur før regning",
+        "source": "SAM2 memoar",
+        "topic": "Modellvalg",
+        "difficulty": "Middels",
+        "minutes": 25,
+        "exam": true,
+        "prompt": "Velg en oppgave fra oppgaveboken, identifiser modelltype og tegn figuren før du gjør beregninger.",
+        "checklist": [
+          "Identifiser modell",
+          "Tegn figur",
+          "Forklar økonomisk intuisjon"
+        ]
+      },
+      {
+        "id": "platform-sam1a-markedsskift",
+        "subject": "SAM1A",
+        "title": "Markedskryss med forklaring",
+        "source": "SAM1A kompendium og eksamener",
+        "topic": "Markedslikevekt",
+        "difficulty": "Lett",
+        "minutes": 20,
+        "exam": true,
+        "prompt": "Tegn et markedskryss med ett skift, og skriv kort hvorfor pris og mengde endres.",
+        "checklist": [
+          "Tegn akser og kurver",
+          "Vis skift",
+          "Forklar ny likevekt"
+        ]
+      },
+      {
+        "id": "platform-met1-tidslinje",
+        "subject": "MET1",
+        "title": "Tidslinje for nåverdi",
+        "source": "MET1 NNV og rente",
+        "topic": "Nåverdi",
+        "difficulty": "Lett",
+        "minutes": 20,
+        "exam": true,
+        "prompt": "Lag tidslinje for en kontantstrøm, velg nåverdiformel og forklar hvilket tidspunkt svaret gjelder for.",
+        "checklist": [
+          "Plasser kontantstrømmer",
+          "Velg renteperiode",
+          "Oppgi tidspunkt for svar"
+        ]
+      },
+      {
+        "id": "platform-kom1-analyseavsnitt",
+        "subject": "KOM1",
+        "title": "Skriv et analyseavsnitt",
+        "source": "KOM1 egne innleveringer",
+        "topic": "Rapportstruktur",
+        "difficulty": "Middels",
+        "minutes": 25,
+        "exam": false,
+        "prompt": "Skriv ett analyseavsnitt med påstand, belegg, forklaring og kobling tilbake til problemstillingen.",
+        "checklist": [
+          "Start med poeng",
+          "Bruk belegg",
+          "Koble til problemstilling"
+        ]
+      },
+      {
+        "id": "platform-ret1a-vilkar",
+        "subject": "RET1A",
+        "title": "Vilkår for vilkår",
+        "source": "RET1A forelesninger og eksamensoving",
+        "topic": "Juridisk metode",
+        "difficulty": "Middels",
+        "minutes": 25,
+        "exam": true,
+        "prompt": "Ta en kort juridisk oppgave og skriv rettsregel, vilkår, subsumsjon og delkonklusjon for hvert vilkår.",
+        "checklist": [
+          "Finn rettsregel",
+          "Ta ett vilkår om gangen",
+          "Konkluder kort"
         ]
       }
     ],
@@ -666,9 +1574,256 @@
             "Ja"
           ]
         ]
+      },
+      "subj_sol1": {
+        "code": "SOL1",
+        "name": "Organisasjonsatferd",
+        "summary": "SOL1 prioriterer teori som kan brukes aktivt på case og skrives presist.",
+        "topics": [
+          [
+            "Teorivalg",
+            "Velge relevant teori fremfor å liste alt du kan.",
+            "Høy",
+            9,
+            "Ja"
+          ],
+          [
+            "Casekobling",
+            "Bruke konkrete fakta til å forklare mekanismen.",
+            "Høy",
+            8,
+            "Ja"
+          ],
+          [
+            "Drøfting",
+            "Vise nyanser, styrker og begrensninger i teorien.",
+            "Middels",
+            7,
+            "Ja"
+          ]
+        ]
+      },
+      "bed1": {
+        "code": "BED1",
+        "name": "Bedriftsøkonomi",
+        "summary": "BED1 prioriterer standardoppsett, beslutningslogikk og kort økonomisk anbefaling.",
+        "topics": [
+          [
+            "Produktkalkulasjon",
+            "Bidrag, selvkost, ABC og knapp faktor.",
+            "Høy",
+            9,
+            "Ja"
+          ],
+          [
+            "Investering",
+            "Nåverdi, kontantstrøm og beslutning.",
+            "Høy",
+            8,
+            "Ja"
+          ],
+          [
+            "Budsjett og resultat",
+            "Sammenheng mellom tall, begrep og forklaring.",
+            "Middels",
+            7,
+            "Ja"
+          ]
+        ]
+      },
+      "sam2": {
+        "code": "SAM2",
+        "name": "Mikroøkonomi",
+        "summary": "SAM2 prioriterer modellgjenkjenning, figur først og oppgavebok som hovedtrening.",
+        "topics": [
+          [
+            "Konsumentteori",
+            "Nyttemaksimering, budsjettlinje og komparativ statikk.",
+            "Høy",
+            9,
+            "Ja"
+          ],
+          [
+            "Produsent og marked",
+            "Kostnader, tilbud og likevekt.",
+            "Høy",
+            8,
+            "Ja"
+          ],
+          [
+            "Markedsmakt og spill",
+            "Monopol, strategi og velferdseffekt.",
+            "Middels",
+            7,
+            "Ja"
+          ]
+        ]
+      },
+      "sam1a": {
+        "code": "SAM1A",
+        "name": "Mikroøkonomi intro",
+        "summary": "SAM1A prioriterer grunnmodeller der figur, begrep og kort forklaring må henge sammen.",
+        "topics": [
+          [
+            "Markedslikevekt",
+            "Tilbud, etterspørsel, skift og ny likevekt.",
+            "Høy",
+            9,
+            "Ja"
+          ],
+          [
+            "Elastisitet",
+            "Regning og økonomisk tolkning.",
+            "Høy",
+            8,
+            "Ja"
+          ],
+          [
+            "Markedssvikt",
+            "Eksternaliteter, kollektive goder og virkemidler.",
+            "Middels",
+            7,
+            "Ja"
+          ]
+        ]
+      },
+      "met1": {
+        "code": "MET1",
+        "name": "Matematikk for økonomer",
+        "summary": "MET1 prioriterer tidslinje, formelvalg og kontroll av renteperiode.",
+        "topics": [
+          [
+            "Nåverdi",
+            "Diskontere kontantstrømmer til riktig tidspunkt.",
+            "Høy",
+            9,
+            "Ja"
+          ],
+          [
+            "Annuitet",
+            "Faste betalinger, lån og restverdi.",
+            "Høy",
+            8,
+            "Ja"
+          ],
+          [
+            "Effektiv rente",
+            "Perioder, kapitalisering og sammenlignbar rente.",
+            "Middels",
+            7,
+            "Ja"
+          ]
+        ]
+      },
+      "kom1": {
+        "code": "KOM1",
+        "name": "Kommunikasjon",
+        "summary": "KOM1 prioriterer skriveflyt, problemstilling og tydelig muntlig formidling.",
+        "topics": [
+          [
+            "Problemstilling",
+            "Avgrense og styre hele teksten.",
+            "Høy",
+            9,
+            "Ja"
+          ],
+          [
+            "Analyseavsnitt",
+            "Påstand, belegg, forklaring og kobling.",
+            "Høy",
+            8,
+            "Ja"
+          ],
+          [
+            "Presentasjon",
+            "Dramaturgi, slideøkonomi og muntlig overgang.",
+            "Middels",
+            7,
+            "Ja"
+          ]
+        ]
+      },
+      "ret1a": {
+        "code": "RET1A",
+        "name": "Juridiske emner",
+        "summary": "RET1A prioriterer rettsregel, vilkår og faktumsnær subsumsjon.",
+        "topics": [
+          [
+            "Juridisk metode",
+            "Problemstilling, rettsregel, vilkår, subsumsjon og konklusjon.",
+            "Høy",
+            9,
+            "Ja"
+          ],
+          [
+            "Avtalerett",
+            "Inngåelse, fullmakt, ugyldighet og tolkning.",
+            "Høy",
+            8,
+            "Ja"
+          ],
+          [
+            "Pengekrav og selskap",
+            "Ansvar, betaling, mislighold og selskapsformer.",
+            "Middels",
+            7,
+            "Ja"
+          ]
+        ]
       }
     },
     "formulaItems": {
+      "ret14": [
+        [
+          "Hjemmel",
+          "Finn relevant paragraf, hovedregel og unntak før faktum.",
+          "RET14"
+        ],
+        [
+          "Vilkår",
+          "Del opp regelen i vilkår og vurder hvert vilkår separat.",
+          "RET14"
+        ],
+        [
+          "Konklusjon",
+          "Koble beregning og rettsanvendelse til kort delkonklusjon.",
+          "RET14"
+        ]
+      ],
+      "subj_sol1": [
+        [
+          "Teori",
+          "Forklar begrep og mekanisme før case brukes.",
+          "SOL1"
+        ],
+        [
+          "Casekobling",
+          "Bruk konkrete fakta som belegg for teorivalget.",
+          "SOL1"
+        ],
+        [
+          "Drøfting",
+          "Vis styrker, begrensninger og alternativ forklaring.",
+          "SOL1"
+        ]
+      ],
+      "sam3": [
+        [
+          "IS-MP",
+          "Etterspørsel, rente, produksjon og pengepolitikk.",
+          "SAM3"
+        ],
+        [
+          "AS-AD",
+          "Kort og lang sikt ved etterspørsels- og tilbudssjokk.",
+          "SAM3"
+        ],
+        [
+          "Åpen økonomi",
+          "Valuta, UIP, kapitalmobilitet og nettoeksport.",
+          "SAM3"
+        ]
+      ],
       "mat10": [
         [
           "Derivasjon",
@@ -718,6 +1873,91 @@
           "Nåverdi",
           "Diskonter kontantstrømmer og trekk fra investering.",
           "BED1"
+        ]
+      ],
+      "sam2": [
+        [
+          "Figur først",
+          "Velg modell og tegn før regning.",
+          "SAM2"
+        ],
+        [
+          "Komparativ statikk",
+          "Forklar hva som endres og hvorfor.",
+          "SAM2"
+        ],
+        [
+          "Velferd",
+          "Koble likevekt, overskudd og effektivitet.",
+          "SAM2"
+        ]
+      ],
+      "sam1a": [
+        [
+          "Markedskryss",
+          "Tilbud, etterspørsel, likevekt og skift.",
+          "SAM1A"
+        ],
+        [
+          "Elastisitet",
+          "Tolk prosentvis respons og inntektsvirkning.",
+          "SAM1A"
+        ],
+        [
+          "Markedssvikt",
+          "Forklar avvik mellom privat og samfunnsøkonomisk optimum.",
+          "SAM1A"
+        ]
+      ],
+      "met1": [
+        [
+          "Tidslinje",
+          "Plasser kontantstrømmer før formelvalg.",
+          "MET1"
+        ],
+        [
+          "Nåverdi",
+          "Diskonter til samme tidspunkt før sammenligning.",
+          "MET1"
+        ],
+        [
+          "Annuitet",
+          "Bruk fast betaling og riktig periode/rente.",
+          "MET1"
+        ]
+      ],
+      "kom1": [
+        [
+          "Problemstilling",
+          "Avgrens, gjør undersøkbar og la den styre strukturen.",
+          "KOM1"
+        ],
+        [
+          "Analyseavsnitt",
+          "Påstand, belegg, forklaring og kobling.",
+          "KOM1"
+        ],
+        [
+          "Leveringssjekk",
+          "Språk, kilder, rød tråd og konklusjon.",
+          "KOM1"
+        ]
+      ],
+      "ret1a": [
+        [
+          "Rettsregel",
+          "Finn hjemmel, vilkår og unntak før faktum.",
+          "RET1A"
+        ],
+        [
+          "Subsumsjon",
+          "Bruk konkrete fakta mot hvert vilkår.",
+          "RET1A"
+        ],
+        [
+          "Delkonklusjon",
+          "Svar kort etter hvert hovedpunkt.",
+          "RET1A"
         ]
       ]
     },
@@ -1029,6 +2269,34 @@
         "cards": 2,
         "minutes": 8,
         "href": "../sam2/memoar/"
+      },
+      "SAM1A": {
+        "title": "SAM1A: Figur og begrep",
+        "sub": "Markedskryss og elastisitet",
+        "cards": 8,
+        "minutes": 20,
+        "href": "../flashcards/?subject=sam1a"
+      },
+      "MET1": {
+        "title": "MET1: Tidslinje først",
+        "sub": "NNV, rente og annuitet",
+        "cards": 8,
+        "minutes": 20,
+        "href": "../flashcards/?subject=met1"
+      },
+      "KOM1": {
+        "title": "KOM1: Ett analyseavsnitt",
+        "sub": "Problemstilling og belegg",
+        "cards": 8,
+        "minutes": 25,
+        "href": "../flashcards/?subject=kom1"
+      },
+      "RET1A": {
+        "title": "RET1A: Rettsregel og vilkår",
+        "sub": "Juridisk metode",
+        "cards": 8,
+        "minutes": 25,
+        "href": "../flashcards/?subject=ret1a"
       }
     }
   },
@@ -1138,6 +2406,83 @@
     };
   }
 
+  function toolsFor(value) {
+    var subject = subjectFor(value);
+    return clone(subject && subject.primaryTools ? subject.primaryTools : []);
+  }
+
+  function roleLabel(role) {
+    var labels = {
+      canvas_lecture: 'Canvas',
+      canvas_export: 'Canvas-eksport',
+      exam_archive: 'Eksamen/sensor',
+      protected_exam_pack: 'Beskyttet eksamenspakke',
+      exam_and_method_notes: 'Eksamen + metode',
+      canvas_and_spreadsheet: 'Canvas + regneark',
+      personal_notes: 'Egne notater',
+      personal_memo: 'Memoar',
+      canvas_and_exam: 'Canvas + eksamen',
+      local_exercise_pack: 'Lokale oppgaver',
+      owned_assignment: 'Egne innleveringer',
+      canvas_and_personal_notes: 'Canvas + egne notater'
+    };
+    return labels[role] || role || 'Kilde';
+  }
+
+  function sourceRolesFor(value) {
+    var subject = subjectFor(value);
+    var sources = sourcesFor(value);
+    var roles = {};
+    sources.forEach(function (source) {
+      var role = source.sourceRole || 'unknown';
+      roles[role] = (roles[role] || 0) + 1;
+    });
+    return {
+      code: subject ? subject.code : subjectCode(value),
+      roles: roles,
+      sources: sources.map(function (source) {
+        return {
+          id: source.id,
+          title: source.title,
+          role: source.sourceRole,
+          roleLabel: roleLabel(source.sourceRole),
+          status: source.status,
+          suggestedUse: source.suggestedUse
+        };
+      })
+    };
+  }
+
+  function qualityFor(value) {
+    var subject = subjectFor(value);
+    if (!subject) return null;
+    var decks = decksFor(subject.id);
+    var cards = decks.reduce(function (sum, deck) { return sum + (deck.cards || []).length; }, 0);
+    return {
+      code: subject.code,
+      status: subject.qualityStatus,
+      target: subject.qualityTarget,
+      stage: subject.stage,
+      sourceSummary: subject.sourceSummary,
+      sourceCount: sourcesFor(subject.id).length,
+      deckCount: decks.length,
+      cardCount: cards,
+      questionCount: questionsFor(subject.id).length
+    };
+  }
+
+  function personalMemoFor(value) {
+    var subject = subjectFor(value);
+    if (!subject) return null;
+    return {
+      code: subject.code,
+      memo: memoFor(subject.id),
+      preferredStudyMethod: subject.preferredStudyMethod,
+      notes: clone(subject.personalNotes || null),
+      warnings: clone(subject.personalWarnings || [])
+    };
+  }
+
   function recommendationFor(value) {
     var subject = subjectFor(value);
     var recommendation = keyedLookup(data.recommendations, value);
@@ -1186,6 +2531,11 @@
   }
 
   function toolsForPage(subject) {
+    if (subject.primaryTools && subject.primaryTools.length) {
+      return subject.primaryTools.map(function (tool) {
+        return [tool.icon, tool.title, tool.description, tool.status, tool.href, tool.accent || subject.accent];
+      });
+    }
     return [
       ['▦', 'Fagmemo', 'Kort arbeidsmåte, eksamensform og beste start for faget.', 'Start', '#memo', subject.accent],
       ['✓', 'Flashcards', 'Korte kort fra katalogen og eksisterende fagpakker.', 'Kort', subject.flashcardsHref, subject.accent],
@@ -1196,13 +2546,13 @@
 
   function sourceRowsForPage(subject) {
     return sourcesFor(subject.id).slice(0, 5).map(function (source) {
-      return [source.title, source.suggestedUse];
+      return [source.title, roleLabel(source.sourceRole) + ': ' + source.suggestedUse];
     });
   }
 
   function canvasRowsForPage(subject) {
     return sourcesFor(subject.id).slice(0, 5).map(function (source) {
-      return [source.title, source.sourcePath + ' · ' + source.status, source.type];
+      return [source.title, roleLabel(source.sourceRole) + ' · ' + source.sourcePath + ' · ' + source.status, source.type];
     });
   }
 
@@ -1243,6 +2593,12 @@
       accent: subject.accent,
       progress: subject.stage === 'rich' ? '62%' : subject.stage === 'ready_for_import' ? '42%' : subject.stage === 'mvp_gap' ? '34%' : '28%',
       lead: subject.lead,
+      toolProfile: subject.toolProfile,
+      qualityStatus: subject.qualityStatus,
+      qualityTarget: subject.qualityTarget,
+      preferredStudyMethod: subject.preferredStudyMethod,
+      personalNotes: subject.personalNotes,
+      personalWarnings: subject.personalWarnings,
       stats: [[String(sources.length), 'kilder'], [String(cards || decks.length), cards ? 'kort fra katalogen' : 'kortpakker'], [subject.stage === 'rich' ? 'Aktiv' : 'Bygges', 'plattform']],
       tools: toolsForPage(subject),
       topics: topicsForPage(subject),
@@ -1296,6 +2652,10 @@
     analysisFor: analysisFor,
     formulaItemsFor: formulaItemsFor,
     learningPathFor: learningPathFor,
+    toolsFor: toolsFor,
+    qualityFor: qualityFor,
+    personalMemoFor: personalMemoFor,
+    sourceRolesFor: sourceRolesFor,
     memoFor: memoFor,
     recommendationFor: recommendationFor,
     notes: function () { return clone(notes()); },

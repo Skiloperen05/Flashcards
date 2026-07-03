@@ -448,6 +448,13 @@
     merged.formulaSheet = mergeRows(existing.formulaSheet, generated.formulaSheet);
     merged.examChecklist = mergeRows(existing.examChecklist, generated.examChecklist);
     merged.resources = mergeRows(existing.resources, generated.resources);
+    merged.tools = generated.tools || existing.tools;
+    merged.toolProfile = generated.toolProfile || existing.toolProfile;
+    merged.qualityStatus = generated.qualityStatus || existing.qualityStatus;
+    merged.qualityTarget = generated.qualityTarget || existing.qualityTarget;
+    merged.preferredStudyMethod = generated.preferredStudyMethod || existing.preferredStudyMethod;
+    merged.personalNotes = generated.personalNotes || existing.personalNotes;
+    merged.personalWarnings = generated.personalWarnings || existing.personalWarnings;
     merged.examRadar = existing.examRadar || generated.examRadar;
     merged.practice = existing.practice || generated.practice;
     merged.plan = existing.plan || generated.plan;
@@ -471,7 +478,7 @@
 
   Object.keys(pages).forEach(function (id) {
     pages[id].id = id;
-    pages[id].memo = memos[id] || {
+    pages[id].memo = memos[id] || pages[id].memo || {
       intro: pages[id].lead,
       exam: 'Eksamensmemoet er klart for fagspesifikk tekst. Bruk denne plassen til form, vurdering og typiske oppgavetyper.',
       studyAdvice: 'Bruk verktøyene i rekkefølge: oversikt, kort øving, oppgaver og til slutt eksamensrettet repetisjon.'
