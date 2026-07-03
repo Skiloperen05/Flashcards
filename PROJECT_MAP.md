@@ -58,10 +58,13 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Local source scanner for PDF/DOCX/PPTX/TXT/HTML/XLSX metadata: `scripts/import-learning-sources.mjs`.
 - Public contract name: `window.HaugnesLearningContent`.
 - Contract fields: `subjects`, `sources`, `decks`, `questions`, `examAnalyses`, `formulaItems`, `learningPaths`, `memos`, `recommendations`.
-- Contract helpers include `sourcesFor`, `decksFor`, `questionsFor`, `analysisFor`, `formulaItemsFor`, `learningPathFor`, `memoFor`, `recommendationFor`, `notes`, and `pageFor`.
+- Subject catalog entries include the active personalization fields `toolProfile`, `primaryTools`, `qualityStatus`, `qualityTarget`, `personalNotes`, `personalWarnings`, and `preferredStudyMethod`.
+- Source entries include `sourceRole` so Canvas exports, personal notes, memoarer, protected exam packs, local exercises, spreadsheets, and owned assignments can be treated differently by imports and UI.
+- Contract helpers include `sourcesFor`, `decksFor`, `questionsFor`, `analysisFor`, `formulaItemsFor`, `learningPathFor`, `toolsFor`, `qualityFor`, `personalMemoFor`, `sourceRolesFor`, `memoFor`, `recommendationFor`, `notes`, and `pageFor`.
 - Active integration points:
   - `shared/haugnes-study-data.js` merges generated decks/questions/notes with legacy manual data.
-  - `shared/subject-page-data.js` supplements or creates fagsider from `pageFor`.
+  - `shared/subject-page-data.js` supplements or creates fagsider from `pageFor` and lets catalog `primaryTools`/personal study guidance drive the main subject-tool grid.
+  - `shared/subject-page-renderer.js` renders personal arbeidsmåte/fallgruver from the generated catalog inside the learning suite.
   - `shared/haugnes-dashboard-progress.js` reads catalog recommendations before legacy fallback.
   - `shared/auth-guard.js` injects `shared/learning-content.js` for user pages.
 - Rights rule: local Canvas/course files remain private source metadata until explicitly reviewed for publication.
