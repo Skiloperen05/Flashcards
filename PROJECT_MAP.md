@@ -13,7 +13,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 ## App Shape
 
 - Static web app deployed from this repository.
-- Deployment: `bhflashcards.no` is served by GitHub Pages (no serverless functions). The same repo also deploys to Netlify (`bhflashcards.netlify.app`), which hosts the Netlify functions. Client code that calls `/.netlify/functions/*` must use the absolute Netlify origin when the page is not served from Netlify/localhost (see `functionsBase()` in `user/butikk.html`).
+- Deployment: `bhflashcards.no` is served by GitHub Pages (no serverless functions). Runtime API endpoints are Supabase Edge Functions.
 - Main public landing page: `index.html`.
 - Login/auth entry: `login.html`.
 - Authenticated user pages: `user/`.
@@ -21,8 +21,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Shared behavior, data, styling, and page enhancement scripts: `shared/`.
 - Supabase setup/schema seed reference: `supabase-setup.sql`.
 - Supabase Edge Functions: `supabase/functions/`.
-- Netlify config and functions: `netlify.toml`, `netlify/functions/`.
-- Stripe checkout/webhook functions: `netlify/functions/create-stripe-checkout.js`, `netlify/functions/stripe-webhook.js`.
+- Stripe payment/webhook functions: `supabase/functions/create-stripe-checkout/`, `supabase/functions/stripe-webhook/`.
 
 ## User Pages
 
@@ -49,7 +48,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - A-besvarelser / eksamensarkiv dynamic package UI: `shared/haugnes-answer-library.js`.
 - User sidebar normalization + global sidebar: `shared/user-sidebar.js`. On `/user/` pages it normalizes the existing sidebar; on all other app pages (subject hubs, tools, flashcards) it injects a fixed, collapsible left menu (`.hf-global-sidebar`, localStorage key `hf_global_sidebar_hidden`). Loaded globally from `shared/auth-guard.js` (`loadGlobalPolish`).
 - Admin inline editing: `shared/haugnes-answer-admin.js` (answer packages/resources CRUD on `user/a-besvarelser.html`), `shared/haugnes-memo-library.js` (memoar publishing on `user/memoarer.html`), `shared/haugnes-rating-admin.js` (subject ratings). All rely on `profiles.is_admin` + existing RLS admin policies.
-- TimeEdit/NHH schedule integration: `shared/timeedit-fetch-proxy.js`, `shared/nhh-schedule-api.js`, `shared/nhh-schedule-normalizer.js`, `shared/nhh-strict-course-filter.js`, `shared/haugnes-studyplan.js`.
+- TimeEdit/NHH schedule integration: `shared/timeedit-fetch-proxy.js`, `shared/nhh-schedule-api.js`, `shared/nhh-schedule-normalizer.js`, `shared/nhh-strict-course-filter.js`, `shared/haugnes-studyplan.js`. Runtime proxy target is the Supabase `timeedit` Edge Function.
 - Flashcard session shared logic: `shared/haugnes-flashcard-session.js`, `shared/haugnes-flashcards-structure.js`.
 
 ## Learning Content Platform
@@ -109,8 +108,14 @@ Typical package IDs:
 ## Supabase
 
 - Project URL in client code: `shared/auth-guard.js`.
+- Edge Function config: `supabase/config.toml`.
+- Active Edge Functions:
+  - `supabase/functions/timeedit/`: NHH TimeEdit proxy.
+  - `supabase/functions/create-stripe-checkout/`: verifies Supabase Auth token, checks entitlements, and returns subject-specific Stripe Payment Links with user reference metadata.
+  - `supabase/functions/stripe-webhook/`: verifies Stripe signatures and grants paid subject entitlements.
 - Schema/source-of-truth file: `supabase-setup.sql`.
 - Key content tables:
+  - `app_private_config` (service-role-only server config such as Stripe webhook signing secret)
   - `profiles`
   - `subject_entitlements`
   - `admin_content` (known keys: `flashcards_custom_data`, `published_memos`)
@@ -118,7 +123,7 @@ Typical package IDs:
   - `answer_packages`
   - `answer_resources`
 - RLS/entitlement helpers: `public.has_subject_entitlement(text)`, `public.has_any_entitlement()` (security definer; required because the free-claim insert policy cannot query `subject_entitlements` directly without infinite RLS recursion).
-- Payment model: first user-claimed free subject is inserted client-side with `source = 'free'`; paid subjects are inserted by the Stripe webhook with `source = 'stripe'` and optional Stripe session/customer/payment metadata.
+- Payment model: first user-claimed free subject is inserted client-side with `source = 'free'`; paid subjects are inserted by the Supabase Stripe webhook with `source = 'stripe'` and optional Stripe session/customer/payment metadata.
 - Rule from repo policy: DB schema changes must be mirrored in `supabase-setup.sql`.
 
 ## Build And Checks
