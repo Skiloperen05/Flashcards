@@ -31,7 +31,8 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Personal subject ratings on `user/subjects.html` use `localStorage` key `hf_subject_ratings_v1` as a cache and sync to `user_custom_data.data.subjectRatings` after auth.
 - Shop/entitlement claiming and Stripe checkout entry: `user/butikk.html`.
 - Exam analysis hub (all subjects, entitlement-aware): `user/eksamensanalyse.html`. Cards are built from `shared/subject-meta.js` + the `eksamen` resources in `shared/subject-resources.js`; the sidebar "Eksamensanalyse" item points here (was previously hardcoded to `ret14/eksamen/`).
-- A-besvarelser / eksamensarkiv shell: `user/a-besvarelser.html`.
+- A-besvarelser / eksamensarkiv shell: `user/a-besvarelser.html`. Admins get inline CRUD for packages/resources via `shared/haugnes-answer-admin.js` (loaded by `shared/haugnes-answer-library.js`).
+- Memoarer: `user/memoarer.html` + `shared/haugnes-memo-library.js`. Published memoarer live in Supabase `admin_content` key `published_memos`; admins create/edit/delete them in place on the page. A built-in card links to the static SAM2 memoar page.
 - Oppgavebank shell: `user/oppgavebank.html`.
 - Study plan shell: `user/studieplan.html`.
 - Notes/settings/progress/achievements: `user/notater.html`, `user/settings.html`, `user/progress.html`, `user/achievements.html`.
@@ -46,7 +47,8 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Subject page rendering/data/enhancements: `shared/subject-page-renderer.js`, `shared/subject-page-data.js`, `shared/subject-page-enhancements.js`, `shared/subject-resources.js`.
 - Dashboard dynamic progress/recommendations and some legacy SAM3 package pointers: `shared/haugnes-dashboard-progress.js`.
 - A-besvarelser / eksamensarkiv dynamic package UI: `shared/haugnes-answer-library.js`.
-- User sidebar normalization: `shared/user-sidebar.js`.
+- User sidebar normalization + global sidebar: `shared/user-sidebar.js`. On `/user/` pages it normalizes the existing sidebar; on all other app pages (subject hubs, tools, flashcards) it injects a fixed, collapsible left menu (`.hf-global-sidebar`, localStorage key `hf_global_sidebar_hidden`). Loaded globally from `shared/auth-guard.js` (`loadGlobalPolish`).
+- Admin inline editing: `shared/haugnes-answer-admin.js` (answer packages/resources CRUD on `user/a-besvarelser.html`), `shared/haugnes-memo-library.js` (memoar publishing on `user/memoarer.html`), `shared/haugnes-rating-admin.js` (subject ratings). All rely on `profiles.is_admin` + existing RLS admin policies.
 - TimeEdit/NHH schedule integration: `shared/timeedit-fetch-proxy.js`, `shared/nhh-schedule-api.js`, `shared/nhh-schedule-normalizer.js`, `shared/nhh-strict-course-filter.js`, `shared/haugnes-studyplan.js`.
 - Flashcard session shared logic: `shared/haugnes-flashcard-session.js`, `shared/haugnes-flashcards-structure.js`.
 
@@ -90,6 +92,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 Active UI:
 - Shell page: `user/a-besvarelser.html`.
 - Dynamic package renderer: `shared/haugnes-answer-library.js`.
+- Admin CRUD overlay: `shared/haugnes-answer-admin.js` (admins publish/edit/delete packages and PDF resources directly in the page; writes go through the "Admins manage packages/resources" RLS policies).
 - Data source: Supabase tables `answer_packages` and `answer_resources`.
 - Schema, RLS policies, and seed reference: `supabase-setup.sql`.
 
@@ -110,7 +113,7 @@ Typical package IDs:
 - Key content tables:
   - `profiles`
   - `subject_entitlements`
-  - `admin_content`
+  - `admin_content` (known keys: `flashcards_custom_data`, `published_memos`)
   - `user_custom_data`
   - `answer_packages`
   - `answer_resources`
