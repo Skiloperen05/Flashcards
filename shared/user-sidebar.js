@@ -50,21 +50,17 @@
     { id: 'subjects', label: 'Mine fag', href: 'user/subjects.html', icon: 'subjects' },
     { id: 'shop', label: 'Butikk', href: 'user/butikk.html', icon: 'shop' },
     { id: 'plan', label: 'Studieplan', href: 'user/studieplan.html', icon: 'plan' },
-    { id: 'focus', label: 'Fokus for i dag', href: 'user/index.html#today', icon: 'focus' },
     { id: 'flashcards', label: 'Alle flashcards', href: 'flashcards/', icon: 'flashcards' },
     { id: 'tasks', label: 'Oppgavebank', href: 'user/oppgavebank.html', icon: 'tasks' },
     { id: 'answers', label: 'A-besvarelser', href: 'user/a-besvarelser.html', icon: 'answers' },
-    { id: 'exam', label: 'Eksamensanalyse', href: 'ret14/eksamen/', icon: 'exam' },
+    { id: 'exam', label: 'Eksamensanalyse', href: 'user/eksamensanalyse.html', icon: 'exam' },
     { id: 'notes', label: 'Notater', href: 'user/notater.html', icon: 'notes' },
-    { id: 'stats', label: 'Statistikk', href: 'user/progress.html', icon: 'stats' },
-    { id: 'achievements', label: 'Prestasjoner', href: 'user/achievements.html', icon: 'achievements' },
     { id: 'settings', label: 'Innstillinger', href: 'user/settings.html', icon: 'settings', bottom: true }
   ];
 
   function activeId() {
     var page = pageName();
     var path = currentPath();
-    if (page === 'index.html' && window.location.hash === '#today') return 'focus';
     if (page === 'index.html') return 'home';
     if (page === 'subjects.html') return 'subjects';
     if (page === 'butikk.html') return 'shop';
@@ -72,10 +68,9 @@
     if (/\/flashcards\//.test(path)) return 'flashcards';
     if (page === 'oppgavebank.html') return 'tasks';
     if (page === 'a-besvarelser.html') return 'answers';
-    if (/\/ret14\/eksamen\//.test(path)) return 'exam';
+    if (page === 'eksamensanalyse.html') return 'exam';
+    if (/\/ret14\/eksamen\//.test(path) || /\/sam2\/eksamen\//.test(path) || /\/sam3\/eksamensradar/.test(path)) return 'exam';
     if (page === 'notater.html') return 'notes';
-    if (page === 'progress.html') return 'stats';
-    if (page === 'achievements.html') return 'achievements';
     if (page === 'settings.html') return 'settings';
     return '';
   }

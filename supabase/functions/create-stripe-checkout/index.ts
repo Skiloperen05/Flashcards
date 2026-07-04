@@ -1,0 +1,297 @@
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "https://qnwjhheoekpqqqhevztw.supabase.co";
+const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") || [
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
+  "eyJpc3MiOiJIUzI1NiIsInJlZiI6Im" + "Fud2poaGVvZWtwcXFxaGV2enR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MTg1NTEsImV4cCI6MjA5MjI5NDU1MX0",
+  "gHBvEH" + "-L-zyiW4" + "UnsCxOY2q" + "-HmeIYe5" + "OHSvxhFt7PQ8",
+].join(".");
+const STRIPE_API_VERSION = "2026-02-25.clover";
+const DEFAULT_SITE_URL = "https://bhflashcards.no";
+
+const SUBJECTS: Record<string, string> = {
+  RET14: "Skatterett",
+  SOL1: "Organisasjonsatferd",
+  SAM2: "Mikroøkonomi",
+  SAM3: "Makroøkonomi",
+  MET2: "Metode",
+  MAT10: "Matematikk",
+  SAM1A: "Mikroøkonomi intro",
+  MET1: "Matematikk for økonomer",
+  KOM1: "Kommunikasjon",
+  RET1A: "Juridiske emner",
+  BED1: "Bedriftsøkonomi",
+};
+
+const ALL_SUBJECT_CODES = Object.keys(SUBJECTS);
+
+type ProductKind = "subject" | "bundle" | "pass";
+
+type CheckoutProduct = {
+  id: string;
+  kind: ProductKind;
+  name: string;
+  description: string;
+  unitAmount: number;
+  subjectCodes: string[];
+  source: string;
+};
+
+function envAmount(name: string, fallback: number) {
+  return Number(Deno.env.get(name) || fallback);
+}
+
+const BUNDLE_PRODUCTS: Record<string, CheckoutProduct> = {
+  "semester-1": {
+    id: "semester-1",
+    kind: "bundle",
+    name: "1. semesterpakke",
+    description: "RET1A, MET1, SAM1A, BED1 og KOM1 samlet.",
+    unitAmount: envAmount("SEMESTER_1_BUNDLE_PRICE_NOK_ORE", 19900),
+    subjectCodes: ["RET1A", "MET1", "SAM1A", "BED1", "KOM1"],
+    source: "stripe_bundle",
+  },
+  "semester-2": {
+    id: "semester-2",
+    kind: "bundle",
+    name: "2. semesterpakke",
+    description: "MET2, SAM2 og SOL1 samlet.",
+    unitAmount: envAmount("SEMESTER_2_BUNDLE_PRICE_NOK_ORE", 14900),
+    subjectCodes: ["MET2", "SAM2", "SOL1"],
+    source: "stripe_bundle",
+  },
+  "valgfag": {
+    id: "valgfag",
+    kind: "bundle",
+    name: "Valgfagspakke",
+    description: "RET14, MAT10 og SAM3 samlet.",
+    unitAmount: envAmount("ELECTIVES_BUNDLE_PRICE_NOK_ORE", 17900),
+    subjectCodes: ["RET14", "MAT10", "SAM3"],
+    source: "stripe_bundle",
+  },
+  "vennepass": {
+    id: "vennepass",
+    kind: "pass",
+    name: "Vennepass",
+    description: "All-access til alle fag som ligger ute nå og nye fag som publiseres senere.",
+    unitAmount: envAmount("FRIEND_PASS_PRICE_NOK_ORE", 35000),
+    subjectCodes: ALL_SUBJECT_CODES,
+    source: "stripe_friend_pass",
+  },
+};
+
+const exactAllowedOrigins = new Set([
+  "https://bhflashcards.no",
+  "https://www.bhflashcards.no",
+  "https://skiloperen05.github.io",
+  "http://localhost:3000",
+  "http://localhost:5173",
+]);
+
+function isAllowedOrigin(origin: string) {
+  if (exactAllowedOrigins.has(origin)) return true;
+
+  try {
+    const hostname = new URL(origin).hostname;
+    return hostname === "bhflashcards.pages.dev" ||
+      hostname.endsWith(".bhflashcards.pages.dev") ||
+      hostname === "bhflashcards-no.pages.dev" ||
+      hostname.endsWith(".bhflashcards-no.pages.dev");
+  } catch (_error) {
+    return false;
+  }
+}
+
+function corsHeaders(req: Request) {
+  const origin = req.headers.get("origin") || "";
+  const allowedOrigin = isAllowedOrigin(origin) ? origin : DEFAULT_SITE_URL;
+  return {
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Authorization, Content-Type",
+    "Content-Type": "application/json; charset=utf-8",
+    "Vary": "Origin",
+  };
+}
+
+function json(req: Request, status: number, body: unknown) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: corsHeaders(req),
+  });
+}
+
+function code(value: unknown) {
+  return String(value || "").toUpperCase().replace(/[\s-]+/g, "");
+}
+
+function productId(value: unknown) {
+  return String(value || "").toLowerCase().trim().replace(/[^a-z0-9-]+/g, "");
+}
+
+function bearerToken(req: Request) {
+  return (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "").trim();
+}
+
+async function getUser(accessToken: string) {
+  const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) throw new Error("Du må være logget inn for å kjøpe fag.");
+  return response.json();
+}
+
+async function getEntitledCodes(userId: string) {
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!serviceKey) throw new Error("SUPABASE_SERVICE_ROLE_KEY mangler.");
+
+  const params = new URLSearchParams({
+    user_id: `eq.${userId}`,
+    select: "subject_code",
+  });
+
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/subject_entitlements?${params.toString()}`, {
+    headers: {
+      apikey: serviceKey,
+      Authorization: `Bearer ${serviceKey}`,
+    },
+  });
+
+  if (!response.ok) throw new Error("Kunne ikke sjekke fagtilgang.");
+  const rows = await response.json();
+  return Array.isArray(rows) ? rows.map((row) => code(row.subject_code)) : [];
+}
+
+async function getProfile(userId: string) {
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!serviceKey) throw new Error("SUPABASE_SERVICE_ROLE_KEY mangler.");
+
+  const params = new URLSearchParams({
+    id: `eq.${userId}`,
+    select: "is_admin,is_friend",
+  });
+
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/profiles?${params.toString()}`, {
+    headers: {
+      apikey: serviceKey,
+      Authorization: `Bearer ${serviceKey}`,
+    },
+  });
+
+  if (!response.ok) throw new Error("Kunne ikke sjekke profil.");
+  const rows = await response.json();
+  return Array.isArray(rows) && rows[0] ? rows[0] as { is_admin?: boolean; is_friend?: boolean } : {};
+}
+
+function productFromPayload(payload: Record<string, unknown>) {
+  const bundle = BUNDLE_PRODUCTS[productId(payload.productId || payload.bundleCode)];
+  if (bundle) return bundle;
+
+  const subjectCode = code(payload.subjectCode);
+  const subjectName = SUBJECTS[subjectCode];
+  if (!subjectName) return null;
+
+  return {
+    id: `subject-${subjectCode.toLowerCase()}`,
+    kind: "subject",
+    name: `${subjectCode} · ${subjectName}`,
+    description: "Tilgang til alt innhold i faget på Haugnes Flashcards.",
+    unitAmount: envAmount("SUBJECT_PRICE_NOK_ORE", 4900),
+    subjectCodes: [subjectCode],
+    source: "stripe",
+  } satisfies CheckoutProduct;
+}
+
+function isProductOwned(product: CheckoutProduct, ownedCodes: string[], profile: { is_admin?: boolean; is_friend?: boolean }) {
+  if (profile.is_admin || profile.is_friend) return true;
+  return product.subjectCodes.every((subjectCode) => ownedCodes.includes(subjectCode));
+}
+
+function siteUrl(req: Request) {
+  const origin = req.headers.get("origin") || "";
+  return isAllowedOrigin(origin) ? origin : DEFAULT_SITE_URL;
+}
+
+async function createCheckoutSession(req: Request, user: { id?: string; email?: string }, product: CheckoutProduct) {
+  const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
+  if (!stripeSecretKey) throw new Error("STRIPE_SECRET_KEY mangler.");
+  if (!user.id) throw new Error("Kunne ikke lese bruker.");
+
+  const baseUrl = siteUrl(req);
+  const successQuery = product.kind === "subject"
+    ? `fag=${encodeURIComponent(product.subjectCodes[0])}`
+    : `produkt=${encodeURIComponent(product.id)}`;
+  const cancelQuery = product.kind === "subject"
+    ? `fag=${encodeURIComponent(product.subjectCodes[0])}`
+    : `produkt=${encodeURIComponent(product.id)}`;
+  const params = new URLSearchParams();
+  params.set("mode", "payment");
+  params.set("line_items[0][quantity]", "1");
+  params.set("line_items[0][price_data][currency]", "nok");
+  params.set("line_items[0][price_data][unit_amount]", String(product.unitAmount));
+  params.set("line_items[0][price_data][product_data][name]", product.name);
+  params.set("line_items[0][price_data][product_data][description]", product.description);
+  params.set("success_url", `${baseUrl}/user/butikk.html?payment=success&${successQuery}&session_id={CHECKOUT_SESSION_ID}`);
+  params.set("cancel_url", `${baseUrl}/user/butikk.html?payment=cancel&${cancelQuery}`);
+  params.set("client_reference_id", user.id);
+  if (user.email) params.set("customer_email", user.email);
+  params.set("metadata[user_id]", user.id);
+  params.set("metadata[product_id]", product.id);
+  params.set("metadata[product_kind]", product.kind);
+  params.set("metadata[subject_codes]", product.subjectCodes.join(","));
+  params.set("metadata[source]", product.source);
+  if (product.kind === "subject") params.set("metadata[subject_code]", product.subjectCodes[0]);
+
+  const response = await fetch("https://api.stripe.com/v1/checkout/sessions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${stripeSecretKey}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Stripe-Version": STRIPE_API_VERSION,
+    },
+    body: params,
+  });
+
+  const session = await response.json();
+  if (!response.ok) {
+    throw new Error(session?.error?.message || "Kunne ikke starte betaling.");
+  }
+
+  return session;
+}
+
+Deno.serve(async (req: Request) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: corsHeaders(req) });
+  }
+
+  if (req.method !== "POST") {
+    return json(req, 405, { error: "Method not allowed" });
+  }
+
+  try {
+    const accessToken = bearerToken(req);
+    if (!accessToken) throw new Error("Du må være logget inn for å kjøpe fag.");
+
+    const payload = await req.json().catch(() => ({}));
+    const product = productFromPayload(payload as Record<string, unknown>);
+    if (!product) throw new Error("Ukjent produkt.");
+
+    const user = await getUser(accessToken);
+    if (!user?.id) throw new Error("Kunne ikke lese bruker.");
+
+    const [ownedCodes, profile] = await Promise.all([getEntitledCodes(user.id), getProfile(user.id)]);
+    if (isProductOwned(product, ownedCodes, profile)) {
+      return json(req, 409, { error: "Du har allerede tilgang til dette produktet." });
+    }
+
+    const session = await createCheckoutSession(req, user, product);
+    return json(req, 200, { url: session.url });
+  } catch (error) {
+    return json(req, 400, { error: error instanceof Error ? error.message : "Kunne ikke starte betaling." });
+  }
+});

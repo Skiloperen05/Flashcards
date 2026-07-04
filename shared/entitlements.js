@@ -28,7 +28,7 @@
   function broadcast() {
     try {
       window.dispatchEvent(new CustomEvent('haugnes:entitlements-changed', {
-        detail: { codes: state.codes.slice(), isAdmin: state.isAdmin }
+        detail: { codes: state.codes.slice(), isAdmin: state.isAdmin, isFriend: state.isFriend }
       }));
     } catch (e) {}
   }
@@ -49,14 +49,14 @@
 
   function load(options) {
     var force = !!(options && options.force);
-    if (state.loaded && !force) return Promise.resolve({ codes: state.codes.slice(), isAdmin: state.isAdmin });
+    if (state.loaded && !force) return Promise.resolve({ codes: state.codes.slice(), isAdmin: state.isAdmin, isFriend: state.isFriend });
     if (loading && !force) return loading;
 
     loading = (function () {
       var session = getSession();
       if (!session || !session.user) {
         // Don't cache: try again next time once auth has resolved.
-        return Promise.resolve({ codes: [], isAdmin: false });
+        return Promise.resolve({ codes: [], isAdmin: false, isFriend: false });
       }
 
       // Local dev bypass — grant everything when running with ?dev=1

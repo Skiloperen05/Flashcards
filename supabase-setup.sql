@@ -141,7 +141,8 @@ create policy "Users read own entitlements"
 
 -- First free subject: users may insert one free entitlement themselves.
 -- Paid entitlements are inserted by trusted server code, e.g. the Stripe webhook
--- using the Supabase service-role key.
+-- using the Supabase service-role key. Current paid sources are:
+--   stripe, stripe_bundle, stripe_friend_pass
 drop policy if exists "Users claim free entitlement" on public.subject_entitlements;
 create policy "Users claim free entitlement"
   on public.subject_entitlements

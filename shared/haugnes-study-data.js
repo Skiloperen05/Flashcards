@@ -273,12 +273,7 @@
     }
   };
 
-  var noteSeeds = [
-    { id: 'seed-ret14-fradrag', title: 'Fradragsrett', subject: 'RET14', tags: 'fradrag, metode', body: 'Start med hovedregelen i sktl. § 6-1. Del drøftelsen i oppofrelse og tilknytning, og vurder deretter om en spesialregel endrer resultatet.' },
-    { id: 'seed-sol1-motivasjon', title: 'Motivasjon', subject: 'SOL1', tags: 'indre, ytre, jobbdesign', body: 'Skill tydelig mellom indre og ytre motivasjon. Bruk selvbestemmelsesteorien, crowding out og jobbkarakteristika-modellen i case.' },
-    { id: 'seed-sam3-ismp', title: 'IS-MP', subject: 'SAM3', tags: 'modell, rente', body: 'IS viser varemarkedet, MP viser sentralbankens rentesetting. Ved sjokk: forklar først skiftet, deretter virkningen på produksjon og rente.' },
-    { id: 'seed-sam2-markedssvikt', title: 'Markedssvikt', subject: 'SAM2', tags: 'eksternalitet, velferd', body: 'Ved negativ eksternalitet ligger MSC over MPC. Markedet produserer for mye, og Pigou-skatt kan korrigere ved å prise ekstern kostnad.' }
-  ];
+  var noteSeeds = [];
 
   function subjectKey(id) {
     var value = String(id || '').toLowerCase();
