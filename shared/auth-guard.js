@@ -65,6 +65,7 @@
         else if (id === 'haugnes-subject-gate-js' && window.HaugnesSubjectGate) onload();
         else if (id === 'haugnes-admin-preview-toggle-js' && window.HaugnesAdminPreviewToggle) onload();
         else if (id === 'haugnes-user-sidebar-js' && window.HaugnesUserSidebar) onload();
+        else if (id === 'haugnes-user-settings-js' && window.HaugnesUserSettings) onload();
         else existing.addEventListener('load', onload, { once: true });
       }
       return;
@@ -253,6 +254,9 @@
   }
 
   function loadGlobalPolish() {
+    addScript('haugnes-user-settings-js', rootRelative('shared/user-settings.js'), function () {
+      if (window.HaugnesUserSettings && typeof window.HaugnesUserSettings.apply === 'function') window.HaugnesUserSettings.apply();
+    });
     addScript('haugnes-logo-normalizer-js', rootRelative('shared/logo-normalizer.js'), function () {
       if (window.HaugnesLogoNormalizer && typeof window.HaugnesLogoNormalizer.run === 'function') window.HaugnesLogoNormalizer.run();
     });

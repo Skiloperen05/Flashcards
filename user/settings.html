@@ -566,6 +566,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     Object.keys(patch || {}).forEach(function (key) { if (key in DEFAULTS) settings[key] = patch[key]; });
     saveLocal();
     applyUi();
+    if (window.HaugnesUserSettings && typeof window.HaugnesUserSettings.apply === 'function') window.HaugnesUserSettings.apply();
     showToast(message || 'Lagret');
     scheduleRemoteSave();
   }
@@ -634,6 +635,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
         settings = merge(DEFAULTS, remote);
         writeJson(STORAGE_KEY, settings);
         applyUi();
+        if (window.HaugnesUserSettings && typeof window.HaugnesUserSettings.apply === 'function') window.HaugnesUserSettings.apply();
       } else if (localTime > remoteTime) {
         remoteDirty = true;
         saveRemote();
