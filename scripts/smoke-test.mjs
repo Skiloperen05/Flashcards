@@ -1,11 +1,10 @@
-import { createRequire } from 'node:module';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
-const require = createRequire(import.meta.url);
 const root = process.cwd();
 const ignoredDirs = new Set(['.git', 'node_modules', 'dist', 'build', 'coverage']);
 const htmlFiles = [];
+const sourceFiles = [];
 
 function walk(dir) {
   for (const entry of readdirSync(dir)) {
@@ -18,6 +17,9 @@ function walk(dir) {
       walk(absolute);
     } else if (entry.endsWith('.html')) {
       htmlFiles.push(absolute);
+      sourceFiles.push(absolute);
+    } else if (entry.endsWith('.js') || entry.endsWith('.ts')) {
+      sourceFiles.push(absolute);
     }
   }
 }
@@ -25,33 +27,6 @@ function walk(dir) {
 function assert(condition, message) {
   if (!condition) {
     throw new Error(message);
-  }
-}
-
-async function testTimeEditProxy() {
-  const { handler } = require('../netlify/functions/timeedit.js');
-  const originalFetch = globalThis.fetch;
-
-  try {
-    globalThis.fetch = async (url) => {
-      assert(String(url).startsWith('https://cloud.timeedit.net/nhh/web/student/'), 'Unexpected upstream URL');
-      return new Response('BEGIN:VCALENDAR\nEND:VCALENDAR', {
-        status: 200,
-        headers: { 'content-type': 'text/calendar' },
-      });
-    };
-
-    const result = await handler({
-      httpMethod: 'GET',
-      headers: { origin: 'http://localhost:5173' },
-      queryStringParameters: { url: 'https://cloud.timeedit.net/nhh/web/student/test.ics' },
-    });
-
-    assert(result.statusCode === 200, 'TimeEdit proxy should return upstream status');
-    assert(result.headers['Content-Type'] === 'text/calendar; charset=utf-8', 'TimeEdit proxy should preserve safe calendar type');
-    assert(result.body === 'BEGIN:VCALENDAR\nEND:VCALENDAR', 'TimeEdit proxy should return upstream body');
-  } finally {
-    globalThis.fetch = originalFetch;
   }
 }
 
@@ -70,7 +45,39 @@ function testHtmlScriptHygiene() {
   );
 }
 
-await testTimeEditProxy();
-testHtmlScriptHygiene();
+function testRuntimeDoesNotCallNetlifyFunctions() {
+  const runtimeFiles = sourceFiles.filter((file) => {
+    const path = relative(root, file);
+    return !path.startsWith('netlify/') && path !== 'netlify.toml' && path !== 'PROJECT_MAP.md';
+  });
+  const offenders = runtimeFiles.filter((file) => readFileSync(file, 'utf8').includes('/.netlify/functions/'));
 
-console.log(`Smoke tests passed for TimeEdit proxy and ${htmlFiles.length} HTML files.`);
+  assert(
+    offenders.length === 0,
+    `Runtime files still call Netlify Functions: ${offenders.map((file) => relative(root, file)).join(', ')}`,
+  );
+}
+
+function testSupabaseRuntimeTargets() {
+  const shop = readFileSync(join(root, 'user/butikk.html'), 'utf8');
+  const timeeditProxy = readFileSync(join(root, 'shared/timeedit-fetch-proxy.js'), 'utf8');
+
+  assert(
+    shop.includes('https://qnwjhheoekpqqqhevztw.supabase.co/functions/v1/create-stripe-checkout'),
+    'Shop checkout should call the Supabase create-stripe-checkout function',
+  );
+  assert(
+    timeeditProxy.includes('https://qnwjhheoekpqqqhevztw.supabase.co/functions/v1/timeedit'),
+    'TimeEdit proxy should call the Supabase timeedit function',
+  );
+  assert(
+    !timeeditProxy.includes('return originalFetch(input, init).then'),
+    'TimeEdit proxy should not try a Netlify/API request before Supabase',
+  );
+}
+
+testHtmlScriptHygiene();
+testRuntimeDoesNotCallNetlifyFunctions();
+testSupabaseRuntimeTargets();
+
+console.log(`Smoke tests passed for Supabase runtime targets and ${htmlFiles.length} HTML files.`);

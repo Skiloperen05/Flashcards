@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
-const allowedOrigins = new Set([
+const exactAllowedOrigins = new Set([
   "https://bhflashcards.no",
   "https://www.bhflashcards.no",
   "https://skiloperen05.github.io",
@@ -8,9 +8,23 @@ const allowedOrigins = new Set([
   "http://localhost:5173",
 ]);
 
+function isAllowedOrigin(origin: string) {
+  if (exactAllowedOrigins.has(origin)) return true;
+
+  try {
+    const hostname = new URL(origin).hostname;
+    return hostname === "bhflashcards.pages.dev" ||
+      hostname.endsWith(".bhflashcards.pages.dev") ||
+      hostname === "bhflashcards-no.pages.dev" ||
+      hostname.endsWith(".bhflashcards-no.pages.dev");
+  } catch (_error) {
+    return false;
+  }
+}
+
 function corsHeaders(req: Request) {
   const origin = req.headers.get("origin") || "";
-  const allowedOrigin = allowedOrigins.has(origin) ? origin : "https://bhflashcards.no";
+  const allowedOrigin = isAllowedOrigin(origin) ? origin : "https://bhflashcards.no";
   return {
     "Access-Control-Allow-Origin": allowedOrigin,
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
