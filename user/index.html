@@ -147,10 +147,7 @@ svg{display:block}
       <a class="nav-link active" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg>Hjem</a>
       <a class="nav-link" href="#mine-fag"><svg viewBox="0 0 24 24"><path d="M12 6.5C10.5 5 7.5 4.5 4.5 5v13c3-.5 6 0 7.5 1.5 1.5-1.5 4.5-2 7.5-1.5V5c-3-.5-6 0-7.5 1.5z"/><path d="M12 6.5V20"/></svg>Mine fag</a>
       <a class="nav-link" href="butikk.html"><svg viewBox="0 0 24 24"><path d="M5 9.5 6.2 4h11.6L19 9.5"/><path d="M6 10v9.5h12V10"/><path d="M9 14h6"/></svg>Butikk</a>
-      <a class="nav-link" href="#today"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6"/></svg>Fokus for i dag</a>
-      <a class="nav-link" href="../ret14/eksamen/"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 3.5h6v3H9z"/><path d="M8.5 11h7M8.5 15h5"/></svg>Eksamensanalyse</a>
-      <a class="nav-link" href="achievements.html"><svg viewBox="0 0 24 24"><path d="M8 4.5h8v4a4 4 0 0 1-8 0z"/><path d="M8 6H5.5v1.5a3 3 0 0 0 3 3M16 6h2.5v1.5a3 3 0 0 1-3 3M9.5 20h5M12 13v3.5"/></svg>Prestasjoner</a>
-      <a class="nav-link" href="progress.html"><svg viewBox="0 0 24 24"><path d="M4 20h16M7 17v-5M12 17V7M17 17v-8"/></svg>Statistikk</a>
+      <a class="nav-link" href="eksamensanalyse.html"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 3.5h6v3H9z"/><path d="M8.5 11h7M8.5 15h5"/></svg>Eksamensanalyse</a>
       <a class="nav-link" href="../flashcards/"><svg viewBox="0 0 24 24"><rect x="4" y="7" width="13" height="13" rx="2"/><path d="M8 3.5h10A1.5 1.5 0 0 1 19.5 5v10"/></svg>Alle flashcards</a>
     </nav>
     <div class="side-bottom">
@@ -175,21 +172,6 @@ svg{display:block}
 
     <div class="dashboard">
       <div class="grid-main">
-        <section class="panel" id="today">
-          <div class="panel-inner">
-            <div class="panel-head">
-              <div><div class="panel-title">Dagens økt</div><div class="panel-sub">Anbefalt for deg</div></div>
-              <div class="target"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".7"/><path d="M18 6l3-3M19 3h2v2"/></svg></div>
-            </div>
-            <div class="today-stats">
-              <div class="big-stat"><b>48</b><span>kort å repetere</span></div>
-              <div class="big-stat"><b>35</b><span>forventet tid min</span></div>
-              <div class="big-stat"><b>66%</b><span>forventet ROI</span></div>
-            </div>
-            <div class="primary-row"><a class="start-btn" href="../ret14/">Start økt →</a><a class="ghost-link" href="../ret14/">Se detaljert plan →</a></div>
-          </div>
-        </section>
-
         <div class="section-title" id="mine-fag"><h2>Mine fag</h2><a href="../flashcards/">Se alle fag →</a></div>
         <section class="subjects">
           <a class="subject-card" style="--accent:#2f62ff;--pct:86" href="../ret14/"><div class="subject-top"><span class="subject-icon"><img class="emblem-img" src="../assets/emblems/RET14.png" alt="" onerror="this.remove()"><span class="emblem-fallback">⚖️</span></span><span class="dots">⋮</span></div><div class="subject-code">RET14</div><div class="subject-name">Skatterett</div><div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">86%</div></div><div class="ring-sub">48 kort i dag</div><span class="subject-cta">Start øving</span></a>
@@ -199,44 +181,24 @@ svg{display:block}
       </div>
 
       <aside class="side-col">
-        <article class="panel stat-row">
-          <div class="panel-inner">
-            <div class="isq isq-blue"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg></div>
-            <div class="stat-row-text"><span>Totalt øvd</span><b>128 <i>dager</i></b></div>
-            <span class="chev">›</span>
-          </div>
-        </article>
-
         <article class="panel">
           <div class="panel-inner">
-            <div class="panel-title">Studievaner</div>
-            <div class="panel-sub">Langsiktig innsats gir resultater ✨</div>
-            <div class="habits">
-              <div class="habit"><div class="isq isq-orange"><svg class="fill" viewBox="0 0 24 24"><path d="M13 2.5c.3 2.8 2.3 4 3.2 5.7.6 1.1.8 2.2.8 3.4a5 5 0 1 1-10 0c0-1.4.5-2.7 1.5-3.8.2 1.6 1.3 2.4 2 3-.5-1.9.2-4 1.5-6.4z"/></svg></div><div class="habit-text"><span>Beste streak</span><b>12 dager</b></div></div>
-              <div class="habit"><div class="isq isq-green"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="M9 14.5l2 2 4-4"/></svg></div><div class="habit-text"><span>Økter denne måneden</span><b id="sessStat">14</b></div></div>
-              <div class="habit"><div class="isq isq-purple"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="13" rx="2.2"/><path d="M7.5 4.5h11A1.5 1.5 0 0 1 20 6v11"/></svg></div><div class="habit-text"><span>Kort repetert</span><b id="cardsStat">3 240</b></div></div>
-            </div>
-            <div class="habit-foot">Hold deg nysgjerrig, fortsett å bygge! 💙</div>
-          </div>
-        </article>
-
-        <article class="panel recommend">
-          <div class="panel-inner">
-            <div class="rec-head"><div class="isq isq-purple"><svg viewBox="0 0 24 24"><path d="M12 4v16M7 20h10"/><path d="M5 8h14"/><path d="M5 8l-2.2 4.5a2.2 2.2 0 0 0 4.4 0z"/><path d="M19 8l-2.2 4.5a2.2 2.2 0 0 0 4.4 0z"/><circle cx="12" cy="5" r="1.3"/></svg></div><div><div class="rec-title">Neste anbefaling</div><div class="rec-sub">Fokus på tema</div></div></div>
-            <h3>Fradragsrett i RET14</h3>
-            <div class="rec-meta"><span><svg viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V20.5H7z"/><path d="M14 3.5V8h4"/></svg>28 kort</span><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>≈ 30 min</span></div>
-            <a class="start-btn" href="../ret14/" style="height:44px">Start nå →</a>
-          </div>
-        </article>
-
-        <article class="panel">
-          <div class="panel-inner">
-            <div class="panel-title">Svakeste område</div>
+            <div class="panel-title">Snarveier</div>
+            <div class="panel-sub">Verktøy som peker til faktiske sider</div>
             <div class="weak-list">
-              <div class="weak"><div class="isq isq-sm isq-red"><svg viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg></div><strong>Transaksjonskostnader</strong></div>
-              <div class="weak"><div class="isq isq-sm isq-blue"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.8"/></svg></div><strong>SOL1</strong></div>
-              <div class="weak-meta"><span><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8.5 12.5l2.5 2.5 5-5"/></svg>42 kort</span><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>≈ 29 min</span></div>
+              <a class="weak" href="eksamensanalyse.html"><div class="isq isq-sm isq-blue"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 3.5h6v3H9z"/><path d="M8.5 11h7M8.5 15h5"/></svg></div><strong>Eksamensanalyse</strong></a>
+              <a class="weak" href="a-besvarelser.html"><div class="isq isq-sm isq-green"><svg viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V20.5H7z"/><path d="M14 3.5V8h4"/><path d="M9.5 12h5M9.5 15.5h4"/></svg></div><strong>A-besvarelser</strong></a>
+              <a class="weak" href="oppgavebank.html"><div class="isq isq-sm isq-purple"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h5M8 17h7"/></svg></div><strong>Oppgavebank</strong></a>
+              <a class="weak" href="notater.html"><div class="isq isq-sm isq-orange"><svg viewBox="0 0 24 24"><path d="M6 4.5h12v15H6z"/><path d="M9 8h6M9 11h6M9 14h4"/></svg></div><strong>Notater</strong></a>
             </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-inner">
+            <div class="panel-title">Tilgang</div>
+            <div class="panel-sub">Kjøp enkeltfag, pakker eller Vennepass</div>
+            <div class="primary-row" style="margin-top:16px"><a class="start-btn" href="butikk.html">Åpne butikk →</a></div>
           </div>
         </article>
       </aside>

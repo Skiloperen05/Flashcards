@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Eksamensanalyse — Haugnes Flashcards</title>
+<link rel="icon" href="../assets/Flashcardslogo.png">
+<link rel="apple-touch-icon" href="../assets/Flashcardslogo.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/haugnes-model-pages.css">
+<style>
+.analysis-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.analysis-card{position:relative;overflow:hidden;min-height:250px;padding:18px;border-radius:22px;background:linear-gradient(180deg,rgba(15,43,92,.94),rgba(8,25,56,.96));border:1px solid var(--line);box-shadow:0 16px 34px rgba(0,0,0,.22);display:flex;flex-direction:column;gap:13px;color:#fff;transition:transform .18s,border-color .18s}
+.analysis-card:hover{transform:translateY(-3px);border-color:rgba(126,162,255,.32)}
+.analysis-card::before{content:"";position:absolute;right:-58px;top:-68px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,var(--accent),transparent 68%);opacity:.22}
+.analysis-top,.analysis-meta,.analysis-actions{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.analysis-icon{width:44px;height:44px;border-radius:15px;background:var(--accent);display:grid;place-items:center;color:#fff;font-weight:950;box-shadow:0 0 28px color-mix(in srgb,var(--accent),transparent 62%)}
+.analysis-pill{height:28px;padding:0 9px;border-radius:999px;background:rgba(32,185,122,.14);border:1px solid rgba(32,185,122,.28);color:#b9f6d7;font-size:10.5px;font-weight:950;display:inline-flex;align-items:center}
+.analysis-card h2{position:relative;z-index:1;margin:0;font-size:22px;line-height:1.12;letter-spacing:-.04em}
+.analysis-card p{position:relative;z-index:1;margin:0;color:#bdc9df;font-size:13px;line-height:1.58;flex:1}
+.analysis-meta{justify-content:flex-start;flex-wrap:wrap}
+.analysis-meta span{font-size:11px;color:#aebddd;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:6px 9px;font-weight:900}
+.analysis-open{height:38px;padding:0 13px;border-radius:12px;background:linear-gradient(135deg,#2657e9,#3e72ff);color:#fff;font-size:12px;font-weight:950;display:inline-flex;align-items:center;justify-content:center}
+.analysis-note{margin-top:14px;padding:18px;border-radius:18px;background:rgba(255,255,255,.04);border:1px dashed rgba(126,162,255,.28);color:#aebddd;line-height:1.6;font-size:13px}
+@media(max-width:1180px){.analysis-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.analysis-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <a class="brand" href="../index.html"><span class="logo-mark"></span><span><span class="brand-title">Haugnes</span><span class="brand-sub">Flashcards</span></span></a>
+    <nav class="nav">
+      <a class="nav-link" href="index.html"><span class="nav-ico">⌂</span>Hjem</a>
+      <a class="nav-link" href="subjects.html"><span class="nav-ico">▦</span>Mine fag</a>
+      <a class="nav-link" href="butikk.html"><span class="nav-ico">⚷</span>Butikk</a>
+      <a class="nav-link active" href="eksamensanalyse.html"><span class="nav-ico">◈</span>Eksamensanalyse</a>
+      <a class="nav-link" href="a-besvarelser.html"><span class="nav-ico">▤</span>A-besvarelser</a>
+      <a class="nav-link" href="oppgavebank.html"><span class="nav-ico">▣</span>Oppgavebank</a>
+      <a class="nav-link" href="notater.html"><span class="nav-ico">▥</span>Notater</a>
+      <a class="nav-link" href="studieplan.html"><span class="nav-ico">☷</span>Studieplan</a>
+      <a class="nav-link" href="settings.html"><span class="nav-ico">⚙</span>Innstillinger</a>
+    </nav>
+    <div class="side-bottom">
+      <div class="mini-card"><div class="mini-label">Analyser</div><div class="mini-number">3 <span>publisert</span></div><div class="mini-bar"><i></i></div></div>
+      <div class="user-mini"><div class="avatar" id="sideAvatar">?</div><div><strong id="sideName">Bruker</strong><span>NHH-student</span></div></div>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="mobile-top"><a class="brand" href="../index.html"><span class="logo-mark"></span><span><span class="brand-title">Haugnes</span><span class="brand-sub">Flashcards</span></span></a><button class="icon-btn" onclick="handleLogout()">⎋</button></div>
+    <header class="topline">
+      <div class="hello"><div class="breadcrumb"><a href="index.html">Dashboard</a><span>›</span><span>Eksamensanalyse</span></div><h1>Eksamensanalyse</h1><p>Kun fag med en faktisk publisert analyse vises her.</p></div>
+      <div class="top-actions"><div class="avatar-top"><div class="avatar" id="topAvatar">?</div><span id="topName">Bruker</span></div></div>
+    </header>
+    <section class="hero-panel">
+      <div class="hero-inner">
+        <div><div class="kicker">Ryddet analysearkiv</div><h2 class="hero-title">Åpne riktig <span>analyse</span> direkte.</h2><p class="hero-copy">MET1 og andre fag uten publisert analyse er fjernet fra oversikten. Når en ny analyse faktisk finnes, kan den legges inn her.</p></div>
+        <div class="hero-stats"><div class="hero-stat"><b>3</b><span>analyser</span></div><div class="hero-stat"><b>0</b><span>placeholders</span></div><div class="hero-stat"><b>100%</b><span>direkte lenker</span></div></div>
+      </div>
+    </section>
+    <div class="workspace">
+      <section>
+        <div class="analysis-grid">
+          <a class="analysis-card" style="--accent:#2f62ff" href="../ret14/eksamen/">
+            <div class="analysis-top"><span class="analysis-icon">%</span><span class="analysis-pill">Publisert</span></div>
+            <h2>RET14 · Skatterett</h2>
+            <p>Eksamensradar for skatterett med temaer, mønstre og prioritering mot faktisk eksamensarbeid.</p>
+            <div class="analysis-meta"><span>Skatt</span><span>Radar</span><span>Direkte</span></div>
+            <div class="analysis-actions"><span class="analysis-open">Åpne analyse →</span></div>
+          </a>
+          <a class="analysis-card" style="--accent:#f09828" href="../sam2/eksamen/">
+            <div class="analysis-top"><span class="analysis-icon">◔</span><span class="analysis-pill">Publisert</span></div>
+            <h2>SAM2 · Mikroøkonomi</h2>
+            <p>Prioriteringsradar basert på tidligere SAM2-eksamener, modellbruk, figurer og typiske oppgavekombinasjoner.</p>
+            <div class="analysis-meta"><span>V/H 2021-2025</span><span>24 temaer</span><span>Direkte</span></div>
+            <div class="analysis-actions"><span class="analysis-open">Åpne analyse →</span></div>
+          </a>
+          <a class="analysis-card" style="--accent:#ef4444" href="../sam3/eksamensradar-v3.html">
+            <div class="analysis-top"><span class="analysis-icon">↗</span><span class="analysis-pill">Publisert</span></div>
+            <h2>SAM3 · Makroøkonomi</h2>
+            <p>Eksamensradar for makro med modellkoblinger, eksamensmønstre og lenker videre til SAM3-verktøy.</p>
+            <div class="analysis-meta"><span>Makro</span><span>Modeller</span><span>Direkte</span></div>
+            <div class="analysis-actions"><span class="analysis-open">Åpne analyse →</span></div>
+          </a>
+        </div>
+        <div class="analysis-note"><strong>Oppryddingsregel:</strong> denne siden skal bare inneholde fag som peker til en faktisk analyse. Oppgavebank, tomme pakkeplasser og planlagte analyser hører ikke hjemme her.</div>
+      </section>
+      <aside class="panel">
+        <h2 class="panel-title">System</h2>
+        <div class="list">
+          <div class="list-item"><span class="rank">1</span><div><strong>Direkte lenke</strong><span>Kortet åpner analysen, ikke oppgavebank.</span></div><span class="tag">Krav</span></div>
+          <div class="list-item"><span class="rank">2</span><div><strong>Ingen tomme fag</strong><span>Fag uten analyse skjules.</span></div><span class="tag">Ryddig</span></div>
+          <div class="list-item"><span class="rank">3</span><div><strong>Legg til senere</strong><span>Nye analyser kan legges inn når de faktisk finnes.</span></div><span class="tag">Skalerer</span></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>
+<script src="auth-guard.js"></script>
+<script>
+function nameFromEmail(e){var n=(e||'student').split('@')[0];return n.charAt(0).toUpperCase()+n.slice(1)}
+window.onUserAuthorized=function(s){var n=nameFromEmail(s&&s.user&&s.user.email),i=n.charAt(0);['sideName','topName'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=n});['sideAvatar','topAvatar'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=i})}
+function handleLogout(){return AuthGuard.logout()}
+</script>
+</body>
+</html>

@@ -2,6 +2,7 @@
   var SHARED_SCRIPT = '../shared/auth-guard.js';
   var MODEL_PAGES = {
     'butikk.html': { label: 'Butikk', icon: '⚷', subtitle: 'Lås opp fag' },
+    'eksamensanalyse.html': { label: 'Eksamensanalyse', icon: '◈', subtitle: 'Åpne faktiske analyser' },
     'a-besvarelser.html': { label: 'A-besvarelser', icon: '▤', subtitle: 'Se sterke tidligere svar' },
     'oppgavebank.html': { label: 'Oppgavebank', icon: '▣', subtitle: 'Øv på eksamensnære oppgaver' },
     'notater.html': { label: 'Notater', icon: '▥', subtitle: 'Samle egne fagnotater' },
@@ -62,9 +63,7 @@
 
   function addPageStylesheet() {
     var page = currentUserPage();
-    if (page === 'achievements.html') addStylesheet('haugnes-achievements-css', '../shared/haugnes-achievements.css');
-    else if (page === 'progress.html') addStylesheet('haugnes-progress-css', '../shared/haugnes-progress.css');
-    else if (page === 'subjects.html') addStylesheet('haugnes-subjects-css', '../shared/haugnes-subjects.css');
+    if (page === 'subjects.html') addStylesheet('haugnes-subjects-css', '../shared/haugnes-subjects.css');
     else if (!isModelPage(page)) addStylesheet('haugnes-dashboard-css', '../shared/haugnes-dashboard.css');
   }
 
@@ -142,10 +141,6 @@
   function standardizeDashboardLinks() {
     var subjectsNav = document.querySelector('.nav-link[href="#mine-fag"]');
     if (subjectsNav) subjectsNav.href = 'subjects.html';
-    var todayStart = document.querySelector('#today .start-btn[href="../ret14/"]');
-    if (todayStart) { todayStart.href = '../flashcards/?subject=ret14'; todayStart.textContent = 'Start økt →'; }
-    var todayPlan = document.querySelector('#today .ghost-link[href="../ret14/"]');
-    if (todayPlan) todayPlan.href = '../ret14/';
     var recommendationStart = document.querySelector('.recommend .start-btn[href="../ret14/"]');
     if (recommendationStart) { recommendationStart.href = '../flashcards/?subject=ret14'; recommendationStart.textContent = 'Start nå →'; }
     document.querySelectorAll('.subject-card .subject-cta').forEach(function (button) { button.textContent = 'Start øving'; });
@@ -164,7 +159,7 @@
     var page = currentUserPage();
     var nav = document.querySelector('.sidebar .nav, nav.nav');
     if (nav) {
-      var insertionAnchor = nav.querySelector('a[href="../ret14/eksamen/"]') || nav.querySelector('a[href="subjects.html"]') || nav.querySelector('a[href="progress.html"]');
+      var insertionAnchor = nav.querySelector('a[href="subjects.html"]') || nav.querySelector('a[href="butikk.html"]');
       Object.keys(MODEL_PAGES).forEach(function (href) {
         if (nav.querySelector('a[href="' + href + '"]')) return;
         var link = createNavLink(href, MODEL_PAGES[href], page === href);
@@ -192,17 +187,6 @@
       item.innerHTML = '<div><strong>' + config.label + '</strong><span>' + config.subtitle + '</span></div><span>→</span>';
       shortcuts.appendChild(item);
     });
-  }
-
-  function enhanceAchievementsPage() {
-    if (currentUserPage() !== 'achievements.html') return;
-    document.title = 'Prestasjoner — Haugnes Flashcards';
-    var heroTitle = document.querySelector('.hero-title');
-    var heroSub = document.querySelector('.hero-sub');
-    var back = document.querySelector('.header-back');
-    if (heroTitle) heroTitle.innerHTML = 'Bygg en <span>streak</span>.';
-    if (heroSub) heroSub.textContent = 'Lås opp badges når du fullfører økter, repeterer kort og treffer nye milepæler.';
-    if (back) back.lastChild.textContent = ' Dashboard';
   }
 
   function loadStudyplanTools() {
@@ -237,7 +221,6 @@
     loadSubjectAccess(function () {
       standardizeDashboardLinks();
       installModelPageLinks();
-      enhanceAchievementsPage();
       loadStudyplanTools();
       loadAnswerLibrary();
       if (currentUserPage() === 'index.html') renderDashboardSubjects();

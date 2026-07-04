@@ -107,19 +107,6 @@
     }).join('');
   }
 
-  function setTodayStats(summary) {
-    var cards = document.querySelectorAll('#today .big-stat');
-    if (!cards.length) return;
-    var values = [summary.total, summary.sessions, summary.mastery + '%'];
-    var labels = ['kort repetert', 'økter fullført', 'nøyaktighet'];
-    cards.forEach(function (card, i) {
-      var b = card.querySelector('b');
-      var span = card.querySelector('span');
-      if (b) b.textContent = i === 0 ? formatNumber(values[i]) : values[i];
-      if (span) span.textContent = labels[i];
-    });
-  }
-
   function setStudyHabits(summary) {
     setText('cardsStat', formatNumber(summary.total));
     setText('sessStat', summary.sessions);
@@ -188,15 +175,7 @@
     }
     var mineFag = document.querySelector('#mine-fag a');
     if (mineFag) { mineFag.href = 'subjects.html'; mineFag.textContent = 'Administrer fag →'; }
-    setTodayStats(summary);
-    setStudyHabits(summary);
-    setRecommendation(active, summary);
-    setWeakestArea(active, summary);
-    var target = summary.weakest && summary.weakest.subject ? summary.weakest.subject : active.find(function (subject) { return !isPlanned(subject); });
-    var start = document.querySelector('#today .start-btn');
-    var plan = document.querySelector('#today .ghost-link');
-    if (start && target) { start.href = flashcardHref(target); start.textContent = summary.total ? 'Fortsett ' + target.code + ' →' : 'Start første økt →'; }
-    if (plan) { plan.href = 'subjects.html'; plan.textContent = 'Administrer fag →'; }
+    document.body.dataset.hfDashboardSummary = JSON.stringify(summary);
   }
 
   function loadAnswerLibrary() {
@@ -225,21 +204,7 @@
 
   function enhanceABesvarelserSensor() { if (inUserPage('a-besvarelser.html')) loadAnswerLibrary(); }
 
-  function enhanceProgressNextSteps() {
-    if (!inUserPage('progress.html') || document.body.dataset.hfProgressNextEnhanced) return;
-    document.body.dataset.hfProgressNextEnhanced = '1';
-    var list = document.querySelector('.side-panel .focus-list');
-    if (!list || list.querySelector('a[href="../sam3/"]')) return;
-    var selected = window.HaugnesSubjectAccess && window.HaugnesSubjectAccess.getSelected ? window.HaugnesSubjectAccess.getSelected() : ['SAM3'];
-    if (selected.indexOf('SAM3') === -1) return;
-    var item = document.createElement('a');
-    item.className = 'focus-item';
-    item.href = 'a-besvarelser.html#/sam3/v26';
-    item.innerHTML = '<span><strong>SAM3 V26-pakke</strong><span>Eksamen, sensorveiledning og A-besvarelse</span></span><span class="tag">PDF</span>';
-    list.appendChild(item);
-  }
-
-  function run() { loadUserSidebar(); enhanceDashboard(); enhanceABesvarelserSensor(); enhanceProgressNextSteps(); }
+  function run() { loadUserSidebar(); enhanceDashboard(); enhanceABesvarelserSensor(); }
   ready(run);
   window.setTimeout(run, 250);
   window.setTimeout(run, 800);

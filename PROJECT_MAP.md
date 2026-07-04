@@ -1,6 +1,6 @@
 # Project Map
 
-Last updated: 2026-07-01
+Last updated: 2026-07-04
 
 Purpose: make future app changes faster by documenting the stable entry points, data sources, and search paths. Update this file whenever a change moves, renames, adds, or removes app-facing functionality.
 
@@ -13,6 +13,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 ## App Shape
 
 - Static web app deployed from this repository.
+- Cloudflare Pages is the target frontend host: no build command, publish/output directory `.`.
 - Main public landing page: `index.html`.
 - Login/auth entry: `login.html`.
 - Authenticated user pages: `user/`.
@@ -20,18 +21,21 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Shared behavior, data, styling, and page enhancement scripts: `shared/`.
 - Supabase setup/schema seed reference: `supabase-setup.sql`.
 - Supabase Edge Functions: `supabase/functions/`.
-- Netlify config and functions: `netlify.toml`, `netlify/functions/`.
-- Stripe checkout/webhook functions: `netlify/functions/create-stripe-checkout.js`, `netlify/functions/stripe-webhook.js`.
+- Cloudflare Pages headers: `_headers`.
+- Netlify config and functions: `netlify.toml`, `netlify/functions/` (legacy rollback only; Git builds are ignored by `netlify.toml` and not active runtime).
+- Stripe checkout/webhook functions: `supabase/functions/create-stripe-checkout/`, `supabase/functions/stripe-webhook/`.
 
 ## User Pages
 
 - Dashboard: `user/index.html`.
 - Subject management: `user/subjects.html`.
-- Shop/entitlement claiming and Stripe checkout entry: `user/butikk.html`.
+- Shop/entitlement claiming and Stripe checkout entry for subjects, bundles, and Vennepass: `user/butikk.html`.
+- Exam analysis catalog with only published/direct analysis links: `user/eksamensanalyse.html`.
 - A-besvarelser / eksamensarkiv shell: `user/a-besvarelser.html`.
 - Oppgavebank shell: `user/oppgavebank.html`.
 - Study plan shell: `user/studieplan.html`.
-- Notes/settings/progress/achievements: `user/notater.html`, `user/settings.html`, `user/progress.html`, `user/achievements.html`.
+- Notes/settings: `user/notater.html`, `user/settings.html`.
+- Removed user pages: `user/progress.html`, `user/achievements.html`.
 - User-page loader/enhancer: `user/auth-guard.js`.
 
 ## Shared Core Scripts
@@ -43,7 +47,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Dashboard dynamic progress/recommendations and some legacy SAM3 package pointers: `shared/haugnes-dashboard-progress.js`.
 - A-besvarelser / eksamensarkiv dynamic package UI: `shared/haugnes-answer-library.js`.
 - User sidebar normalization: `shared/user-sidebar.js`.
-- TimeEdit/NHH schedule integration: `shared/timeedit-fetch-proxy.js`, `shared/nhh-schedule-api.js`, `shared/nhh-schedule-normalizer.js`, `shared/nhh-strict-course-filter.js`, `shared/haugnes-studyplan.js`.
+- TimeEdit/NHH schedule integration: `shared/timeedit-fetch-proxy.js`, `shared/nhh-schedule-api.js`, `shared/nhh-schedule-normalizer.js`, `shared/nhh-strict-course-filter.js`, `shared/haugnes-studyplan.js`. Runtime proxy target is the Supabase `timeedit` Edge Function.
 - Flashcard session shared logic: `shared/haugnes-flashcard-session.js`, `shared/haugnes-flashcards-structure.js`.
 
 ## Subject Areas
@@ -78,6 +82,11 @@ Typical package IDs:
 ## Supabase
 
 - Project URL in client code: `shared/auth-guard.js`.
+- Edge Function config: `supabase/config.toml`.
+- Active Edge Functions:
+  - `supabase/functions/timeedit/`: NHH TimeEdit proxy.
+  - `supabase/functions/create-stripe-checkout/`: verifies Supabase Auth token, checks entitlements, and creates Stripe Checkout Sessions.
+  - `supabase/functions/stripe-webhook/`: verifies Stripe signatures and grants paid subject entitlements.
 - Schema/source-of-truth file: `supabase-setup.sql`.
 - Key content tables:
   - `profiles`
@@ -85,7 +94,8 @@ Typical package IDs:
   - `answer_packages`
   - `answer_resources`
 - RLS/entitlement helper: `public.has_subject_entitlement(text)`.
-- Payment model: first user-claimed free subject is inserted client-side with `source = 'free'`; paid subjects are inserted by the Stripe webhook with `source = 'stripe'` and optional Stripe session/customer/payment metadata.
+- Payment model: first user-claimed free subject is inserted client-side with `source = 'free'`; paid subjects are inserted by the Supabase Stripe webhook with `source = 'stripe'` and optional Stripe session/customer/payment metadata.
+- Bundle/payment model: `user/butikk.html` can send `subjectCode` or `productId` to `supabase/functions/create-stripe-checkout/`. Bundles insert multiple `subject_entitlements` rows with `source = 'stripe_bundle'`; Vennepass inserts all current subjects with `source = 'stripe_friend_pass'` and sets `profiles.is_friend = true`.
 - Rule from repo policy: DB schema changes must be mirrored in `supabase-setup.sql`.
 
 ## Build And Checks
