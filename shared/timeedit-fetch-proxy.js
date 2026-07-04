@@ -29,13 +29,7 @@
   window.fetch = function (input, init) {
     if (!shouldProxy(input)) return originalFetch(input, init);
 
-    var supabaseUrl = toSupabaseUrl(input);
-    return originalFetch(input, init).then(function (response) {
-      if (response && response.ok) return response;
-      return originalFetch(supabaseUrl, init);
-    }).catch(function () {
-      return originalFetch(supabaseUrl, init);
-    });
+    return originalFetch(toSupabaseUrl(input), init);
   };
 
   window.HaugnesTimeEditProxy = {

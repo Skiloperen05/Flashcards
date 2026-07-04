@@ -22,7 +22,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Supabase setup/schema seed reference: `supabase-setup.sql`.
 - Supabase Edge Functions: `supabase/functions/`.
 - Cloudflare Pages headers: `_headers`.
-- Netlify config and functions: `netlify.toml`, `netlify/functions/` (legacy rollback only; Git builds are ignored by `netlify.toml` and not active runtime).
+- Netlify is not an active deployment target; Netlify config/functions have been removed.
 - Stripe checkout/webhook functions: `supabase/functions/create-stripe-checkout/`, `supabase/functions/stripe-webhook/`.
 
 ## User Pages
