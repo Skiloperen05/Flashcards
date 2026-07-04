@@ -1,6 +1,6 @@
 # Project Map
 
-Last updated: 2026-07-03
+Last updated: 2026-07-04
 
 Purpose: make future app changes faster by documenting the stable entry points, data sources, and search paths. Update this file whenever a change moves, renames, adds, or removes app-facing functionality.
 
@@ -34,7 +34,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Memoarer: `user/memoarer.html` + `shared/haugnes-memo-library.js`. Published memoarer live in Supabase `admin_content` key `published_memos`; admins create/edit/delete them in place on the page. A built-in card links to the static SAM2 memoar page.
 - Oppgavebank shell: `user/oppgavebank.html`.
 - Study plan shell: `user/studieplan.html`.
-- Notes/settings/progress/achievements: `user/notater.html`, `user/settings.html`, `user/progress.html`, `user/achievements.html`.
+- Notes/settings/progress/achievements: `user/notater.html`, `user/settings.html`, `user/progress.html`, `user/achievements.html`. Settings uses `localStorage` key `hf_user_settings_v2` for instant live preferences and syncs to `user_custom_data.data.settings`; avatar choices use `assets/illustrations/`.
 - User-page loader/enhancer: `user/auth-guard.js`.
 
 ## Shared Core Scripts

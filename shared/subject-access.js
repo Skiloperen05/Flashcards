@@ -163,9 +163,9 @@
   function mountControls() {
     injectStyles();
     var page = pageName();
-    if (page !== 'subjects.html' && page !== 'settings.html') return;
+    if (page !== 'subjects.html') return;
     if (document.getElementById('hfSubjectAccessPanel')) return;
-    var host = page === 'subjects.html' ? document.querySelector('main.main .toolbar') : document.querySelector('main, .main, body');
+    var host = document.querySelector('main.main .toolbar');
     if (!host) return;
     if (page === 'subjects.html') host.insertAdjacentHTML('beforebegin', panelHtml());
     else host.insertAdjacentHTML('afterbegin', panelHtml());
