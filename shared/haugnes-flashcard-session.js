@@ -64,6 +64,106 @@
     if (typeof window.showToast === 'function') window.showToast(message);
   }
 
+  function getUserSettings() {
+    if (window.HaugnesUserSettings && typeof window.HaugnesUserSettings.getAll === 'function') return window.HaugnesUserSettings.getAll();
+    var stored = readJson('hf_user_settings_v2', {});
+    return {
+      sessionLen: stored.sessionLen != null ? stored.sessionLen : 50,
+      startWith: stored.startWith || 'repetisjon',
+      autoDiff: stored.autoDiff !== false,
+      examMode: stored.examMode !== false,
+      sound: !!stored.sound
+    };
+  }
+
+  var audioContext = null;
+
+  function playTones(freqs) {
+    if (!getUserSettings().sound) return;
+    try {
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      if (!audioContext) audioContext = new Ctx();
+      var start = audioContext.currentTime;
+      freqs.forEach(function (freq, i) {
+        var osc = audioContext.createOscillator();
+        var gain = audioContext.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        var at = start + i * 0.09;
+        gain.gain.setValueAtTime(0.0001, at);
+        gain.gain.exponentialRampToValueAtTime(0.05, at + 0.012);
+        gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.15);
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.start(at);
+        osc.stop(at + 0.17);
+      });
+    } catch (e) {}
+  }
+
+  function playRatingSound(rating) {
+    if (rating === 'right') playTones([620]);
+    else if (rating === 'half') playTones([420]);
+    else playTones([260]);
+  }
+
+  function defaultSessionFilter() {
+    // "Start hver økt med" from settings: repetisjon -> the app's "Igjen"
+    // filter (unrated or wrong cards); nye/blandet start from all cards and
+    // rely on the ordering applied in applySessionPreferences.
+    return getUserSettings().startWith === 'repetisjon' ? 'wrong' : 'all';
+  }
+
+  function applySessionPreferences() {
+    var cards = window.currentCards;
+    if (!Array.isArray(cards) || !cards.length || !window.currentDeck) return;
+    var prefs = getUserSettings();
+    var stats = typeof window.getStats === 'function' ? window.getStats() : {};
+    var cardStats = (stats[window.currentDeck.id] || {}).cardStats || {};
+    var decorated = cards.map(function (card, index) {
+      var cs = cardStats[card.idx];
+      var weight = 0;
+      if (prefs.startWith === 'nye' && !cs) weight -= 4;
+      if (prefs.autoDiff !== false && cs && cs.lastRating === 'wrong') weight -= 3;
+      if (prefs.autoDiff !== false && cs && cs.lastRating === 'half') weight -= 2;
+      if (prefs.examMode !== false && /eksamen|exam/i.test([card.topic, card.tag, card.source].join(' '))) weight -= 1;
+      return { card: card, index: index, weight: weight };
+    });
+    decorated.sort(function (a, b) { return a.weight - b.weight || a.index - b.index; });
+    var ordered = decorated.map(function (item) { return item.card; });
+    var limit = parseInt(prefs.sessionLen, 10);
+    if (Number.isFinite(limit) && limit > 0 && ordered.length > limit) ordered = ordered.slice(0, limit);
+    window.currentCards = ordered;
+  }
+
+  function installSettingsHooks() {
+    if (typeof window.filterCards === 'function' && !window.filterCards.__hfSettings) {
+      var originalFilter = window.filterCards;
+      window.filterCards = function () {
+        var result = originalFilter.apply(this, arguments);
+        applySessionPreferences();
+        return result;
+      };
+      window.filterCards.__hfSettings = true;
+    }
+    if (typeof window.startDeck === 'function' && !window.startDeck.__hfSettings) {
+      var originalStart = window.startDeck;
+      window.startDeck = function (id, filter) {
+        return originalStart.call(this, id, filter || defaultSessionFilter());
+      };
+      window.startDeck.__hfSettings = true;
+    }
+    if (typeof window.rateCard === 'function' && !window.rateCard.__hfSettings) {
+      var originalRate = window.rateCard;
+      window.rateCard = function (rating) {
+        playRatingSound(rating);
+        return originalRate.apply(this, arguments);
+      };
+      window.rateCard.__hfSettings = true;
+    }
+  }
+
   function injectStyles() {
     if (document.getElementById('hf-session-enhancements-css')) return;
     var style = document.createElement('style');
@@ -316,6 +416,7 @@
     }
 
     installed = true;
+    installSettingsHooks();
     wrap('startDeck', function () {
       rememberLastRoute();
       ensureSessionStatus();
@@ -332,6 +433,7 @@
       patchProgressBar();
     });
     wrap('showEndScreen', function () {
+      playTones([523, 659, 784]);
       mirrorLatestDeckSession();
       patchEndScreen();
       try { window.dispatchEvent(new CustomEvent('haugnes:flashcard-session-saved')); } catch (e) {}

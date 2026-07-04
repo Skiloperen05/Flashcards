@@ -34,7 +34,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - A-besvarelser / eksamensarkiv shell: `user/a-besvarelser.html`.
 - Oppgavebank shell: `user/oppgavebank.html`.
 - Study plan shell: `user/studieplan.html`.
-- Notes/settings: `user/notater.html`, `user/settings.html`.
+- Notes/settings: `user/notater.html`, `user/settings.html`. Settings live in `localStorage` key `hf_user_settings_v2` and sync to Supabase `user_custom_data.data.settings`; they are applied app-wide by `shared/user-settings.js` (theme/identity) and `shared/haugnes-flashcard-session.js` (session behavior).
 - Removed user pages: `user/progress.html`, `user/achievements.html`.
 - User-page loader/enhancer: `user/auth-guard.js`.
 
@@ -47,8 +47,9 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Dashboard dynamic progress/recommendations and some legacy SAM3 package pointers: `shared/haugnes-dashboard-progress.js`.
 - A-besvarelser / eksamensarkiv dynamic package UI: `shared/haugnes-answer-library.js`.
 - User sidebar normalization: `shared/user-sidebar.js`.
+- Global user-settings applier: `shared/user-settings.js`. Loaded on every app page from `shared/auth-guard.js` (`loadGlobalPolish`). Reads `hf_user_settings_v2` (plus a one-shot pull from `user_custom_data.data.settings` when newer) and applies accent color, background theme, font-size scaling, reduced motion, high contrast, avatar/display name in sidebars, the friendly check-in banner, and hides recommendation panels when disabled. Exposes `window.HaugnesUserSettings`.
 - TimeEdit/NHH schedule integration: `shared/timeedit-fetch-proxy.js`, `shared/nhh-schedule-api.js`, `shared/nhh-schedule-normalizer.js`, `shared/nhh-strict-course-filter.js`, `shared/haugnes-studyplan.js`. Runtime proxy target is the Supabase `timeedit` Edge Function.
-- Flashcard session shared logic: `shared/haugnes-flashcard-session.js`, `shared/haugnes-flashcards-structure.js`.
+- Flashcard session shared logic: `shared/haugnes-flashcard-session.js`, `shared/haugnes-flashcards-structure.js`. The session script also applies learning settings from `hf_user_settings_v2`: session length cap, default start filter (`startWith`), difficult-first ordering (`autoDiff`), exam-topic priority (`examMode`), and optional sound feedback.
 
 ## Subject Areas
 
