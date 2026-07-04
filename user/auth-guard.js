@@ -9,6 +9,17 @@
     'studieplan.html': { label: 'Studieplan', icon: '☷', subtitle: 'Planlegg ukens økter' },
     'settings.html': { label: 'Innstillinger', icon: '⚙', subtitle: 'Profil og preferanser' }
   };
+  var NAV_ITEMS = [
+    { href: 'index.html', label: 'Hjem', icon: '⌂' },
+    { href: 'subjects.html', label: 'Mine fag', icon: '▦' },
+    { href: 'butikk.html', label: 'Butikk', icon: '⚷' },
+    { href: 'eksamensanalyse.html', label: 'Eksamensanalyse', icon: '◈' },
+    { href: 'a-besvarelser.html', label: 'A-besvarelser', icon: '▤' },
+    { href: 'oppgavebank.html', label: 'Oppgavebank', icon: '▣' },
+    { href: 'notater.html', label: 'Notater', icon: '▥' },
+    { href: 'studieplan.html', label: 'Studieplan', icon: '☷' },
+    { href: 'settings.html', label: 'Innstillinger', icon: '⚙' }
+  ];
 
   function loadSharedAuthGuard() {
     return new Promise(function (resolve, reject) {
@@ -77,7 +88,12 @@
       '.sidebar::-webkit-scrollbar-thumb{background:rgba(126,162,255,.25);border-radius:999px}',
       '.sidebar .nav{gap:5px}',
       '.sidebar .nav-link{min-height:38px;padding:9px 11px}',
-      '.sidebar .side-bottom{margin-top:14px}',
+      '.sidebar .side-bottom{margin-top:auto;display:grid;gap:12px;min-width:0;padding-top:12px}',
+      '.sidebar .user-mini,.sidebar .profile-card{display:flex;align-items:center;gap:10px;width:100%;min-height:58px;padding:10px 11px;box-sizing:border-box;overflow:hidden}',
+      '.sidebar .user-mini>div:last-child,.sidebar .user-mini-text,.sidebar .profile-copy{min-width:0;display:block;line-height:1.15}',
+      '.sidebar .user-mini strong,.sidebar .user-mini-text strong,.sidebar .profile-copy strong{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}',
+      '.sidebar .user-mini span,.sidebar .user-mini-text span,.sidebar .profile-copy span{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;margin-top:2px}',
+      '.sidebar .logout{width:100%;min-height:40px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}',
       '.side-col .small-list{max-height:none}',
       '@media(max-height:820px){.sidebar{padding-top:16px;padding-bottom:16px}.brand{padding-bottom:6px}.streak-card{padding:13px}.streak-number{font-size:26px}.user-mini{padding:9px}}'
     ].join('\n');
@@ -159,20 +175,28 @@
     var page = currentUserPage();
     var nav = document.querySelector('.sidebar .nav, nav.nav');
     if (nav) {
-      var insertionAnchor = nav.querySelector('a[href="subjects.html"]') || nav.querySelector('a[href="butikk.html"]');
-      Object.keys(MODEL_PAGES).forEach(function (href) {
-        if (nav.querySelector('a[href="' + href + '"]')) return;
-        var link = createNavLink(href, MODEL_PAGES[href], page === href);
-        if (insertionAnchor && insertionAnchor.parentNode === nav) { insertionAnchor.insertAdjacentElement('afterend', link); insertionAnchor = link; }
-        else nav.appendChild(link);
-      });
-      if (isModelPage(page)) {
-        document.querySelectorAll('.nav-link.active').forEach(function (active) { if (active.getAttribute('href') !== page) active.classList.remove('active'); });
-        var current = nav.querySelector('a[href="' + page + '"]');
-        if (current) current.classList.add('active');
-      }
+      nav.innerHTML = NAV_ITEMS.map(function (item) {
+        var active = page === item.href ? ' active' : '';
+        return '<a class="nav-link' + active + '" href="' + item.href + '"><span class="nav-ico">' + item.icon + '</span>' + item.label + '</a>';
+      }).join('');
     }
     if (page === 'index.html') installDashboardShortcuts();
+  }
+
+  function normalizeSidebarBottom() {
+    var bottom = document.querySelector('.sidebar .side-bottom');
+    if (!bottom) return;
+    if (!bottom.querySelector('.logout')) {
+      var button = document.createElement('button');
+      button.className = 'logout';
+      button.type = 'button';
+      button.textContent = 'Logg ut';
+      button.onclick = function () {
+        if (typeof window.handleLogout === 'function') return window.handleLogout();
+        if (window.AuthGuard && typeof window.AuthGuard.logout === 'function') return window.AuthGuard.logout();
+      };
+      bottom.appendChild(button);
+    }
   }
 
   function installDashboardShortcuts() {
@@ -218,9 +242,12 @@
     addPageStylesheet();
     installNavVisibilityStyles();
     applyDashboardBranding();
+    installModelPageLinks();
+    normalizeSidebarBottom();
     loadSubjectAccess(function () {
       standardizeDashboardLinks();
       installModelPageLinks();
+      normalizeSidebarBottom();
       loadStudyplanTools();
       loadAnswerLibrary();
       if (currentUserPage() === 'index.html') renderDashboardSubjects();
