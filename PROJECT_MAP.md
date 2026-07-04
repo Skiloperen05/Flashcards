@@ -13,7 +13,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 ## App Shape
 
 - Static web app deployed from this repository.
-- Cloudflare Pages is the target frontend host: no build command, publish/output directory `.`.
+- GitHub Pages is the active frontend host for `bhflashcards.no`: no build command, publish/output directory `.`.
 - Main public landing page: `index.html`.
 - Login/auth entry: `login.html`.
 - Authenticated user pages: `user/`.
@@ -29,7 +29,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 
 - Dashboard: `user/index.html`.
 - Subject management: `user/subjects.html`.
-- Shop/entitlement claiming and Stripe checkout entry for subjects, bundles, and Vennepass: `user/butikk.html`.
+- Shop/entitlement claiming, Stripe checkout entry, discount field, and admin commerce editor for subjects, bundles, Vennepass, prices, and rabattkoder: `user/butikk.html`.
 - Exam analysis catalog with only published/direct analysis links: `user/eksamensanalyse.html`.
 - A-besvarelser / eksamensarkiv shell: `user/a-besvarelser.html`.
 - Oppgavebank shell: `user/oppgavebank.html`.
@@ -92,11 +92,15 @@ Typical package IDs:
 - Key content tables:
   - `profiles`
   - `subject_entitlements`
+  - `subject_prices`
+  - `commerce_products`
+  - `discount_codes`
   - `answer_packages`
   - `answer_resources`
 - RLS/entitlement helper: `public.has_subject_entitlement(text)`.
 - Payment model: first user-claimed free subject is inserted client-side with `source = 'free'`; paid subjects are inserted by the Supabase Stripe webhook with `source = 'stripe'` and optional Stripe session/customer/payment metadata.
-- Bundle/payment model: `user/butikk.html` can send `subjectCode` or `productId` to `supabase/functions/create-stripe-checkout/`. Bundles insert multiple `subject_entitlements` rows with `source = 'stripe_bundle'`; Vennepass inserts all current subjects with `source = 'stripe_friend_pass'` and sets `profiles.is_friend = true`.
+- Bundle/payment model: `user/butikk.html` can send `subjectCode` or `productId` to `supabase/functions/create-stripe-checkout/`. Storefront products and prices come from `subject_prices` and `commerce_products` when available. Bundles insert multiple `subject_entitlements` rows with `source = 'stripe_bundle'`; Vennepass inserts all current subjects with `source = 'stripe_friend_pass'` and sets `profiles.is_friend = true`.
+- Discount model: admins manage `discount_codes` in `user/butikk.html`; checkout validates active codes server-side, stores discount metadata on Stripe Checkout Sessions, and `stripe-webhook` increments `redeemed_count` after paid completion.
 - Rule from repo policy: DB schema changes must be mirrored in `supabase-setup.sql`.
 
 ## Build And Checks

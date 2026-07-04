@@ -187,6 +187,131 @@ revoke execute on function public.has_subject_entitlement(text) from public, ano
 grant execute on function public.has_subject_entitlement(text) to authenticated;
 
 -- ------------------------------------------------------------
+-- 3b. Commerce admin: subject prices, bundle prices, discount codes
+-- ------------------------------------------------------------
+create table if not exists public.subject_prices (
+  subject_code text primary key,
+  price_nok_ore integer not null check (price_nok_ore >= 0),
+  updated_at timestamptz not null default now(),
+  updated_by uuid references auth.users(id)
+);
+
+create table if not exists public.commerce_products (
+  product_id text primary key,
+  label text not null,
+  product_kind text not null default 'bundle' check (product_kind in ('bundle', 'pass')),
+  subject_codes text[] not null default '{}',
+  description text not null default '',
+  price_sub text not null default '',
+  cta text not null default 'Kjøp pakke',
+  accent text not null default '#2f62ff',
+  icon text not null default 'P',
+  price_nok_ore integer not null check (price_nok_ore >= 0),
+  active boolean not null default true,
+  sort_order integer not null default 0,
+  updated_at timestamptz not null default now(),
+  updated_by uuid references auth.users(id)
+);
+
+alter table public.commerce_products
+  add column if not exists product_kind text not null default 'bundle',
+  add column if not exists subject_codes text[] not null default '{}',
+  add column if not exists description text not null default '',
+  add column if not exists price_sub text not null default '',
+  add column if not exists cta text not null default 'Kjøp pakke',
+  add column if not exists accent text not null default '#2f62ff',
+  add column if not exists icon text not null default 'P',
+  add column if not exists sort_order integer not null default 0;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'commerce_products_product_kind_check'
+      and conrelid = 'public.commerce_products'::regclass
+  ) then
+    alter table public.commerce_products
+      add constraint commerce_products_product_kind_check
+      check (product_kind in ('bundle', 'pass'));
+  end if;
+end $$;
+
+create table if not exists public.discount_codes (
+  code text primary key,
+  label text not null default '',
+  percent_off integer check (percent_off is null or (percent_off > 0 and percent_off <= 100)),
+  amount_off_nok_ore integer check (amount_off_nok_ore is null or amount_off_nok_ore > 0),
+  active boolean not null default true,
+  expires_at timestamptz,
+  max_redemptions integer check (max_redemptions is null or max_redemptions > 0),
+  redeemed_count integer not null default 0 check (redeemed_count >= 0),
+  updated_at timestamptz not null default now(),
+  updated_by uuid references auth.users(id),
+  check (percent_off is not null or amount_off_nok_ore is not null)
+);
+
+alter table public.subject_prices enable row level security;
+alter table public.commerce_products enable row level security;
+alter table public.discount_codes enable row level security;
+
+grant select, insert, update, delete on public.subject_prices to authenticated;
+grant select, insert, update, delete on public.commerce_products to authenticated;
+grant select, insert, update, delete on public.discount_codes to authenticated;
+
+drop policy if exists "Read subject prices" on public.subject_prices;
+create policy "Read subject prices"
+  on public.subject_prices
+  for select
+  to authenticated
+  using (true);
+
+drop policy if exists "Admins manage subject prices" on public.subject_prices;
+create policy "Admins manage subject prices"
+  on public.subject_prices
+  for all
+  to authenticated
+  using (exists (select 1 from public.profiles where id = (select auth.uid()) and is_admin = true))
+  with check (exists (select 1 from public.profiles where id = (select auth.uid()) and is_admin = true));
+
+drop policy if exists "Read commerce products" on public.commerce_products;
+create policy "Read commerce products"
+  on public.commerce_products
+  for select
+  to authenticated
+  using (active = true or exists (select 1 from public.profiles where id = (select auth.uid()) and is_admin = true));
+
+drop policy if exists "Admins manage commerce products" on public.commerce_products;
+create policy "Admins manage commerce products"
+  on public.commerce_products
+  for all
+  to authenticated
+  using (exists (select 1 from public.profiles where id = (select auth.uid()) and is_admin = true))
+  with check (exists (select 1 from public.profiles where id = (select auth.uid()) and is_admin = true));
+
+drop policy if exists "Admins manage discount codes" on public.discount_codes;
+create policy "Admins manage discount codes"
+  on public.discount_codes
+  for all
+  to authenticated
+  using (exists (select 1 from public.profiles where id = (select auth.uid()) and is_admin = true))
+  with check (exists (select 1 from public.profiles where id = (select auth.uid()) and is_admin = true));
+
+insert into public.subject_prices (subject_code, price_nok_ore)
+values
+  ('RET14', 4900), ('SOL1', 4900), ('SAM2', 4900), ('SAM3', 4900),
+  ('MET2', 4900), ('MAT10', 4900), ('SAM1A', 4900), ('MET1', 4900),
+  ('KOM1', 4900), ('RET1A', 4900), ('BED1', 4900)
+on conflict (subject_code) do nothing;
+
+insert into public.commerce_products (product_id, label, product_kind, subject_codes, description, price_sub, cta, accent, icon, price_nok_ore, active, sort_order)
+values
+  ('semester-1', '1. semesterpakke', 'bundle', array['RET1A','MET1','SAM1A','BED1','KOM1'], 'Alt for første semester samlet i én tilgang. Best når du vil rydde opp hele startpakken med én gang.', '5 fag samlet', 'Kjøp semesterpakke', '#3b82f6', '1', 19900, true, 10),
+  ('semester-2', '2. semesterpakke', 'bundle', array['MET2','SAM2','SOL1'], 'Metode, mikro og organisasjonsatferd i samme pakke, med oppgaver, memo og eksamensrettede verktøy.', '3 fag samlet', 'Kjøp semesterpakke', '#20b97a', '2', 14900, true, 20),
+  ('valgfag', 'Valgfagspakke', 'bundle', array['RET14','MAT10','SAM3'], 'For deg som vil ha de tyngre fagene samlet: skatterett, matematikk og makroverktøy.', 'valgfag', 'Kjøp valgfagspakke', '#e8bc68', 'V', 17900, true, 30),
+  ('vennepass', 'Vennepass', 'pass', array['RET14','SOL1','SAM2','SAM3','MET2','MAT10','SAM1A','MET1','KOM1','RET1A','BED1'], 'Gir tilgang til alle fag som ligger ute nå, og alle nye fag som publiseres senere.', 'all-access', 'Kjøp Vennepass', '#f09828', '★', 35000, true, 40)
+on conflict (product_id) do nothing;
+
+-- ------------------------------------------------------------
 -- 4. A-besvarelser (premium content metadata)
 --    Rows are only readable for users with entitlement on the package's
 --    subject. PDF URLs are therefore not exposed in any client bundle.

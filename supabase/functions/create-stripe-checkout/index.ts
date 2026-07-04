@@ -38,6 +38,13 @@ type CheckoutProduct = {
   source: string;
 };
 
+type DiscountCode = {
+  code: string;
+  label?: string;
+  percent_off?: number | null;
+  amount_off_nok_ore?: number | null;
+};
+
 function envAmount(name: string, fallback: number) {
   return Number(Deno.env.get(name) || fallback);
 }
@@ -195,6 +202,103 @@ async function subjectPriceOre(subjectCode: string) {
   return price && price > 0 ? price : DEFAULT_PRICE_NOK_ORE;
 }
 
+async function productPriceOre(product: CheckoutProduct) {
+  if (product.kind === "subject") return product.unitAmount;
+
+  const params = new URLSearchParams({
+    product_id: `eq.${product.id}`,
+    select: "price_nok_ore,active",
+    limit: "1",
+  });
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/commerce_products?${params.toString()}`, {
+    headers: adminHeaders(),
+  });
+
+  if (!response.ok) return product.unitAmount;
+  const rows = await response.json();
+  const row = Array.isArray(rows) ? rows[0] : null;
+  if (!row) return product.unitAmount;
+  if (row.active === false) throw new Error("Produktet er ikke aktivt akkurat nå.");
+
+  const price = Number(row.price_nok_ore);
+  return price >= 0 ? price : product.unitAmount;
+}
+
+async function commerceProduct(productIdValue: string) {
+  const id = productId(productIdValue);
+  if (!id) return null;
+
+  const params = new URLSearchParams({
+    product_id: `eq.${id}`,
+    select: "product_id,label,product_kind,subject_codes,description,price_nok_ore,active",
+    limit: "1",
+  });
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/commerce_products?${params.toString()}`, {
+    headers: adminHeaders(),
+  });
+
+  if (!response.ok) return null;
+  const rows = await response.json();
+  const row = Array.isArray(rows) ? rows[0] : null;
+  if (!row) return null;
+  if (row.active === false) throw new Error("Produktet er ikke aktivt akkurat nå.");
+
+  const subjectCodes = Array.isArray(row.subject_codes)
+    ? row.subject_codes.map(code).filter(Boolean)
+    : [];
+  const kind = row.product_kind === "pass" ? "pass" : "bundle";
+  const codes = kind === "pass" && !subjectCodes.length ? ALL_SUBJECT_CODES : subjectCodes;
+  if (!codes.length) throw new Error("Produktet mangler fag.");
+
+  return {
+    id: row.product_id,
+    kind,
+    name: row.label || row.product_id,
+    description: row.description || "Tilgang til fagpakke på Haugnes Flashcards.",
+    unitAmount: Number(row.price_nok_ore),
+    subjectCodes: codes,
+    source: kind === "pass" ? "stripe_friend_pass" : "stripe_bundle",
+  } satisfies CheckoutProduct;
+}
+
+async function discountFromCode(rawCode: unknown) {
+  const normalized = String(rawCode || "").trim().toUpperCase().replace(/\s+/g, "");
+  if (!normalized) return null;
+
+  const params = new URLSearchParams({
+    code: `eq.${normalized}`,
+    select: "code,label,percent_off,amount_off_nok_ore,active,expires_at,max_redemptions,redeemed_count",
+    limit: "1",
+  });
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/discount_codes?${params.toString()}`, {
+    headers: adminHeaders(),
+  });
+
+  if (!response.ok) throw new Error("Kunne ikke sjekke rabattkode.");
+  const rows = await response.json();
+  const row = Array.isArray(rows) ? rows[0] : null;
+  if (!row || row.active === false) throw new Error("Rabattkoden er ikke gyldig.");
+  if (row.expires_at && new Date(row.expires_at).getTime() < Date.now()) throw new Error("Rabattkoden er utløpt.");
+  if (row.max_redemptions && Number(row.redeemed_count || 0) >= Number(row.max_redemptions)) {
+    throw new Error("Rabattkoden er brukt opp.");
+  }
+
+  return {
+    code: normalized,
+    label: row.label || normalized,
+    percent_off: row.percent_off == null ? null : Number(row.percent_off),
+    amount_off_nok_ore: row.amount_off_nok_ore == null ? null : Number(row.amount_off_nok_ore),
+  } satisfies DiscountCode;
+}
+
+function applyDiscount(unitAmount: number, discount: DiscountCode | null) {
+  if (!discount) return unitAmount;
+  let discounted = unitAmount;
+  if (discount.percent_off) discounted = Math.round(unitAmount * (100 - discount.percent_off) / 100);
+  if (discount.amount_off_nok_ore) discounted = unitAmount - discount.amount_off_nok_ore;
+  return Math.max(0, discounted);
+}
+
 async function getUser(accessToken: string) {
   const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
     headers: {
@@ -238,8 +342,12 @@ async function getProfile(userId: string) {
 }
 
 async function productFromPayload(payload: Record<string, unknown>) {
-  const bundle = BUNDLE_PRODUCTS[productId(payload.productId || payload.bundleCode)];
-  if (bundle) return bundle;
+  const requestedProductId = productId(payload.productId || payload.bundleCode);
+  const managedProduct = await commerceProduct(requestedProductId);
+  if (managedProduct) return managedProduct;
+
+  const bundle = BUNDLE_PRODUCTS[requestedProductId];
+  if (bundle) return { ...bundle, unitAmount: await productPriceOre(bundle) };
 
   const subjectCode = code(payload.subjectCode);
   const subjectName = SUBJECTS[subjectCode];
@@ -266,12 +374,14 @@ function siteUrl(req: Request) {
   return isAllowedOrigin(origin) ? origin : DEFAULT_SITE_URL;
 }
 
-async function createCheckoutSession(req: Request, user: { id?: string; email?: string }, product: CheckoutProduct) {
+async function createCheckoutSession(req: Request, user: { id?: string; email?: string }, product: CheckoutProduct, discount: DiscountCode | null) {
   const secretKey = await stripeSecretKey();
   if (!secretKey) throw new Error("STRIPE_SECRET_KEY mangler.");
   if (!user.id) throw new Error("Kunne ikke lese bruker.");
 
   const baseUrl = siteUrl(req);
+  const finalAmount = applyDiscount(product.unitAmount, discount);
+  if (finalAmount < 100) throw new Error("Rabattkoden gjør beløpet for lavt for Stripe-betaling.");
   const successQuery = product.kind === "subject"
     ? `fag=${encodeURIComponent(product.subjectCodes[0])}`
     : `produkt=${encodeURIComponent(product.id)}`;
@@ -282,7 +392,7 @@ async function createCheckoutSession(req: Request, user: { id?: string; email?: 
   params.set("mode", "payment");
   params.set("line_items[0][quantity]", "1");
   params.set("line_items[0][price_data][currency]", "nok");
-  params.set("line_items[0][price_data][unit_amount]", String(product.unitAmount));
+  params.set("line_items[0][price_data][unit_amount]", String(finalAmount));
   params.set("line_items[0][price_data][product_data][name]", product.name);
   params.set("line_items[0][price_data][product_data][description]", product.description);
   params.set("success_url", `${baseUrl}/user/butikk.html?payment=success&${successQuery}&session_id={CHECKOUT_SESSION_ID}`);
@@ -294,6 +404,12 @@ async function createCheckoutSession(req: Request, user: { id?: string; email?: 
   params.set("metadata[product_kind]", product.kind);
   params.set("metadata[subject_codes]", product.subjectCodes.join(","));
   params.set("metadata[source]", product.source);
+  params.set("metadata[original_amount]", String(product.unitAmount));
+  params.set("metadata[final_amount]", String(finalAmount));
+  if (discount) {
+    params.set("metadata[discount_code]", discount.code);
+    params.set("metadata[discount_label]", discount.label || discount.code);
+  }
   if (product.kind === "subject") params.set("metadata[subject_code]", product.subjectCodes[0]);
 
   const response = await fetch("https://api.stripe.com/v1/checkout/sessions", {
@@ -330,6 +446,7 @@ Deno.serve(async (req: Request) => {
     const payload = await req.json().catch(() => ({}));
     const product = await productFromPayload(payload as Record<string, unknown>);
     if (!product) throw new Error("Ukjent produkt.");
+    const discount = await discountFromCode((payload as Record<string, unknown>).discountCode);
 
     const user = await getUser(accessToken);
     if (!user?.id) throw new Error("Kunne ikke lese bruker.");
@@ -339,7 +456,7 @@ Deno.serve(async (req: Request) => {
       return json(req, 409, { error: "Du har allerede tilgang til dette produktet." });
     }
 
-    const session = await createCheckoutSession(req, user, product);
+    const session = await createCheckoutSession(req, user, product, discount);
     return json(req, 200, { url: session.url });
   } catch (error) {
     return json(req, 400, { error: error instanceof Error ? error.message : "Kunne ikke starte betaling." });
