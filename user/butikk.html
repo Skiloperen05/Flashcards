@@ -80,12 +80,34 @@ a{text-decoration:none;color:inherit}button,input,select{font-family:inherit}
 @keyframes spin{to{transform:rotate(360deg)}}
 .shop-error{display:none;margin-top:9px;padding:10px 12px;border-radius:11px;background:rgba(239,68,68,.10);border:1px solid rgba(239,68,68,.28);color:#fecaca;font-size:12px;font-weight:800}
 .shop-error.show{display:block}
+.admin-commerce{display:none;margin-bottom:20px;padding:18px;border-radius:20px;background:linear-gradient(180deg,rgba(232,188,104,.10),rgba(8,25,56,.88));border:1px solid rgba(232,188,104,.32);box-shadow:0 16px 34px rgba(0,0,0,.22)}
+.admin-commerce.show{display:block}
+.admin-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap;margin-bottom:14px}
+.admin-head strong{display:block;color:#ffd98f;font-size:13px;letter-spacing:.10em;text-transform:uppercase}
+.admin-head span{display:block;color:#cbd7ef;font-size:12.5px;margin-top:4px;line-height:1.45}
+.admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.admin-box{padding:14px;border-radius:16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11);display:grid;gap:10px}
+.admin-box h3{font-size:15px;color:#fff;letter-spacing:-.02em}
+.admin-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.admin-form label{display:grid;gap:5px;color:#cbd7ef;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
+.admin-form input,.admin-form select{width:100%;height:38px;border-radius:11px;border:1px solid rgba(255,255,255,.15);background:rgba(4,14,34,.62);color:#fff;padding:0 10px;font-size:13px;outline:none}
+.admin-form .wide{grid-column:1/-1}
+.admin-actions{display:flex;gap:8px;flex-wrap:wrap}
+.admin-btn{height:36px;padding:0 12px;border-radius:11px;border:0;background:linear-gradient(135deg,#f6b43c,#f09a25);color:#061735;font-size:12px;font-weight:950;cursor:pointer}
+.admin-btn.ghost{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#e6edfb}
+.admin-btn.danger{background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.32);color:#fecaca}
+.admin-list{display:grid;gap:8px;max-height:280px;overflow:auto}
+.admin-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;border-radius:12px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.10);font-size:12px}
+.admin-row b{color:#fff}.admin-row span{color:#9fb1d2}
+.admin-state{min-height:18px;color:#cbd7ef;font-size:12px}
+.discount-row{display:flex;gap:8px;margin:0 0 12px;max-width:520px}
+.discount-row input{height:40px;flex:1;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.055);color:#fff;padding:0 12px}
 .empty{padding:30px;border-radius:20px;border:1px dashed rgba(126,162,255,.25);color:#9fb0cf;text-align:center;background:rgba(255,255,255,.035)}
 .logout{width:100%;height:42px;border-radius:14px;border:1px solid rgba(239,68,68,.25);background:rgba(239,68,68,.08);color:#fecaca;font-weight:850;cursor:pointer}
 .mobile-top{display:none}
-@media(max-width:1280px){.shop-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero-inner{grid-template-columns:1fr}.hero-stats{max-width:520px}}
+@media(max-width:1280px){.shop-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero-inner{grid-template-columns:1fr}.hero-stats{max-width:520px}.admin-grid{grid-template-columns:1fr}}
 @media(max-width:980px){.app{grid-template-columns:1fr}.sidebar{display:none}.main{padding:16px}.mobile-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.topline{display:none}.shop-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero-title{font-size:28px}.hero-stats{grid-template-columns:1fr 1fr 1fr}}
-@media(max-width:620px){.shop-grid,.hero-stats{grid-template-columns:1fr}.hero-inner{padding:18px}.brand-title{font-size:17px;letter-spacing:.16em}.brand-sub{letter-spacing:.28em}}
+@media(max-width:620px){.shop-grid,.hero-stats,.admin-form{grid-template-columns:1fr}.hero-inner{padding:18px}.brand-title{font-size:17px;letter-spacing:.16em}.brand-sub{letter-spacing:.28em}.discount-row{display:grid}}
 </style>
 </head>
 <body>
@@ -119,6 +141,72 @@ a{text-decoration:none;color:inherit}button,input,select{font-family:inherit}
     </header>
 
     <div class="notice" id="lockNotice">Du må låse opp dette faget for å bruke verktøyene.</div>
+
+    <section class="shop-section">
+      <div class="discount-row">
+        <input id="discountCodeInput" type="text" autocomplete="off" placeholder="Rabattkode">
+        <button class="admin-btn ghost" id="applyDiscountBtn" type="button">Bruk kode</button>
+        <button class="admin-btn ghost" id="clearDiscountBtn" type="button" style="display:none">Fjern</button>
+      </div>
+      <div class="admin-state" id="discountState"></div>
+    </section>
+
+    <section class="admin-commerce" id="adminCommerce">
+      <div class="admin-head">
+        <div>
+          <strong>Admin commerce</strong>
+          <span>Endre pakker, priser og rabattkoder direkte fra appen.</span>
+        </div>
+        <div class="admin-state" id="adminState"></div>
+      </div>
+      <div class="admin-grid">
+        <div class="admin-box">
+          <h3>Pakker og pass</h3>
+          <div class="admin-form">
+            <label>Produkt-ID<input id="adminProductId" placeholder="semester-3"></label>
+            <label>Type<select id="adminProductKind"><option value="bundle">Pakke</option><option value="pass">Pass</option></select></label>
+            <label>Navn<input id="adminProductLabel" placeholder="3. semesterpakke"></label>
+            <label>Pris kr<input id="adminProductPrice" type="number" min="1" step="1" placeholder="199"></label>
+            <label class="wide">Fagkoder<input id="adminProductSubjects" placeholder="RET1A, MET1, SAM1A"></label>
+            <label>Prislinje<input id="adminProductPriceSub" placeholder="3 fag samlet"></label>
+            <label>Sortering<input id="adminProductSort" type="number" step="1" placeholder="50"></label>
+            <label>Knappetekst<input id="adminProductCta" placeholder="Kjøp pakke"></label>
+            <label>Farge<input id="adminProductAccent" placeholder="#2f62ff"></label>
+            <label>Ikon<input id="adminProductIcon" maxlength="2" placeholder="P"></label>
+            <label class="wide">Beskrivelse<input id="adminProductDescription" placeholder="Kort forklaring som vises i butikken"></label>
+            <label>Aktiv<select id="adminProductActive"><option value="true">Ja</option><option value="false">Nei</option></select></label>
+          </div>
+          <div class="admin-actions">
+            <button class="admin-btn" id="saveProductBtn" type="button">Lagre pakke</button>
+            <button class="admin-btn ghost" id="newProductBtn" type="button">Ny pakke</button>
+            <button class="admin-btn danger" id="deleteProductBtn" type="button">Slett valgt</button>
+          </div>
+          <div class="admin-list" id="adminProductList"></div>
+        </div>
+        <div class="admin-box">
+          <h3>Rabattkoder</h3>
+          <div class="admin-form">
+            <label>Kode<input id="adminDiscountCode" placeholder="VENN20"></label>
+            <label>Navn<input id="adminDiscountLabel" placeholder="Vennekode"></label>
+            <label>Prosent<input id="adminDiscountPercent" type="number" min="1" max="100" step="1" placeholder="20"></label>
+            <label>Beløp kr<input id="adminDiscountAmount" type="number" min="1" step="1" placeholder="50"></label>
+            <label>Maks bruk<input id="adminDiscountMax" type="number" min="1" step="1" placeholder="100"></label>
+            <label>Utløper<input id="adminDiscountExpires" type="datetime-local"></label>
+            <label>Aktiv<select id="adminDiscountActive"><option value="true">Ja</option><option value="false">Nei</option></select></label>
+          </div>
+          <div class="admin-actions">
+            <button class="admin-btn" id="saveDiscountBtn" type="button">Lagre kode</button>
+            <button class="admin-btn ghost" id="newDiscountBtn" type="button">Ny kode</button>
+            <button class="admin-btn danger" id="deleteDiscountBtn" type="button">Slett valgt</button>
+          </div>
+          <div class="admin-list" id="adminDiscountList"></div>
+        </div>
+        <div class="admin-box">
+          <h3>Enkeltfagpriser</h3>
+          <div class="admin-list" id="adminPriceList"></div>
+        </div>
+      </div>
+    </section>
 
     <section class="hero-panel">
       <div class="hero-inner">
@@ -179,15 +267,65 @@ var BUNDLES = [
 
 var SUBJECT_PRICE_LABEL = '49 kr';
 var FIRST_FREE_LABEL = 'Gratis første fag';
+var SHOP_PRODUCTS = BUNDLES.slice();
+var MANAGED_PRODUCTS = [];
+var COMMERCE_LOADED = false;
+var SUBJECT_PRICES = {};
+var DISCOUNT_CODE = '';
+var DISCOUNT_CODES = [];
+var SELECTED_PRODUCT_ID = '';
+var SELECTED_DISCOUNT_CODE = '';
 
 function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});}
 function getQuery(name){return new URLSearchParams(window.location.search).get(name);}
 function nameFromEmail(email){var u=(email||'student').split('@')[0];return u.charAt(0).toUpperCase()+u.slice(1);}
 function subjectByCode(code){return SUBJECTS.find(function(s){return s.code===code})}
-function bundleById(id){return BUNDLES.find(function(p){return p.id===id})}
+function bundleById(id){return SHOP_PRODUCTS.find(function(p){return p.id===id}) || BUNDLES.find(function(p){return p.id===id})}
 function productLabel(id){var p=bundleById(id);return p?p.title:String(id||'produktet')}
 function hasAllAccess(ent){return !!(ent&&ent.hasBypass&&ent.hasBypass())}
 function ownsAll(codes, owned){return (codes||[]).every(function(code){return owned.indexOf(code)!==-1})}
+function codeValue(value){return String(value||'').toUpperCase().replace(/[\s-]+/g,'');}
+function productIdValue(value){return String(value||'').toLowerCase().trim().replace(/[^a-z0-9-]+/g,'');}
+function codesFromText(value){return String(value||'').split(',').map(codeValue).filter(Boolean).filter(function(item,index,arr){return arr.indexOf(item)===index;});}
+function krFromOre(ore){var amount=Number(ore||0)/100;return amount%1===0?String(amount):amount.toFixed(2).replace('.',',');}
+function labelFromOre(ore){return krFromOre(ore)+' kr';}
+function oreFromKr(value){return Math.round(Number(String(value||'').replace(',','.'))*100);}
+function subjectPriceLabel(code){return SUBJECT_PRICES[code] != null ? labelFromOre(SUBJECT_PRICES[code]) : SUBJECT_PRICE_LABEL;}
+function getClient(){return window.AuthGuard && typeof window.AuthGuard.getClient==='function' ? window.AuthGuard.getClient() : null;}
+function currentUserId(){var s=window.AuthGuard && window.AuthGuard.getSession ? window.AuthGuard.getSession() : null;return s && s.user && s.user.id || null;}
+function isAdminUser(){return !!(window.HaugnesEntitlements && window.HaugnesEntitlements.effectiveAdmin && window.HaugnesEntitlements.effectiveAdmin());}
+function setAdminState(message){var el=document.getElementById('adminState');if(el) el.textContent=message||'';}
+function normalizeDiscount(value){return String(value||'').trim().toUpperCase().replace(/\s+/g,'');}
+function activeDiscountPayload(){return DISCOUNT_CODE ? { discountCode: DISCOUNT_CODE } : {};}
+
+function productFromRow(row){
+  var codes=Array.isArray(row.subject_codes)?row.subject_codes.map(codeValue).filter(Boolean):[];
+  if (row.product_kind==='pass' && !codes.length) codes=SUBJECTS.map(function(s){return s.code;});
+  return {
+    id: row.product_id,
+    title: row.label || row.product_id,
+    sub: codes.join(' · ') || (row.product_kind==='pass'?'Alle fag':'Fagpakke'),
+    accent: row.accent || '#2f62ff',
+    icon: row.icon || 'P',
+    price: labelFromOre(row.price_nok_ore),
+    priceSub: row.price_sub || '',
+    cta: row.cta || 'Kjøp pakke',
+    summary: row.description || '',
+    subjectCodes: codes,
+    active: row.active !== false,
+    sortOrder: Number(row.sort_order || 0),
+    kind: row.product_kind === 'pass' ? 'pass' : 'bundle',
+    raw: row
+  };
+}
+
+function refreshShopProducts(){
+  if (COMMERCE_LOADED) {
+    SHOP_PRODUCTS = MANAGED_PRODUCTS.filter(function(p){return p.active;}).sort(function(a,b){return a.sortOrder-b.sortOrder || a.title.localeCompare(b.title);});
+  } else {
+    SHOP_PRODUCTS = BUNDLES.slice();
+  }
+}
 
 function showLockNotice(){
   var reason=(getQuery('reason')||'').toLowerCase();
@@ -237,11 +375,11 @@ function render(){
   document.getElementById('statOwned').textContent=ownedCount;
   document.getElementById('statAvailable').textContent=Math.max(0, SUBJECTS.length-ownedCount);
   document.getElementById('statTotal').textContent=SUBJECTS.length;
-  document.getElementById('bundleCount').textContent=BUNDLES.length+' pakker';
+  document.getElementById('bundleCount').textContent=SHOP_PRODUCTS.length+' pakker';
 
   if (!SUBJECTS.length){empty.style.display='block';grid.innerHTML='';bundleGrid.innerHTML='';return;}
   empty.style.display='none';
-  bundleGrid.innerHTML=BUNDLES.map(function(p){
+  bundleGrid.innerHTML=SHOP_PRODUCTS.map(function(p){
     var has=allAccess||ownsAll(p.subjectCodes, owned);
     var status=!entReady?'<span class="status-pill available">Laster</span>':has?'<span class="status-pill owned">Inkludert</span>':'<span class="status-pill available">Tilgjengelig</span>';
     var subjects=p.subjectCodes.map(function(code){var s=subjectByCode(code);return '<span>'+esc(code)+(s?' · '+esc(s.name):'')+'</span>'}).join('');
@@ -265,7 +403,7 @@ function render(){
   grid.innerHTML=SUBJECTS.map(function(s){
     var has=allAccess||owned.indexOf(s.code)!==-1;
     var status=!entReady?'<span class="status-pill available">Laster</span>':has?'<span class="status-pill owned">Låst opp</span>':'<span class="status-pill available">Tilgjengelig</span>';
-    var price=canClaimFree?FIRST_FREE_LABEL:SUBJECT_PRICE_LABEL;
+    var price=canClaimFree?FIRST_FREE_LABEL:subjectPriceLabel(s.code);
     var currency=canClaimFree?'for nye brukere':'per fag';
     var cta=!entReady
       ? '<button class="shop-cta" disabled><span class="spinner"></span><span class="cta-text">Laster tilgang…</span></button>'
@@ -284,6 +422,7 @@ function render(){
       + '<div class="shop-error" data-error="'+esc(s.code)+'"></div>'
       + '</article>';
   }).join('');
+  renderAdminCommerce();
   bind();
 }
 
@@ -304,6 +443,7 @@ function startCheckout(payload, btn, errBox, idleText){
     }
     return;
   }
+  Object.assign(payload, activeDiscountPayload());
   setLoading(btn, true, idleText, 'Sender til Stripe…');
   fetch('https://qnwjhheoekpqqqhevztw.supabase.co/functions/v1/create-stripe-checkout', {
     method: 'POST',
@@ -387,6 +527,277 @@ function bind(){
   });
 }
 
+function bindDiscountControls(){
+  var input=document.getElementById('discountCodeInput');
+  var apply=document.getElementById('applyDiscountBtn');
+  var clear=document.getElementById('clearDiscountBtn');
+  var state=document.getElementById('discountState');
+  if (apply) apply.onclick=function(){
+    var value=normalizeDiscount(input&&input.value);
+    if (!value){
+      DISCOUNT_CODE='';
+      if (state) state.textContent='Skriv inn en rabattkode først.';
+      if (clear) clear.style.display='none';
+      return;
+    }
+    DISCOUNT_CODE=value;
+    if (input) input.value=value;
+    if (state) state.textContent='Rabattkode '+value+' brukes i Stripe når du kjøper.';
+    if (clear) clear.style.display='';
+  };
+  if (clear) clear.onclick=function(){
+    DISCOUNT_CODE='';
+    if (input) input.value='';
+    if (state) state.textContent='';
+    clear.style.display='none';
+  };
+}
+
+function loadCommerceData(){
+  var sb=getClient();
+  if (!sb) return Promise.resolve();
+  var productSelect='product_id,label,product_kind,subject_codes,description,price_sub,cta,accent,icon,price_nok_ore,active,sort_order';
+  var work=[
+    sb.from('subject_prices').select('subject_code,price_nok_ore'),
+    sb.from('commerce_products').select(productSelect).order('sort_order', { ascending: true })
+  ];
+  if (isAdminUser()) {
+    work.push(sb.from('discount_codes').select('code,label,percent_off,amount_off_nok_ore,active,expires_at,max_redemptions,redeemed_count').order('code', { ascending: true }));
+  }
+  return Promise.all(work).then(function(results){
+    var prices=results[0];
+    var products=results[1];
+    var discounts=results[2];
+    if (prices && prices.data) {
+      SUBJECT_PRICES={};
+      prices.data.forEach(function(row){SUBJECT_PRICES[codeValue(row.subject_code)]=Number(row.price_nok_ore);});
+    }
+    if (products && products.data) {
+      COMMERCE_LOADED=true;
+      MANAGED_PRODUCTS=products.data.map(productFromRow);
+      refreshShopProducts();
+    }
+    if (discounts && discounts.data) DISCOUNT_CODES=discounts.data;
+    render();
+  }).catch(function(){
+    renderAdminCommerce();
+  });
+}
+
+function renderAdminCommerce(){
+  var panel=document.getElementById('adminCommerce');
+  if (!panel) return;
+  var show=isAdminUser();
+  panel.classList.toggle('show', show);
+  if (!show) return;
+  renderAdminProducts();
+  renderAdminPrices();
+  renderAdminDiscounts();
+}
+
+function renderAdminProducts(){
+  var list=document.getElementById('adminProductList');
+  if (!list) return;
+  var products=MANAGED_PRODUCTS.slice().sort(function(a,b){return a.sortOrder-b.sortOrder || a.title.localeCompare(b.title);});
+  if (!products.length){list.innerHTML='<div class="admin-row"><span>Ingen pakker er lastet ennå.</span></div>';return;}
+  list.innerHTML=products.map(function(p){
+    return '<div class="admin-row">'
+      + '<div><b>'+esc(p.title)+'</b><br><span>'+esc(p.id)+' · '+esc(p.price)+' · '+(p.active?'aktiv':'inaktiv')+'</span></div>'
+      + '<div class="admin-actions"><button class="admin-btn ghost" type="button" data-edit-product="'+esc(p.id)+'">Rediger</button><button class="admin-btn danger" type="button" data-remove-product="'+esc(p.id)+'">Slett</button></div>'
+      + '</div>';
+  }).join('');
+  list.querySelectorAll('[data-edit-product]').forEach(function(btn){btn.onclick=function(){fillProductForm(btn.getAttribute('data-edit-product'));};});
+  list.querySelectorAll('[data-remove-product]').forEach(function(btn){btn.onclick=function(){deleteProduct(btn.getAttribute('data-remove-product'));};});
+}
+
+function fillProductForm(id){
+  var p=MANAGED_PRODUCTS.find(function(item){return item.id===id;});
+  SELECTED_PRODUCT_ID=id||'';
+  document.getElementById('adminProductId').value=p?p.id:'';
+  document.getElementById('adminProductKind').value=p?p.kind:'bundle';
+  document.getElementById('adminProductLabel').value=p?p.title:'';
+  document.getElementById('adminProductPrice').value=p?krFromOre(p.raw.price_nok_ore):'';
+  document.getElementById('adminProductSubjects').value=p?p.subjectCodes.join(', '):'';
+  document.getElementById('adminProductPriceSub').value=p?(p.priceSub||''):'';
+  document.getElementById('adminProductSort').value=p?String(p.sortOrder):'';
+  document.getElementById('adminProductCta').value=p?(p.cta||''):'';
+  document.getElementById('adminProductAccent').value=p?(p.accent||''):'';
+  document.getElementById('adminProductIcon').value=p?(p.icon||''):'';
+  document.getElementById('adminProductDescription').value=p?(p.summary||''):'';
+  document.getElementById('adminProductActive').value=p&&p.active===false?'false':'true';
+}
+
+function resetProductForm(){SELECTED_PRODUCT_ID='';fillProductForm('');document.getElementById('adminProductActive').value='true';}
+
+function saveProduct(){
+  var sb=getClient();
+  var userId=currentUserId();
+  if (!sb || !userId) return;
+  var id=productIdValue(document.getElementById('adminProductId').value);
+  var kind=document.getElementById('adminProductKind').value==='pass'?'pass':'bundle';
+  var label=document.getElementById('adminProductLabel').value.trim();
+  var priceOre=oreFromKr(document.getElementById('adminProductPrice').value);
+  var subjectCodes=codesFromText(document.getElementById('adminProductSubjects').value);
+  if (kind==='pass' && !subjectCodes.length) subjectCodes=SUBJECTS.map(function(s){return s.code;});
+  if (!id || !label || !priceOre || priceOre < 100 || !subjectCodes.length){
+    setAdminState('Mangler produkt-ID, navn, pris eller fagkoder.');
+    return;
+  }
+  var row={
+    product_id:id,
+    product_kind:kind,
+    label:label,
+    subject_codes:subjectCodes,
+    price_nok_ore:priceOre,
+    price_sub:document.getElementById('adminProductPriceSub').value.trim(),
+    cta:document.getElementById('adminProductCta').value.trim() || 'Kjøp pakke',
+    accent:document.getElementById('adminProductAccent').value.trim() || '#2f62ff',
+    icon:document.getElementById('adminProductIcon').value.trim() || 'P',
+    description:document.getElementById('adminProductDescription').value.trim(),
+    active:document.getElementById('adminProductActive').value==='true',
+    sort_order:Number(document.getElementById('adminProductSort').value || 0),
+    updated_by:userId,
+    updated_at:new Date().toISOString()
+  };
+  setAdminState('Lagrer pakke...');
+  sb.from('commerce_products').upsert(row, { onConflict:'product_id' }).then(function(result){
+    if (result.error) throw result.error;
+    setAdminState('Pakke lagret.');
+    return loadCommerceData();
+  }).catch(function(e){setAdminState((e&&e.message)||'Kunne ikke lagre pakke.');});
+}
+
+function deleteProduct(id){
+  var sb=getClient();
+  if (!sb || !id) return;
+  if (!window.confirm('Slette pakken '+id+'?')) return;
+  setAdminState('Sletter pakke...');
+  sb.from('commerce_products').delete().eq('product_id', id).then(function(result){
+    if (result.error) throw result.error;
+    if (SELECTED_PRODUCT_ID===id) resetProductForm();
+    setAdminState('Pakke slettet.');
+    return loadCommerceData();
+  }).catch(function(e){setAdminState((e&&e.message)||'Kunne ikke slette pakke.');});
+}
+
+function renderAdminPrices(){
+  var list=document.getElementById('adminPriceList');
+  if (!list) return;
+  list.innerHTML=SUBJECTS.map(function(s){
+    return '<div class="admin-row">'
+      + '<div><b>'+esc(s.code)+'</b><br><span>'+esc(s.name)+'</span></div>'
+      + '<div class="admin-actions"><input data-price-input="'+esc(s.code)+'" type="number" min="1" step="1" value="'+esc(krFromOre(SUBJECT_PRICES[s.code]||4900))+'" style="width:78px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(4,14,34,.62);color:#fff;padding:0 8px"><button class="admin-btn ghost" type="button" data-save-price="'+esc(s.code)+'">Lagre</button></div>'
+      + '</div>';
+  }).join('');
+  list.querySelectorAll('[data-save-price]').forEach(function(btn){btn.onclick=function(){saveSubjectPrice(btn.getAttribute('data-save-price'));};});
+}
+
+function saveSubjectPrice(subjectCode){
+  var sb=getClient();
+  var userId=currentUserId();
+  var input=document.querySelector('[data-price-input="'+subjectCode+'"]');
+  var priceOre=oreFromKr(input&&input.value);
+  if (!sb || !userId || !priceOre || priceOre < 100){setAdminState('Ugyldig fagpris.');return;}
+  setAdminState('Lagrer fagpris...');
+  sb.from('subject_prices').upsert({
+    subject_code:subjectCode,
+    price_nok_ore:priceOre,
+    updated_by:userId,
+    updated_at:new Date().toISOString()
+  }, { onConflict:'subject_code' }).then(function(result){
+    if (result.error) throw result.error;
+    setAdminState('Fagpris lagret.');
+    return loadCommerceData();
+  }).catch(function(e){setAdminState((e&&e.message)||'Kunne ikke lagre fagpris.');});
+}
+
+function renderAdminDiscounts(){
+  var list=document.getElementById('adminDiscountList');
+  if (!list) return;
+  if (!DISCOUNT_CODES.length){list.innerHTML='<div class="admin-row"><span>Ingen rabattkoder ennå.</span></div>';return;}
+  list.innerHTML=DISCOUNT_CODES.map(function(d){
+    var value=d.percent_off ? d.percent_off+'%' : labelFromOre(d.amount_off_nok_ore);
+    var usage=Number(d.redeemed_count||0)+(d.max_redemptions?'/'+d.max_redemptions:'');
+    return '<div class="admin-row">'
+      + '<div><b>'+esc(d.code)+'</b><br><span>'+esc(value)+' · '+(d.active?'aktiv':'inaktiv')+' · brukt '+esc(usage)+'</span></div>'
+      + '<div class="admin-actions"><button class="admin-btn ghost" type="button" data-edit-discount="'+esc(d.code)+'">Rediger</button><button class="admin-btn danger" type="button" data-remove-discount="'+esc(d.code)+'">Slett</button></div>'
+      + '</div>';
+  }).join('');
+  list.querySelectorAll('[data-edit-discount]').forEach(function(btn){btn.onclick=function(){fillDiscountForm(btn.getAttribute('data-edit-discount'));};});
+  list.querySelectorAll('[data-remove-discount]').forEach(function(btn){btn.onclick=function(){deleteDiscount(btn.getAttribute('data-remove-discount'));};});
+}
+
+function fillDiscountForm(code){
+  var d=DISCOUNT_CODES.find(function(item){return item.code===code;});
+  SELECTED_DISCOUNT_CODE=code||'';
+  document.getElementById('adminDiscountCode').value=d?d.code:'';
+  document.getElementById('adminDiscountLabel').value=d?(d.label||''):'';
+  document.getElementById('adminDiscountPercent').value=d&&d.percent_off?String(d.percent_off):'';
+  document.getElementById('adminDiscountAmount').value=d&&d.amount_off_nok_ore?krFromOre(d.amount_off_nok_ore):'';
+  document.getElementById('adminDiscountMax').value=d&&d.max_redemptions?String(d.max_redemptions):'';
+  document.getElementById('adminDiscountExpires').value=d&&d.expires_at?String(d.expires_at).slice(0,16):'';
+  document.getElementById('adminDiscountActive').value=d&&d.active===false?'false':'true';
+}
+
+function resetDiscountForm(){SELECTED_DISCOUNT_CODE='';fillDiscountForm('');document.getElementById('adminDiscountActive').value='true';}
+
+function saveDiscount(){
+  var sb=getClient();
+  var userId=currentUserId();
+  if (!sb || !userId) return;
+  var code=normalizeDiscount(document.getElementById('adminDiscountCode').value);
+  var percent=Number(document.getElementById('adminDiscountPercent').value || 0);
+  var amountOre=oreFromKr(document.getElementById('adminDiscountAmount').value);
+  var max=Number(document.getElementById('adminDiscountMax').value || 0);
+  var expires=document.getElementById('adminDiscountExpires').value;
+  if (!code || (!percent && !amountOre)){setAdminState('Rabattkode må ha kode og enten prosent eller beløp.');return;}
+  var row={
+    code:code,
+    label:document.getElementById('adminDiscountLabel').value.trim(),
+    percent_off:percent || null,
+    amount_off_nok_ore:amountOre || null,
+    max_redemptions:max || null,
+    expires_at:expires ? new Date(expires).toISOString() : null,
+    active:document.getElementById('adminDiscountActive').value==='true',
+    updated_by:userId,
+    updated_at:new Date().toISOString()
+  };
+  setAdminState('Lagrer rabattkode...');
+  sb.from('discount_codes').upsert(row, { onConflict:'code' }).then(function(result){
+    if (result.error) throw result.error;
+    setAdminState('Rabattkode lagret.');
+    return loadCommerceData();
+  }).catch(function(e){setAdminState((e&&e.message)||'Kunne ikke lagre rabattkode.');});
+}
+
+function deleteDiscount(code){
+  var sb=getClient();
+  if (!sb || !code) return;
+  if (!window.confirm('Slette rabattkoden '+code+'?')) return;
+  setAdminState('Sletter rabattkode...');
+  sb.from('discount_codes').delete().eq('code', code).then(function(result){
+    if (result.error) throw result.error;
+    if (SELECTED_DISCOUNT_CODE===code) resetDiscountForm();
+    setAdminState('Rabattkode slettet.');
+    return loadCommerceData();
+  }).catch(function(e){setAdminState((e&&e.message)||'Kunne ikke slette rabattkode.');});
+}
+
+function bindAdminControls(){
+  var saveProductBtn=document.getElementById('saveProductBtn');
+  var newProductBtn=document.getElementById('newProductBtn');
+  var deleteProductBtn=document.getElementById('deleteProductBtn');
+  var saveDiscountBtn=document.getElementById('saveDiscountBtn');
+  var newDiscountBtn=document.getElementById('newDiscountBtn');
+  var deleteDiscountBtn=document.getElementById('deleteDiscountBtn');
+  if (saveProductBtn) saveProductBtn.onclick=saveProduct;
+  if (newProductBtn) newProductBtn.onclick=resetProductForm;
+  if (deleteProductBtn) deleteProductBtn.onclick=function(){deleteProduct(SELECTED_PRODUCT_ID || productIdValue(document.getElementById('adminProductId').value));};
+  if (saveDiscountBtn) saveDiscountBtn.onclick=saveDiscount;
+  if (newDiscountBtn) newDiscountBtn.onclick=resetDiscountForm;
+  if (deleteDiscountBtn) deleteDiscountBtn.onclick=function(){deleteDiscount(SELECTED_DISCOUNT_CODE || normalizeDiscount(document.getElementById('adminDiscountCode').value));};
+}
+
 function handleLogout(){ if (window.AuthGuard) return window.AuthGuard.logout(); }
 window.handleLogout = handleLogout;
 
@@ -400,6 +811,8 @@ window.onUserAuthorized = function(session){
 
 (function boot(){
   showLockNotice();
+  bindDiscountControls();
+  bindAdminControls();
   render();
   function waitForGuard(){
     if (!window.AuthGuard || typeof window.AuthGuard.requireAuth !== 'function'){
@@ -411,10 +824,11 @@ window.onUserAuthorized = function(session){
       function whenEntitlementsReady(){
         if (window.HaugnesEntitlements && window.HaugnesEntitlements.isLoaded()){
           render();
+          loadCommerceData();
           return;
         }
         if (window.HaugnesEntitlements && typeof window.HaugnesEntitlements.load === 'function'){
-          window.HaugnesEntitlements.load().then(render).catch(render);
+          window.HaugnesEntitlements.load().then(function(){render();return loadCommerceData();}).catch(render);
           return;
         }
         window.setTimeout(whenEntitlementsReady, 30);

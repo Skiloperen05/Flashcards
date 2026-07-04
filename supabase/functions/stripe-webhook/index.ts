@@ -175,17 +175,45 @@ async function grantFriendPass(userId: string) {
   if (!response.ok) throw new Error(`Kunne ikke aktivere Vennepass (${response.status}).`);
 }
 
+async function markDiscountRedeemed(discountCode: string) {
+  const normalized = code(discountCode);
+  if (!normalized) return;
+
+  const readResponse = await fetch(
+    `${SUPABASE_URL}/rest/v1/discount_codes?code=eq.${encodeURIComponent(normalized)}&select=redeemed_count&limit=1`,
+    { headers: adminHeaders() },
+  );
+
+  if (!readResponse.ok) throw new Error(`Kunne ikke lese rabattkode (${readResponse.status}).`);
+  const rows = await readResponse.json();
+  const row = Array.isArray(rows) ? rows[0] : null;
+  if (!row) return;
+
+  const updateResponse = await fetch(`${SUPABASE_URL}/rest/v1/discount_codes?code=eq.${encodeURIComponent(normalized)}`, {
+    method: "PATCH",
+    headers: adminHeaders({
+      "Content-Type": "application/json",
+      Prefer: "return=minimal",
+    }),
+    body: JSON.stringify({ redeemed_count: Number(row.redeemed_count || 0) + 1 }),
+  });
+
+  if (!updateResponse.ok) throw new Error(`Kunne ikke oppdatere rabattkode (${updateResponse.status}).`);
+}
+
 async function grantPurchase(session: Record<string, unknown>) {
   const metadata = (session.metadata || {}) as Record<string, unknown>;
   const userId = String(metadata.user_id || "");
   const subjectCodes = codesFromMetadata(metadata);
   const productKind = String(metadata.product_kind || "subject");
   const source = String(metadata.source || (productKind === "bundle" ? "stripe_bundle" : "stripe"));
+  const discountCode = code(metadata.discount_code);
 
   if (!userId || !subjectCodes.length) throw new Error("Stripe-session mangler kjøpsmetadata.");
 
   await grantSubjectEntitlements(session, userId, subjectCodes, source);
   if (productKind === "pass") await grantFriendPass(userId);
+  if (discountCode) await markDiscountRedeemed(discountCode);
 }
 
 Deno.serve(async (req: Request) => {
