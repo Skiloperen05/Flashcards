@@ -6,11 +6,11 @@
 -- ============================================================
 
 -- ------------------------------------------------------------
--- 1. Per-user storage (custom subjects, subject ratings, stats)
+-- 1. Per-user storage (custom subjects, stats)
 -- ------------------------------------------------------------
 create table if not exists user_custom_data (
   user_id    uuid primary key references auth.users(id) on delete cascade,
-  data       jsonb not null default '{"subjects":[],"decks":{},"subjectRatings":{}}'::jsonb,
+  data       jsonb not null default '{"subjects":[],"decks":{}}'::jsonb,
   updated_at timestamptz not null default now()
 );
 
@@ -40,48 +40,8 @@ create policy "Users manage own stats"
   using  ((select auth.uid()) = user_id)
   with check ((select auth.uid()) = user_id);
 
-create table if not exists public.profiles (
-  id        uuid primary key references auth.users(id) on delete cascade,
-  email     text,
-  is_admin  boolean not null default false,
-  is_friend boolean not null default false
-);
-
-alter table public.profiles enable row level security;
-
 -- ------------------------------------------------------------
--- 2. Global admin-managed content
---    Known keys used by the app:
---    - 'flashcards_custom_data' (flashcards/index.html admin decks)
---    - 'published_memos' (user/memoarer.html; shape:
---      {"memos":[{id,subject_code,title,summary,body,link,updated_at}]})
--- ------------------------------------------------------------
-create table if not exists public.admin_content (
-  key        text primary key,
-  content    jsonb not null default '{}'::jsonb,
-  updated_by uuid references auth.users(id) on delete set null,
-  updated_at timestamptz not null default now()
-);
-
-alter table public.admin_content enable row level security;
-
-drop policy if exists "Authenticated users read admin content" on public.admin_content;
-create policy "Authenticated users read admin content"
-  on public.admin_content
-  for select
-  to authenticated
-  using (true);
-
-drop policy if exists "Admins manage admin content" on public.admin_content;
-create policy "Admins manage admin content"
-  on public.admin_content
-  for all
-  to authenticated
-  using (exists (select 1 from public.profiles where id = (select auth.uid()) and is_admin = true))
-  with check (exists (select 1 from public.profiles where id = (select auth.uid()) and is_admin = true));
-
--- ------------------------------------------------------------
--- 3. Profiles + admin flag
+-- 2. Profiles + admin flag
 -- ------------------------------------------------------------
 create or replace function public.handle_new_user()
 returns trigger
@@ -149,49 +109,7 @@ begin
 end $$;
 
 -- ------------------------------------------------------------
--- 4. Private server config (service-role only)
--- ------------------------------------------------------------
-create table if not exists public.app_private_config (
-  key text primary key,
-  value text not null,
-  updated_at timestamptz not null default now()
-);
-
-alter table public.app_private_config enable row level security;
-
-revoke all on public.app_private_config from anon, authenticated;
-
--- ------------------------------------------------------------
--- 4b. Subject prices (read-only for clients, edited via service role)
--- ------------------------------------------------------------
-create table if not exists public.subject_prices (
-  subject_code text primary key,
-  price_nok_ore integer not null check (price_nok_ore >= 300),
-  updated_at timestamptz not null default now()
-);
-
-alter table public.subject_prices enable row level security;
-
-drop policy if exists "subject_prices_read" on public.subject_prices;
-create policy "subject_prices_read" on public.subject_prices
-  for select to anon, authenticated using (true);
-
-insert into public.subject_prices (subject_code, price_nok_ore) values
-  ('RET14', 4900),
-  ('SOL1', 4900),
-  ('SAM2', 4900),
-  ('SAM3', 4900),
-  ('MET2', 4900),
-  ('MAT10', 4900),
-  ('SAM1A', 4900),
-  ('MET1', 4900),
-  ('KOM1', 4900),
-  ('RET1A', 4900),
-  ('BED1', 4900)
-on conflict (subject_code) do nothing;
-
--- ------------------------------------------------------------
--- 5. Subject entitlements (paywall – per-subject ownership)
+-- 3. Subject entitlements (paywall – per-subject ownership)
 -- ------------------------------------------------------------
 create table if not exists public.subject_entitlements (
   id           bigserial primary key,
@@ -223,26 +141,8 @@ create policy "Users read own entitlements"
 
 -- First free subject: users may insert one free entitlement themselves.
 -- Paid entitlements are inserted by trusted server code, e.g. the Stripe webhook
--- using the Supabase service-role key.
--- NOTE: the "no existing entitlements" check must live in a security definer
--- function. Querying subject_entitlements directly inside its own policy makes
--- Postgres abort every insert with "infinite recursion detected in policy".
-create or replace function public.has_any_entitlement()
-returns boolean
-language sql
-stable
-security definer
-set search_path = public, pg_temp
-as $$
-  select exists (
-    select 1 from public.subject_entitlements
-    where user_id = (select auth.uid())
-  );
-$$;
-
-revoke execute on function public.has_any_entitlement() from public, anon;
-grant execute on function public.has_any_entitlement() to authenticated;
-
+-- using the Supabase service-role key. Current paid sources are:
+--   stripe, stripe_bundle, stripe_friend_pass
 drop policy if exists "Users claim free entitlement" on public.subject_entitlements;
 create policy "Users claim free entitlement"
   on public.subject_entitlements
@@ -251,7 +151,10 @@ create policy "Users claim free entitlement"
   with check (
     (select auth.uid()) = user_id
     and source = 'free'
-    and not public.has_any_entitlement()
+    and not exists (
+      select 1 from public.subject_entitlements existing
+      where existing.user_id = (select auth.uid())
+    )
   );
 
 drop policy if exists "Users release own entitlement" on public.subject_entitlements;
@@ -284,7 +187,7 @@ revoke execute on function public.has_subject_entitlement(text) from public, ano
 grant execute on function public.has_subject_entitlement(text) to authenticated;
 
 -- ------------------------------------------------------------
--- 5. A-besvarelser (premium content metadata)
+-- 4. A-besvarelser (premium content metadata)
 --    Rows are only readable for users with entitlement on the package's
 --    subject. PDF URLs are therefore not exposed in any client bundle.
 -- ------------------------------------------------------------

@@ -13,7 +13,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 ## App Shape
 
 - Static web app deployed from this repository.
-- Deployment: `bhflashcards.no` is served by GitHub Pages (no serverless functions). Runtime API endpoints are Supabase Edge Functions.
+- Cloudflare Pages is the target frontend host: no build command, publish/output directory `.`.
 - Main public landing page: `index.html`.
 - Login/auth entry: `login.html`.
 - Authenticated user pages: `user/`.
@@ -21,20 +21,21 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Shared behavior, data, styling, and page enhancement scripts: `shared/`.
 - Supabase setup/schema seed reference: `supabase-setup.sql`.
 - Supabase Edge Functions: `supabase/functions/`.
-- Stripe payment/webhook functions: `supabase/functions/create-stripe-checkout/`, `supabase/functions/stripe-webhook/`.
+- Cloudflare Pages headers: `_headers`.
+- Netlify is not an active deployment target; Netlify config/functions have been removed.
+- Stripe checkout/webhook functions: `supabase/functions/create-stripe-checkout/`, `supabase/functions/stripe-webhook/`.
 
 ## User Pages
 
 - Dashboard: `user/index.html`.
 - Subject management: `user/subjects.html`.
-- Personal subject ratings on `user/subjects.html` use `localStorage` key `hf_subject_ratings_v1` as a cache and sync to `user_custom_data.data.subjectRatings` after auth.
-- Shop/entitlement claiming and Stripe checkout entry: `user/butikk.html`.
-- Exam analysis hub (all subjects, entitlement-aware): `user/eksamensanalyse.html`. Cards are built from `shared/subject-meta.js` + the `eksamen` resources in `shared/subject-resources.js`; the sidebar "Eksamensanalyse" item points here (was previously hardcoded to `ret14/eksamen/`).
-- A-besvarelser / eksamensarkiv shell: `user/a-besvarelser.html`. Admins get inline CRUD for packages/resources via `shared/haugnes-answer-admin.js` (loaded by `shared/haugnes-answer-library.js`).
-- Memoarer: `user/memoarer.html` + `shared/haugnes-memo-library.js`. Published memoarer live in Supabase `admin_content` key `published_memos`; admins create/edit/delete them in place on the page. A built-in card links to the static SAM2 memoar page.
+- Shop/entitlement claiming and Stripe checkout entry for subjects, bundles, and Vennepass: `user/butikk.html`.
+- Exam analysis catalog with only published/direct analysis links: `user/eksamensanalyse.html`.
+- A-besvarelser / eksamensarkiv shell: `user/a-besvarelser.html`.
 - Oppgavebank shell: `user/oppgavebank.html`.
 - Study plan shell: `user/studieplan.html`.
-- Notes/settings/progress/achievements: `user/notater.html`, `user/settings.html`, `user/progress.html`, `user/achievements.html`. Settings uses `localStorage` key `hf_user_settings_v2` for instant live preferences and syncs to `user_custom_data.data.settings`; avatar choices use `assets/illustrations/`.
+- Notes/settings: `user/notater.html`, `user/settings.html`.
+- Removed user pages: `user/progress.html`, `user/achievements.html`.
 - User-page loader/enhancer: `user/auth-guard.js`.
 
 ## Shared Core Scripts
@@ -42,37 +43,12 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Auth/session/client bootstrap: `shared/auth-guard.js`.
 - Entitlements and subject access: `shared/entitlements.js`, `shared/subject-access.js`, `shared/subject-gate.js`.
 - Subject metadata: `shared/subject-meta.js`.
-- Generated learning content contract: `shared/learning-content.js` exposes `window.HaugnesLearningContent`.
 - Subject page rendering/data/enhancements: `shared/subject-page-renderer.js`, `shared/subject-page-data.js`, `shared/subject-page-enhancements.js`, `shared/subject-resources.js`.
 - Dashboard dynamic progress/recommendations and some legacy SAM3 package pointers: `shared/haugnes-dashboard-progress.js`.
 - A-besvarelser / eksamensarkiv dynamic package UI: `shared/haugnes-answer-library.js`.
-- User sidebar normalization + global sidebar: `shared/user-sidebar.js`. On `/user/` pages it normalizes the existing sidebar; on all other app pages (subject hubs, tools, flashcards) it injects a fixed, collapsible left menu (`.hf-global-sidebar`, localStorage key `hf_global_sidebar_hidden`). Loaded globally from `shared/auth-guard.js` (`loadGlobalPolish`).
-- Admin inline editing: `shared/haugnes-answer-admin.js` (answer packages/resources CRUD on `user/a-besvarelser.html`), `shared/haugnes-memo-library.js` (memoar publishing on `user/memoarer.html`), `shared/haugnes-rating-admin.js` (subject ratings). All rely on `profiles.is_admin` + existing RLS admin policies.
+- User sidebar normalization: `shared/user-sidebar.js`.
 - TimeEdit/NHH schedule integration: `shared/timeedit-fetch-proxy.js`, `shared/nhh-schedule-api.js`, `shared/nhh-schedule-normalizer.js`, `shared/nhh-strict-course-filter.js`, `shared/haugnes-studyplan.js`. Runtime proxy target is the Supabase `timeedit` Edge Function.
 - Flashcard session shared logic: `shared/haugnes-flashcard-session.js`, `shared/haugnes-flashcards-structure.js`.
-
-## Learning Content Platform
-
-- Editable source catalog: `data/learning-content.json`.
-- Generated browser contract: `shared/learning-content.js`.
-- Generator and validator: `scripts/generate-learning-content.mjs`.
-- Local source scanner for PDF/DOCX/PPTX/TXT/HTML/XLSX metadata: `scripts/import-learning-sources.mjs`.
-- Generated local source indexes use `data/*.generated.json` and are gitignored because they may include local file paths/snippets.
-- Public contract name: `window.HaugnesLearningContent`.
-- Contract fields: `subjects`, `sources`, `decks`, `questions`, `examAnalyses`, `formulaItems`, `learningPaths`, `memos`, `recommendations`.
-- Subject catalog entries include the active personalization fields `toolProfile`, `primaryTools`, `qualityStatus`, `qualityTarget`, `personalNotes`, `personalWarnings`, and `preferredStudyMethod`.
-- V1 planning field: top-level `v1` stores the shared V1 target and marks deep subject content as pending joint build.
-- Source entries include `sourceRole` so Canvas exports, personal notes, memoarer, protected exam packs, local exercises, spreadsheets, and owned assignments can be treated differently by imports and UI.
-- Contract helpers include `sourcesFor`, `decksFor`, `questionsFor`, `analysisFor`, `formulaItemsFor`, `learningPathFor`, `toolsFor`, `qualityFor`, `personalMemoFor`, `sourceRolesFor`, `memoFor`, `recommendationFor`, `notes`, and `pageFor`.
-- V1 content rule: subjects can keep `qualityTarget: "exam_ready"` while content is pending; any subject actually marked `qualityStatus: "exam_ready"` must validate with at least 25 catalog cards, 8 catalog questions, a memo, a recommendation, a learning path, method/formula items, and exam radar.
-- Active integration points:
-  - `shared/haugnes-study-data.js` merges generated decks/questions/notes with legacy manual data.
-  - `shared/subject-page-data.js` supplements or creates fagsider from `pageFor` and lets catalog `primaryTools`/personal study guidance drive the main subject-tool grid.
-  - `shared/subject-page-renderer.js` renders personal arbeidsmåte/fallgruver from the generated catalog inside the learning suite.
-  - `shared/subject-meta.js` decorates subject cards from catalog quality/counts when `shared/learning-content.js` is available.
-  - `shared/haugnes-dashboard-progress.js` reads catalog recommendations before legacy fallback.
-  - `shared/auth-guard.js` injects `shared/learning-content.js` for user pages.
-- Rights rule: local Canvas/course files remain private source metadata until explicitly reviewed for publication.
 
 ## Subject Areas
 
@@ -84,14 +60,12 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - `sol1/`: SOL1 subject pages and flashcard data.
 - `sam1a/`, `met1/`, `kom1/`, `ret1a/`, `bed1/`, `mat10/`, `met2/`: MVP or planned subject hubs.
 - `flashcards/`: generic flashcard app entry.
-- Flashcard admin/custom content in `flashcards/index.html` is loaded from Supabase `admin_content` key `flashcards_custom_data`, with `localStorage` key `fc_custom_data` as cache/fallback.
 
 ## A-besvarelser / Exam Packages
 
 Active UI:
 - Shell page: `user/a-besvarelser.html`.
 - Dynamic package renderer: `shared/haugnes-answer-library.js`.
-- Admin CRUD overlay: `shared/haugnes-answer-admin.js` (admins publish/edit/delete packages and PDF resources directly in the page; writes go through the "Admins manage packages/resources" RLS policies).
 - Data source: Supabase tables `answer_packages` and `answer_resources`.
 - Schema, RLS policies, and seed reference: `supabase-setup.sql`.
 
@@ -111,27 +85,23 @@ Typical package IDs:
 - Edge Function config: `supabase/config.toml`.
 - Active Edge Functions:
   - `supabase/functions/timeedit/`: NHH TimeEdit proxy.
-  - `supabase/functions/create-stripe-checkout/`: verifies Supabase Auth token, checks entitlements, and returns subject-specific Stripe Payment Links with user reference metadata.
+  - `supabase/functions/create-stripe-checkout/`: verifies Supabase Auth token, checks entitlements, and creates Stripe Checkout Sessions.
   - `supabase/functions/stripe-webhook/`: verifies Stripe signatures and grants paid subject entitlements.
 - Schema/source-of-truth file: `supabase-setup.sql`.
 - Key content tables:
-  - `app_private_config` (service-role-only server config such as Stripe webhook signing secret)
   - `profiles`
   - `subject_entitlements`
-  - `admin_content` (known keys: `flashcards_custom_data`, `published_memos`)
-  - `user_custom_data`
   - `answer_packages`
   - `answer_resources`
-- RLS/entitlement helpers: `public.has_subject_entitlement(text)`, `public.has_any_entitlement()` (security definer; required because the free-claim insert policy cannot query `subject_entitlements` directly without infinite RLS recursion).
+- RLS/entitlement helper: `public.has_subject_entitlement(text)`.
 - Payment model: first user-claimed free subject is inserted client-side with `source = 'free'`; paid subjects are inserted by the Supabase Stripe webhook with `source = 'stripe'` and optional Stripe session/customer/payment metadata.
+- Bundle/payment model: `user/butikk.html` can send `subjectCode` or `productId` to `supabase/functions/create-stripe-checkout/`. Bundles insert multiple `subject_entitlements` rows with `source = 'stripe_bundle'`; Vennepass inserts all current subjects with `source = 'stripe_friend_pass'` and sets `profiles.is_friend = true`.
 - Rule from repo policy: DB schema changes must be mirrored in `supabase-setup.sql`.
 
 ## Build And Checks
 
 - JS check: `npm run check:js`.
 - Smoke check: `npm run check:smoke`.
-- Learning content validation: `npm run check:learning`.
-- Regenerate learning contract after editing `data/learning-content.json`: `npm run learning:generate`.
 - Full check: `npm run check`.
 - Known repo policy: `biome check` has preexisting failures and should not block unless the task specifically concerns Biome cleanup.
 
@@ -141,8 +111,6 @@ Typical package IDs:
   `rg -n "answer_packages|answer_resources|HaugnesAnswerLibrary|a-besvarelser" .`
 - Find subject metadata or access logic:
   `rg -n "HaugnesSubjects|HaugnesSubjectAccess|subject-meta|subject-access" shared user`
-- Find generated learning content usage:
-  `rg -n "HaugnesLearningContent|learning-content|check:learning|learning:generate" data shared scripts user flashcards`
 - Find SAM3 package references:
   `rg -n "sam3-v|SAM3 V|eksamenspakker|A-besvarelse SAM3|sensorveiledning" .`
 - Find injected scripts:

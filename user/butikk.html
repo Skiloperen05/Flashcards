@@ -40,7 +40,6 @@ a{text-decoration:none;color:inherit}button,input,select{font-family:inherit}
 .hello p{font-size:15px;color:#c2cee4;margin-top:5px}
 .notice{display:none;margin-bottom:16px;padding:14px 18px;border-radius:16px;background:rgba(232,188,104,.10);border:1px solid rgba(232,188,104,.30);color:#ffd98f;font-size:13.5px;font-weight:800}
 .notice.show{display:block}
-.notice.success{background:rgba(32,185,122,.10);border-color:rgba(32,185,122,.32);color:#a8f1cf}
 .hero-panel{position:relative;overflow:hidden;border-radius:var(--radius);border:1px solid var(--line2);background:linear-gradient(135deg,rgba(13,38,86,.93),rgba(7,22,50,.96));box-shadow:var(--shadow);margin-bottom:18px}
 .hero-inner{position:relative;z-index:1;padding:24px;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:20px;align-items:center}
 .kicker{display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border-radius:999px;background:rgba(47,98,255,.15);border:1px solid rgba(95,136,255,.32);color:#b8c9ff;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
@@ -51,6 +50,11 @@ a{text-decoration:none;color:inherit}button,input,select{font-family:inherit}
 .hero-stat{padding:14px;border-radius:16px;background:rgba(255,255,255,.055);border:1px solid var(--line)}
 .hero-stat b{font-size:24px;font-weight:900;letter-spacing:-.05em}
 .hero-stat span{display:block;margin-top:5px;color:var(--muted);font-size:11px;font-weight:750}
+.shop-section{display:grid;gap:12px;margin-bottom:20px}
+.shop-section-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap}
+.shop-section-head h2{font-size:22px;line-height:1.1;letter-spacing:-.04em}
+.shop-section-head p{margin-top:5px;color:#9fb1d2;font-size:13px;line-height:1.55}
+.shop-section-badge{height:30px;padding:0 11px;border-radius:999px;background:rgba(255,255,255,.055);border:1px solid var(--line);color:#cbd7ef;font-size:12px;font-weight:900;display:inline-flex;align-items:center}
 .shop-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .shop-card{position:relative;overflow:hidden;padding:18px;border-radius:20px;background:linear-gradient(180deg,rgba(15,43,92,.94),rgba(8,25,56,.96));border:1px solid var(--line);box-shadow:0 16px 34px rgba(0,0,0,.22);display:flex;flex-direction:column;gap:12px;min-height:240px}
 .shop-card::before{content:"";position:absolute;right:-58px;top:-66px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,var(--accent),transparent 68%);opacity:.22}
@@ -59,15 +63,14 @@ a{text-decoration:none;color:inherit}button,input,select{font-family:inherit}
 .status-pill{height:28px;padding:0 11px;border-radius:999px;font-size:11px;font-weight:900;display:inline-flex;align-items:center;letter-spacing:.04em}
 .status-pill.owned{background:rgba(32,185,122,.16);border:1px solid rgba(32,185,122,.32);color:#a8f1cf}
 .status-pill.available{background:rgba(232,188,104,.13);border:1px solid rgba(232,188,104,.30);color:#ffd98f}
-.status-pill.loading{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#cbd7ef}
 .shop-title{position:relative;z-index:1;font-size:19px;font-weight:900;letter-spacing:-.035em}
 .shop-sub{position:relative;z-index:1;font-size:12.5px;color:#9fb1d2;font-weight:800}
 .shop-desc{position:relative;z-index:1;font-size:13px;color:#bdc9df;line-height:1.55;flex:1}
 .shop-price{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;margin-top:4px}
 .price-tag{font-size:22px;font-weight:900;letter-spacing:-.03em;color:#fff}
 .price-tag .currency{font-size:12px;color:var(--muted);font-weight:700;margin-left:5px}
-.price-tag.included{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:850;color:#a8f1cf}
-.price-tag.included::before{content:"✓";width:20px;height:20px;display:grid;place-items:center;border-radius:50%;background:rgba(32,185,122,.16);border:1px solid rgba(32,185,122,.34);font-size:11px}
+.shop-subjects{position:relative;z-index:1;display:flex;gap:6px;flex-wrap:wrap}
+.shop-subjects span{font-size:10.5px;font-weight:900;color:#cbd7ef;background:rgba(255,255,255,.055);border:1px solid var(--line);border-radius:999px;padding:5px 7px}
 .shop-cta{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:9px;height:44px;border-radius:13px;background:linear-gradient(135deg,#2657e9,#3e72ff);color:#fff;font-size:13.5px;font-weight:900;border:0;cursor:pointer;transition:transform .15s,filter .15s}
 .shop-cta:hover:not(:disabled){transform:translateY(-1px)}
 .shop-cta:disabled{cursor:default;background:rgba(255,255,255,.08);color:#cbd7ef}
@@ -94,7 +97,6 @@ a{text-decoration:none;color:inherit}button,input,select{font-family:inherit}
       <a class="nav-link" href="subjects.html"><span class="nav-ico">▦</span>Mine fag</a>
       <a class="nav-link active" href="butikk.html"><span class="nav-ico">⚷</span>Butikk</a>
       <a class="nav-link" href="a-besvarelser.html"><span class="nav-ico">▤</span>A-besvarelser</a>
-      <a class="nav-link" href="progress.html"><span class="nav-ico">▥</span>Statistikk</a>
       <a class="nav-link" href="../flashcards/"><span class="nav-ico">▱</span>Alle flashcards</a>
     </nav>
     <div class="side-bottom">
@@ -112,7 +114,7 @@ a{text-decoration:none;color:inherit}button,input,select{font-family:inherit}
       <div class="hello">
         <div class="breadcrumb"><a href="index.html">Dashboard</a><span>›</span><span>Butikk</span></div>
         <h1>Butikk</h1>
-        <p>Lås opp ett fag av gangen. Du får tilgang til alt fagets innhold — flashcards, A-besvarelser, eksamensarkiv og verktøy.</p>
+        <p>Lås opp enkeltfag, semesterpakker eller Vennepass med tilgang til alle fag.</p>
       </div>
     </header>
 
@@ -121,19 +123,33 @@ a{text-decoration:none;color:inherit}button,input,select{font-family:inherit}
     <section class="hero-panel">
       <div class="hero-inner">
         <div>
-          <div class="kicker">Per-fag-tilgang · Stripe</div>
-          <h2 class="hero-title">Lås opp <span>fagene</span> du jobber med.</h2>
-          <p class="hero-copy">Nye brukere får <strong>ett fag gratis</strong> for å teste appen. Etterpå låses hvert fag opp separat for 49 kr via Stripe.</p>
+          <div class="kicker">Fagpakker · Stripe</div>
+          <h2 class="hero-title">Velg tilgang som <span>matcher semesteret</span>.</h2>
+          <p class="hero-copy">Nye brukere får <strong>ett fag gratis</strong> for å teste appen. Etterpå kan du kjøpe enkeltfag, semesterpakker eller Vennepass med all-access.</p>
         </div>
         <div class="hero-stats">
           <div class="hero-stat"><b id="statOwned">0</b><span>låst opp</span></div>
-          <div class="hero-stat"><b id="statAvailable">0</b><span>tilgjengelig</span></div>
+          <div class="hero-stat"><b id="statAvailable">0</b><span>gjenstår</span></div>
           <div class="hero-stat"><b id="statTotal">0</b><span>totalt</span></div>
         </div>
       </div>
     </section>
 
-    <section class="shop-grid" id="shopGrid"></section>
+    <section class="shop-section">
+      <div class="shop-section-head">
+        <div><h2>Pakker og pass</h2><p>Ryddigere valg for semester, valgfag og all-access.</p></div>
+        <span class="shop-section-badge" id="bundleCount">0 pakker</span>
+      </div>
+      <section class="shop-grid" id="bundleGrid"></section>
+    </section>
+
+    <section class="shop-section">
+      <div class="shop-section-head">
+        <div><h2>Enkeltfag</h2><p>Fortsatt tilgjengelig for deg som bare trenger ett fag.</p></div>
+        <span class="shop-section-badge">49 kr per fag</span>
+      </div>
+      <section class="shop-grid" id="shopGrid"></section>
+    </section>
     <div class="empty" id="emptyState" style="display:none">Kunne ikke laste fagene akkurat nå. Prøv å laste siden på nytt.</div>
   </main>
 </div>
@@ -154,114 +170,103 @@ var SUBJECTS = [
   { code: 'BED1', name: 'Bedriftsøkonomi', accent: '#20b97a', icon: '◆', summary: 'Kalkyler, investering, resultat og budsjettering.' }
 ];
 
+var BUNDLES = [
+  { id: 'semester-1', title: '1. semesterpakke', sub: 'RET1A · MET1 · SAM1A · BED1 · KOM1', accent: '#3b82f6', icon: '1', price: '199 kr', priceSub: '5 fag samlet', cta: 'Kjøp semesterpakke', summary: 'Alt for første semester samlet i én tilgang. Best når du vil rydde opp hele startpakken med én gang.', subjectCodes: ['RET1A','MET1','SAM1A','BED1','KOM1'] },
+  { id: 'semester-2', title: '2. semesterpakke', sub: 'MET2 · SAM2 · SOL1', accent: '#20b97a', icon: '2', price: '149 kr', priceSub: '3 fag samlet', cta: 'Kjøp semesterpakke', summary: 'Metode, mikro og organisasjonsatferd i samme pakke, med oppgaver, memo og eksamensrettede verktøy.', subjectCodes: ['MET2','SAM2','SOL1'] },
+  { id: 'valgfag', title: 'Valgfagspakke', sub: 'RET14 · MAT10 · SAM3', accent: '#e8bc68', icon: 'V', price: '179 kr', priceSub: 'valgfag', cta: 'Kjøp valgfagspakke', summary: 'For deg som vil ha de tyngre fagene samlet: skatterett, matematikk og makroverktøy.', subjectCodes: ['RET14','MAT10','SAM3'] },
+  { id: 'vennepass', title: 'Vennepass', sub: 'Alle fag · nye fag inkludert', accent: '#f09828', icon: '★', price: '350 kr', priceSub: 'all-access', cta: 'Kjøp Vennepass', summary: 'Gir tilgang til alle fag som ligger ute nå, og alle nye fag som publiseres senere.', subjectCodes: SUBJECTS.map(function(s){return s.code}) }
+];
+
 var SUBJECT_PRICE_LABEL = '49 kr';
-var STRIPE_CHECKOUT_FUNCTION_URL = 'https://qnwjhheoekpqqqhevztw.supabase.co/functions/v1/create-stripe-checkout';
-
-// Actual prices live in the subject_prices table so they can be changed
-// without touching the code. The hardcoded label above is only the fallback
-// while prices load (or if the lookup fails).
-var SUBJECT_PRICES_ORE = {};
-
-function priceLabelFor(code){
-  var ore = SUBJECT_PRICES_ORE[code];
-  if (!ore) return SUBJECT_PRICE_LABEL;
-  var kr = ore / 100;
-  return (kr % 1 === 0 ? String(kr) : kr.toFixed(2).replace('.', ',')) + ' kr';
-}
-
-function loadPrices(){
-  try {
-    var sb = window.AuthGuard && typeof window.AuthGuard.getClient === 'function' ? window.AuthGuard.getClient() : null;
-    if (!sb) return;
-    sb.from('subject_prices').select('subject_code,price_nok_ore').then(function(res){
-      var rows = (res && res.data) || [];
-      if (!rows.length) return;
-      rows.forEach(function(row){ SUBJECT_PRICES_ORE[row.subject_code] = row.price_nok_ore; });
-      render();
-    });
-  } catch (e) {}
-}
+var FIRST_FREE_LABEL = 'Gratis første fag';
 
 function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});}
 function getQuery(name){return new URLSearchParams(window.location.search).get(name);}
 function nameFromEmail(email){var u=(email||'student').split('@')[0];return u.charAt(0).toUpperCase()+u.slice(1);}
+function subjectByCode(code){return SUBJECTS.find(function(s){return s.code===code})}
+function bundleById(id){return BUNDLES.find(function(p){return p.id===id})}
+function productLabel(id){var p=bundleById(id);return p?p.title:String(id||'produktet')}
+function hasAllAccess(ent){return !!(ent&&ent.hasBypass&&ent.hasBypass())}
+function ownsAll(codes, owned){return (codes||[]).every(function(code){return owned.indexOf(code)!==-1})}
 
 function showLockNotice(){
   var reason=(getQuery('reason')||'').toLowerCase();
   var subject=(getQuery('fag')||'').toUpperCase();
+  var product=(getQuery('produkt')||'').toLowerCase();
   var payment=(getQuery('payment')||'').toLowerCase();
-  var n=document.getElementById('lockNotice');
+  if (payment==='success' && product){
+    var productSuccess=document.getElementById('lockNotice');
+    productSuccess.textContent='Betaling registrert for '+productLabel(product)+'. Tilgangen aktiveres straks Stripe har bekreftet kjøpet.';
+    productSuccess.classList.add('show');
+    return;
+  }
+  if (payment==='cancel' && product){
+    var productCancel=document.getElementById('lockNotice');
+    productCancel.textContent='Betalingen for '+productLabel(product)+' ble avbrutt. Du kan prøve igjen når du er klar.';
+    productCancel.classList.add('show');
+    return;
+  }
   if (payment==='success' && subject){
-    n.textContent='Betalingen for '+subject+' er registrert. Aktiverer tilgangen din …';
-    n.classList.add('success','show');
+    var success=document.getElementById('lockNotice');
+    success.textContent='Betaling registrert for '+subject+'. Tilgangen aktiveres straks Stripe har bekreftet kjøpet.';
+    success.classList.add('show');
     return;
   }
   if (payment==='cancel' && subject){
-    n.textContent='Betalingen for '+subject+' ble avbrutt. Ingenting er trukket — du kan prøve igjen når du er klar.';
-    n.classList.add('show');
+    var cancel=document.getElementById('lockNotice');
+    cancel.textContent='Betalingen for '+subject+' ble avbrutt. Du kan prøve igjen når du er klar.';
+    cancel.classList.add('show');
     return;
   }
   if (reason!=='lock'||!subject) return;
+  var n=document.getElementById('lockNotice');
   n.textContent='Du må låse opp '+subject+' i Butikken for å åpne fagets verktøy.';
   n.classList.add('show');
 }
 
-// After Stripe redirects back with payment=success, the entitlement is granted
-// asynchronously by the webhook. Poll until it shows up so the user does not
-// have to reload the page manually.
-function watchPaymentActivation(){
-  var subject=(getQuery('fag')||'').toUpperCase();
-  if ((getQuery('payment')||'').toLowerCase()!=='success' || !subject) return;
-  var n=document.getElementById('lockNotice');
-  var attempts=0;
-  function check(){
-    var ent=window.HaugnesEntitlements;
-    if (!ent || typeof ent.load!=='function') return done(false);
-    if (ent.isLoaded() && (ent.getCodes().indexOf(subject)!==-1 || (ent.hasBypass&&ent.hasBypass()))) return done(true);
-    if (attempts>=15) return done(false);
-    attempts++;
-    ent.load({ force:true }).catch(function(){}).then(function(){
-      if (ent.isLoaded() && ent.getCodes().indexOf(subject)!==-1) return done(true);
-      window.setTimeout(check, 3000);
-    });
-  }
-  function done(active){
-    if (active){
-      n.textContent=subject+' er låst opp! Du har nå full tilgang til faget.';
-      n.classList.add('success','show');
-    } else {
-      n.classList.remove('success');
-      n.textContent='Betalingen for '+subject+' behandles fortsatt. Tilgangen dukker opp her om et lite øyeblikk — last siden på nytt om den lar vente på seg.';
-      n.classList.add('show');
-    }
-    render();
-  }
-  check();
-}
-
 function render(){
   var grid=document.getElementById('shopGrid');
+  var bundleGrid=document.getElementById('bundleGrid');
   var empty=document.getElementById('emptyState');
   var ent=window.HaugnesEntitlements;
   var entReady=!!(ent && ent.isLoaded());
   var owned=entReady ? ent.getCodes() : [];
-  var bypass=!!(ent && ent.hasBypass && ent.hasBypass());
-  var canClaimFree=entReady && !bypass && owned.length===0;
-  var ownedCount=bypass?SUBJECTS.length:owned.length;
+  var allAccess=entReady && hasAllAccess(ent);
+  var canClaimFree=entReady && !allAccess && owned.length===0;
+  var ownedCount=allAccess?SUBJECTS.length:owned.length;
   document.getElementById('statOwned').textContent=ownedCount;
   document.getElementById('statAvailable').textContent=Math.max(0, SUBJECTS.length-ownedCount);
   document.getElementById('statTotal').textContent=SUBJECTS.length;
+  document.getElementById('bundleCount').textContent=BUNDLES.length+' pakker';
 
-  if (!SUBJECTS.length){empty.style.display='block';grid.innerHTML='';return;}
+  if (!SUBJECTS.length){empty.style.display='block';grid.innerHTML='';bundleGrid.innerHTML='';return;}
   empty.style.display='none';
+  bundleGrid.innerHTML=BUNDLES.map(function(p){
+    var has=allAccess||ownsAll(p.subjectCodes, owned);
+    var status=!entReady?'<span class="status-pill available">Laster</span>':has?'<span class="status-pill owned">Inkludert</span>':'<span class="status-pill available">Tilgjengelig</span>';
+    var subjects=p.subjectCodes.map(function(code){var s=subjectByCode(code);return '<span>'+esc(code)+(s?' · '+esc(s.name):'')+'</span>'}).join('');
+    var cta=!entReady
+      ? '<button class="shop-cta" disabled><span class="spinner"></span><span class="cta-text">Laster tilgang…</span></button>'
+      : has
+        ? '<a class="shop-cta secondary" href="subjects.html">Åpne fagene →</a>'
+        : '<button class="shop-cta" data-product="'+esc(p.id)+'" data-idle="'+esc(p.cta)+'"><span class="spinner"></span><span class="cta-text">'+esc(p.cta)+'</span></button>';
+    return '<article class="shop-card" style="--accent:'+esc(p.accent)+'">'
+      + '<div class="shop-top"><span class="shop-icon">'+esc(p.icon)+'</span>'+status+'</div>'
+      + '<div class="shop-title">'+esc(p.title)+'</div>'
+      + '<div class="shop-sub">'+esc(p.sub)+'</div>'
+      + '<p class="shop-desc">'+esc(p.summary)+'</p>'
+      + '<div class="shop-subjects">'+subjects+'</div>'
+      + '<div class="shop-price"><span class="price-tag">'+esc(p.price)+'<span class="currency">'+esc(p.priceSub)+'</span></span></div>'
+      + cta
+      + '<div class="shop-error" data-error="'+esc(p.id)+'"></div>'
+      + '</article>';
+  }).join('');
+
   grid.innerHTML=SUBJECTS.map(function(s){
-    var has=bypass||owned.indexOf(s.code)!==-1;
-    var status=!entReady?'<span class="status-pill loading">Laster…</span>':has?'<span class="status-pill owned">Låst opp</span>':'<span class="status-pill available">Tilgjengelig</span>';
-    var priceHtml=has
-      ? '<span class="price-tag included">Inkludert i tilgangen din</span>'
-      : canClaimFree
-        ? '<span class="price-tag">Gratis<span class="currency">første fag · deretter '+esc(priceLabelFor(s.code))+'</span></span>'
-        : '<span class="price-tag">'+esc(priceLabelFor(s.code))+'<span class="currency">per fag · engangsbeløp</span></span>';
+    var has=allAccess||owned.indexOf(s.code)!==-1;
+    var status=!entReady?'<span class="status-pill available">Laster</span>':has?'<span class="status-pill owned">Låst opp</span>':'<span class="status-pill available">Tilgjengelig</span>';
+    var price=canClaimFree?FIRST_FREE_LABEL:SUBJECT_PRICE_LABEL;
+    var currency=canClaimFree?'for nye brukere':'per fag';
     var cta=!entReady
       ? '<button class="shop-cta" disabled><span class="spinner"></span><span class="cta-text">Laster tilgang…</span></button>'
       : has
@@ -274,7 +279,7 @@ function render(){
       + '<div class="shop-title">'+esc(s.code)+' · '+esc(s.name)+'</div>'
       + '<div class="shop-sub">Tilgang til alt innhold i faget</div>'
       + '<p class="shop-desc">'+esc(s.summary)+'</p>'
-      + '<div class="shop-price">'+priceHtml+'</div>'
+      + '<div class="shop-price"><span class="price-tag">'+esc(price)+'<span class="currency">'+esc(currency)+'</span></span></div>'
       + cta
       + '<div class="shop-error" data-error="'+esc(s.code)+'"></div>'
       + '</article>';
@@ -287,6 +292,35 @@ function setLoading(btn, on, idleText, loadingText){
   btn.classList.toggle('loading', on);
   var label = btn.querySelector('.cta-text');
   if (label) label.textContent = on ? loadingText : idleText;
+}
+
+function startCheckout(payload, btn, errBox, idleText){
+  var session = window.AuthGuard && window.AuthGuard.getSession ? window.AuthGuard.getSession() : null;
+  var token = session && session.access_token;
+  if (!token){
+    if (errBox){
+      errBox.textContent = 'Du må være logget inn for å kjøpe.';
+      errBox.classList.add('show');
+    }
+    return;
+  }
+  setLoading(btn, true, idleText, 'Sender til Stripe…');
+  fetch('https://qnwjhheoekpqqqhevztw.supabase.co/functions/v1/create-stripe-checkout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer '+token },
+    body: JSON.stringify(payload)
+  }).then(function(res){
+    return res.json().then(function(data){ return { ok: res.ok, data: data }; });
+  }).then(function(result){
+    if (!result.ok || !result.data || !result.data.url) throw new Error(result.data && result.data.error || 'Kunne ikke starte betaling.');
+    window.location.href = result.data.url;
+  }).catch(function(e){
+    setLoading(btn, false, idleText, 'Sender til Stripe…');
+    if (errBox){
+      errBox.textContent = (e && e.message) ? e.message : 'Kunne ikke starte Stripe-betaling.';
+      errBox.classList.add('show');
+    }
+  });
 }
 
 var SUBJECT_HOMES = {
@@ -324,9 +358,6 @@ function bind(){
           window.location.href = subjectHome(code, true);
           return;
         }
-        var n = document.getElementById('lockNotice');
-        n.textContent = code + ' er låst opp! Du har nå full tilgang til faget.';
-        n.classList.add('success','show');
         render();
       }).catch(function(e){
         setLoading(btn, false, 'Lås opp gratis', 'Låser opp…');
@@ -342,32 +373,16 @@ function bind(){
       var code = btn.getAttribute('data-buy');
       var errBox = document.querySelector('[data-error="'+code+'"]');
       if (errBox){ errBox.classList.remove('show'); errBox.textContent=''; }
-      var session = window.AuthGuard && window.AuthGuard.getSession ? window.AuthGuard.getSession() : null;
-      var token = session && session.access_token;
-      if (!token){
-        if (errBox){
-          errBox.textContent = 'Du må være logget inn for å kjøpe fag.';
-          errBox.classList.add('show');
-        }
-        return;
-      }
-      setLoading(btn, true, 'Kjøp med Stripe', 'Sender til Stripe…');
-      fetch(STRIPE_CHECKOUT_FUNCTION_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer '+token },
-        body: JSON.stringify({ subjectCode: code })
-      }).then(function(res){
-        return res.json().then(function(data){ return { ok: res.ok, data: data }; });
-      }).then(function(result){
-        if (!result.ok || !result.data || !result.data.url) throw new Error(result.data && result.data.error || 'Kunne ikke starte betaling.');
-        window.location.href = result.data.url;
-      }).catch(function(e){
-        setLoading(btn, false, 'Kjøp med Stripe', 'Sender til Stripe…');
-        if (errBox){
-          errBox.textContent = (e && e.message) ? e.message : 'Kunne ikke starte Stripe-betaling.';
-          errBox.classList.add('show');
-        }
-      });
+      startCheckout({ subjectCode: code }, btn, errBox, 'Kjøp med Stripe');
+    });
+  });
+  document.querySelectorAll('[data-product]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var id = btn.getAttribute('data-product');
+      var idle = btn.getAttribute('data-idle') || 'Kjøp med Stripe';
+      var errBox = document.querySelector('[data-error="'+id+'"]');
+      if (errBox){ errBox.classList.remove('show'); errBox.textContent=''; }
+      startCheckout({ productId: id }, btn, errBox, idle);
     });
   });
 }
@@ -393,15 +408,13 @@ window.onUserAuthorized = function(session){
     window.AuthGuard.requireAuth().then(function(session){
       if (!session) return;
       if (window.onUserAuthorized) window.onUserAuthorized(session);
-      loadPrices();
       function whenEntitlementsReady(){
         if (window.HaugnesEntitlements && window.HaugnesEntitlements.isLoaded()){
           render();
-          watchPaymentActivation();
           return;
         }
         if (window.HaugnesEntitlements && typeof window.HaugnesEntitlements.load === 'function'){
-          window.HaugnesEntitlements.load().then(function(){ render(); watchPaymentActivation(); }).catch(render);
+          window.HaugnesEntitlements.load().then(render).catch(render);
           return;
         }
         window.setTimeout(whenEntitlementsReady, 30);

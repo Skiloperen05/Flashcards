@@ -7,6 +7,7 @@
   var STORAGE_KEY = 'hf_enabled_subjects';
   var MIGRATION_KEY = 'hf_enabled_subjects_catalog_20260529';
   var CORE_ONLY_KEY = 'hf_enabled_subjects_core_only';
+  var EXPLICIT_EMPTY_KEY = 'hf_enabled_subjects_explicit_empty';
   var CORE_CODES = ['RET14', 'SOL1', 'SAM2', 'SAM3'];
   var DEFAULT_CODES = ['RET14', 'SOL1', 'SAM2', 'SAM3', 'MET2', 'MAT10', 'SAM1A', 'MET1', 'KOM1', 'RET1A', 'BED1'];
   var FALLBACK_CATALOG = [
@@ -52,6 +53,7 @@
     var selected = readJson(STORAGE_KEY, null);
     var owned = entitledSet();
     if (Array.isArray(owned) && !owned.length) return [];
+    if (readJson(EXPLICIT_EMPTY_KEY, false)) return [];
     if (!Array.isArray(selected) || !selected.length) selected = Array.isArray(owned) ? owned.slice() : DEFAULT_CODES;
     if (!readJson(CORE_ONLY_KEY, false) && selected.map(code).sort().join(',') === CORE_CODES.slice().sort().join(',')) selected = DEFAULT_CODES.slice();
     if (!readJson(MIGRATION_KEY, false)) {
@@ -71,6 +73,7 @@
     var value = (codes || []).map(code).filter(function (item, index, arr) { return item && arr.indexOf(item) === index && (!available.length || available.indexOf(item) !== -1); });
     var owned = entitledSet();
     if (Array.isArray(owned)) value = value.filter(function (c) { return owned.indexOf(c) !== -1; });
+    writeJson(EXPLICIT_EMPTY_KEY, value.length === 0);
     writeJson(CORE_ONLY_KEY, value.slice().sort().join(',') === CORE_CODES.slice().sort().join(','));
     writeJson(STORAGE_KEY, value);
     patchIntegrations();
@@ -154,7 +157,7 @@
     if (Array.isArray(owned) && !owned.length) {
       return '<section class="hf-access-panel" id="hfSubjectAccessPanel"><div class="hf-access-head"><div><strong>Mine fag</strong><span>Du eier ingen fag ennå. Gå til Butikk for å kjøpe et fag, så vises det her automatisk.</span><a class="hf-access-shop" href="butikk.html">Gå til Butikk</a></div></div></section>';
     }
-    return '<section class="hf-access-panel" id="hfSubjectAccessPanel"><div class="hf-access-head"><div><strong>Mine fag</strong><span>Velg hvilke fag du vil ha synlig i dashboard, studieplan, eksamensarkiv og andre oversikter.</span></div><div class="hf-access-actions"><button type="button" data-access-all>Velg alle</button><button type="button" data-access-core>Kjernefag</button></div></div><div class="hf-access-grid">' + subjects.map(function (subject) {
+    return '<section class="hf-access-panel" id="hfSubjectAccessPanel"><div class="hf-access-head"><div><strong>Mine fag</strong><span>Velg hvilke fag du vil ha synlig i dashboard, studieplan, eksamensarkiv og andre oversikter.</span></div><div class="hf-access-actions"><button type="button" data-access-all>Velg alle</button><button type="button" data-access-none>Velg ingen</button><button type="button" data-access-core>Kjernefag</button></div></div><div class="hf-access-grid">' + subjects.map(function (subject) {
       var c = code(subject.code || subject.id);
       return '<button type="button" class="hf-access-pill ' + (selected.indexOf(c) !== -1 ? 'active' : '') + '" data-access-subject="' + esc(c) + '" style="--accent:' + esc(subject.accent || '#2f62ff') + '"><span class="hf-access-dot"></span>' + esc(c) + ' · ' + esc(subject.name || subject.label || '') + '</button>';
     }).join('') + '</div></section>';
@@ -181,6 +184,7 @@
       if (!btn) return;
       var current = getSelected();
       if (btn.hasAttribute('data-access-all')) setSelected(catalog().map(function (s) { return s.code || s.id; }));
+      else if (btn.hasAttribute('data-access-none')) setSelected([]);
       else if (btn.hasAttribute('data-access-core')) setSelected(CORE_CODES);
       else if (btn.hasAttribute('data-access-subject')) {
         var c = btn.getAttribute('data-access-subject');
