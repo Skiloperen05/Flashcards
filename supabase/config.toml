@@ -1,4 +1,4 @@
-project_id = "qnwjhheoekpqqqhevztw"
+project_id = "haugnes-flashcards"
 
 [functions.timeedit]
 verify_jwt = false

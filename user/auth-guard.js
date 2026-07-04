@@ -2,9 +2,8 @@
   var SHARED_SCRIPT = '../shared/auth-guard.js';
   var MODEL_PAGES = {
     'butikk.html': { label: 'Butikk', icon: '⚷', subtitle: 'Lås opp fag' },
-    'eksamensanalyse.html': { label: 'Eksamensanalyse', icon: '◈', subtitle: 'Temaer som går igjen' },
+    'eksamensanalyse.html': { label: 'Eksamensanalyse', icon: '◈', subtitle: 'Åpne faktiske analyser' },
     'a-besvarelser.html': { label: 'A-besvarelser', icon: '▤', subtitle: 'Se sterke tidligere svar' },
-    'memoarer.html': { label: 'Memoarer', icon: '✎', subtitle: 'Arbeidsmåter og fallgruver per fag' },
     'oppgavebank.html': { label: 'Oppgavebank', icon: '▣', subtitle: 'Øv på eksamensnære oppgaver' },
     'notater.html': { label: 'Notater', icon: '▥', subtitle: 'Samle egne fagnotater' },
     'studieplan.html': { label: 'Studieplan', icon: '☷', subtitle: 'Planlegg ukens økter' },
@@ -43,7 +42,7 @@
     var existing = document.getElementById(id);
     if (existing) {
       if (onload) {
-        if ((id === 'haugnes-learning-content-js' && window.HaugnesLearningContent) || (id === 'haugnes-subject-meta-js' && window.HaugnesSubjects) || (id === 'haugnes-subject-access-js' && window.HaugnesSubjectAccess) || (id === 'timeedit-fetch-proxy-js' && window.HaugnesTimeEditProxy) || (id === 'nhh-schedule-api-js' && window.NHHScheduleAPI) || (id === 'nhh-schedule-normalizer-js' && window.NHHScheduleAPI && window.NHHScheduleAPI.normalizeEvents) || (id === 'nhh-strict-course-filter-js' && window.NHHScheduleAPI && window.NHHScheduleAPI.strictCourseFilter) || (id === 'haugnes-studyplan-js' && window.HaugnesStudyplan) || (id === 'haugnes-answer-library-js' && window.__haugnesAnswerLibraryInstalled) || (id === 'haugnes-memo-library-js' && window.__haugnesMemoLibraryInstalled)) onload();
+        if ((id === 'haugnes-subject-meta-js' && window.HaugnesSubjects) || (id === 'haugnes-subject-access-js' && window.HaugnesSubjectAccess) || (id === 'timeedit-fetch-proxy-js' && window.HaugnesTimeEditProxy) || (id === 'nhh-schedule-api-js' && window.NHHScheduleAPI) || (id === 'nhh-schedule-normalizer-js' && window.NHHScheduleAPI && window.NHHScheduleAPI.normalizeEvents) || (id === 'nhh-strict-course-filter-js' && window.NHHScheduleAPI && window.NHHScheduleAPI.strictCourseFilter) || (id === 'haugnes-studyplan-js' && window.HaugnesStudyplan) || (id === 'haugnes-answer-library-js' && window.__haugnesAnswerLibraryInstalled)) onload();
         else existing.addEventListener('load', onload, { once: true });
       }
       return;
@@ -64,9 +63,7 @@
 
   function addPageStylesheet() {
     var page = currentUserPage();
-    if (page === 'achievements.html') addStylesheet('haugnes-achievements-css', '../shared/haugnes-achievements.css');
-    else if (page === 'progress.html') addStylesheet('haugnes-progress-css', '../shared/haugnes-progress.css');
-    else if (page === 'subjects.html') addStylesheet('haugnes-subjects-css', '../shared/haugnes-subjects.css');
+    if (page === 'subjects.html') addStylesheet('haugnes-subjects-css', '../shared/haugnes-subjects.css');
     else if (!isModelPage(page)) addStylesheet('haugnes-dashboard-css', '../shared/haugnes-dashboard.css');
   }
 
@@ -87,22 +84,12 @@
     document.head.appendChild(style);
   }
 
-  function loadLearningContent(onload) {
-    if (window.HaugnesLearningContent) {
-      if (onload) onload();
-      return;
-    }
-    addScript('haugnes-learning-content-js', '../shared/learning-content.js', onload);
-  }
-
   function loadSubjectMeta(onload) {
     if (window.HaugnesSubjects) {
       if (onload) onload();
       return;
     }
-    loadLearningContent(function () {
-      addScript('haugnes-subject-meta-js', '../shared/subject-meta.js', onload);
-    });
+    addScript('haugnes-subject-meta-js', '../shared/subject-meta.js', onload);
   }
 
   function loadSubjectAccess(onload) {
@@ -154,10 +141,6 @@
   function standardizeDashboardLinks() {
     var subjectsNav = document.querySelector('.nav-link[href="#mine-fag"]');
     if (subjectsNav) subjectsNav.href = 'subjects.html';
-    var todayStart = document.querySelector('#today .start-btn[href="../ret14/"]');
-    if (todayStart) { todayStart.href = '../flashcards/?subject=ret14'; todayStart.textContent = 'Start økt →'; }
-    var todayPlan = document.querySelector('#today .ghost-link[href="../ret14/"]');
-    if (todayPlan) todayPlan.href = '../ret14/';
     var recommendationStart = document.querySelector('.recommend .start-btn[href="../ret14/"]');
     if (recommendationStart) { recommendationStart.href = '../flashcards/?subject=ret14'; recommendationStart.textContent = 'Start nå →'; }
     document.querySelectorAll('.subject-card .subject-cta').forEach(function (button) { button.textContent = 'Start øving'; });
@@ -176,7 +159,7 @@
     var page = currentUserPage();
     var nav = document.querySelector('.sidebar .nav, nav.nav');
     if (nav) {
-      var insertionAnchor = nav.querySelector('a[href="eksamensanalyse.html"]') || nav.querySelector('a[href="../ret14/eksamen/"]') || nav.querySelector('a[href="subjects.html"]') || nav.querySelector('a[href="progress.html"]');
+      var insertionAnchor = nav.querySelector('a[href="subjects.html"]') || nav.querySelector('a[href="butikk.html"]');
       Object.keys(MODEL_PAGES).forEach(function (href) {
         if (nav.querySelector('a[href="' + href + '"]')) return;
         var link = createNavLink(href, MODEL_PAGES[href], page === href);
@@ -206,17 +189,6 @@
     });
   }
 
-  function enhanceAchievementsPage() {
-    if (currentUserPage() !== 'achievements.html') return;
-    document.title = 'Prestasjoner — Haugnes Flashcards';
-    var heroTitle = document.querySelector('.hero-title');
-    var heroSub = document.querySelector('.hero-sub');
-    var back = document.querySelector('.header-back');
-    if (heroTitle) heroTitle.innerHTML = 'Bygg en <span>streak</span>.';
-    if (heroSub) heroSub.textContent = 'Lås opp badges når du fullfører økter, repeterer kort og treffer nye milepæler.';
-    if (back) back.lastChild.textContent = ' Dashboard';
-  }
-
   function loadStudyplanTools() {
     if (currentUserPage() !== 'studieplan.html') return;
     loadSubjectAccess(function () {
@@ -242,13 +214,6 @@
     });
   }
 
-  function loadMemoLibrary() {
-    if (currentUserPage() !== 'memoarer.html') return;
-    loadSubjectAccess(function () {
-      addScript('haugnes-memo-library-js', '../shared/haugnes-memo-library.js');
-    });
-  }
-
   function runEnhancements() {
     addPageStylesheet();
     installNavVisibilityStyles();
@@ -256,10 +221,8 @@
     loadSubjectAccess(function () {
       standardizeDashboardLinks();
       installModelPageLinks();
-      enhanceAchievementsPage();
       loadStudyplanTools();
       loadAnswerLibrary();
-      loadMemoLibrary();
       if (currentUserPage() === 'index.html') renderDashboardSubjects();
     });
   }
