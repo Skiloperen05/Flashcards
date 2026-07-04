@@ -1,1 +1,774 @@
-<!DOCTYPE html><html lang="no"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Innstillinger — Haugnes Flashcards</title><link rel="icon" href="../assets/haugnes-logo-mark.svg"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"><link rel="stylesheet" href="../shared/haugnes-model-pages.css"></head><body><div class="app"><aside class="sidebar"><a class="brand" href="../index.html"><span class="logo-mark"></span><span><span class="brand-title">Haugnes</span><span class="brand-sub">Flashcards</span></span></a><nav class="nav"><a class="nav-link" href="index.html"><span class="nav-ico">⌂</span>Hjem</a><a class="nav-link" href="subjects.html"><span class="nav-ico">▦</span>Mine fag</a><a class="nav-link" href="butikk.html"><span class="nav-ico">⚷</span>Butikk</a><a class="nav-link" href="eksamensanalyse.html"><span class="nav-ico">◈</span>Eksamensanalyse</a><a class="nav-link" href="a-besvarelser.html"><span class="nav-ico">▤</span>A-besvarelser</a><a class="nav-link" href="oppgavebank.html"><span class="nav-ico">▣</span>Oppgavebank</a><a class="nav-link" href="notater.html"><span class="nav-ico">▥</span>Notater</a><a class="nav-link" href="studieplan.html"><span class="nav-ico">☷</span>Studieplan</a><a class="nav-link active" href="settings.html"><span class="nav-ico">⚙</span>Innstillinger</a></nav><div class="side-bottom"><div class="mini-card"><div class="mini-label">Profil</div><div class="mini-number">86% <span>oppsett</span></div><div class="mini-bar"><i></i></div></div><div class="user-mini"><div class="avatar" id="sideAvatar">?</div><div><strong id="sideName">Bruker</strong><span>NHH-student</span></div></div></div></aside><main class="main"><div class="mobile-top"><a class="brand" href="../index.html"><span class="logo-mark"></span><span><span class="brand-title">Haugnes</span><span class="brand-sub">Flashcards</span></span></a><button class="icon-btn" onclick="handleLogout()">⎋</button></div><header class="topline"><div class="hello"><div class="breadcrumb"><a href="index.html">Dashboard</a><span>›</span><span>Innstillinger</span></div><h1>Innstillinger</h1><p>Profil, læringspreferanser, varsler og app-oppsett.</p></div><div class="top-actions"><button class="icon-btn">?</button><div class="avatar-top"><div class="avatar" id="topAvatar">?</div><span id="topName">Bruker</span></div></div></header><section class="hero-panel"><div class="hero-inner"><div><div class="kicker">Profil · Preferanser</div><h2 class="hero-title">Tilpass <span>studieappen</span>.</h2><p class="hero-copy">Profil, varsler og læringsvalg samlet på ett sted. Flere innstillinger aktiveres fortløpende.</p></div><div class="hero-stats"><div class="hero-stat"><b>12</b><span>dager streak</span></div><div class="hero-stat"><b>50</b><span>kort per økt</span></div><div class="hero-stat"><b>19:00</b><span>påminnelse</span></div></div></div></section><div class="workspace"><section><div class="settings-grid"><div class="setting"><div><strong>Daglige påminnelser</strong><span>Varsle når du har kort å repetere.</span></div><span class="toggle on"></span></div><div class="setting"><div><strong>Eksamensmodus</strong><span>Prioriter tidligere eksamensoppgaver.</span></div><span class="toggle on"></span></div><div class="setting"><div><strong>Automatisk vanskelighet</strong><span>Juster intervaller basert på svar.</span></div><span class="toggle on"></span></div><div class="setting"><div><strong>Lyd og effekter</strong><span>Diskré feedback i økter.</span></div><span class="toggle"></span></div></div><div class="panel" style="margin-top:14px"><h2 class="panel-title">Læringsinnstillinger</h2><div class="settings-grid"><div class="setting"><div><strong>Øktlengde</strong><span>50 kort per økt</span></div><span class="tag">Endre</span></div><div class="setting"><div><strong>Organisering</strong><span>Fag → tema → eksamen</span></div><span class="tag">Endre</span></div><div class="setting"><div><strong>Start hver økt med</strong><span>Repetisjon</span></div><span class="tag">Endre</span></div><div class="setting"><div><strong>Språk</strong><span>Norsk</span></div><span class="tag">Endre</span></div></div></div></section><aside class="panel"><h2 class="panel-title">Profil</h2><div class="user-mini" style="margin:0 0 14px"><div class="avatar" id="profileAvatar">?</div><div><strong id="profileName">Bruker</strong><span>NHH-student</span></div></div><div class="list"><div class="list-item"><span class="rank">1</span><div><strong>Konto</strong><span>E-post og innlogging</span></div><span class="tag">Profil</span></div><div class="list-item"><span class="rank">2</span><div><strong>Personvern</strong><span>Data og samtykker</span></div><span class="tag">Trygt</span></div><div class="list-item"><span class="rank">3</span><div><strong>Eksporter</strong><span>Notater og progresjon</span></div><span class="tag">Snart</span></div></div><button class="primary-btn" onclick="handleLogout()" style="border:0;margin-top:16px;cursor:pointer">Logg ut</button></aside></div></main></div><script src="auth-guard.js"></script><script>function nameFromEmail(e){var n=(e||'student').split('@')[0];return n.charAt(0).toUpperCase()+n.slice(1)}window.onUserAuthorized=function(s){var n=nameFromEmail(s&&s.user&&s.user.email),i=n.charAt(0);['sideName','topName','profileName'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=n});['sideAvatar','topAvatar','profileAvatar'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=i})}</script></body></html>
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Innstillinger - Haugnes Flashcards</title>
+<link rel="icon" type="image/png" href="../assets/Flashcardslogo.png">
+<link rel="apple-touch-icon" href="../assets/Flashcardslogo.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--text-primary:#f8fbff;--text-secondary:#cbd7ef;--text-gold:#e8bc68;--border:rgba(126,162,255,.18);--border-soft:rgba(255,255,255,.10);--border-strong:rgba(126,162,255,.30);--shadow-lg:0 24px 70px rgba(0,0,0,.30);--danger:#ef4444;--ux-accent:#2f62ff;--ux-accent-2:#4b7dff;--ux-accent-grad:linear-gradient(135deg,#2f62ff,#4b7dff);--ux-accent-fill:rgba(47,98,255,.15);--ux-accent-line:rgba(47,98,255,.35);--ux-accent-glow:rgba(47,98,255,.34);--ux-accent-ink:#fff;--ux-muted:#91a5c8;--ux-text:15px;--ux-row-pad:19px 20px;--ux-page-bg:radial-gradient(1200px 720px at 10% -8%, rgba(47,98,255,.20), transparent 60%), radial-gradient(1100px 720px at 112% 4%, rgba(232,188,104,.12), transparent 55%), linear-gradient(180deg,#04142f,#020817)}
+html{scroll-behavior:smooth}
+body.settings-page{min-height:100vh;overflow-x:hidden;font-family:'Lora',Georgia,'Times New Roman',serif;color:var(--text-primary);background:var(--ux-page-bg)}
+body.settings-page a{text-decoration:none;color:inherit}
+body.settings-page button,body.settings-page input,body.settings-page select,body.settings-page textarea{font-family:inherit}
+body.settings-page button{cursor:pointer}
+body.settings-page svg{display:block}
+.settings-page #hfSubjectAccessPanel{display:none!important}
+.settings-page button:focus-visible,.settings-page input:focus-visible,.settings-page select:focus-visible{outline:2px solid var(--ux-accent);outline-offset:2px}
+.ux-reduce *{transition:none!important;animation:none!important}
+@keyframes uxpop{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.app{display:grid;grid-template-columns:264px minmax(0,1fr);min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;padding:22px 16px 18px;background:linear-gradient(180deg,rgba(6,20,45,.72),rgba(3,11,28,.86));border-right:1px solid var(--border);display:flex;flex-direction:column;gap:14px;scrollbar-width:thin}
+.sidebar::-webkit-scrollbar,.main::-webkit-scrollbar{width:10px}
+.sidebar::-webkit-scrollbar-thumb,.main::-webkit-scrollbar-thumb{background:rgba(126,162,255,.18);border-radius:8px;border:3px solid transparent;background-clip:padding-box}
+.brand{display:flex;align-items:center;gap:13px;padding:4px 8px 14px;color:#fff;min-width:0}
+.logo-mark{width:52px;height:52px;flex:0 0 52px;border-radius:15px;background:#0b244e url('../assets/Flashcardslogo.png') center/contain no-repeat;border:1px solid rgba(255,255,255,.14);box-shadow:0 10px 26px rgba(0,0,0,.40);overflow:hidden}
+.brand-title{display:block;font-size:19px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;line-height:1;color:#fff}
+.brand-sub{display:block;margin-top:4px;font-size:10.5px;font-weight:800;letter-spacing:.34em;text-transform:uppercase;line-height:1;color:var(--text-gold)}
+.nav{display:flex;flex-direction:column;gap:3px}
+.settings-page .sidebar .nav-link{display:flex;align-items:center;gap:13px;min-height:40px;padding:10px 13px;border-radius:12px;color:var(--text-secondary);font-size:14.5px;font-weight:700;white-space:nowrap;transition:background .18s cubic-bezier(.4,0,.2,1),color .18s cubic-bezier(.4,0,.2,1),transform .18s cubic-bezier(.4,0,.2,1)}
+.settings-page .sidebar .nav-link:hover{background:rgba(255,255,255,.06);color:#fff;transform:translateX(2px)}
+.settings-page .sidebar .nav-link.active{background:var(--ux-accent-grad)!important;color:#fff;font-weight:800;box-shadow:0 12px 26px var(--ux-accent-glow)}
+.settings-page .sidebar .nav-link svg{width:19px;height:19px;flex:0 0 19px;stroke:currentColor;stroke-width:1.85;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.side-bottom{margin-top:auto;display:grid;gap:12px;padding-top:14px}
+.profile-card{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:15px;background:rgba(255,255,255,.045);border:1px solid var(--border-soft);min-width:0}
+.mini-avatar,.avatar-img{display:grid;place-items:center;overflow:hidden;background:linear-gradient(180deg,#fdfefe,#eaeff5);border:2px solid var(--ux-accent);box-shadow:0 8px 22px var(--ux-accent-glow)}
+.mini-avatar{width:40px;height:40px;flex:0 0 40px;border-radius:12px}
+.mini-avatar img,.avatar-img img{width:100%;height:100%;object-fit:contain;padding:4px}
+.profile-copy{flex:1;min-width:0}
+.profile-copy strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;font-weight:800;color:#fff}
+.profile-copy span{display:block;margin-top:2px;color:var(--ux-muted);font-size:12px}
+.chevron{width:16px;height:16px;color:var(--ux-muted);flex:0 0 16px}
+.logout{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:12px;border-radius:14px;border:1px solid rgba(239,68,68,.24);background:rgba(239,68,68,.09);color:#fecaca;font-size:14px;font-weight:800}
+.main{min-width:0;height:100vh;overflow-y:auto;padding:26px 36px 72px}
+.mobile-top{display:none}
+.topline{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:22px}
+.breadcrumb{display:flex;align-items:center;gap:8px;margin-bottom:10px;color:var(--ux-muted);font-size:13px;font-weight:700}
+.breadcrumb a{color:#b8c9ee}
+.topline h1{font-size:40px;font-weight:900;letter-spacing:-.04em;line-height:.98;color:#fff}
+.topline p{margin-top:9px;color:var(--text-secondary);font-size:16px;line-height:1.45}
+.top-actions{display:flex;align-items:center;gap:12px}
+.profile-pill{display:flex;align-items:center;gap:11px;padding:8px 16px 8px 8px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid var(--border-soft);min-width:0}
+.profile-pill .mini-avatar{width:38px;height:38px;flex-basis:38px;border-radius:11px}
+.profile-pill span{font-size:15px;font-weight:800;color:#fff;white-space:nowrap}
+.hero-panel{position:relative;overflow:hidden;border-radius:24px;border:1px solid var(--border);background:linear-gradient(180deg,rgba(16,47,104,.84),rgba(7,23,52,.92));box-shadow:var(--shadow-lg);padding:30px 32px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;margin-bottom:22px}
+.hero-panel::after{content:"";position:absolute;right:-90px;top:-90px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,var(--ux-accent-fill),transparent 68%);pointer-events:none}
+.hero-copy{position:relative;z-index:1;max-width:560px}
+.kicker{display:inline-flex;align-items:center;gap:9px;margin-bottom:15px;color:#b8c9ff;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.kicker::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--text-gold);box-shadow:0 0 14px rgba(232,188,104,.95)}
+.hero-title{margin:0;font-size:44px;font-weight:900;letter-spacing:-.045em;line-height:.96;color:#fff}
+.hero-title span{color:var(--ux-accent)}
+.hero-copy p{margin:14px 0 0;color:var(--text-secondary);font-size:16px;line-height:1.5}
+.hero-stats{position:relative;z-index:1;display:flex;gap:12px;flex-wrap:wrap}
+.hero-stat{min-width:104px;padding:18px 20px;border-radius:16px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.hero-stat b{display:block;color:#fff;font-size:30px;font-weight:900;letter-spacing:-.03em;line-height:1}
+.hero-stat span{display:block;margin-top:5px;color:var(--ux-muted);font-size:12.5px}
+.tabs{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:24px}
+.tab-btn{display:inline-flex;align-items:center;gap:8px;padding:11px 17px;border-radius:12px;border:1px solid var(--border-soft);background:rgba(255,255,255,.03);color:var(--ux-muted);font-size:14px;font-weight:800;transition:all .16s cubic-bezier(.4,0,.2,1)}
+.tab-btn svg{width:17px;height:17px;stroke:currentColor;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.tab-btn.is-active{background:var(--ux-accent-fill);border-color:var(--ux-accent-line);color:#fff;box-shadow:0 12px 24px rgba(0,0,0,.14)}
+.tab-panel{display:none}
+.tab-panel.is-active{display:block}
+.section-stack{display:flex;flex-direction:column;gap:28px}
+.setting-section>header{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.setting-section h2{font-size:21px;font-weight:900;letter-spacing:-.02em;color:#fff}
+.setting-section header span,.setting-help{color:var(--ux-muted);font-size:14px;line-height:1.45}
+.avatar-layout{display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap}
+.avatar-preview{display:flex;flex-direction:column;align-items:center;gap:12px;padding:22px;border-radius:20px;background:rgba(255,255,255,.04);border:1px solid var(--border-soft);flex:0 0 auto}
+.avatar-img{width:120px;height:120px;border-radius:24px;border-width:3px}
+.avatar-img img{padding:14px}
+.avatar-name{font-size:14px;font-weight:800;color:#fff}
+.avatar-caption{font-size:12.5px;color:var(--ux-muted)}
+.avatar-grid{flex:1;min-width:300px;display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:11px}
+.avatar-choice{aspect-ratio:1;border-radius:16px;border:1px solid var(--border-soft);background:rgba(255,255,255,.035);padding:4px;transition:transform .16s,border-color .16s,box-shadow .16s}
+.avatar-choice img{width:100%;height:100%;border-radius:13px;object-fit:contain;padding:7px;background:linear-gradient(180deg,#fdfefe,#eaeff5)}
+.avatar-choice.is-selected{background:var(--ux-accent-fill);border:2px solid var(--ux-accent);box-shadow:0 8px 22px var(--ux-accent-glow)}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.field-label{display:block}
+.field-label span{display:block;margin-bottom:8px;color:var(--text-secondary);font-size:13px;font-weight:800}
+.ux-field{width:100%;border:1px solid var(--border-soft);border-radius:12px;background:rgba(4,14,34,.50);color:#fff;font-size:14px;outline:none;padding:12px 14px;transition:border-color .15s}
+.ux-field:focus{border-color:var(--ux-accent-line)}
+select.ux-field{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2391a5c8' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px}
+.settings-list{display:flex;flex-direction:column;gap:12px}
+.setting-row{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:var(--ux-row-pad);border-radius:16px;background:rgba(255,255,255,.035);border:1px solid var(--border-soft)}
+.setting-row strong{display:block;margin-bottom:3px;color:#fff;font-size:16px;font-weight:800}
+.setting-row p{margin:0;color:var(--ux-muted);font-size:var(--ux-text);line-height:1.45}
+.ghost-btn,.accent-btn,.danger-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:9px 15px;border-radius:11px;font-size:13px;font-weight:800;white-space:nowrap}
+.ghost-btn{border:1px solid var(--border-soft);background:rgba(255,255,255,.05);color:var(--text-secondary)}
+.accent-btn{border:1px solid var(--ux-accent-line);background:var(--ux-accent-fill);color:#fff;box-shadow:0 10px 20px rgba(0,0,0,.12)}
+.danger-btn{border:1px solid rgba(239,68,68,.30);background:rgba(239,68,68,.10);color:#fecaca}
+.live-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;border:1px solid var(--ux-accent-line);background:var(--ux-accent-fill);color:#fff;font-size:11px;font-weight:900;letter-spacing:.06em;text-transform:uppercase}
+.swatch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:12px}
+.swatch-btn{display:flex;align-items:center;gap:11px;padding:12px;border-radius:14px;border:1px solid var(--border-soft);background:rgba(255,255,255,.035);color:#fff;transition:transform .16s,border-color .16s,box-shadow .16s}
+.swatch-btn.is-selected{border-color:var(--ux-accent-line);box-shadow:0 10px 24px var(--ux-accent-glow);background:var(--ux-accent-fill)}
+.swatch-dot{width:36px;height:36px;border-radius:50%;box-shadow:0 10px 18px rgba(0,0,0,.25)}
+.bg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.bg-btn{padding:7px;border-radius:17px;border:1px solid var(--border-soft);background:rgba(255,255,255,.035);text-align:left;transition:border-color .16s,box-shadow .16s}
+.bg-btn.is-selected{border-color:var(--ux-accent-line);box-shadow:0 10px 24px var(--ux-accent-glow)}
+.bg-preview{display:block;height:90px;border-radius:13px;border:1px solid rgba(255,255,255,.10)}
+.bg-btn span:last-child{display:block;padding:11px 4px 5px;color:#fff;font-size:14px;font-weight:800}
+.segmented{display:flex;gap:8px;flex-wrap:wrap}
+.segment-btn{min-height:38px;padding:9px 13px;border-radius:11px;border:1px solid var(--border-soft);background:rgba(255,255,255,.05);color:var(--text-secondary);font-size:13px;font-weight:800}
+.segment-btn.is-selected{border-color:var(--ux-accent-line);background:var(--ux-accent-fill);color:#fff}
+.learning-card{padding:var(--ux-row-pad);border-radius:16px;background:rgba(255,255,255,.035);border:1px solid var(--border-soft)}
+.learning-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:16px}
+.metric-chip{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.metric-chip b{display:inline-flex;gap:4px;padding:7px 14px;border-radius:10px;border:1px solid var(--ux-accent-line);background:var(--ux-accent-fill);color:#fff;font-size:15px;font-weight:900;white-space:nowrap}
+.metric-chip span{color:var(--ux-muted);font-size:12.5px;font-weight:800;white-space:nowrap}
+input[type=range]{appearance:none;width:100%;height:6px;border-radius:999px;background:rgba(255,255,255,.12);outline:none}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--ux-accent);box-shadow:0 3px 10px rgba(0,0,0,.40)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--ux-accent);box-shadow:0 3px 10px rgba(0,0,0,.40)}
+.range-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px}
+.number-field{width:92px;padding:9px 12px;border-radius:11px;border:1px solid var(--border-soft);background:rgba(4,14,34,.50);color:#fff;font-size:14px;font-weight:800;outline:none}
+.toggle{position:relative;flex:0 0 auto;width:52px;height:30px;border-radius:999px;border:1px solid var(--border-soft);background:rgba(255,255,255,.09);transition:background .18s,box-shadow .18s,border-color .18s}
+.toggle::after{content:"";position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 4px 12px rgba(0,0,0,.30);transition:left .18s cubic-bezier(.4,0,.2,1)}
+.toggle.is-on{border-color:transparent;background:var(--ux-accent-grad);box-shadow:0 6px 16px var(--ux-accent-glow)}
+.toggle.is-on::after{left:24px}
+.divider{height:1px;background:rgba(255,255,255,.10);margin:4px 0}
+.danger-zone{border-color:rgba(239,68,68,.22);background:rgba(239,68,68,.06)}
+.preview-box{margin-top:12px;padding:16px;border-radius:16px;border:1px solid var(--border-soft);background:rgba(255,255,255,.035);color:var(--text-secondary);font-size:var(--ux-text);line-height:1.55}
+.toast{position:fixed;right:30px;bottom:26px;z-index:40;display:none;align-items:center;gap:8px;padding:11px 15px;border-radius:999px;border:1px solid rgba(32,185,122,.34);background:rgba(32,185,122,.16);color:#74f0b6;font-size:13px;font-weight:900;box-shadow:0 18px 42px rgba(0,0,0,.25)}
+.toast.is-visible{display:flex;animation:uxpop .18s cubic-bezier(.4,0,.2,1)}
+.toast::before{content:"";width:8px;height:8px;border-radius:50%;background:#74f0b6;box-shadow:0 0 12px rgba(116,240,182,.8)}
+@media(max-width:1180px){.app{grid-template-columns:1fr}.settings-page .sidebar{display:none!important}.main{height:auto;min-height:100vh;padding:18px 18px 56px}.mobile-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.mobile-top .brand{padding:0}.mobile-top .logo-mark{width:46px;height:46px;flex-basis:46px}.topline{align-items:flex-start}.tabs{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.tab-btn{flex:0 0 auto}.hero-panel{padding:24px}.hero-title{font-size:38px}}
+@media(max-width:760px){.topline h1{font-size:34px}.topline p{font-size:15px}.top-actions{width:100%}.profile-pill{max-width:100%}.hero-panel{display:grid}.hero-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%}.hero-stat{min-width:0;padding:14px}.hero-stat b{font-size:24px}.setting-row,.learning-head{align-items:flex-start;display:grid}.setting-row .segmented{justify-content:flex-start}.avatar-grid{min-width:0;grid-template-columns:repeat(auto-fill,minmax(68px,1fr))}.form-grid{grid-template-columns:1fr}.bg-grid,.swatch-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.main{padding:16px}.hero-panel{padding:20px}.hero-title{font-size:32px}.hero-stats{grid-template-columns:1fr}.brand-title{font-size:17px;letter-spacing:.16em}.brand-sub{font-size:8.5px;letter-spacing:.28em}.logo-mark{width:42px;height:42px;flex-basis:42px}.bg-grid,.swatch-grid{grid-template-columns:1fr}.setting-row{padding:16px}.range-actions{display:grid;align-items:stretch}.range-actions .ghost-btn,.range-actions .accent-btn{width:100%}.toast{left:16px;right:16px;justify-content:center}}
+</style>
+</head>
+<body class="settings-page">
+<div class="app">
+  <aside class="sidebar">
+    <a class="brand" href="../index.html"><span class="logo-mark" aria-hidden="true"></span><span><span class="brand-title">Haugnes</span><span class="brand-sub">Flashcards</span></span></a>
+    <nav class="nav" aria-label="Brukermeny">
+      <a class="nav-link" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg><span>Hjem</span></a>
+      <a class="nav-link" href="subjects.html"><svg viewBox="0 0 24 24"><path d="M12 6.5C10.5 5 7.5 4.5 4.5 5v13c3-.5 6 0 7.5 1.5 1.5-1.5 4.5-2 7.5-1.5V5c-3-.5-6 0-7.5 1.5z"/><path d="M12 6.5V20"/></svg><span>Mine fag</span></a>
+      <a class="nav-link" href="butikk.html"><svg viewBox="0 0 24 24"><path d="M5 9.5 6.2 4h11.6L19 9.5"/><path d="M6 10v9.5h12V10"/><path d="M9 14h6"/></svg><span>Butikk</span></a>
+      <a class="nav-link" href="studieplan.html"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M8 3.5v3M16 3.5v3M4 9h16M8 13h2M12 13h2M16 13h1M8 16h2M12 16h2"/></svg><span>Studieplan</span></a>
+      <a class="nav-link" href="../flashcards/"><svg viewBox="0 0 24 24"><rect x="4" y="7" width="13" height="13" rx="2"/><path d="M8 3.5h10A1.5 1.5 0 0 1 19.5 5v10"/></svg><span>Alle flashcards</span></a>
+      <a class="nav-link" href="oppgavebank.html"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h5M8 17h7"/></svg><span>Oppgavebank</span></a>
+      <a class="nav-link" href="a-besvarelser.html"><svg viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V20.5H7z"/><path d="M14 3.5V8h4"/><path d="M9.5 12h5M9.5 15.5h4"/></svg><span>A-besvarelser</span></a>
+      <a class="nav-link" href="notater.html"><svg viewBox="0 0 24 24"><path d="M6 4.5h12v15H6z"/><path d="M9 8h6M9 11h6M9 14h4"/></svg><span>Notater</span></a>
+      <a class="nav-link active" href="settings.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 0 0-.1-1.1l2-1.5-2-3.4-2.4 1a7.2 7.2 0 0 0-1.9-1.1L14.3 3h-4.6l-.3 2.9A7.2 7.2 0 0 0 7.5 7L5.1 6l-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .4 0 .8.1 1.1l-2 1.5 2 3.4 2.4-1a7.2 7.2 0 0 0 1.9 1.1l.3 2.9h4.6l.3-2.9a7.2 7.2 0 0 0 1.9-1.1l2.4 1 2-3.4-2-1.5c.1-.4.1-.7.1-1.1z"/></svg><span>Innstillinger</span></a>
+    </nav>
+    <div class="side-bottom" data-unified-bottom="1">
+      <a class="profile-card" href="settings.html">
+        <span class="mini-avatar"><img data-avatar-img src="../assets/illustrations/01_graduation_cap.png" alt=""></span>
+        <span class="profile-copy"><strong data-username>Bruker</strong><span>NHH-student</span></span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+      <button class="logout" type="button" onclick="handleLogout()">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-3 M10 12H3 M6 8l-3 4 3 4"/></svg>
+        Logg ut
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="mobile-top">
+      <a class="brand" href="../index.html"><span class="logo-mark" aria-hidden="true"></span><span><span class="brand-title">Haugnes</span><span class="brand-sub">Flashcards</span></span></a>
+      <button class="logout" type="button" onclick="handleLogout()" style="width:auto;padding:10px 13px">Logg ut</button>
+    </div>
+
+    <header class="topline">
+      <div>
+        <div class="breadcrumb"><a href="index.html">Dashboard</a><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg><span>Innstillinger</span></div>
+        <h1>Innstillinger</h1>
+        <p>Profil, læringspreferanser, varsler og app-oppsett - alt lagres automatisk.</p>
+      </div>
+      <div class="top-actions">
+        <div class="profile-pill">
+          <span class="mini-avatar"><img data-avatar-img src="../assets/illustrations/01_graduation_cap.png" alt=""></span>
+          <span data-username>Bruker</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="hero-panel">
+      <div class="hero-copy">
+        <div class="kicker">Profil · Preferanser</div>
+        <h2 class="hero-title">Tilpass <span>studieappen.</span></h2>
+        <p>Velg avatar, aksentfarge, læringsflyt og varsler. Alt oppdateres live mens du velger.</p>
+      </div>
+      <div class="hero-stats" aria-label="Nøkkeltall">
+        <div class="hero-stat"><b id="activeSubjectsStat">0</b><span>aktive fag</span></div>
+        <div class="hero-stat"><b id="answerCountStat">0</b><span>A-besvarelser klare</span></div>
+        <div class="hero-stat"><b id="sessionHeroStat">50</b><span>kort per økt</span></div>
+      </div>
+    </section>
+
+    <nav class="tabs" aria-label="Innstillingsfaner">
+      <button class="tab-btn is-active" type="button" data-tab="profil"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>Profil</button>
+      <button class="tab-btn" type="button" data-tab="utseende"><svg viewBox="0 0 24 24"><path d="M12 3.5a8.5 8.5 0 1 0 0 17h1.5a2 2 0 0 0 0-4H12a1.5 1.5 0 0 1 0-3h2a6 6 0 0 0 0-12z"/><path d="M7.5 10h.1M9.5 6.5h.1M14.5 6.5h.1"/></svg>Utseende</button>
+      <button class="tab-btn" type="button" data-tab="laering"><svg viewBox="0 0 24 24"><path d="M12 6.5C10.5 5 7.5 4.5 4.5 5v13c3-.5 6 0 7.5 1.5 1.5-1.5 4.5-2 7.5-1.5V5c-3-.5-6 0-7.5 1.5z"/><path d="M12 6.5V20"/></svg>Læring</button>
+      <button class="tab-btn" type="button" data-tab="varsler"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>Varsler</button>
+      <button class="tab-btn" type="button" data-tab="personvern"><svg viewBox="0 0 24 24"><path d="M12 3.5 19 6v5.5c0 4.5-2.9 7.4-7 9-4.1-1.6-7-4.5-7-9V6z"/><path d="M9.5 12l1.8 1.8 3.7-4"/></svg>Personvern</button>
+      <button class="tab-btn" type="button" data-tab="tilgjengelighet"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><path d="M4 9h16"/><path d="M12 7v13"/><path d="M8 20l4-8 4 8"/></svg>Tilgjengelighet</button>
+    </nav>
+
+    <section class="tab-panel is-active" id="tab-profil">
+      <div class="section-stack">
+        <section class="setting-section">
+          <header><h2>Avatar</h2><span>Velg en illustrasjon som følger deg i appen.</span></header>
+          <div class="avatar-layout">
+            <div class="avatar-preview">
+              <span class="avatar-img"><img data-avatar-img src="../assets/illustrations/01_graduation_cap.png" alt=""></span>
+              <div class="avatar-name" data-username>Bruker</div>
+              <div class="avatar-caption">Valgt avatar</div>
+            </div>
+            <div class="avatar-grid" aria-label="Avatarvalg">
+              <button class="avatar-choice" type="button" data-avatar="cap" title="Graduation cap"><img src="../assets/illustrations/01_graduation_cap.png" alt=""></button>
+              <button class="avatar-choice" type="button" data-avatar="brain" title="Brain idea"><img src="../assets/illustrations/04_brain_idea.png" alt=""></button>
+              <button class="avatar-choice" type="button" data-avatar="target" title="Target arrow"><img src="../assets/illustrations/07_target_arrow.png" alt=""></button>
+              <button class="avatar-choice" type="button" data-avatar="lightbulb" title="Lightbulb"><img src="../assets/illustrations/08_lightbulb.png" alt=""></button>
+              <button class="avatar-choice" type="button" data-avatar="medal" title="Medal"><img src="../assets/illustrations/17_medal.png" alt=""></button>
+              <button class="avatar-choice" type="button" data-avatar="rocket" title="Rocket"><img src="../assets/illustrations/24_rocket_clean.png" alt=""></button>
+              <button class="avatar-choice" type="button" data-avatar="coffee" title="Coffee mug"><img src="../assets/illustrations/14_coffee_mug.png" alt=""></button>
+              <button class="avatar-choice" type="button" data-avatar="book" title="Open book"><img src="../assets/illustrations/19_open_book_clean.png" alt=""></button>
+              <button class="avatar-choice" type="button" data-avatar="growth" title="Growth arrow"><img src="../assets/illustrations/06_growth_arrow.png" alt=""></button>
+              <button class="avatar-choice" type="button" data-avatar="calendar" title="Calendar star"><img src="../assets/illustrations/11_calendar_star.png" alt=""></button>
+              <button class="avatar-choice" type="button" data-avatar="chart" title="Pie chart"><img src="../assets/illustrations/12_pie_chart.png" alt=""></button>
+            </div>
+          </div>
+        </section>
+
+        <section class="setting-section">
+          <header><h2>Profildetaljer</h2></header>
+          <div class="form-grid">
+            <label class="field-label"><span>Visningsnavn</span><input class="ux-field" id="displayNameInput" type="text" data-input-setting="displayName" autocomplete="name"></label>
+            <label class="field-label"><span>Brukernavn</span><input class="ux-field" id="usernameInput" type="text" data-input-setting="username" autocomplete="username"></label>
+            <label class="field-label"><span>Studieprogram</span><select class="ux-field" id="programInput" data-input-setting="program"><option>Master i økonomi og administrasjon</option><option>Bachelor i økonomi og administrasjon</option><option>Enkeltemner ved NHH</option><option>Annet studieprogram</option></select></label>
+            <label class="field-label"><span>Kull</span><select class="ux-field" id="kullInput" data-input-setting="kull"><option>2026</option><option>2025</option><option>2024</option><option>2023</option><option>2022</option><option>2021</option></select></label>
+          </div>
+        </section>
+
+        <section class="setting-section">
+          <header><h2>Konto</h2></header>
+          <div class="settings-list">
+            <div class="setting-row"><div><strong>E-post</strong><p id="emailText">Laster konto...</p></div><button class="ghost-btn" type="button" data-soft-action="email">Endre</button></div>
+            <div class="setting-row"><div><strong>Passord</strong><p>Sist endret av kontoleverandøren din</p></div><button class="ghost-btn" type="button" data-soft-action="password">Endre</button></div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="tab-utseende">
+      <div class="section-stack">
+        <section class="setting-section">
+          <header><h2>Aksentfarge</h2><span class="live-badge">Endres live</span></header>
+          <div class="swatch-grid">
+            <button class="swatch-btn" type="button" data-choice-setting="accent" data-value="bla"><span class="swatch-dot" style="background:linear-gradient(135deg,#2f62ff,#4b7dff)"></span><span>Blå</span></button>
+            <button class="swatch-btn" type="button" data-choice-setting="accent" data-value="gull"><span class="swatch-dot" style="background:linear-gradient(135deg,#e8bc68,#f3c469)"></span><span>Gull</span></button>
+            <button class="swatch-btn" type="button" data-choice-setting="accent" data-value="gronn"><span class="swatch-dot" style="background:linear-gradient(135deg,#20b97a,#22c55e)"></span><span>Grønn</span></button>
+            <button class="swatch-btn" type="button" data-choice-setting="accent" data-value="oransje"><span class="swatch-dot" style="background:linear-gradient(135deg,#f09828,#fb923c)"></span><span>Oransje</span></button>
+            <button class="swatch-btn" type="button" data-choice-setting="accent" data-value="lilla"><span class="swatch-dot" style="background:linear-gradient(135deg,#a855f7,#8b5cf6)"></span><span>Lilla</span></button>
+            <button class="swatch-btn" type="button" data-choice-setting="accent" data-value="cyan"><span class="swatch-dot" style="background:linear-gradient(135deg,#06b6d4,#38bdd8)"></span><span>Cyan</span></button>
+          </div>
+        </section>
+
+        <section class="setting-section">
+          <header><h2>Bakgrunn</h2></header>
+          <div class="bg-grid">
+            <button class="bg-btn" type="button" data-choice-setting="bg" data-value="standard"><span class="bg-preview" style="background:radial-gradient(1200px 720px at 10% -8%, rgba(47,98,255,.20), transparent 60%),radial-gradient(1100px 720px at 112% 4%, rgba(232,188,104,.12), transparent 55%),linear-gradient(180deg,#04142f,#020817)"></span><span>Dyp natt</span></button>
+            <button class="bg-btn" type="button" data-choice-setting="bg" data-value="midnatt"><span class="bg-preview" style="background:radial-gradient(1000px 640px at 14% -10%, rgba(47,98,255,.13), transparent 60%),linear-gradient(180deg,#030c20,#010410)"></span><span>Midnatt</span></button>
+            <button class="bg-btn" type="button" data-choice-setting="bg" data-value="skumring"><span class="bg-preview" style="background:radial-gradient(1100px 720px at 90% -8%, rgba(232,188,104,.20), transparent 58%),radial-gradient(1000px 720px at 4% 6%, rgba(124,58,237,.18), transparent 60%),linear-gradient(180deg,#0a0920,#050412)"></span><span>Skumring</span></button>
+          </div>
+        </section>
+
+        <section class="setting-section">
+          <header><h2>Tetthet</h2></header>
+          <div class="setting-row">
+            <div><strong>Kortavstand</strong><p>Hvor luftig innstillingene vises.</p></div>
+            <div class="segmented">
+              <button class="segment-btn" type="button" data-choice-setting="density" data-value="komfort">Komfortabel</button>
+              <button class="segment-btn" type="button" data-choice-setting="density" data-value="kompakt">Kompakt</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="tab-laering">
+      <div class="section-stack">
+        <section class="learning-card">
+          <div class="learning-head">
+            <div><strong>Øktlengde</strong><p class="setting-help">Antall kort per studieøkt. Vi anbefaler rundt 75.</p></div>
+            <div class="metric-chip"><b><span id="sessionLenChip">50</span> kort</b><span id="sessionLenLabel">Kort øvingsrunde</span></div>
+          </div>
+          <input id="sessionRange" type="range" min="10" max="200" step="5" data-input-setting="sessionLen">
+          <div class="range-actions">
+            <label style="display:inline-flex;align-items:center;gap:8px"><span style="font-size:13px;font-weight:800;color:var(--text-secondary)">Skriv antall</span><input class="number-field" id="sessionNumber" type="number" min="1" data-input-setting="sessionLen"></label>
+            <button class="accent-btn" type="button" data-set-session="75">Anbefalt · 75</button>
+            <button class="ghost-btn" type="button" data-random-session>Tilfeldig</button>
+          </div>
+        </section>
+
+        <section class="settings-list">
+          <div class="setting-row"><div><strong>Start hver økt med</strong><p>Velg første modus når du åpner flashcards.</p></div><div class="segmented"><button class="segment-btn" type="button" data-choice-setting="startWith" data-value="repetisjon">Repetisjon</button><button class="segment-btn" type="button" data-choice-setting="startWith" data-value="nye">Nye kort</button><button class="segment-btn" type="button" data-choice-setting="startWith" data-value="blandet">Blandet</button></div></div>
+          <div class="setting-row"><div><strong>Organisering</strong><p>Hvordan appen prioriterer neste arbeidsflate.</p></div><div class="segmented"><button class="segment-btn" type="button" data-choice-setting="organizing" data-value="fag">Fag → tema → eksamen</button><button class="segment-btn" type="button" data-choice-setting="organizing" data-value="frist">Etter frist</button><button class="segment-btn" type="button" data-choice-setting="organizing" data-value="blandet">Blandet</button></div></div>
+          <div class="setting-row"><div><strong>Automatisk vanskelighet</strong><p>Juster intervaller basert på svarene dine.</p></div><button class="toggle" type="button" data-toggle-setting="autoDiff" aria-label="Automatisk vanskelighet"></button></div>
+          <div class="setting-row"><div><strong>Eksamensmodus</strong><p>Prioriter tidligere eksamensoppgaver når det nærmer seg.</p></div><button class="toggle" type="button" data-toggle-setting="examMode" aria-label="Eksamensmodus"></button></div>
+          <div class="setting-row"><div><strong>Språk</strong><p>Bruk samme språkvalg i nye verktøy.</p></div><div class="segmented"><button class="segment-btn" type="button" data-choice-setting="language" data-value="norsk">Norsk</button><button class="segment-btn" type="button" data-choice-setting="language" data-value="engelsk">Engelsk</button></div></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="tab-varsler">
+      <div class="settings-list">
+        <div class="setting-row"><div><strong>Vennlig sjekk-inn</strong><p>En rolig melding hvis du har vært borte en stund.</p></div><button class="toggle" type="button" data-toggle-setting="checkIn" aria-label="Vennlig sjekk-inn"></button></div>
+        <div class="setting-row"><div><strong>Send sjekk-inn etter</strong><p>Velg hvor lenge appen skal vente før den sier hei.</p></div><div class="segmented"><button class="segment-btn" type="button" data-choice-setting="checkInAfter" data-value="uke">1 uke</button><button class="segment-btn" type="button" data-choice-setting="checkInAfter" data-value="to_uker">2 uker</button><button class="segment-btn" type="button" data-choice-setting="checkInAfter" data-value="maaned">1 måned</button></div></div>
+        <div class="setting-row"><div><strong>Eksamensvarsler</strong><p>Gi beskjed når viktige eksamensressurser oppdateres.</p></div><button class="toggle" type="button" data-toggle-setting="examAlerts" aria-label="Eksamensvarsler"></button></div>
+        <div class="setting-row"><div><strong>Lyd og effekter</strong><p>Diskré feedback i økter.</p></div><button class="toggle" type="button" data-toggle-setting="sound" aria-label="Lyd og effekter"></button></div>
+        <div class="divider" aria-hidden="true"></div>
+        <div class="setting-row"><div><strong>Varsel i appen</strong><p>Vis et diskret banner neste gang du åpner siden.</p></div><button class="toggle" type="button" data-toggle-setting="appNotice" aria-label="Varsel i appen"></button></div>
+        <div class="setting-row"><div><strong>E-post</strong><p>Vil du motta varsler fra oss på e-post?</p></div><button class="toggle" type="button" data-toggle-setting="email" aria-label="E-postvarsler"></button></div>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="tab-personvern">
+      <div class="settings-list">
+        <div class="setting-row"><div><strong>Bruksstatistikk</strong><p>Anonym analyse av hvilke deler av appen som brukes.</p></div><button class="toggle" type="button" data-toggle-setting="analytics" aria-label="Bruksstatistikk"></button></div>
+        <div class="setting-row"><div><strong>Personlige anbefalinger</strong><p>Bruk progresjon og fagvalg til å foreslå neste økt.</p></div><button class="toggle" type="button" data-toggle-setting="recommend" aria-label="Personlige anbefalinger"></button></div>
+        <div class="setting-row"><div><strong>Del fremgang med studiegruppe</strong><p>Gjør samlet progresjon synlig for valgte grupper når funksjonen åpnes.</p></div><button class="toggle" type="button" data-toggle-setting="shareGroup" aria-label="Del fremgang med studiegruppe"></button></div>
+        <div class="setting-row"><div><strong>Eksporter dataene mine</strong><p>Last ned innstillinger, lokal progresjon og fagvalg som JSON.</p></div><button class="accent-btn" type="button" id="exportDataBtn">Eksporter</button></div>
+        <div class="setting-row danger-zone"><div><strong>Slett konto</strong><p>Permanent sletting må bekreftes før noe fjernes.</p></div><button class="danger-btn" type="button" data-soft-action="delete">Slett konto</button></div>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="tab-tilgjengelighet">
+      <div class="section-stack">
+        <section class="learning-card">
+          <div class="learning-head">
+            <div><strong>Skriftstørrelse</strong><p class="setting-help">Juster brødtekst i innstillingsflaten.</p></div>
+            <div class="metric-chip"><b><span id="fontSizeChip">15</span> px</b><span>Anbefalt: 15 px</span></div>
+          </div>
+          <input id="fontSizeRange" type="range" min="13" max="20" step="1" data-input-setting="fontSize">
+          <div class="range-actions"><button class="ghost-btn" type="button" data-reset-font>Nullstill</button></div>
+          <div class="preview-box">Dette er en forhåndsvisning av hvordan hjelpetekst og forklaringer føles med valgt skriftstørrelse.</div>
+        </section>
+        <section class="settings-list">
+          <div class="setting-row"><div><strong>Redusert bevegelse</strong><p>Slå av animasjoner og overganger.</p></div><button class="toggle" type="button" data-toggle-setting="reducedMotion" aria-label="Redusert bevegelse"></button></div>
+          <div class="setting-row"><div><strong>Høy kontrast</strong><p>Gjør sekundærtekst lysere.</p></div><button class="toggle" type="button" data-toggle-setting="highContrast" aria-label="Høy kontrast"></button></div>
+        </section>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="saveToast" role="status" aria-live="polite">Lagret</div>
+
+<script src="auth-guard.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var STORAGE_KEY = 'hf_user_settings_v2';
+  var AVATARS = {
+    cap: '../assets/illustrations/01_graduation_cap.png',
+    brain: '../assets/illustrations/04_brain_idea.png',
+    target: '../assets/illustrations/07_target_arrow.png',
+    lightbulb: '../assets/illustrations/08_lightbulb.png',
+    medal: '../assets/illustrations/17_medal.png',
+    rocket: '../assets/illustrations/24_rocket_clean.png',
+    coffee: '../assets/illustrations/14_coffee_mug.png',
+    book: '../assets/illustrations/19_open_book_clean.png',
+    growth: '../assets/illustrations/06_growth_arrow.png',
+    calendar: '../assets/illustrations/11_calendar_star.png',
+    chart: '../assets/illustrations/12_pie_chart.png'
+  };
+  var ACCENTS = {
+    bla: { main: '#2f62ff', light: '#4b7dff', ink: '#fff' },
+    gull: { main: '#e8bc68', light: '#f3c469', ink: '#2a1e06' },
+    gronn: { main: '#20b97a', light: '#22c55e', ink: '#04231a' },
+    oransje: { main: '#f09828', light: '#fb923c', ink: '#2a1706' },
+    lilla: { main: '#a855f7', light: '#8b5cf6', ink: '#fff' },
+    cyan: { main: '#06b6d4', light: '#38bdd8', ink: '#052027' }
+  };
+  var BACKGROUNDS = {
+    standard: 'radial-gradient(1200px 720px at 10% -8%, rgba(47,98,255,.20), transparent 60%), radial-gradient(1100px 720px at 112% 4%, rgba(232,188,104,.12), transparent 55%), linear-gradient(180deg,#04142f,#020817)',
+    midnatt: 'radial-gradient(1000px 640px at 14% -10%, rgba(47,98,255,.13), transparent 60%), linear-gradient(180deg,#030c20,#010410)',
+    skumring: 'radial-gradient(1100px 720px at 90% -8%, rgba(232,188,104,.20), transparent 58%), radial-gradient(1000px 720px at 4% 6%, rgba(124,58,237,.18), transparent 60%), linear-gradient(180deg,#0a0920,#050412)'
+  };
+  var DEFAULTS = {
+    avatar: 'cap',
+    displayName: '',
+    username: '',
+    program: 'Master i økonomi og administrasjon',
+    kull: '2026',
+    accent: 'bla',
+    bg: 'standard',
+    density: 'komfort',
+    sessionLen: 50,
+    startWith: 'repetisjon',
+    organizing: 'fag',
+    autoDiff: true,
+    examMode: true,
+    language: 'norsk',
+    checkIn: true,
+    checkInAfter: 'maaned',
+    examAlerts: true,
+    sound: false,
+    appNotice: true,
+    email: false,
+    analytics: true,
+    recommend: true,
+    shareGroup: false,
+    fontSize: 15,
+    reducedMotion: false,
+    highContrast: false,
+    updatedAt: ''
+  };
+  var settings = merge(DEFAULTS, readJson(STORAGE_KEY, {}));
+  var sessionRef = null;
+  var remoteLoaded = false;
+  var remoteDirty = false;
+  var remoteSaving = false;
+  var remoteTimer = null;
+  var toastTimer = null;
+
+  function merge(base, extra) {
+    var out = {};
+    Object.keys(base).forEach(function (key) { out[key] = base[key]; });
+    Object.keys(extra || {}).forEach(function (key) { if (key in base) out[key] = extra[key]; });
+    return out;
+  }
+
+  function readJson(key, fallback) {
+    try {
+      var raw = window.localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch (e) {
+      return fallback;
+    }
+  }
+
+  function writeJson(key, value) {
+    try { window.localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+  }
+
+  function setText(id, value) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = value;
+  }
+
+  function syncValue(id, value) {
+    var el = document.getElementById(id);
+    if (el && document.activeElement !== el) el.value = value;
+  }
+
+  function hexToRgb(hex) {
+    var clean = String(hex || '').replace('#', '');
+    var num = parseInt(clean, 16);
+    return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+  }
+
+  function rgba(hex, alpha) {
+    var rgb = hexToRgb(hex);
+    return 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + alpha + ')';
+  }
+
+  function nameFromEmail(email) {
+    var username = String(email || 'student').split('@')[0] || 'student';
+    return username.charAt(0).toUpperCase() + username.slice(1);
+  }
+
+  function sessionLabel(value) {
+    var n = Number(value) || 0;
+    if (n < 30) return 'Rask repetisjon';
+    if (n < 60) return 'Kort øvingsrunde';
+    if (n < 90) return 'Solid økt';
+    if (n < 130) return 'Lang økt';
+    return 'Maraton-økt';
+  }
+
+  function clampNumber(value, min, max, fallback) {
+    var n = parseInt(value, 10);
+    if (!Number.isFinite(n)) n = fallback;
+    return Math.max(min, Math.min(max, n));
+  }
+
+  function currentName() {
+    return settings.displayName || settings.username || (sessionRef && sessionRef.user ? nameFromEmail(sessionRef.user.email) : 'Bruker');
+  }
+
+  function applyVars() {
+    var accent = ACCENTS[settings.accent] || ACCENTS.bla;
+    var root = document.documentElement;
+    root.style.setProperty('--ux-accent', accent.main);
+    root.style.setProperty('--ux-accent-2', accent.light);
+    root.style.setProperty('--ux-accent-grad', 'linear-gradient(135deg,' + accent.main + ',' + accent.light + ')');
+    root.style.setProperty('--ux-accent-fill', rgba(accent.main, .15));
+    root.style.setProperty('--ux-accent-line', rgba(accent.main, .35));
+    root.style.setProperty('--ux-accent-glow', rgba(accent.main, .34));
+    root.style.setProperty('--ux-accent-ink', accent.ink);
+    root.style.setProperty('--ux-page-bg', BACKGROUNDS[settings.bg] || BACKGROUNDS.standard);
+    root.style.setProperty('--ux-row-pad', settings.density === 'kompakt' ? '14px 16px' : '19px 20px');
+    root.style.setProperty('--ux-text', clampNumber(settings.fontSize, 13, 20, 15) + 'px');
+    root.style.setProperty('--ux-muted', settings.highContrast ? '#dfe8fb' : '#91a5c8');
+    root.classList.toggle('ux-reduce', !!settings.reducedMotion);
+  }
+
+  function applyUi() {
+    applyVars();
+    var avatarSrc = AVATARS[settings.avatar] || AVATARS.cap;
+    document.querySelectorAll('[data-avatar-img]').forEach(function (img) { img.src = avatarSrc; });
+    document.querySelectorAll('[data-username]').forEach(function (el) { el.textContent = currentName(); });
+    setText('sessionHeroStat', settings.sessionLen);
+    setText('sessionLenChip', settings.sessionLen);
+    setText('sessionLenLabel', sessionLabel(settings.sessionLen));
+    setText('fontSizeChip', settings.fontSize);
+    syncValue('displayNameInput', settings.displayName);
+    syncValue('usernameInput', settings.username);
+    syncValue('programInput', settings.program);
+    syncValue('kullInput', settings.kull);
+    syncValue('sessionRange', settings.sessionLen);
+    syncValue('sessionNumber', settings.sessionLen);
+    syncValue('fontSizeRange', settings.fontSize);
+    document.querySelectorAll('[data-avatar]').forEach(function (button) {
+      var on = button.getAttribute('data-avatar') === settings.avatar;
+      button.classList.toggle('is-selected', on);
+      button.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    document.querySelectorAll('[data-choice-setting]').forEach(function (button) {
+      var key = button.getAttribute('data-choice-setting');
+      var on = String(settings[key]) === button.getAttribute('data-value');
+      button.classList.toggle('is-selected', on);
+      button.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    document.querySelectorAll('[data-toggle-setting]').forEach(function (button) {
+      var key = button.getAttribute('data-toggle-setting');
+      var on = !!settings[key];
+      button.classList.toggle('is-on', on);
+      button.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+  }
+
+  function showToast(message) {
+    var toast = document.getElementById('saveToast');
+    if (!toast) return;
+    toast.textContent = message || 'Lagret';
+    toast.classList.add('is-visible');
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(function () { toast.classList.remove('is-visible'); }, 1700);
+  }
+
+  function saveLocal() {
+    settings.updatedAt = new Date().toISOString();
+    writeJson(STORAGE_KEY, settings);
+  }
+
+  function commit(patch, message) {
+    Object.keys(patch || {}).forEach(function (key) { if (key in DEFAULTS) settings[key] = patch[key]; });
+    saveLocal();
+    applyUi();
+    showToast(message || 'Lagret');
+    scheduleRemoteSave();
+  }
+
+  function getRemoteContext() {
+    if (!window.AuthGuard || typeof window.AuthGuard.getClient !== 'function' || typeof window.AuthGuard.getSession !== 'function') return null;
+    var session = window.AuthGuard.getSession();
+    if (!session || !session.user || !session.user.id || session.user.email === 'dev@student.local') return null;
+    try { return { sb: window.AuthGuard.getClient(), userId: session.user.id }; }
+    catch (e) { return null; }
+  }
+
+  function scheduleRemoteSave() {
+    remoteDirty = true;
+    if (!remoteLoaded) return;
+    window.clearTimeout(remoteTimer);
+    remoteTimer = window.setTimeout(saveRemote, 500);
+  }
+
+  function saveRemote() {
+    var context = getRemoteContext();
+    if (!context || !remoteDirty) return;
+    if (remoteSaving) {
+      window.clearTimeout(remoteTimer);
+      remoteTimer = window.setTimeout(saveRemote, 700);
+      return;
+    }
+    remoteSaving = true;
+    remoteDirty = false;
+    return context.sb.from('user_custom_data').select('data').eq('user_id', context.userId).maybeSingle().then(function (result) {
+      var data = result && result.data && result.data.data && typeof result.data.data === 'object' ? result.data.data : {};
+      data.settings = settings;
+      return context.sb.from('user_custom_data').upsert({
+        user_id: context.userId,
+        data: data,
+        updated_at: new Date().toISOString()
+      });
+    }).then(function (result) {
+      if (result && result.error) throw result.error;
+    }).catch(function () {
+      remoteDirty = true;
+    }).finally(function () {
+      remoteSaving = false;
+      if (remoteDirty) scheduleRemoteSave();
+    });
+  }
+
+  function loadRemote() {
+    var context = getRemoteContext();
+    if (!context) {
+      remoteLoaded = true;
+      return Promise.resolve();
+    }
+    return context.sb.from('user_custom_data').select('data').eq('user_id', context.userId).maybeSingle().then(function (result) {
+      var data = result && result.data && result.data.data && typeof result.data.data === 'object' ? result.data.data : {};
+      var remote = data.settings && typeof data.settings === 'object' ? data.settings : null;
+      remoteLoaded = true;
+      if (!remote) {
+        remoteDirty = true;
+        saveRemote();
+        return;
+      }
+      var remoteTime = Date.parse(remote.updatedAt || '') || 0;
+      var localTime = Date.parse(settings.updatedAt || '') || 0;
+      if (remoteTime > localTime) {
+        settings = merge(DEFAULTS, remote);
+        writeJson(STORAGE_KEY, settings);
+        applyUi();
+      } else if (localTime > remoteTime) {
+        remoteDirty = true;
+        saveRemote();
+      }
+    }).catch(function () {
+      remoteLoaded = true;
+    });
+  }
+
+  function updateAccount(session) {
+    sessionRef = session || sessionRef;
+    var email = sessionRef && sessionRef.user && sessionRef.user.email ? sessionRef.user.email : '';
+    if (email) setText('emailText', email);
+    if (!settings.displayName && !settings.username && email) {
+      settings.displayName = nameFromEmail(email);
+      settings.username = String(email).split('@')[0] || '';
+      saveLocal();
+    }
+    applyUi();
+  }
+
+  function updateStats() {
+    if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.getSelected === 'function') {
+      setText('activeSubjectsStat', window.HaugnesSubjectAccess.getSelected().length);
+    } else if (window.HaugnesSubjects && typeof window.HaugnesSubjects.getAll === 'function') {
+      setText('activeSubjectsStat', window.HaugnesSubjects.getAll().length);
+    } else {
+      var selected = readJson('hf_enabled_subjects', []);
+      setText('activeSubjectsStat', Array.isArray(selected) && selected.length ? selected.length : 0);
+    }
+
+    var context = getRemoteContext();
+    if (!context) return;
+    context.sb.from('answer_resources').select('id', { count: 'exact', head: true }).eq('kind', 'A-besvarelse').then(function (result) {
+      if (result && typeof result.count === 'number') setText('answerCountStat', result.count);
+    }).catch(function () {});
+  }
+
+  function bindEvents() {
+    document.querySelectorAll('[data-tab]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var id = button.getAttribute('data-tab');
+        document.querySelectorAll('[data-tab]').forEach(function (tab) { tab.classList.toggle('is-active', tab === button); });
+        document.querySelectorAll('.tab-panel').forEach(function (panel) { panel.classList.toggle('is-active', panel.id === 'tab-' + id); });
+      });
+    });
+
+    document.addEventListener('click', function (event) {
+      var avatar = event.target.closest('[data-avatar]');
+      if (avatar) commit({ avatar: avatar.getAttribute('data-avatar') });
+
+      var choice = event.target.closest('[data-choice-setting]');
+      if (choice) {
+        var key = choice.getAttribute('data-choice-setting');
+        var value = choice.getAttribute('data-value');
+        var patch = {};
+        patch[key] = value;
+        commit(patch);
+      }
+
+      var toggle = event.target.closest('[data-toggle-setting]');
+      if (toggle) {
+        var tkey = toggle.getAttribute('data-toggle-setting');
+        var tpatch = {};
+        tpatch[tkey] = !settings[tkey];
+        commit(tpatch);
+      }
+
+      var setSession = event.target.closest('[data-set-session]');
+      if (setSession) commit({ sessionLen: clampNumber(setSession.getAttribute('data-set-session'), 1, 250, 75) });
+
+      if (event.target.closest('[data-random-session]')) {
+        var random = 25 + Math.round(Math.random() * 20) * 5;
+        commit({ sessionLen: random });
+      }
+
+      if (event.target.closest('[data-reset-font]')) commit({ fontSize: 15 });
+
+      if (event.target.closest('#exportDataBtn')) exportData();
+
+      var soft = event.target.closest('[data-soft-action]');
+      if (soft) {
+        var action = soft.getAttribute('data-soft-action');
+        showToast(action === 'delete' ? 'Kontosletting må bekreftes manuelt' : 'Kontoendring kommer snart');
+      }
+    });
+
+    document.addEventListener('input', function (event) {
+      var input = event.target.closest('[data-input-setting]');
+      if (!input) return;
+      var key = input.getAttribute('data-input-setting');
+      var value = input.value;
+      if (key === 'sessionLen') value = clampNumber(value, 1, 250, settings.sessionLen || 50);
+      if (key === 'fontSize') value = clampNumber(value, 13, 20, 15);
+      var patch = {};
+      patch[key] = value;
+      commit(patch);
+    });
+
+    window.addEventListener('haugnes:subject-access-changed', updateStats);
+    window.addEventListener('haugnes:entitlements-changed', updateStats);
+    window.setTimeout(updateStats, 300);
+    window.setTimeout(updateStats, 1200);
+  }
+
+  function exportData() {
+    var payload = {
+      exportedAt: new Date().toISOString(),
+      settings: settings,
+      flashcardStats: readJson('fc_stats', {}),
+      enabledSubjects: readJson('hf_enabled_subjects', [])
+    };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = 'haugnes-data.json';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(function () { URL.revokeObjectURL(url); }, 500);
+    showToast('Eksportert');
+  }
+
+  window.onUserAuthorized = function (session) {
+    updateAccount(session);
+    loadRemote().then(function () {
+      updateStats();
+    });
+  };
+
+  bindEvents();
+  applyUi();
+  updateStats();
+})();
+</script>
+</body>
+</html>
