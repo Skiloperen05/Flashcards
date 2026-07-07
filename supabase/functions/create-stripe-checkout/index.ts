@@ -154,6 +154,27 @@ function bearerToken(req: Request) {
   return (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "").trim();
 }
 
+// Interne Supabase-kall kan feile forbigående med 5xx (bl.a. Cloudflare 522);
+// prøv på nytt før vi gir opp hele checkouten.
+async function fetchWithRetry(url: string, init?: RequestInit, attempts = 3) {
+  let lastError: unknown = null;
+  for (let attempt = 0; attempt < attempts; attempt++) {
+    if (attempt > 0) await new Promise((resolve) => setTimeout(resolve, 250 * attempt));
+    try {
+      const response = await fetch(url, init);
+      if (response.status < 500 || attempt === attempts - 1) return response;
+      console.error(`Transient ${response.status} from ${url}, retrying...`);
+      await response.body?.cancel();
+      lastError = new Error(`HTTP ${response.status}`);
+    } catch (error) {
+      console.error(`Fetch failed for ${url}:`, error instanceof Error ? error.message : error);
+      if (attempt === attempts - 1) throw error;
+      lastError = error;
+    }
+  }
+  throw lastError instanceof Error ? lastError : new Error("fetch failed");
+}
+
 function serviceRoleKey() {
   const legacyKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (legacyKey) return legacyKey;
@@ -185,7 +206,7 @@ function adminHeaders(extra?: Record<string, string>) {
 
 async function privateConfig(key: string) {
   const params = new URLSearchParams({ key: `eq.${key}`, select: "value", limit: "1" });
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/app_private_config?${params.toString()}`, {
+  const response = await fetchWithRetry(`${SUPABASE_URL}/rest/v1/app_private_config?${params.toString()}`, {
     headers: adminHeaders(),
   });
 
@@ -205,7 +226,7 @@ async function subjectPriceOre(subjectCode: string) {
     select: "price_nok_ore",
     limit: "1",
   });
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/subject_prices?${params.toString()}`, {
+  const response = await fetchWithRetry(`${SUPABASE_URL}/rest/v1/subject_prices?${params.toString()}`, {
     headers: adminHeaders(),
   });
 
@@ -223,7 +244,7 @@ async function productPriceOre(product: CheckoutProduct) {
     select: "price_nok_ore,active",
     limit: "1",
   });
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/commerce_products?${params.toString()}`, {
+  const response = await fetchWithRetry(`${SUPABASE_URL}/rest/v1/commerce_products?${params.toString()}`, {
     headers: adminHeaders(),
   });
 
@@ -246,7 +267,7 @@ async function commerceProduct(productIdValue: string) {
     select: "product_id,label,product_kind,subject_codes,description,price_nok_ore,active",
     limit: "1",
   });
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/commerce_products?${params.toString()}`, {
+  const response = await fetchWithRetry(`${SUPABASE_URL}/rest/v1/commerce_products?${params.toString()}`, {
     headers: adminHeaders(),
   });
 
@@ -283,7 +304,7 @@ async function discountFromCode(rawCode: unknown) {
     select: "code,label,percent_off,amount_off_nok_ore,active,expires_at,max_redemptions,redeemed_count",
     limit: "1",
   });
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/discount_codes?${params.toString()}`, {
+  const response = await fetchWithRetry(`${SUPABASE_URL}/rest/v1/discount_codes?${params.toString()}`, {
     headers: adminHeaders(),
   });
 
@@ -348,7 +369,7 @@ async function productPricing(product: CheckoutProduct, entitlements: EntitledSu
 }
 
 async function getUser(accessToken: string) {
-  const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+  const response = await fetchWithRetry(`${SUPABASE_URL}/auth/v1/user`, {
     headers: {
       apikey: SUPABASE_ANON_KEY,
       Authorization: `Bearer ${accessToken}`,
@@ -365,7 +386,7 @@ async function getEntitlements(userId: string) {
     select: "subject_code,source,amount_paid",
   });
 
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/subject_entitlements?${params.toString()}`, {
+  const response = await fetchWithRetry(`${SUPABASE_URL}/rest/v1/subject_entitlements?${params.toString()}`, {
     headers: adminHeaders(),
   });
 
@@ -386,7 +407,7 @@ async function getProfile(userId: string) {
     select: "is_admin,is_friend",
   });
 
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/profiles?${params.toString()}`, {
+  const response = await fetchWithRetry(`${SUPABASE_URL}/rest/v1/profiles?${params.toString()}`, {
     headers: adminHeaders(),
   });
 
@@ -425,7 +446,10 @@ function isProductOwned(product: CheckoutProduct, productOwnedCodes: string[], p
 
 function siteUrl(req: Request) {
   const origin = req.headers.get("origin") || "";
-  return isAllowedOrigin(origin) ? origin : DEFAULT_SITE_URL;
+  if (!isAllowedOrigin(origin)) return DEFAULT_SITE_URL;
+  // GitHub Pages serverer appen under /Flashcards/, ikke på rot.
+  if (origin === "https://skiloperen05.github.io") return `${origin}/Flashcards`;
+  return origin;
 }
 
 async function createCheckoutSession(req: Request, user: { id?: string; email?: string }, product: CheckoutProduct, pricing: CheckoutPricing, discount: DiscountCode | null) {
@@ -480,6 +504,16 @@ async function createCheckoutSession(req: Request, user: { id?: string; email?: 
 
   const session = await response.json();
   if (!response.ok) {
+    console.error(
+      "Stripe checkout session failed:",
+      response.status,
+      JSON.stringify({
+        type: session?.error?.type,
+        code: session?.error?.code,
+        message: session?.error?.message,
+        product: product.id,
+      }),
+    );
     throw new Error(session?.error?.message || "Kunne ikke starte betaling.");
   }
 
@@ -516,6 +550,7 @@ Deno.serve(async (req: Request) => {
     const session = await createCheckoutSession(req, user, product, pricing, discount);
     return json(req, 200, { url: session.url });
   } catch (error) {
+    console.error("create-stripe-checkout feilet:", error instanceof Error ? error.message : error);
     return json(req, 400, { error: error instanceof Error ? error.message : "Kunne ikke starte betaling." });
   }
 });
