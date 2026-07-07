@@ -46,7 +46,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Subject page rendering/data/enhancements: `shared/subject-page-renderer.js`, `shared/subject-page-data.js`, `shared/subject-page-enhancements.js`, `shared/subject-resources.js`.
 - Dashboard dynamic progress/recommendations and some legacy SAM3 package pointers: `shared/haugnes-dashboard-progress.js`.
 - A-besvarelser / eksamensarkiv dynamic package UI: `shared/haugnes-answer-library.js`.
-- User sidebar normalization: `shared/user-sidebar.js`. It is the source of truth for the flat left menu used across user/app pages: Hjem, Mine fag, Butikk, Eksamensanalyse, A-besvarelser, Oppgavebank, Notater, Studieplan, Innstillinger.
+- User sidebar normalization: `shared/user-sidebar.js`. It is the source of truth for the grouped left menu used across user/app pages: Hjem, Mine fag, Butikk, Studieplan, Eksamensanalyse, Oppgavebank, A-besvarelser, Memoarer, Notater, Alle flashcards, Innstillinger.
 - Logo normalization: `shared/logo-normalizer.js`. Re-applies the logo image if later branding scripts clear an already normalized logo mark.
 - Global user-settings applier: `shared/user-settings.js`. Loaded on every app page from `shared/auth-guard.js` (`loadGlobalPolish`). Reads `hf_user_settings_v2` (plus a one-shot pull from `user_custom_data.data.settings` when newer) and applies accent color, background theme, font-size scaling, reduced motion, high contrast, avatar/display name in sidebars, the friendly check-in banner, and hides recommendation panels when disabled. Exposes `window.HaugnesUserSettings`.
 - TimeEdit/NHH schedule integration: `shared/timeedit-fetch-proxy.js`, `shared/nhh-schedule-api.js`, `shared/nhh-schedule-normalizer.js`, `shared/nhh-strict-course-filter.js`, `shared/haugnes-studyplan.js`. Runtime proxy target is the Supabase `timeedit` Edge Function.
@@ -61,7 +61,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - `ret14/`: RET14 Skatterett hub, exam radar, pensum, quiz, and progress.
 - `sol1/`: SOL1 subject pages and flashcard data.
 - `sam1a/`, `met1/`, `kom1/`, `ret1a/`, `bed1/`, `mat10/`, `met2/`: MVP or planned subject hubs.
-- `flashcards/`: generic flashcard app entry.
+- `flashcards/`: generic flashcard app entry. The start surface is a faggruppert "Alle flashcards" catalog with search/semester filters; `shared/flashcards-library-fallback.js` keeps the catalog visible if the full flashcard app init has not rendered cards yet.
 
 ## A-besvarelser / Exam Packages
 

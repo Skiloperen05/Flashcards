@@ -179,7 +179,7 @@
     loadSubjectAccess(function () {
       addScript('haugnes-flashcards-structure-js', rootRelative('shared/haugnes-flashcards-structure.js'));
     });
-    document.title = 'Flashcards — Haugnes';
+    document.title = 'Alle flashcards — Haugnes';
   }
 
   function enhanceRet14QuizPage() {

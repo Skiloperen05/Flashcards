@@ -56,12 +56,21 @@
     { id: 'home', label: 'Hjem', href: 'user/index.html', icon: 'home' },
     { id: 'subjects', label: 'Mine fag', href: 'user/subjects.html', icon: 'subjects' },
     { id: 'shop', label: 'Butikk', href: 'user/butikk.html', icon: 'shop' },
-    { id: 'exam', label: 'Eksamensanalyse', href: 'user/eksamensanalyse.html', icon: 'exam' },
-    { id: 'answers', label: 'A-besvarelser', href: 'user/a-besvarelser.html', icon: 'answers' },
-    { id: 'tasks', label: 'Oppgavebank', href: 'user/oppgavebank.html', icon: 'tasks' },
-    { id: 'notes', label: 'Notater', href: 'user/notater.html', icon: 'notes' },
     { id: 'plan', label: 'Studieplan', href: 'user/studieplan.html', icon: 'plan' },
+    { id: 'exam', label: 'Eksamensanalyse', href: 'user/eksamensanalyse.html', icon: 'exam' },
+    { id: 'tasks', label: 'Oppgavebank', href: 'user/oppgavebank.html', icon: 'tasks' },
+    { id: 'answers', label: 'A-besvarelser', href: 'user/a-besvarelser.html', icon: 'answers' },
+    { id: 'memos', label: 'Memoarer', href: 'user/memoarer.html', icon: 'memos' },
+    { id: 'notes', label: 'Notater', href: 'user/notater.html', icon: 'notes' },
+    { id: 'flashcards', label: 'Alle flashcards', href: 'flashcards/', icon: 'flashcards' },
     { id: 'settings', label: 'Innstillinger', href: 'user/settings.html', icon: 'settings' }
+  ];
+
+  var SECTIONS = [
+    { label: 'Oversikt', items: MENU.slice(0, 3) },
+    { label: 'Studier', items: MENU.slice(3, 6) },
+    { label: 'Innhold', items: MENU.slice(6, 10) },
+    { label: 'Konto', items: MENU.slice(10) }
   ];
 
   function activeId() {
@@ -74,15 +83,21 @@
     if (page === 'eksamensanalyse.html' || /\/(?:ret14|sam2)\x2feksamen\//.test(path) || /\/sam3\/eksamensradar-v3\.html$/.test(path)) return 'exam';
     if (page === 'oppgavebank.html' || /\/sam2\/oppgaver/.test(path)) return 'tasks';
     if (page === 'a-besvarelser.html') return 'answers';
-    if (page === 'memoarer.html' || /\/memoar\//.test(path)) return 'notes';
+    if (page === 'memoarer.html' || /\/memoar\//.test(path)) return 'memos';
     if (page === 'notater.html') return 'notes';
-    if (/\/flashcards\//.test(path) || /flashcards/.test(page)) return 'subjects';
+    if (/\/flashcards\//.test(path) || /flashcards/.test(page)) return 'flashcards';
     if (page === 'settings.html') return 'settings';
     return '';
   }
 
   function itemHtml(item, active) {
     return '<a class="nav-link ' + (active === item.id ? 'active' : '') + '" href="' + rootRelative(item.href) + '" data-nav-id="' + esc(item.id) + '">' + icon(item.icon) + '<span>' + esc(item.label) + '</span></a>';
+  }
+
+  function sectionHtml(section, active) {
+    return '<div class="hf-nav-section"><div class="hf-nav-section-label">' + esc(section.label) + '</div>' + section.items.map(function (item) {
+      return itemHtml(item, active);
+    }).join('') + '</div>';
   }
 
   function brandHtml() {
@@ -100,19 +115,21 @@
 
   function sharedCss(selector) {
     return [
-      selector + '{display:flex!important;flex-direction:column!important;gap:24px!important;box-sizing:border-box}',
-      selector + ' .brand{display:flex!important;align-items:center!important;gap:14px!important;padding:4px 6px 22px!important;min-width:0!important;color:#fff!important;text-decoration:none!important}',
-      selector + ' .brand>.logo-mark{width:52px!important;height:52px!important;flex:0 0 52px!important;border-radius:16px!important;background:#0b244e url("' + rootRelative('assets/Flashcardslogo.png') + '") center center/contain no-repeat!important;border:1px solid rgba(126,162,255,.28)!important;box-shadow:0 16px 34px rgba(0,0,0,.30),0 0 30px rgba(47,98,255,.16)!important}',
+      selector + '{display:flex!important;flex-direction:column!important;gap:16px!important;box-sizing:border-box}',
+      selector + ' .brand{display:flex!important;align-items:center!important;gap:14px!important;padding:4px 6px 12px!important;min-width:0!important;color:#fff!important;text-decoration:none!important}',
+      selector + ' .brand>.logo-mark{width:52px!important;height:52px!important;flex:0 0 52px!important;border-radius:16px!important;background:#0b244e url("' + rootRelative('assets/Flashcardslogo.png') + '") center center/contain no-repeat!important;border:1px solid rgba(126,162,255,.28)!important;box-shadow:0 14px 28px rgba(0,0,0,.28),0 0 26px rgba(47,98,255,.14)!important}',
       selector + ' .brand>span:not(.logo-mark){display:grid!important;gap:8px!important;line-height:1!important;min-width:0!important}',
       selector + ' .brand-title{display:block!important;font-size:24px!important;font-weight:950!important;letter-spacing:.18em!important;text-transform:uppercase!important;color:#fff!important;white-space:nowrap!important;line-height:1!important}',
       selector + ' .brand-sub{display:block!important;font-size:10px!important;font-weight:950!important;letter-spacing:.42em!important;text-transform:uppercase!important;color:#e8bc68!important;white-space:nowrap!important;line-height:1!important;margin-top:0!important}',
       selector + ' .nav{display:grid!important;gap:13px!important;flex:0 0 auto!important}',
-      selector + ' .nav-link{display:flex!important;align-items:center!important;gap:14px!important;min-height:44px!important;padding:10px 14px!important;border-radius:16px!important;color:#c6d3eb!important;font-size:16px!important;font-weight:900!important;text-decoration:none!important;line-height:1.15!important;background:transparent!important;box-shadow:none!important;transition:background .18s ease,color .18s ease,transform .18s ease!important}',
+      selector + ' .hf-nav-section{display:grid!important;gap:6px!important}',
+      selector + ' .hf-nav-section-label{padding:0 16px 2px!important;color:#8ea0bf!important;font-size:11px!important;font-weight:950!important;letter-spacing:.16em!important;text-transform:uppercase!important}',
+      selector + ' .nav-link{display:flex!important;align-items:center!important;gap:14px!important;min-height:38px!important;padding:8px 14px!important;border-radius:15px!important;color:#c6d3eb!important;font-size:15px!important;font-weight:900!important;text-decoration:none!important;line-height:1.15!important;background:transparent!important;box-shadow:none!important;transition:background .18s ease,color .18s ease,transform .18s ease!important}',
       selector + ' .nav-link:hover{background:rgba(255,255,255,.06)!important;color:#fff!important;transform:translateX(2px)!important}',
       selector + ' .nav-link.active{background:linear-gradient(135deg,#2455ef,#3f73ff)!important;color:#fff!important;box-shadow:0 12px 26px rgba(47,98,255,.28)!important}',
       selector + ' .nav-link svg{width:20px!important;height:20px!important;flex:0 0 20px!important;stroke:currentColor!important;stroke-width:1.9!important;fill:none!important;stroke-linecap:round!important;stroke-linejoin:round!important}',
       selector + ' .nav-link span{min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}',
-      '@media(max-height:880px){' + selector + '{gap:14px!important}' + selector + ' .brand{padding-bottom:10px!important}' + selector + ' .nav{gap:8px!important}' + selector + ' .nav-link{min-height:36px!important;padding-top:7px!important;padding-bottom:7px!important;font-size:14px!important}}'
+      '@media(max-height:880px){' + selector + '{gap:10px!important}' + selector + ' .brand{padding-bottom:6px!important}' + selector + ' .nav{gap:7px!important}' + selector + ' .hf-nav-section{gap:3px!important}' + selector + ' .hf-nav-section-label{font-size:9px!important;padding-bottom:0!important}' + selector + ' .nav-link{min-height:32px!important;padding-top:6px!important;padding-bottom:6px!important;font-size:13px!important}}'
     ].join('\n');
   }
 
@@ -157,7 +174,7 @@
 
   function navHtml() {
     var active = activeId();
-    return '<nav class="nav" aria-label="Brukermeny">' + MENU.map(function (item) { return itemHtml(item, active); }).join('') + '</nav>';
+    return '<nav class="nav" aria-label="Brukermeny">' + SECTIONS.map(function (section) { return sectionHtml(section, active); }).join('') + '</nav>';
   }
 
   function renderLocal() {
@@ -251,5 +268,5 @@
   window.addEventListener('hashchange', render);
   window.addEventListener('haugnes:subject-access-changed', render);
 
-  window.HaugnesUserSidebar = { run: run, render: render, menu: MENU.slice() };
+  window.HaugnesUserSidebar = { run: run, render: render, sections: SECTIONS.slice(), menu: MENU.slice() };
 })(window, document);
