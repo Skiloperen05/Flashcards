@@ -13,27 +13,33 @@
 <link rel="stylesheet" href="../shared/haugnes-subjects.css">
 </head>
 <body>
-<header class="site-header">
-  <a class="site-logo" href="index.html" aria-label="Haugnes Flashcards dashboard">
-    <span class="logo-mark"></span>
-    <span><span class="logo-text">Haugnes</span><span class="logo-sub">Flashcards</span></span>
-  </a>
-  <a class="header-back" href="index.html">← Dashboard</a>
-</header>
-<section class="page-hero">
-  <div class="hero-inner">
-    <div>
-      <div class="hero-kicker">Mine fag</div>
-      <h1 class="hero-title">Velg hvor du vil <span>øve</span>.</h1>
-      <p class="hero-sub">Samlet oversikt over fagene dine, progresjon, verktøy og anbefalt neste handling.</p>
-    </div>
-    <div class="hero-actions">
-      <a class="hero-btn" href="../flashcards/">Alle flashcards →</a>
-      <a class="hero-btn secondary" href="butikk.html">Kjøp flere fag</a>
-    </div>
-  </div>
-</section>
-<main class="main">
+<div class="app">
+  <aside class="sidebar">
+    <a class="brand" href="index.html"><span class="logo-mark"></span><span><span class="brand-title">Haugnes</span><span class="brand-sub">Flashcards</span></span></a>
+    <nav class="nav" aria-label="Brukermeny"></nav>
+  </aside>
+  <div class="subject-page">
+    <header class="site-header">
+      <a class="site-logo" href="index.html" aria-label="Haugnes Flashcards dashboard">
+        <span class="logo-mark"></span>
+        <span><span class="logo-text">Haugnes</span><span class="logo-sub">Flashcards</span></span>
+      </a>
+      <a class="header-back" href="index.html">Dashboard</a>
+    </header>
+    <section class="page-hero">
+      <div class="hero-inner">
+        <div>
+          <div class="hero-kicker">Mine fag</div>
+          <h1 class="hero-title">Velg hvor du vil <span>øve</span>.</h1>
+          <p class="hero-sub">Samlet oversikt over fagene dine, progresjon, verktøy og anbefalt neste handling.</p>
+        </div>
+        <div class="hero-actions">
+          <a class="hero-btn" href="../flashcards/">Alle flashcards</a>
+          <a class="hero-btn secondary" href="butikk.html">Kjøp flere fag</a>
+        </div>
+      </div>
+    </section>
+    <main class="main">
   <div class="toolbar">
     <input class="searchbox" id="subjectSearch" placeholder="Søk etter fag, kode eller verktøy..." autocomplete="off">
     <div class="filter-row" aria-label="Filtrer fag">
@@ -67,7 +73,9 @@
   </section>
   <div class="subject-groups" id="subjectsGrid"></div>
   <div class="empty-note" id="emptyNote">Fant ingen fag som matcher søket.</div>
-</main>
+    </main>
+  </div>
+</div>
 <script src="../shared/learning-content.js"></script>
 <script src="../shared/subject-meta.js"></script>
 <script src="auth-guard.js"></script>
