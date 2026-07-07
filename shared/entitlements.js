@@ -6,7 +6,7 @@
   var ALL_DEV_CODES = ['RET14', 'SOL1', 'SAM2', 'SAM3', 'MET2', 'MAT10', 'SAM1A', 'MET1', 'KOM1', 'RET1A', 'BED1'];
   var PREVIEW_KEY = 'hf_admin_preview_as_student';
 
-  var state = { loaded: false, codes: [], isAdmin: false, isFriend: false };
+  var state = { loaded: false, codes: [], paidCodes: [], isAdmin: false, isFriend: false };
   var loading = null;
 
   function code(value) {
@@ -28,19 +28,29 @@
   function broadcast() {
     try {
       window.dispatchEvent(new CustomEvent('haugnes:entitlements-changed', {
-        detail: { codes: state.codes.slice(), isAdmin: state.isAdmin, isFriend: state.isFriend }
+        detail: { codes: state.codes.slice(), paidCodes: state.paidCodes.slice(), isAdmin: state.isAdmin, isFriend: state.isFriend }
       }));
     } catch (e) {}
   }
 
-  function applySnapshot(codes, isAdmin, isFriend) {
+  function isPaidSource(row) {
+    var source = String(row && row.source || '').toLowerCase();
+    return source === 'paid' || source.indexOf('stripe') === 0 || Number(row && row.amount_paid || 0) > 0;
+  }
+
+  function applySnapshot(codes, isAdmin, isFriend, paidCodes) {
     var unique = (codes || []).map(code).filter(function (item, index, arr) {
       return item && arr.indexOf(item) === index;
     });
+    var paidUnique = (paidCodes || []).map(code).filter(function (item, index, arr) {
+      return item && arr.indexOf(item) === index;
+    });
     var changed = state.codes.join(',') !== unique.join(',')
+      || state.paidCodes.join(',') !== paidUnique.join(',')
       || state.isAdmin !== !!isAdmin
       || state.isFriend !== !!isFriend;
     state.codes = unique;
+    state.paidCodes = paidUnique;
     state.isAdmin = !!isAdmin;
     state.isFriend = !!isFriend;
     state.loaded = true;
@@ -61,31 +71,33 @@
 
       // Local dev bypass — grant everything when running with ?dev=1
       if (session.user.email === 'dev@student.local') {
-        applySnapshot(ALL_DEV_CODES, true, false);
+        applySnapshot(ALL_DEV_CODES, true, false, ALL_DEV_CODES);
         return Promise.resolve({ codes: ALL_DEV_CODES.slice(), isAdmin: true, isFriend: false });
       }
 
       var sb;
       try { sb = getClient(); }
       catch (e) {
-        applySnapshot([], false, false);
+        applySnapshot([], false, false, []);
         return Promise.resolve({ codes: [], isAdmin: false, isFriend: false });
       }
 
-      var entitlementsPromise = sb.from('subject_entitlements').select('subject_code');
+      var entitlementsPromise = sb.from('subject_entitlements').select('subject_code,source,amount_paid');
       var profilePromise = sb.from('profiles').select('is_admin,is_friend').eq('id', session.user.id).maybeSingle();
 
       return Promise.all([entitlementsPromise, profilePromise]).then(function (results) {
         var entRes = results[0];
         var profRes = results[1];
-        var codes = (entRes && entRes.data ? entRes.data : []).map(function (row) { return row.subject_code; });
+        var entitlements = entRes && entRes.data ? entRes.data : [];
+        var codes = entitlements.map(function (row) { return row.subject_code; });
+        var paidCodes = entitlements.filter(isPaidSource).map(function (row) { return row.subject_code; });
         var isAdmin = !!(profRes && profRes.data && profRes.data.is_admin);
         var isFriend = !!(profRes && profRes.data && profRes.data.is_friend);
-        applySnapshot(codes, isAdmin, isFriend);
-        return { codes: codes.map(code), isAdmin: isAdmin, isFriend: isFriend };
+        applySnapshot(codes, isAdmin, isFriend, paidCodes);
+        return { codes: codes.map(code), paidCodes: paidCodes.map(code), isAdmin: isAdmin, isFriend: isFriend };
       }).catch(function () {
-        applySnapshot([], false, false);
-        return { codes: [], isAdmin: false, isFriend: false };
+        applySnapshot([], false, false, []);
+        return { codes: [], paidCodes: [], isAdmin: false, isFriend: false };
       });
     })();
 
@@ -125,6 +137,7 @@
 
   function isLoaded() { return state.loaded; }
   function getCodes() { return state.codes.slice(); }
+  function getPaidCodes() { return state.paidCodes.slice(); }
   function isAdmin() { return state.isAdmin; }
   function isFriend() { return state.isFriend; }
 
@@ -174,6 +187,7 @@
     isEntitled: isEntitled,
     isLoaded: isLoaded,
     getCodes: getCodes,
+    getPaidCodes: getPaidCodes,
     isAdmin: isAdmin,
     isFriend: isFriend,
     hasBypass: hasBypass,
