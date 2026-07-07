@@ -43,7 +43,8 @@
   }
 
   function normalizeElement(el) {
-    if (!el || el.dataset.hfLogoNormalized === '1') return;
+    if (!el) return;
+    if (el.dataset.hfLogoNormalized === '1' && el.querySelector('img')) return;
     el.dataset.hfLogoNormalized = '1';
     el.classList.add('hf-logo-normalized');
     el.textContent = '';

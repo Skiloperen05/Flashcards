@@ -52,41 +52,17 @@
     return icons[name] || '';
   }
 
-  var SECTIONS = [
-    {
-      label: 'Oversikt',
-      items: [
-        { id: 'home', label: 'Hjem', href: 'user/index.html', icon: 'home' },
-        { id: 'subjects', label: 'Mine fag', href: 'user/subjects.html', icon: 'subjects' },
-        { id: 'shop', label: 'Butikk', href: 'user/butikk.html', icon: 'shop' }
-      ]
-    },
-    {
-      label: 'Studier',
-      items: [
-        { id: 'plan', label: 'Studieplan', href: 'user/studieplan.html', icon: 'plan' },
-        { id: 'exam', label: 'Eksamensanalyse', href: 'user/eksamensanalyse.html', icon: 'exam' },
-        { id: 'tasks', label: 'Oppgavebank', href: 'user/oppgavebank.html', icon: 'tasks' }
-      ]
-    },
-    {
-      label: 'Innhold',
-      items: [
-        { id: 'answers', label: 'A-besvarelser', href: 'user/a-besvarelser.html', icon: 'answers' },
-        { id: 'memos', label: 'Memoarer', href: 'user/memoarer.html', icon: 'memos' },
-        { id: 'notes', label: 'Notater', href: 'user/notater.html', icon: 'notes' },
-        { id: 'flashcards', label: 'Alle flashcards', href: 'flashcards/', icon: 'flashcards' }
-      ]
-    },
-    {
-      label: 'Konto',
-      items: [
-        { id: 'settings', label: 'Innstillinger', href: 'user/settings.html', icon: 'settings' }
-      ]
-    }
+  var MENU = [
+    { id: 'home', label: 'Hjem', href: 'user/index.html', icon: 'home' },
+    { id: 'subjects', label: 'Mine fag', href: 'user/subjects.html', icon: 'subjects' },
+    { id: 'shop', label: 'Butikk', href: 'user/butikk.html', icon: 'shop' },
+    { id: 'exam', label: 'Eksamensanalyse', href: 'user/eksamensanalyse.html', icon: 'exam' },
+    { id: 'answers', label: 'A-besvarelser', href: 'user/a-besvarelser.html', icon: 'answers' },
+    { id: 'tasks', label: 'Oppgavebank', href: 'user/oppgavebank.html', icon: 'tasks' },
+    { id: 'notes', label: 'Notater', href: 'user/notater.html', icon: 'notes' },
+    { id: 'plan', label: 'Studieplan', href: 'user/studieplan.html', icon: 'plan' },
+    { id: 'settings', label: 'Innstillinger', href: 'user/settings.html', icon: 'settings' }
   ];
-
-  var MENU = SECTIONS.reduce(function (all, section) { return all.concat(section.items); }, []);
 
   function activeId() {
     var page = pageName();
@@ -98,21 +74,15 @@
     if (page === 'eksamensanalyse.html' || /\/(?:ret14|sam2)\x2feksamen\//.test(path) || /\/sam3\/eksamensradar-v3\.html$/.test(path)) return 'exam';
     if (page === 'oppgavebank.html' || /\/sam2\/oppgaver/.test(path)) return 'tasks';
     if (page === 'a-besvarelser.html') return 'answers';
-    if (page === 'memoarer.html' || /\/memoar\//.test(path)) return 'memos';
+    if (page === 'memoarer.html' || /\/memoar\//.test(path)) return 'notes';
     if (page === 'notater.html') return 'notes';
-    if (/\/flashcards\//.test(path) || /flashcards/.test(page)) return 'flashcards';
+    if (/\/flashcards\//.test(path) || /flashcards/.test(page)) return 'subjects';
     if (page === 'settings.html') return 'settings';
     return '';
   }
 
   function itemHtml(item, active) {
     return '<a class="nav-link ' + (active === item.id ? 'active' : '') + '" href="' + rootRelative(item.href) + '" data-nav-id="' + esc(item.id) + '">' + icon(item.icon) + '<span>' + esc(item.label) + '</span></a>';
-  }
-
-  function sectionHtml(section, active) {
-    return '<div class="hf-nav-section"><div class="hf-nav-section-label">' + esc(section.label) + '</div>' + section.items.map(function (item) {
-      return itemHtml(item, active);
-    }).join('') + '</div>';
   }
 
   function brandHtml() {
@@ -130,21 +100,19 @@
 
   function sharedCss(selector) {
     return [
-      selector + '{display:flex!important;flex-direction:column!important;gap:16px!important;box-sizing:border-box}',
-      selector + ' .brand{display:flex!important;align-items:center!important;gap:12px!important;padding:0 6px 8px!important;min-width:0!important;color:#fff!important;text-decoration:none!important}',
-      selector + ' .brand>.logo-mark{width:46px!important;height:46px!important;flex:0 0 46px!important;border-radius:14px!important;background:#0b244e url("' + rootRelative('assets/Flashcardslogo.png') + '") center center/contain no-repeat!important;border:1px solid rgba(255,255,255,.16)!important;box-shadow:0 12px 28px rgba(0,0,0,.28)!important}',
-      selector + ' .brand>span:not(.logo-mark){display:grid!important;gap:6px!important;line-height:1!important;min-width:0!important}',
-      selector + ' .brand-title{display:block!important;font-size:20px!important;font-weight:950!important;letter-spacing:.20em!important;text-transform:uppercase!important;color:#fff!important;white-space:nowrap!important;line-height:1!important}',
-      selector + ' .brand-sub{display:block!important;font-size:9px!important;font-weight:950!important;letter-spacing:.42em!important;text-transform:uppercase!important;color:#e8bc68!important;white-space:nowrap!important;line-height:1!important;margin-top:0!important}',
+      selector + '{display:flex!important;flex-direction:column!important;gap:24px!important;box-sizing:border-box}',
+      selector + ' .brand{display:flex!important;align-items:center!important;gap:14px!important;padding:4px 6px 22px!important;min-width:0!important;color:#fff!important;text-decoration:none!important}',
+      selector + ' .brand>.logo-mark{width:52px!important;height:52px!important;flex:0 0 52px!important;border-radius:16px!important;background:#0b244e url("' + rootRelative('assets/Flashcardslogo.png') + '") center center/contain no-repeat!important;border:1px solid rgba(126,162,255,.28)!important;box-shadow:0 16px 34px rgba(0,0,0,.30),0 0 30px rgba(47,98,255,.16)!important}',
+      selector + ' .brand>span:not(.logo-mark){display:grid!important;gap:8px!important;line-height:1!important;min-width:0!important}',
+      selector + ' .brand-title{display:block!important;font-size:24px!important;font-weight:950!important;letter-spacing:.18em!important;text-transform:uppercase!important;color:#fff!important;white-space:nowrap!important;line-height:1!important}',
+      selector + ' .brand-sub{display:block!important;font-size:10px!important;font-weight:950!important;letter-spacing:.42em!important;text-transform:uppercase!important;color:#e8bc68!important;white-space:nowrap!important;line-height:1!important;margin-top:0!important}',
       selector + ' .nav{display:grid!important;gap:13px!important;flex:0 0 auto!important}',
-      selector + ' .hf-nav-section{display:grid!important;gap:4px!important}',
-      selector + ' .hf-nav-section-label{padding:0 11px 3px;color:#7f91b2;font-size:10px;font-weight:950;letter-spacing:.14em;text-transform:uppercase}',
-      selector + ' .nav-link{display:flex!important;align-items:center!important;gap:11px!important;min-height:36px!important;padding:8px 11px!important;border-radius:13px!important;color:#c6d3eb!important;font-size:13.5px!important;font-weight:780!important;text-decoration:none!important;line-height:1.15!important;background:transparent!important;box-shadow:none!important;transition:background .18s ease,color .18s ease,transform .18s ease!important}',
+      selector + ' .nav-link{display:flex!important;align-items:center!important;gap:14px!important;min-height:44px!important;padding:10px 14px!important;border-radius:16px!important;color:#c6d3eb!important;font-size:16px!important;font-weight:900!important;text-decoration:none!important;line-height:1.15!important;background:transparent!important;box-shadow:none!important;transition:background .18s ease,color .18s ease,transform .18s ease!important}',
       selector + ' .nav-link:hover{background:rgba(255,255,255,.06)!important;color:#fff!important;transform:translateX(2px)!important}',
       selector + ' .nav-link.active{background:linear-gradient(135deg,#2455ef,#3f73ff)!important;color:#fff!important;box-shadow:0 12px 26px rgba(47,98,255,.28)!important}',
-      selector + ' .nav-link svg{width:19px!important;height:19px!important;flex:0 0 19px!important;stroke:currentColor!important;stroke-width:1.9!important;fill:none!important;stroke-linecap:round!important;stroke-linejoin:round!important}',
+      selector + ' .nav-link svg{width:20px!important;height:20px!important;flex:0 0 20px!important;stroke:currentColor!important;stroke-width:1.9!important;fill:none!important;stroke-linecap:round!important;stroke-linejoin:round!important}',
       selector + ' .nav-link span{min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}',
-      '@media(max-height:880px){' + selector + '{gap:12px!important}' + selector + ' .nav{gap:8px!important}' + selector + ' .nav-link{min-height:32px!important;padding-top:7px!important;padding-bottom:7px!important;font-size:13px!important}' + selector + ' .hf-nav-section-label{font-size:9px!important}}'
+      '@media(max-height:880px){' + selector + '{gap:14px!important}' + selector + ' .brand{padding-bottom:10px!important}' + selector + ' .nav{gap:8px!important}' + selector + ' .nav-link{min-height:36px!important;padding-top:7px!important;padding-bottom:7px!important;font-size:14px!important}}'
     ].join('\n');
   }
 
@@ -161,15 +129,15 @@
     var style = document.createElement('style');
     style.id = 'haugnes-global-sidebar-css';
     style.textContent = [
-      '.hf-global-sidebar{position:fixed;top:0;left:0;bottom:0;width:264px;z-index:9000;padding:22px 16px;background:linear-gradient(180deg,rgba(4,16,38,.97),rgba(7,23,51,.97));border-right:1px solid rgba(255,255,255,.11);overflow-y:auto;font-family:Lora,Georgia,serif;transform:translateX(-100%);transition:transform .22s ease;scrollbar-width:thin}',
+      '.hf-global-sidebar{position:fixed;top:0;left:0;bottom:0;width:284px;z-index:9000;padding:26px 16px;background:linear-gradient(180deg,rgba(4,16,38,.97),rgba(7,23,51,.97));border-right:1px solid rgba(255,255,255,.11);overflow-y:auto;font-family:Lora,Georgia,serif;transform:translateX(-100%);transition:transform .22s ease;scrollbar-width:thin}',
       '.hf-global-sidebar,.hf-global-sidebar *{box-sizing:border-box}',
       '.hf-global-sidebar::-webkit-scrollbar{width:7px}.hf-global-sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.10);border-radius:99px}',
       'html.hf-gs-open .hf-global-sidebar{transform:none}',
-      'html.hf-gs-open body{margin-left:264px!important}',
+      'html.hf-gs-open body{margin-left:284px!important}',
       '@media(max-width:1180px){html.hf-gs-open body{margin-left:0!important}.hf-global-sidebar{width:min(86vw,304px)}}',
       sharedCss('.hf-global-sidebar'),
       '.hf-gs-toggle{position:fixed;bottom:18px;left:14px;z-index:9001;width:42px;height:42px;border-radius:14px;border:1px solid rgba(126,162,255,.35);background:rgba(11,33,72,.94);color:#dce6f7;font-size:17px;font-family:Lora,Georgia,serif;cursor:pointer;box-shadow:0 14px 30px rgba(0,0,0,.35);transition:left .22s ease}',
-      'html.hf-gs-open .hf-gs-toggle{left:206px}'
+      'html.hf-gs-open .hf-gs-toggle{left:226px}'
     ].join('\n');
     document.head.appendChild(style);
   }
@@ -189,7 +157,7 @@
 
   function navHtml() {
     var active = activeId();
-    return '<nav class="nav" aria-label="Brukermeny">' + SECTIONS.map(function (section) { return sectionHtml(section, active); }).join('') + '</nav>';
+    return '<nav class="nav" aria-label="Brukermeny">' + MENU.map(function (item) { return itemHtml(item, active); }).join('') + '</nav>';
   }
 
   function renderLocal() {
@@ -283,5 +251,5 @@
   window.addEventListener('hashchange', render);
   window.addEventListener('haugnes:subject-access-changed', render);
 
-  window.HaugnesUserSidebar = { run: run, render: render, sections: SECTIONS.slice(), menu: MENU.slice() };
+  window.HaugnesUserSidebar = { run: run, render: render, menu: MENU.slice() };
 })(window, document);
