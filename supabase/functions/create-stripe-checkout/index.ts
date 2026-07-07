@@ -9,6 +9,7 @@ const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") || [
 const STRIPE_API_VERSION = "2026-02-25.clover";
 const DEFAULT_SITE_URL = "https://bhflashcards.no";
 const DEFAULT_PRICE_NOK_ORE = 4900;
+const BUNDLE_OWNED_CREDIT_RATE = 0.8;
 
 const SUBJECTS: Record<string, string> = {
   RET14: "Skatterett",
@@ -43,6 +44,18 @@ type DiscountCode = {
   label?: string;
   percent_off?: number | null;
   amount_off_nok_ore?: number | null;
+};
+
+type EntitledSubject = {
+  subjectCode: string;
+  source: string;
+  amountPaid: number;
+};
+
+type CheckoutPricing = {
+  baseAmount: number;
+  ownedCreditAmount: number;
+  payableAmount: number;
 };
 
 function envAmount(name: string, fallback: number) {
@@ -199,7 +212,7 @@ async function subjectPriceOre(subjectCode: string) {
   if (!response.ok) return DEFAULT_PRICE_NOK_ORE;
   const rows = await response.json();
   const price = Array.isArray(rows) && Number(rows[0]?.price_nok_ore);
-  return price && price > 0 ? price : DEFAULT_PRICE_NOK_ORE;
+  return Number.isFinite(price) && price >= 0 ? price : DEFAULT_PRICE_NOK_ORE;
 }
 
 async function productPriceOre(product: CheckoutProduct) {
@@ -299,6 +312,41 @@ function applyDiscount(unitAmount: number, discount: DiscountCode | null) {
   return Math.max(0, discounted);
 }
 
+function isPaidEntitlement(entitlement: EntitledSubject) {
+  const source = entitlement.source.toLowerCase();
+  return source === "paid" || source.startsWith("stripe") || entitlement.amountPaid > 0;
+}
+
+function ownedCodes(entitlements: EntitledSubject[]) {
+  return entitlements.map((entitlement) => entitlement.subjectCode);
+}
+
+function paidOwnedCodes(entitlements: EntitledSubject[]) {
+  return entitlements.filter(isPaidEntitlement).map((entitlement) => entitlement.subjectCode);
+}
+
+async function ownedBundleCreditOre(product: CheckoutProduct, entitlements: EntitledSubject[]) {
+  if (product.kind !== "bundle") return 0;
+
+  const paidCodes = new Set(paidOwnedCodes(entitlements));
+  let credit = 0;
+  for (const subjectCode of product.subjectCodes) {
+    if (!paidCodes.has(subjectCode)) continue;
+    credit += Math.ceil((await subjectPriceOre(subjectCode)) * BUNDLE_OWNED_CREDIT_RATE / 100) * 100;
+  }
+
+  return Math.min(Math.max(0, credit), Math.max(0, product.unitAmount));
+}
+
+async function productPricing(product: CheckoutProduct, entitlements: EntitledSubject[]) {
+  const ownedCreditAmount = await ownedBundleCreditOre(product, entitlements);
+  return {
+    baseAmount: product.unitAmount,
+    ownedCreditAmount,
+    payableAmount: Math.max(0, product.unitAmount - ownedCreditAmount),
+  } satisfies CheckoutPricing;
+}
+
 async function getUser(accessToken: string) {
   const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
     headers: {
@@ -311,10 +359,10 @@ async function getUser(accessToken: string) {
   return response.json();
 }
 
-async function getEntitledCodes(userId: string) {
+async function getEntitlements(userId: string) {
   const params = new URLSearchParams({
     user_id: `eq.${userId}`,
-    select: "subject_code",
+    select: "subject_code,source,amount_paid",
   });
 
   const response = await fetch(`${SUPABASE_URL}/rest/v1/subject_entitlements?${params.toString()}`, {
@@ -323,7 +371,13 @@ async function getEntitledCodes(userId: string) {
 
   if (!response.ok) throw new Error("Kunne ikke sjekke fagtilgang.");
   const rows = await response.json();
-  return Array.isArray(rows) ? rows.map((row) => code(row.subject_code)) : [];
+  return Array.isArray(rows)
+    ? rows.map((row) => ({
+      subjectCode: code(row.subject_code),
+      source: String(row.source || ""),
+      amountPaid: Number(row.amount_paid || 0),
+    })).filter((row) => row.subjectCode)
+    : [];
 }
 
 async function getProfile(userId: string) {
@@ -364,9 +418,9 @@ async function productFromPayload(payload: Record<string, unknown>) {
   } satisfies CheckoutProduct;
 }
 
-function isProductOwned(product: CheckoutProduct, ownedCodes: string[], profile: { is_admin?: boolean; is_friend?: boolean }) {
+function isProductOwned(product: CheckoutProduct, productOwnedCodes: string[], profile: { is_admin?: boolean; is_friend?: boolean }) {
   if (profile.is_admin || profile.is_friend) return true;
-  return product.subjectCodes.every((subjectCode) => ownedCodes.includes(subjectCode));
+  return product.subjectCodes.every((subjectCode) => productOwnedCodes.includes(subjectCode));
 }
 
 function siteUrl(req: Request) {
@@ -374,14 +428,14 @@ function siteUrl(req: Request) {
   return isAllowedOrigin(origin) ? origin : DEFAULT_SITE_URL;
 }
 
-async function createCheckoutSession(req: Request, user: { id?: string; email?: string }, product: CheckoutProduct, discount: DiscountCode | null) {
+async function createCheckoutSession(req: Request, user: { id?: string; email?: string }, product: CheckoutProduct, pricing: CheckoutPricing, discount: DiscountCode | null) {
   const secretKey = await stripeSecretKey();
   if (!secretKey) throw new Error("STRIPE_SECRET_KEY mangler.");
   if (!user.id) throw new Error("Kunne ikke lese bruker.");
 
   const baseUrl = siteUrl(req);
-  const finalAmount = applyDiscount(product.unitAmount, discount);
-  if (finalAmount < 100) throw new Error("Rabattkoden gjør beløpet for lavt for Stripe-betaling.");
+  const finalAmount = applyDiscount(pricing.payableAmount, discount);
+  if (finalAmount < 100) throw new Error("Beløpet er for lavt for Stripe-betaling.");
   const successQuery = product.kind === "subject"
     ? `fag=${encodeURIComponent(product.subjectCodes[0])}`
     : `produkt=${encodeURIComponent(product.id)}`;
@@ -404,7 +458,9 @@ async function createCheckoutSession(req: Request, user: { id?: string; email?: 
   params.set("metadata[product_kind]", product.kind);
   params.set("metadata[subject_codes]", product.subjectCodes.join(","));
   params.set("metadata[source]", product.source);
-  params.set("metadata[original_amount]", String(product.unitAmount));
+  params.set("metadata[original_amount]", String(pricing.baseAmount));
+  params.set("metadata[owned_bundle_credit_amount]", String(pricing.ownedCreditAmount));
+  params.set("metadata[adjusted_amount]", String(pricing.payableAmount));
   params.set("metadata[final_amount]", String(finalAmount));
   if (discount) {
     params.set("metadata[discount_code]", discount.code);
@@ -451,12 +507,13 @@ Deno.serve(async (req: Request) => {
     const user = await getUser(accessToken);
     if (!user?.id) throw new Error("Kunne ikke lese bruker.");
 
-    const [ownedCodes, profile] = await Promise.all([getEntitledCodes(user.id), getProfile(user.id)]);
-    if (isProductOwned(product, ownedCodes, profile)) {
+    const [entitlements, profile] = await Promise.all([getEntitlements(user.id), getProfile(user.id)]);
+    if (isProductOwned(product, ownedCodes(entitlements), profile)) {
       return json(req, 409, { error: "Du har allerede tilgang til dette produktet." });
     }
 
-    const session = await createCheckoutSession(req, user, product, discount);
+    const pricing = await productPricing(product, entitlements);
+    const session = await createCheckoutSession(req, user, product, pricing, discount);
     return json(req, 200, { url: session.url });
   } catch (error) {
     return json(req, 400, { error: error instanceof Error ? error.message : "Kunne ikke starte betaling." });

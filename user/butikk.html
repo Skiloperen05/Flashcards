@@ -273,14 +273,15 @@ var SUBJECTS = [
 ];
 
 var BUNDLES = [
-  { id: 'semester-1', title: '1. semesterpakke', sub: 'RET1A · MET1 · SAM1A · BED1 · KOM1', accent: '#3b82f6', icon: '1', price: '199 kr', priceSub: '5 fag samlet', cta: 'Kjøp semesterpakke', summary: 'Alt for første semester samlet i én tilgang. Best når du vil rydde opp hele startpakken med én gang.', subjectCodes: ['RET1A','MET1','SAM1A','BED1','KOM1'] },
-  { id: 'semester-2', title: '2. semesterpakke', sub: 'MET2 · SAM2 · SOL1', accent: '#20b97a', icon: '2', price: '149 kr', priceSub: '3 fag samlet', cta: 'Kjøp semesterpakke', summary: 'Metode, mikro og organisasjonsatferd i samme pakke, med oppgaver, memo og eksamensrettede verktøy.', subjectCodes: ['MET2','SAM2','SOL1'] },
-  { id: 'valgfag', title: 'Valgfagspakke', sub: 'RET14 · MAT10 · SAM3', accent: '#e8bc68', icon: 'V', price: '179 kr', priceSub: 'valgfag', cta: 'Kjøp valgfagspakke', summary: 'For deg som vil ha de tyngre fagene samlet: skatterett, matematikk og makroverktøy.', subjectCodes: ['RET14','MAT10','SAM3'] },
-  { id: 'vennepass', title: 'Vennepass', sub: 'Alle fag · nye fag inkludert', accent: '#f09828', icon: '★', price: '350 kr', priceSub: 'all-access', cta: 'Kjøp Vennepass', summary: 'Gir tilgang til alle fag som ligger ute nå, og alle nye fag som publiseres senere.', subjectCodes: SUBJECTS.map(function(s){return s.code}) }
+  { id: 'semester-1', kind: 'bundle', title: '1. semesterpakke', sub: 'RET1A · MET1 · SAM1A · BED1 · KOM1', accent: '#3b82f6', icon: '1', price: '199 kr', priceOre: 19900, priceSub: '5 fag samlet', cta: 'Kjøp semesterpakke', summary: 'Alt for første semester samlet i én tilgang. Best når du vil rydde opp hele startpakken med én gang.', subjectCodes: ['RET1A','MET1','SAM1A','BED1','KOM1'] },
+  { id: 'semester-2', kind: 'bundle', title: '2. semesterpakke', sub: 'MET2 · SAM2 · SOL1', accent: '#20b97a', icon: '2', price: '149 kr', priceOre: 14900, priceSub: '3 fag samlet', cta: 'Kjøp semesterpakke', summary: 'Metode, mikro og organisasjonsatferd i samme pakke, med oppgaver, memo og eksamensrettede verktøy.', subjectCodes: ['MET2','SAM2','SOL1'] },
+  { id: 'valgfag', kind: 'bundle', title: 'Valgfagspakke', sub: 'RET14 · MAT10 · SAM3', accent: '#e8bc68', icon: 'V', price: '179 kr', priceOre: 17900, priceSub: 'valgfag', cta: 'Kjøp valgfagspakke', summary: 'For deg som vil ha de tyngre fagene samlet: skatterett, matematikk og makroverktøy.', subjectCodes: ['RET14','MAT10','SAM3'] },
+  { id: 'vennepass', kind: 'pass', title: 'Vennepass', sub: 'Alle fag · nye fag inkludert', accent: '#f09828', icon: '★', price: '350 kr', priceOre: 35000, priceSub: 'all-access', cta: 'Kjøp Vennepass', summary: 'Gir tilgang til alle fag som ligger ute nå, og alle nye fag som publiseres senere.', subjectCodes: SUBJECTS.map(function(s){return s.code}) }
 ];
 
 var SUBJECT_PRICE_LABEL = '49 kr';
 var FIRST_FREE_LABEL = 'Gratis første fag';
+var BUNDLE_OWNED_CREDIT_RATE = 0.8;
 var SHOP_PRODUCTS = BUNDLES.slice();
 var MANAGED_PRODUCTS = [];
 var COMMERCE_LOADED = false;
@@ -306,6 +307,19 @@ function krFromOre(ore){var amount=Number(ore||0)/100;return amount%1===0?String
 function labelFromOre(ore){return krFromOre(ore)+' kr';}
 function oreFromKr(value){return Math.round(Number(String(value||'').replace(',','.'))*100);}
 function subjectPriceLabel(code){return SUBJECT_PRICES[code] != null ? labelFromOre(SUBJECT_PRICES[code]) : SUBJECT_PRICE_LABEL;}
+function subjectPriceOre(code){return SUBJECT_PRICES[code] != null ? Number(SUBJECT_PRICES[code]) : 4900;}
+function ownedBundleCreditOre(subjectCodes, paidOwnedCodes){
+  return (subjectCodes||[]).reduce(function(sum, code){
+    if ((paidOwnedCodes||[]).indexOf(code)===-1) return sum;
+    return sum + Math.ceil((subjectPriceOre(code) * BUNDLE_OWNED_CREDIT_RATE) / 100) * 100;
+  }, 0);
+}
+function bundlePricing(product, paidOwnedCodes){
+  var baseOre=Number(product.priceOre || (product.raw && product.raw.price_nok_ore) || 0);
+  var creditOre=product.kind==='bundle' ? ownedBundleCreditOre(product.subjectCodes, paidOwnedCodes) : 0;
+  creditOre=Math.min(Math.max(0, creditOre), Math.max(0, baseOre));
+  return { baseOre:baseOre, creditOre:creditOre, finalOre:Math.max(0, baseOre-creditOre) };
+}
 function getClient(){return window.AuthGuard && typeof window.AuthGuard.getClient==='function' ? window.AuthGuard.getClient() : null;}
 function currentUserId(){var s=window.AuthGuard && window.AuthGuard.getSession ? window.AuthGuard.getSession() : null;return s && s.user && s.user.id || null;}
 function isAdminUser(){return !!(window.HaugnesEntitlements && window.HaugnesEntitlements.effectiveAdmin && window.HaugnesEntitlements.effectiveAdmin());}
@@ -324,6 +338,7 @@ function productFromRow(row){
     accent: row.accent || '#2f62ff',
     icon: row.icon || 'P',
     price: labelFromOre(row.price_nok_ore),
+    priceOre: Number(row.price_nok_ore),
     priceSub: row.price_sub || '',
     cta: row.cta || 'Kjøp pakke',
     summary: row.description || '',
@@ -385,6 +400,7 @@ function render(){
   var ent=window.HaugnesEntitlements;
   var entReady=!!(ent && ent.isLoaded());
   var owned=entReady ? ent.getCodes() : [];
+  var paidOwned=entReady && typeof ent.getPaidCodes==='function' ? ent.getPaidCodes() : [];
   var allAccess=entReady && hasAllAccess(ent);
   var canClaimFree=entReady && !allAccess && owned.length===0;
   var ownedCount=allAccess?SUBJECTS.length:owned.length;
@@ -399,6 +415,9 @@ function render(){
     var has=allAccess||ownsAll(p.subjectCodes, owned);
     var status=!entReady?'<span class="status-pill available">Laster</span>':has?'<span class="status-pill owned">Inkludert</span>':'<span class="status-pill available">Tilgjengelig</span>';
     var subjects=p.subjectCodes.map(function(code){var s=subjectByCode(code);return '<span>'+esc(code)+(s?' · '+esc(s.name):'')+'</span>'}).join('');
+    var pricing=bundlePricing(p, paidOwned);
+    var priceLabel=pricing.finalOre || pricing.baseOre ? labelFromOre(pricing.finalOre) : p.price;
+    var priceSub=pricing.creditOre>0 ? 'før '+labelFromOre(pricing.baseOre) : p.priceSub;
     var cta=!entReady
       ? '<button class="shop-cta" disabled><span class="spinner"></span><span class="cta-text">Laster tilgang…</span></button>'
       : has
@@ -410,7 +429,7 @@ function render(){
       + '<div class="shop-sub">'+esc(p.sub)+'</div>'
       + '<p class="shop-desc">'+esc(p.summary)+'</p>'
       + '<div class="shop-subjects">'+subjects+'</div>'
-      + '<div class="shop-price"><span class="price-tag">'+esc(p.price)+'<span class="currency">'+esc(p.priceSub)+'</span></span></div>'
+      + '<div class="shop-price"><span class="price-tag">'+esc(priceLabel)+'<span class="currency">'+esc(priceSub)+'</span></span></div>'
       + cta
       + '<div class="shop-error" data-error="'+esc(p.id)+'"></div>'
       + '</article>';
@@ -737,15 +756,20 @@ function saveSubjectPrice(subjectCode){
   var input=document.querySelector('[data-price-input="'+subjectCode+'"]');
   var priceOre=oreFromKr(input&&input.value);
   if (!sb || !userId || !priceOre || priceOre < 100){setAdminState('Ugyldig fagpris.');return;}
+  var row={subject_code:subjectCode,price_nok_ore:priceOre,updated_at:new Date().toISOString()};
+  if (userId) row.updated_by=userId;
   setAdminState('Lagrer fagpris...');
-  sb.from('subject_prices').upsert({
-    subject_code:subjectCode,
-    price_nok_ore:priceOre,
-    updated_by:userId,
-    updated_at:new Date().toISOString()
-  }, { onConflict:'subject_code' }).then(function(result){
+  sb.from('subject_prices').upsert(row, { onConflict:'subject_code' }).then(function(result){
+    if (result.error && /updated_by/i.test(result.error.message || '')) {
+      delete row.updated_by;
+      return sb.from('subject_prices').upsert(row, { onConflict:'subject_code' });
+    }
+    return result;
+  }).then(function(result){
     if (result.error) throw result.error;
+    SUBJECT_PRICES[subjectCode]=priceOre;
     setAdminState('Fagpris lagret.');
+    render();
     return loadCommerceData();
   }).catch(function(e){setAdminState((e&&e.message)||'Kunne ikke lagre fagpris.');});
 }
