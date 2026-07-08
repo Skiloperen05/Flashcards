@@ -385,7 +385,10 @@
         });
       });
     });
-    return chain.then(function () { return reloadLibrary(); });
+    return chain.then(function () { return reloadLibrary(); }).then(function () {
+      // Land inside the package so the freshly uploaded PDFs are visible right away.
+      navigateToPackage(pack.subject, pack.id);
+    });
   }
 
   function deleteResource(resource) {
@@ -463,7 +466,7 @@
   }
 
   function panelHtml(state) {
-    var html = '<div class="hf-admin-panel hf-admin-ui"><div class="hf-admin-panel-head"><strong>Adminverktøy</strong><span>Publiser og rediger eksamenspakker direkte. Endringer er live med en gang.</span></div>';
+    var html = '<div class="hf-admin-panel hf-admin-ui"><div class="hf-admin-panel-head"><strong>Adminverktøy</strong><span>Kun synlig for deg som admin. Publiser og rediger eksamenspakker direkte – endringer er live med en gang.</span></div>';
     html += '<div class="hf-admin-actions"><button type="button" class="hf-admin-btn" data-admin-action="new-package">＋ Ny pakke</button>';
 
     var pack = state.packageId ? packageById(state.packageId) : null;
@@ -489,7 +492,9 @@
       if (packs.length) {
         html += '<div class="hf-admin-list">' + packs.map(function (p) {
           return '<div class="hf-admin-row"><div><b>' + esc(p.term) + ' · ' + esc(p.title) + '</b><small>' + p.resources.length + ' PDF-er</small></div>'
-            + '<div class="hf-admin-actions"><button type="button" class="hf-admin-btn ghost" data-admin-action="edit-package" data-id="' + esc(p.id) + '">Rediger</button>'
+            + '<div class="hf-admin-actions"><button type="button" class="hf-admin-btn" data-admin-action="upload-to" data-id="' + esc(p.id) + '">⤴ Last opp PDF-er</button>'
+            + '<button type="button" class="hf-admin-btn ghost" data-admin-action="open-package" data-id="' + esc(p.id) + '">Åpne</button>'
+            + '<button type="button" class="hf-admin-btn ghost" data-admin-action="edit-package" data-id="' + esc(p.id) + '">Rediger</button>'
             + '<button type="button" class="hf-admin-btn danger" data-admin-action="delete-package" data-id="' + esc(p.id) + '">Slett</button></div></div>';
         }).join('') + '</div>';
       }
@@ -508,6 +513,8 @@
         else if (action === 'delete-package') { var doomed = packageById(id); if (doomed) deletePackage(doomed); }
         else if (action === 'new-resource') { var target = packageById(state.packageId); if (target) openResourceForm(target); }
         else if (action === 'upload-resources') { var batchTarget = packageById(state.packageId); if (batchTarget) openBatchUploadForm(batchTarget); }
+        else if (action === 'upload-to') { var upTarget = packageById(id); if (upTarget) openBatchUploadForm(upTarget); }
+        else if (action === 'open-package') { var openTarget = packageById(id); if (openTarget) navigateToPackage(openTarget.subject, openTarget.id); }
         else if (action === 'edit-resource') { var hit = resourceById(id); if (hit) openResourceForm(hit.pack, hit.resource); }
         else if (action === 'delete-resource') { var gone = resourceById(id); if (gone) deleteResource(gone.resource); }
       });
