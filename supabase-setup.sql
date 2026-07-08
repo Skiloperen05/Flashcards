@@ -462,6 +462,100 @@ values
    'Pakkeplass for gamle eksamener, gruppeøvinger og regnetrening fra BED1.', null, 110)
 on conflict (id) do nothing;
 
+-- Seed: local A-besvarelser imported from Desktop/A-besvarelser.
+-- These rows intentionally use repo-local URLs so the archive can serve the
+-- same packages without requiring a Storage upload first.
+insert into public.answer_packages (id, subject_code, term, title, subtitle, description, local_status, sort_order)
+values
+  ('sam3-v25',  'SAM3',  'V25', 'Våren 2025', 'SAM3 Makroøkonomi',
+   'Komplett eksamenspakke med originaloppgave, A-besvarelse og sensorveiledning.', null, 40),
+  ('sam3-v26',  'SAM3',  'V26', 'Våren 2026', 'SAM3 Makroøkonomi',
+   'Komplett eksamenspakke med originaloppgave, A-besvarelse og sensorveiledning.', null, 41),
+  ('sol1-v25',  'SOL1',  'V25', 'Våren 2025', 'SOL1 Organisasjonsatferd',
+   'Eksamen, sensorveiledning og to ulike A-besvarelser til samme eksamen. Les dem som to separate eksempler på sterke svar, ikke som én samlet besvarelse.',
+   'To A-besvarelser', 20),
+  ('sol1-v26',  'SOL1',  'V26', 'Våren 2026', 'SOL1 Organisasjonsatferd',
+   'Eksamenspakke med A-besvarelse og sensorveiledning for våren 2026.', null, 21),
+  ('bed1-h25',  'BED1',  'H25', 'Høsten 2025', 'BED1 Bedriftsøkonomi',
+   'Eksamenspakke med original eksamen, A-besvarelse og løsningsforslag.', null, 110),
+  ('ret1a-h25', 'RET1A', 'H25', 'Høsten 2025', 'RET1A Juridiske emner',
+   'Eksamenspakke med A-besvarelse og sensorveiledning.', null, 100)
+on conflict (id) do update
+  set subject_code = excluded.subject_code,
+      term = excluded.term,
+      title = excluded.title,
+      subtitle = excluded.subtitle,
+      description = excluded.description,
+      local_status = excluded.local_status,
+      sort_order = excluded.sort_order,
+      updated_at = now();
+
+insert into public.answer_resources (id, package_id, kind, title, subtitle, description, icon, url, download_url, order_index)
+values
+  ('sam3-v25-exam', 'sam3-v25', 'Eksamen', 'SAM3 skoleeksamen V25', 'Original oppgave',
+   'Original eksamensoppgave for våren 2025. Start her og gjør et eget forsøk før du ser på løsning.',
+   'E', '../sam3/eksamenspakker/v25/sam3-skoleeksamen-v25.pdf', '../sam3/eksamenspakker/v25/sam3-skoleeksamen-v25.pdf', 1),
+  ('sam3-v25-answer', 'sam3-v25', 'A-besvarelse', 'A-besvarelse SAM3 V25', 'Makroøkonomi',
+   'Eksempel på sterk besvarelse. Bruk den etter egen gjennomføring for å sammenligne struktur, modellbruk og drøfting.',
+   'A', '../sam3/eksamenspakker/v25/sam3-a-besvarelse-v25.pdf', '../sam3/eksamenspakker/v25/sam3-a-besvarelse-v25.pdf', 2),
+  ('sam3-v25-sensor', 'sam3-v25', 'Sensorveiledning', 'SAM3 sensorveiledning V25', 'Vurderingspunkter',
+   'Sensorveiledningen viser hva sensor belønner og hvilke momenter som bør være med.',
+   'S', '../sam3/eksamenspakker/v25/sam3-sensorveiledning-v25.pdf', '../sam3/eksamenspakker/v25/sam3-sensorveiledning-v25.pdf', 3),
+  ('sam3-v26-exam', 'sam3-v26', 'Eksamen', 'SAM3 skoleeksamen V26', 'Original oppgave',
+   'Original eksamensoppgave for våren 2026. Start her og gjør et eget forsøk før du ser på løsning.',
+   'E', '../sam3/eksamenspakker/v26/sam3-skoleeksamen-v26.pdf', '../sam3/eksamenspakker/v26/sam3-skoleeksamen-v26.pdf', 1),
+  ('sam3-v26-answer', 'sam3-v26', 'A-besvarelse', 'A-besvarelse SAM3 V26', 'Makroøkonomi',
+   'Eksempel på sterk besvarelse. Bruk den etter egen gjennomføring for å sammenligne struktur, modellbruk og drøfting.',
+   'A', '../sam3/eksamenspakker/v26/sam3-a-besvarelse-v26.pdf', '../sam3/eksamenspakker/v26/sam3-a-besvarelse-v26.pdf', 2),
+  ('sam3-v26-sensor', 'sam3-v26', 'Sensorveiledning', 'SAM3 sensorveiledning V26', 'Vurderingspunkter',
+   'Sensorveiledningen viser hva sensor belønner og hvilke momenter som bør være med.',
+   'S', '../sam3/eksamenspakker/v26/sam3-sensorveiledning-v26.pdf', '../sam3/eksamenspakker/v26/sam3-sensorveiledning-v26.pdf', 3),
+  ('sol1-v25-exam', 'sol1-v25', 'Eksamen', 'SOL1 eksamen V25', 'Original oppgave',
+   'Original eksamensoppgave i SOL1 våren 2025.',
+   'E', '../sol1/eksamenspakker/v25/sol1-eksamen-v25.pdf', '../sol1/eksamenspakker/v25/sol1-eksamen-v25.pdf', 1),
+  ('sol1-v25-answer-vetle', 'sol1-v25', 'A-besvarelse', 'A-besvarelse SOL1 V25 · Vetle', 'A-besvarelse 1 av 2',
+   'Den ene av to ulike A-besvarelser til samme SOL1-eksamen våren 2025.',
+   'A', '../sol1/eksamenspakker/v25/sol1-a-besvarelse-vetle-v25.pdf', '../sol1/eksamenspakker/v25/sol1-a-besvarelse-vetle-v25.pdf', 2),
+  ('sol1-v25-answer-aksel', 'sol1-v25', 'A-besvarelse', 'A-besvarelse SOL1 V25 · Aksel', 'A-besvarelse 2 av 2',
+   'Den andre av to ulike A-besvarelser til samme SOL1-eksamen våren 2025. Sammenlign struktur, teorivalg og drøftingsnivå med Vetle-besvarelsen.',
+   'A', '../sol1/eksamenspakker/v25/sol1-a-besvarelse-aksel-v25.pdf', '../sol1/eksamenspakker/v25/sol1-a-besvarelse-aksel-v25.pdf', 3),
+  ('sol1-v25-sensor', 'sol1-v25', 'Sensorveiledning', 'SOL1 sensorveiledning V25', 'Vurderingspunkter',
+   'Sensorveiledning til SOL1-eksamen våren 2025.',
+   'S', '../sol1/eksamenspakker/v25/sol1-sensorveiledning-v25.pdf', '../sol1/eksamenspakker/v25/sol1-sensorveiledning-v25.pdf', 4),
+  ('sol1-v26-answer', 'sol1-v26', 'A-besvarelse', 'A-besvarelse SOL1 V26', 'Word-dokument',
+   'A-besvarelse til SOL1-eksamen våren 2026.',
+   'A', '../sol1/eksamenspakker/v26/sol1-a-besvarelse-v26.docx', '../sol1/eksamenspakker/v26/sol1-a-besvarelse-v26.docx', 1),
+  ('sol1-v26-sensor', 'sol1-v26', 'Sensorveiledning', 'SOL1 sensorveiledning V26', 'Vurderingspunkter',
+   'Sensorveiledning til SOL1-eksamen våren 2026.',
+   'S', '../sol1/eksamenspakker/v26/sol1-sensorveiledning-v26.pdf', '../sol1/eksamenspakker/v26/sol1-sensorveiledning-v26.pdf', 2),
+  ('bed1-h25-exam', 'bed1-h25', 'Eksamen', 'BED1 eksamen H25', 'Original oppgave',
+   'Original eksamensoppgave i BED1 høsten 2025.',
+   'E', '../bed1/eksamenspakker/h25/bed1-eksamen-h25.pdf', '../bed1/eksamenspakker/h25/bed1-eksamen-h25.pdf', 1),
+  ('bed1-h25-answer', 'bed1-h25', 'A-besvarelse', 'A-besvarelse BED1 H25', 'Bedriftsøkonomi',
+   'Eksempel på sterk besvarelse til BED1-eksamen høsten 2025.',
+   'A', '../bed1/eksamenspakker/h25/bed1-a-besvarelse-h25.pdf', '../bed1/eksamenspakker/h25/bed1-a-besvarelse-h25.pdf', 2),
+  ('bed1-h25-solution', 'bed1-h25', 'Løsningsforslag', 'BED1 løsning H25', 'Løsningsforslag',
+   'Løsningsforslag til BED1-eksamen høsten 2025.',
+   'L', '../bed1/eksamenspakker/h25/bed1-losning-h25.pdf', '../bed1/eksamenspakker/h25/bed1-losning-h25.pdf', 3),
+  ('ret1a-h25-answer', 'ret1a-h25', 'A-besvarelse', 'A-besvarelse RET1A H25', 'Juridiske emner',
+   'Eksempel på sterk juridisk besvarelse til RET1A høsten 2025.',
+   'A', '../ret1a/eksamenspakker/h25/ret1a-a-besvarelse-h25.pdf', '../ret1a/eksamenspakker/h25/ret1a-a-besvarelse-h25.pdf', 1),
+  ('ret1a-h25-sensor', 'ret1a-h25', 'Sensorveiledning', 'RET1A sensorveiledning H25', 'Word-dokument',
+   'Sensorveiledning til RET1A høsten 2025.',
+   'S', '../ret1a/eksamenspakker/h25/ret1a-sensorveiledning-h25.doc', '../ret1a/eksamenspakker/h25/ret1a-sensorveiledning-h25.doc', 2)
+on conflict (id) do update
+  set package_id = excluded.package_id,
+      kind = excluded.kind,
+      title = excluded.title,
+      subtitle = excluded.subtitle,
+      description = excluded.description,
+      icon = excluded.icon,
+      url = excluded.url,
+      download_url = excluded.download_url,
+      storage_bucket = null,
+      storage_path = null,
+      order_index = excluded.order_index;
+
 -- Seed: SAM3 resources with published PDFs
 insert into public.answer_resources (id, package_id, kind, title, subtitle, description, icon, url, download_url, order_index)
 values
