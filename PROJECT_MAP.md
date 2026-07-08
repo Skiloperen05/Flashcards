@@ -71,8 +71,15 @@ Active UI:
 - Data source: Supabase tables `answer_packages` and `answer_resources`.
 - Schema, RLS policies, and seed reference: `supabase-setup.sql`.
 
+Admin authoring (`shared/haugnes-answer-admin.js`, admins only):
+- Create/edit/delete packages; creating a new package auto-navigates into it so PDFs can be added immediately.
+- Add resources two ways: (1) upload a PDF file directly, or (2) paste a shareable link (Google Drive / repo path).
+- Batch upload: select many PDFs at once; each becomes a resource with kind auto-detected from the filename (override with a fixed kind).
+- Uploaded files go to the private Supabase Storage bucket `answer-pdfs` at path `{package_id}/{resource_id}-{slug}.pdf`; deleting a resource/package also removes its storage objects.
+
 Important behavior:
 - The renderer fetches packages/resources from Supabase after auth and entitlement checks.
+- Uploaded PDFs are stored in the private `answer-pdfs` bucket and served as short-lived signed URLs (`storage_bucket` / `storage_path` columns on `answer_resources`); link-based resources still use `url` / `download_url`.
 - PDF URLs are intended to stay in Supabase-protected metadata, not hardcoded in public client bundles, unless a package is intentionally local/public.
 - Legacy V25 SAM3 Google Drive links also exist in `shared/haugnes-dashboard-progress.js`.
 - Local SAM3 V26 PDFs currently live under `sam3/eksamenspakker/v26/`.
@@ -99,6 +106,7 @@ Typical package IDs:
   - `answer_packages`
   - `answer_resources`
 - RLS/entitlement helper: `public.has_subject_entitlement(text)`.
+- Storage: private bucket `answer-pdfs` for uploaded exam-package PDFs (PDF only, 50 MB). Admins write; entitled users read via signed URLs. Path convention `{package_id}/{file}.pdf`.
 - Payment model: first user-claimed free subject is inserted client-side with `source = 'free'`; paid subjects are inserted by the Supabase Stripe webhook with `source = 'stripe'` and optional Stripe session/customer/payment metadata.
 - Bundle/payment model: `user/butikk.html` can send `subjectCode` or `productId` to `supabase/functions/create-stripe-checkout/`. Storefront products and prices come from `subject_prices` and `commerce_products` when available. Bundles insert multiple `subject_entitlements` rows with `source = 'stripe_bundle'`; Vennepass inserts all current subjects with `source = 'stripe_friend_pass'` and sets `profiles.is_friend = true`.
 - Discount model: admins manage `discount_codes` in `user/butikk.html`; checkout validates active codes server-side, stores discount metadata on Stripe Checkout Sessions, and `stripe-webhook` increments `redeemed_count` after paid completion.
