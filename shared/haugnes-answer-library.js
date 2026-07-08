@@ -33,7 +33,6 @@
   function isPage() { return /\/user\/a-besvarelser\.html$/.test(window.location.pathname); }
   function esc(s) { return String(s || '').replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
   function code(value) { return String(value || '').toUpperCase().replace(/[\s-]+/g, ''); }
-  function readJson(key, fallback) { try { var raw = window.localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; } }
 
   function entitledCodes() {
     if (window.HaugnesEntitlements && typeof window.HaugnesEntitlements.getCodes === 'function') {
@@ -46,18 +45,21 @@
     return [];
   }
 
-  function selectedCodes() {
-    if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.getSelected === 'function') {
-      return window.HaugnesSubjectAccess.getSelected();
-    }
-    return readJson('hf_enabled_subjects', SUBJECTS.map(function (s) { return s.code; })).map(code);
+  // Access to the archive is driven purely by subject ownership: unlocking a
+  // subject unlocks its A-besvarelser. (The Mine fag selection no longer hides
+  // the archive – locked subjects are shown with a padlock instead.)
+  function availableCodes() {
+    return entitledCodes();
   }
 
-  function availableCodes() {
-    var owned = entitledCodes();
-    var selected = selectedCodes();
-    if (!owned.length) return [];
-    return selected.filter(function (c) { return owned.indexOf(c) !== -1; });
+  function isUnlocked(c) {
+    return availableCodes().indexOf(code(c)) !== -1;
+  }
+
+  function shopUrl() {
+    return (window.AuthGuard && typeof window.AuthGuard.getRootPath === 'function')
+      ? window.AuthGuard.getRootPath().replace(/\/$/, '/') + 'user/butikk.html'
+      : 'butikk.html';
   }
 
   function enabledSubjects() {
@@ -197,6 +199,11 @@
       '.hf-tile-icon{width:44px;height:44px;border-radius:15px;background:var(--accent);display:grid;place-items:center;color:#fff;font-weight:950;box-shadow:0 0 28px rgba(47,98,255,.22)}',
       '.hf-status-pill{height:28px;padding:0 9px;border-radius:999px;background:rgba(255,255,255,.075);border:1px solid rgba(255,255,255,.08);color:#cbd7ef;font-size:10.5px;font-weight:950;display:inline-flex;align-items:center}',
       '.hf-status-pill.live{background:rgba(32,185,122,.14);border-color:rgba(32,185,122,.24);color:#b9f6d7}.hf-status-pill.planned{background:rgba(232,188,104,.12);border-color:rgba(232,188,104,.22);color:#ffd98f}',
+      '.hf-status-pill.locked{background:rgba(148,163,184,.16);border-color:rgba(148,163,184,.30);color:#dbe3f0}',
+      '.hf-subject-tile.hf-locked{cursor:default;border-color:rgba(148,163,184,.20)}',
+      '.hf-subject-tile.hf-locked .hf-tile-icon{background:rgba(148,163,184,.22);box-shadow:none}',
+      '.hf-subject-tile.hf-locked h3,.hf-subject-tile.hf-locked p{opacity:.72}',
+      '.hf-subject-tile.hf-locked::before{opacity:.10}',
       '.hf-subject-tile h3,.hf-package-card h3,.hf-resource-card h3{position:relative;z-index:1;margin:0;color:#fff;font-size:20px;line-height:1.12;letter-spacing:-.04em}',
       '.hf-subject-tile p,.hf-package-card p,.hf-resource-card p{position:relative;z-index:1;color:#bdc9df;font-size:13px;line-height:1.55;margin:0}',
       '.hf-tile-meta{position:relative;z-index:1;margin-top:auto;display:flex;gap:8px;flex-wrap:wrap}',
@@ -232,7 +239,7 @@
     if (heading) heading.textContent = 'Eksamensarkiv';
     if (intro) intro.textContent = 'Fag → eksamenspakker → PDF-er som faktisk ligger ute.';
     if (heroTitle) heroTitle.innerHTML = 'Finn riktig <span>eksamenspakke</span>.';
-    if (heroCopy) heroCopy.textContent = 'Arkivet viser kun fag du har låst opp i Butikken.';
+    if (heroCopy) heroCopy.textContent = 'Fag du har låst opp er åpne. Fag du ikke eier vises med hengelås til du låser dem opp i Butikken.';
     if (stats[0]) stats[0].textContent = s.resources;
     if (stats[1]) stats[1].textContent = s.packages;
     if (stats[2]) stats[2].textContent = s.answers;
@@ -245,21 +252,21 @@
   function parseHash() { var parts = window.location.hash.replace(/^#\/?/, '').split('/').filter(Boolean); state.subject = parts[0] ? parts[0].toUpperCase() : null; state.packageId = state.subject && parts[1] ? state.subject.toLowerCase() + '-' + parts[1] : null; if (state.subject && availableCodes().indexOf(state.subject) === -1) { state.subject = null; state.packageId = null; } }
   function breadcrumb() { var html = '<div class="hf-answer-breadcrumb"><button type="button" data-route="home">Fag</button>'; if (state.subject) html += '<span>›</span><button type="button" data-route="subject" data-subject="' + esc(state.subject) + '">' + esc(state.subject) + '</button>'; if (state.packageId) { var pack = packageById(state.packageId); html += '<span>›</span><span>' + esc(pack ? pack.title : 'Pakke') + '</span>'; } return html + '</div>'; }
 
-  function renderEmptyState() {
-    var rootHref = (window.AuthGuard && typeof window.AuthGuard.getRootPath === 'function')
-      ? window.AuthGuard.getRootPath().replace(/\/$/, '/') + 'user/butikk.html'
-      : 'butikk.html';
-    return breadcrumb() + '<div class="hf-empty-panel"><strong>Ingen fag låst opp ennå.</strong><br>'
-      + 'Gå til <a href="' + esc(rootHref) + '" style="color:#9eb7ff;font-weight:900">Butikken</a> for å låse opp et fag (gratis), så vises pakker, A-besvarelser og sensorveiledninger her.</div>';
-  }
-
   function renderSubjects() {
-    if (!entitledCodes().length) return renderEmptyState();
+    // Wait for entitlements so we don't briefly show owned subjects as locked.
+    if (window.HaugnesEntitlements && typeof window.HaugnesEntitlements.isLoaded === 'function' && !window.HaugnesEntitlements.isLoaded()) {
+      return breadcrumb() + '<div class="hf-empty-panel">Laster fagtilgang…</div>';
+    }
     var s = summary();
     var q = state.query.toLowerCase().trim();
-    var subjects = enabledSubjects().filter(function (subject) { return !q || (subject.code + ' ' + subject.name + ' ' + subject.summary).toLowerCase().indexOf(q) !== -1; });
-    if (!subjects.length) return breadcrumb() + '<div class="hf-empty-panel">Ingen valgte fag matcher søket. Endre fagvalg på Mine fag-siden eller lås opp nye fag i Butikken.</div>';
-    return breadcrumb() + '<div class="hf-answer-toolbar"><input class="hf-answer-search" id="hfAnswerSearch" type="search" placeholder="Søk i valgte fag..." value="' + esc(state.query) + '"><span class="hf-answer-muted">' + s.subjects + ' valgte fag · ' + s.packages + ' pakker · ' + s.resources + ' PDF-er</span></div><div class="hf-subject-grid">' + subjects.map(function (subject) {
+    var subjects = SUBJECTS.filter(function (subject) { return !q || (subject.code + ' ' + subject.name + ' ' + subject.summary).toLowerCase().indexOf(q) !== -1; });
+    var shopHref = shopUrl();
+    var toolbar = '<div class="hf-answer-toolbar"><input class="hf-answer-search" id="hfAnswerSearch" type="search" placeholder="Søk i fag..." value="' + esc(state.query) + '"><span class="hf-answer-muted">' + s.subjects + ' av ' + SUBJECTS.length + ' fag låst opp · ' + s.resources + ' PDF-er ute</span></div>';
+    if (!subjects.length) return breadcrumb() + toolbar + '<div class="hf-empty-panel">Ingen fag matcher søket.</div>';
+    return breadcrumb() + toolbar + '<div class="hf-subject-grid">' + subjects.map(function (subject) {
+      if (!isUnlocked(subject.code)) {
+        return '<div class="hf-subject-tile hf-locked" style="--accent:' + subject.accent + '"><div class="hf-tile-top"><span class="hf-tile-icon">🔒</span><span class="hf-status-pill locked">Låst</span></div><h3>' + subject.code + '<br>' + subject.name + '</h3><p>Lås opp ' + subject.code + ' i Butikken for å få tilgang til eksamenspakker, A-besvarelser og sensorveiledninger.</p><div class="hf-tile-meta"><a class="hf-primary" href="' + esc(shopHref) + '">Lås opp i Butikk →</a></div></div>';
+      }
       var packs = packagesForSubject(subject.code);
       var count = packs.reduce(function (sum, p) { return sum + p.resources.length; }, 0);
       var live = count > 0;
