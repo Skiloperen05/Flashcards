@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import vm from 'node:vm';
 
 const root = process.cwd();
 const ignoredDirs = new Set(['.git', 'node_modules', 'dist', 'build', 'coverage']);
@@ -45,6 +46,40 @@ function testHtmlScriptHygiene() {
   );
 }
 
+// Inline <script> blocks are not covered by check:js (which only lints .js
+// files). A syntax error here silently takes down the whole page, so parse
+// every inline block. (A broken emblem onerror string once emptied the shop.)
+function testInlineScriptsParse() {
+  const offenders = [];
+  const scriptRe = /<script\b([^>]*)>([\s\S]*?)<\/script>/g;
+  // Only classic inline JS: skip external (src), modules, and data blocks
+  // (application/json, importmap, text/template, …).
+  const jsTypeRe = /type\s*=\s*["']?(text\/javascript|application\/javascript)["']?/i;
+  for (const file of htmlFiles) {
+    const html = readFileSync(file, 'utf8');
+    let match;
+    let index = 0;
+    while ((match = scriptRe.exec(html)) !== null) {
+      const attrs = match[1];
+      const code = match[2].trim();
+      index += 1;
+      if (!code) continue;
+      if (/\bsrc\s*=/.test(attrs)) continue;
+      if (/\btype\s*=/.test(attrs) && !jsTypeRe.test(attrs)) continue;
+      try {
+        new vm.Script(code);
+      } catch (error) {
+        offenders.push(`${relative(root, file)} (block ${index}): ${error.message}`);
+      }
+    }
+  }
+
+  assert(
+    offenders.length === 0,
+    `Inline <script> blocks with syntax errors:\n  ${offenders.join('\n  ')}`,
+  );
+}
+
 function testRuntimeDoesNotCallNetlifyFunctions() {
   const runtimeFiles = sourceFiles.filter((file) => {
     const path = relative(root, file);
@@ -77,6 +112,7 @@ function testSupabaseRuntimeTargets() {
 }
 
 testHtmlScriptHygiene();
+testInlineScriptsParse();
 testRuntimeDoesNotCallNetlifyFunctions();
 testSupabaseRuntimeTargets();
 
