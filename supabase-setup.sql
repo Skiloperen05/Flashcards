@@ -440,27 +440,20 @@ values
   ('sol1-v25',   'SOL1',  'V25', 'Våren 2025', 'SOL1 Organisasjonsatferd',
    'A-besvarelse er funnet lokalt i SOL1-mappen. Pakken er klargjort, men PDF-en publiseres ikke offentlig før filen er gjort klar for deling.',
    'A-besvarelse funnet lokalt', 20),
-  ('sam2-v25',   'SAM2',  'V25', 'Våren 2025', 'SAM2 Mikroøkonomi',
-   'Pakkeplass for eksamen, A-besvarelse og sensorveiledning når dokumentene er publisert.', null, 30),
   ('sam3-v25',   'SAM3',  'V25', 'Våren 2025', 'SAM3 Makroøkonomi',
    'Komplett eksamenspakke med originaloppgave, A-besvarelse og sensorveiledning.', null, 40),
   ('sam3-v26',   'SAM3',  'V26', 'Våren 2026', 'SAM3 Makroøkonomi',
    'Komplett eksamenspakke med originaloppgave, A-besvarelse og sensorveiledning.', null, 41),
-  ('met2-v25',   'MET2',  'V25', 'Våren 2025', 'MET2 Metode',
-   'Pakkeplass for eksamen, A-besvarelse og sensorveiledning når dokumentene er publisert.', null, 50),
-  ('mat10-v25',  'MAT10', 'V25', 'Våren 2025', 'MAT10 Matematikk',
-   'Pakkeplass for eksamen, A-besvarelse og sensorveiledning når dokumentene er publisert.', null, 60),
   ('sam1a-h25',  'SAM1A', 'H25', 'Høsten 2025', 'SAM1A Mikroøkonomi intro',
    'Pakkeplass basert på lokale læringsmål og kompendium. PDF-er publiseres først når de er klargjort for offentlig bruk.', null, 70),
-  ('met1-h25',   'MET1',  'H25', 'Høsten 2025', 'MET1 Matematikk for økonomer',
-   'Pakkeplass for rente, NNV, annuitet og metodeoppgaver fra lokale filer.', null, 80),
-  ('kom1-h25',   'KOM1',  'H25', 'Høsten 2025', 'KOM1 Kommunikasjon',
-   'Pakkeplass for rapporter, presentasjoner og refleksjonstekster som kan bli skrivekort.', null, 90),
   ('ret1a-h25',  'RET1A', 'H25', 'Høsten 2025', 'RET1A Juridiske emner',
    'Pakkeplass for eksamensøving, teorioppgaver og juridisk metode fra første semester.', null, 100),
   ('bed1-h25',   'BED1',  'H25', 'Høsten 2025', 'BED1 Bedriftsøkonomi',
    'Pakkeplass for gamle eksamener, gruppeøvinger og regnetrening fra BED1.', null, 110)
 on conflict (id) do nothing;
+
+delete from public.answer_packages
+where id in ('sam2-v25', 'met1-h25', 'met2-v25', 'mat10-v25', 'kom1-h25');
 
 -- Seed: local A-besvarelser imported from Desktop/A-besvarelser.
 -- These rows intentionally use repo-local URLs so the archive can serve the

@@ -9,16 +9,12 @@
   var SUBJECTS = [
     { code: 'RET14', name: 'Skatterett', accent: '#2f62ff', icon: '%', summary: 'Eksamenspakker for skatterett samles her når PDF-er legges ut.' },
     { code: 'SOL1', name: 'Organisasjonsatferd', accent: '#20b97a', icon: '♣', summary: 'V25-pakken har to ulike A-besvarelser til samme eksamen. V26-pakken har A-besvarelse og sensorveiledning.' },
-    { code: 'SAM2', name: 'Mikroøkonomi', accent: '#f09828', icon: '◔', summary: 'Eksamenspakker for mikroøkonomi samles her når PDF-er legges ut.' },
     { code: 'SAM3', name: 'Makroøkonomi', accent: '#ef4444', icon: '↗', summary: 'V25- og V26-pakkene ligger ute med original eksamen, A-besvarelse og sensorveiledning.' },
-    { code: 'MET2', name: 'Metode', accent: '#7c3aed', icon: 'Σ', summary: 'Eksamenspakker for metode samles her når PDF-er legges ut.' },
-    { code: 'MAT10', name: 'Matematikk', accent: '#0891b2', icon: '∫', summary: 'Eksamenspakker for matematikk samles her når PDF-er legges ut.' },
     { code: 'SAM1A', name: 'Mikroøkonomi intro', accent: '#f09828', icon: '↗', emblem: '../assets/emblems/SAM1A.png', summary: 'Første-semesterpakke for læringsmål, kompendium og eksamensrelevante modeller.' },
-    { code: 'MET1', name: 'Matematikk for økonomer', accent: '#06b6d4', icon: '%', emblem: '../assets/emblems/MET1.png', summary: 'Første-semesterpakke for NNV, rente, annuitet og metodeoppgaver.' },
-    { code: 'KOM1', name: 'Kommunikasjon', accent: '#e8bc68', icon: '✎', emblem: '../assets/emblems/KOM1.png', summary: 'Første-semesterpakke for rapport, presentasjon og akademisk skriving.' },
     { code: 'RET1A', name: 'Juridiske emner', accent: '#3b82f6', icon: '§', emblem: '../assets/emblems/RET1A.png', summary: 'H25-pakken ligger ute med A-besvarelse og sensorveiledning.' },
     { code: 'BED1', name: 'Bedriftsøkonomi', accent: '#20b97a', icon: '◆', emblem: '../assets/emblems/BED1.png', summary: 'H25-pakken ligger ute med eksamen, A-besvarelse og løsningsforslag.' }
   ];
+  var ARCHIVE_SUBJECT_CODES = SUBJECTS.map(function (s) { return s.code; });
 
   var STORAGE_BUCKET = 'answer-pdfs';
   var SIGNED_URL_TTL = 60 * 60 * 4; // 4 hours – re-signed on every page load.
@@ -137,9 +133,9 @@
   function availableCodes() {
     var owned = entitledCodes();
     if (!owned.length && /^(localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname) && new URLSearchParams(window.location.search).get('dev') === '1') {
-      return SUBJECTS.map(function (s) { return s.code; });
+      return ARCHIVE_SUBJECT_CODES.slice();
     }
-    return owned;
+    return owned.filter(function (c) { return ARCHIVE_SUBJECT_CODES.indexOf(code(c)) !== -1; });
   }
 
   function isUnlocked(c) {
