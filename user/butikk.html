@@ -59,7 +59,9 @@ a{text-decoration:none;color:inherit}button,input,select{font-family:inherit}
 .shop-card{position:relative;overflow:hidden;padding:18px;border-radius:20px;background:linear-gradient(180deg,rgba(15,43,92,.94),rgba(8,25,56,.96));border:1px solid var(--line);box-shadow:0 16px 34px rgba(0,0,0,.22);display:flex;flex-direction:column;gap:12px;min-height:240px}
 .shop-card::before{content:"";position:absolute;right:-58px;top:-66px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,var(--accent),transparent 68%);opacity:.22}
 .shop-top{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.shop-icon{width:46px;height:46px;border-radius:14px;background:var(--accent);display:grid;place-items:center;color:#fff;font-weight:900;font-size:22px;box-shadow:0 0 26px color-mix(in srgb,var(--accent),transparent 62%)}
+.shop-icon{width:46px;height:46px;border-radius:14px;background:var(--accent);display:grid;place-items:center;color:#fff;font-weight:900;font-size:22px;box-shadow:0 0 26px color-mix(in srgb,var(--accent),transparent 62%);overflow:hidden}
+.shop-icon.has-emblem{background:linear-gradient(180deg,#fdfefe,#eaeff5)}
+.shop-icon img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
 .status-pill{height:28px;padding:0 11px;border-radius:999px;font-size:11px;font-weight:900;display:inline-flex;align-items:center;letter-spacing:.04em}
 .status-pill.owned{background:rgba(32,185,122,.16);border:1px solid rgba(32,185,122,.32);color:#a8f1cf}
 .status-pill.available{background:rgba(232,188,104,.13);border:1px solid rgba(232,188,104,.30);color:#ffd98f}
@@ -265,11 +267,11 @@ var SUBJECTS = [
   { code: 'SAM3', name: 'Makroøkonomi', accent: '#ef4444', icon: '↗', summary: 'IS-MP, Phillipskurven, Solow og Romer — komplette V25- og V26-pakker.' },
   { code: 'MET2', name: 'Metode', accent: '#7c3aed', icon: 'Σ', summary: 'Statistikk, hypotesetesting og kvantitativ metode.' },
   { code: 'MAT10', name: 'Matematikk', accent: '#0891b2', icon: '∫', summary: 'Funksjoner, derivasjon, integrasjon og lineær algebra.' },
-  { code: 'SAM1A', name: 'Mikroøkonomi intro', accent: '#f09828', icon: '↗', summary: 'Læringsmål, kompendium og eksamensrelevante modeller.' },
-  { code: 'MET1', name: 'Matematikk for økonomer', accent: '#06b6d4', icon: '%', summary: 'NNV, rente, annuitet og metodeoppgaver.' },
-  { code: 'KOM1', name: 'Kommunikasjon', accent: '#e8bc68', icon: '✎', summary: 'Rapport, presentasjon og akademisk skriving.' },
-  { code: 'RET1A', name: 'Juridiske emner', accent: '#3b82f6', icon: '§', summary: 'Avtalerett, pengekrav, selskapsrett og juridisk metode.' },
-  { code: 'BED1', name: 'Bedriftsøkonomi', accent: '#20b97a', icon: '◆', summary: 'Kalkyler, investering, resultat og budsjettering.' }
+  { code: 'SAM1A', name: 'Mikroøkonomi intro', accent: '#f09828', icon: '↗', emblem: '../assets/emblems/SAM1A.png', summary: 'Læringsmål, kompendium og eksamensrelevante modeller.' },
+  { code: 'MET1', name: 'Matematikk for økonomer', accent: '#06b6d4', icon: '%', emblem: '../assets/emblems/MET1.png', summary: 'NNV, rente, annuitet og metodeoppgaver.' },
+  { code: 'KOM1', name: 'Kommunikasjon', accent: '#e8bc68', icon: '✎', emblem: '../assets/emblems/KOM1.png', summary: 'Rapport, presentasjon og akademisk skriving.' },
+  { code: 'RET1A', name: 'Juridiske emner', accent: '#3b82f6', icon: '§', emblem: '../assets/emblems/RET1A.png', summary: 'Avtalerett, pengekrav, selskapsrett og juridisk metode.' },
+  { code: 'BED1', name: 'Bedriftsøkonomi', accent: '#20b97a', icon: '◆', emblem: '../assets/emblems/BED1.png', summary: 'Kalkyler, investering, resultat og budsjettering.' }
 ];
 
 var BUNDLES = [
@@ -308,6 +310,10 @@ function labelFromOre(ore){return krFromOre(ore)+' kr';}
 function oreFromKr(value){return Math.round(Number(String(value||'').replace(',','.'))*100);}
 function subjectPriceLabel(code){return SUBJECT_PRICES[code] != null ? labelFromOre(SUBJECT_PRICES[code]) : SUBJECT_PRICE_LABEL;}
 function subjectPriceOre(code){return SUBJECT_PRICES[code] != null ? Number(SUBJECT_PRICES[code]) : 4900;}
+function iconHtml(item){
+  if (item && item.emblem) return '<span class="shop-icon has-emblem"><img src="'+esc(item.emblem)+'" alt="" onerror="this.parentNode.classList.remove(\\'has-emblem\\');this.parentNode.textContent=\\''+esc(item.icon || '')+'\\';"></span>';
+  return '<span class="shop-icon">'+esc(item && item.icon || '')+'</span>';
+}
 function ownedBundleCreditOre(subjectCodes, paidOwnedCodes){
   return (subjectCodes||[]).reduce(function(sum, code){
     if ((paidOwnedCodes||[]).indexOf(code)===-1) return sum;
@@ -424,7 +430,7 @@ function render(){
         ? '<a class="shop-cta secondary" href="subjects.html">Åpne fagene →</a>'
         : '<button class="shop-cta" data-product="'+esc(p.id)+'" data-idle="'+esc(p.cta)+'"><span class="spinner"></span><span class="cta-text">'+esc(p.cta)+'</span></button>';
     return '<article class="shop-card" style="--accent:'+esc(p.accent)+'">'
-      + '<div class="shop-top"><span class="shop-icon">'+esc(p.icon)+'</span>'+status+'</div>'
+      + '<div class="shop-top">'+iconHtml(p)+status+'</div>'
       + '<div class="shop-title">'+esc(p.title)+'</div>'
       + '<div class="shop-sub">'+esc(p.sub)+'</div>'
       + '<p class="shop-desc">'+esc(p.summary)+'</p>'
@@ -448,7 +454,7 @@ function render(){
         ? '<button class="shop-cta" data-claim="'+esc(s.code)+'"><span class="spinner"></span><span class="cta-text">Lås opp gratis</span></button>'
         : '<button class="shop-cta" data-buy="'+esc(s.code)+'"><span class="spinner"></span><span class="cta-text">Kjøp med Stripe</span></button>';
     return '<article class="shop-card" style="--accent:'+esc(s.accent)+'">'
-      + '<div class="shop-top"><span class="shop-icon">'+esc(s.icon)+'</span>'+status+'</div>'
+      + '<div class="shop-top">'+iconHtml(s)+status+'</div>'
       + '<div class="shop-title">'+esc(s.code)+' · '+esc(s.name)+'</div>'
       + '<div class="shop-sub">Tilgang til alt innhold i faget</div>'
       + '<p class="shop-desc">'+esc(s.summary)+'</p>'

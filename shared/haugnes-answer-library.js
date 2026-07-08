@@ -13,11 +13,11 @@
     { code: 'SAM3', name: 'Makroøkonomi', accent: '#ef4444', icon: '↗', summary: 'V25- og V26-pakkene ligger ute med original eksamen, A-besvarelse og sensorveiledning.' },
     { code: 'MET2', name: 'Metode', accent: '#7c3aed', icon: 'Σ', summary: 'Eksamenspakker for metode samles her når PDF-er legges ut.' },
     { code: 'MAT10', name: 'Matematikk', accent: '#0891b2', icon: '∫', summary: 'Eksamenspakker for matematikk samles her når PDF-er legges ut.' },
-    { code: 'SAM1A', name: 'Mikroøkonomi intro', accent: '#f09828', icon: '↗', summary: 'Første-semesterpakke for læringsmål, kompendium og eksamensrelevante modeller.' },
-    { code: 'MET1', name: 'Matematikk for økonomer', accent: '#06b6d4', icon: '%', summary: 'Første-semesterpakke for NNV, rente, annuitet og metodeoppgaver.' },
-    { code: 'KOM1', name: 'Kommunikasjon', accent: '#e8bc68', icon: '✎', summary: 'Første-semesterpakke for rapport, presentasjon og akademisk skriving.' },
-    { code: 'RET1A', name: 'Juridiske emner', accent: '#3b82f6', icon: '§', summary: 'Første-semesterpakke for avtalerett, pengekrav, selskapsrett og juridisk metode.' },
-    { code: 'BED1', name: 'Bedriftsøkonomi', accent: '#20b97a', icon: '◆', summary: 'Første-semesterpakke for kalkyler, investering, resultat og budsjettering.' }
+    { code: 'SAM1A', name: 'Mikroøkonomi intro', accent: '#f09828', icon: '↗', emblem: '../assets/emblems/SAM1A.png', summary: 'Første-semesterpakke for læringsmål, kompendium og eksamensrelevante modeller.' },
+    { code: 'MET1', name: 'Matematikk for økonomer', accent: '#06b6d4', icon: '%', emblem: '../assets/emblems/MET1.png', summary: 'Første-semesterpakke for NNV, rente, annuitet og metodeoppgaver.' },
+    { code: 'KOM1', name: 'Kommunikasjon', accent: '#e8bc68', icon: '✎', emblem: '../assets/emblems/KOM1.png', summary: 'Første-semesterpakke for rapport, presentasjon og akademisk skriving.' },
+    { code: 'RET1A', name: 'Juridiske emner', accent: '#3b82f6', icon: '§', emblem: '../assets/emblems/RET1A.png', summary: 'Første-semesterpakke for avtalerett, pengekrav, selskapsrett og juridisk metode.' },
+    { code: 'BED1', name: 'Bedriftsøkonomi', accent: '#20b97a', icon: '◆', emblem: '../assets/emblems/BED1.png', summary: 'Første-semesterpakke for kalkyler, investering, resultat og budsjettering.' }
   ];
 
   var PACKAGES = [];
