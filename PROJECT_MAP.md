@@ -1,6 +1,6 @@
 # Project Map
 
-Last updated: 2026-07-07
+Last updated: 2026-07-08
 
 Purpose: make future app changes faster by documenting the stable entry points, data sources, and search paths. Update this file whenever a change moves, renames, adds, or removes app-facing functionality.
 
@@ -18,6 +18,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Login/auth entry: `login.html`.
 - Authenticated user pages: `user/`.
 - Subject pages: one folder per subject, for example `sam3/`, `sam2/`, `ret14/`, `sol1/`.
+- Subject app icons/emblems: `assets/emblems/`, referenced from `shared/subject-meta.js`.
 - Shared behavior, data, styling, and page enhancement scripts: `shared/`.
 - Supabase setup/schema seed reference: `supabase-setup.sql`.
 - Supabase Edge Functions: `supabase/functions/`.
