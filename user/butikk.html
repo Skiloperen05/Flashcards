@@ -311,9 +311,15 @@ function oreFromKr(value){return Math.round(Number(String(value||'').replace(','
 function subjectPriceLabel(code){return SUBJECT_PRICES[code] != null ? labelFromOre(SUBJECT_PRICES[code]) : SUBJECT_PRICE_LABEL;}
 function subjectPriceOre(code){return SUBJECT_PRICES[code] != null ? Number(SUBJECT_PRICES[code]) : 4900;}
 function iconHtml(item){
-  if (item && item.emblem) return '<span class="shop-icon has-emblem"><img src="'+esc(item.emblem)+'" alt="" onerror="this.parentNode.classList.remove(\\'has-emblem\\');this.parentNode.textContent=\\''+esc(item.icon || '')+'\\';"></span>';
+  if (item && item.emblem) return '<span class="shop-icon has-emblem"><img src="'+esc(item.emblem)+'" alt="" data-fallback="'+esc(item.icon || '')+'" onerror="window.hfEmblemFallback&&window.hfEmblemFallback(this)"></span>';
   return '<span class="shop-icon">'+esc(item && item.icon || '')+'</span>';
 }
+window.hfEmblemFallback=function(img){
+  var span=img&&img.parentNode;
+  if(!span) return;
+  span.classList.remove('has-emblem');
+  span.textContent=img.getAttribute('data-fallback')||'';
+};
 function ownedBundleCreditOre(subjectCodes, paidOwnedCodes){
   return (subjectCodes||[]).reduce(function(sum, code){
     if ((paidOwnedCodes||[]).indexOf(code)===-1) return sum;
