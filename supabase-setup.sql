@@ -336,10 +336,21 @@ create table if not exists public.answer_resources (
   subtitle     text not null default '',
   description  text not null default '',
   icon         text not null default '',
-  url          text not null,
+  url          text not null default '',
   download_url text not null default '',
+  storage_bucket text,
+  storage_path   text,
   order_index  integer not null default 0
 );
+
+-- Storage-backed uploads: resources whose PDF lives in the private
+-- `answer-pdfs` bucket keep only bucket + path here, and are served to the
+-- client as short-lived signed URLs (see shared/haugnes-answer-library.js).
+alter table public.answer_resources
+  add column if not exists storage_bucket text,
+  add column if not exists storage_path text;
+
+alter table public.answer_resources alter column url set default '';
 
 alter table public.answer_packages enable row level security;
 alter table public.answer_resources enable row level security;
@@ -379,6 +390,47 @@ create policy "Admins manage resources"
   to authenticated
   using (exists (select 1 from public.profiles where id = (select auth.uid()) and is_admin = true))
   with check (exists (select 1 from public.profiles where id = (select auth.uid()) and is_admin = true));
+
+-- ------------------------------------------------------------
+-- 4b. Storage bucket for uploaded answer-package PDFs
+--     Private bucket. Admins upload; entitled users read via signed URLs.
+--     Object path convention: {package_id}/{file}.pdf, so the first path
+--     segment maps back to an answer_packages row for the entitlement check.
+-- ------------------------------------------------------------
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('answer-pdfs', 'answer-pdfs', false, 52428800, array['application/pdf'])
+on conflict (id) do update
+  set public = excluded.public,
+      file_size_limit = excluded.file_size_limit,
+      allowed_mime_types = excluded.allowed_mime_types;
+
+drop policy if exists "Read answer pdfs if entitled" on storage.objects;
+create policy "Read answer pdfs if entitled"
+  on storage.objects
+  for select
+  to authenticated
+  using (
+    bucket_id = 'answer-pdfs'
+    and exists (
+      select 1 from public.answer_packages p
+      where p.id = split_part(storage.objects.name, '/', 1)
+        and public.has_subject_entitlement(p.subject_code)
+    )
+  );
+
+drop policy if exists "Admins manage answer pdfs" on storage.objects;
+create policy "Admins manage answer pdfs"
+  on storage.objects
+  for all
+  to authenticated
+  using (
+    bucket_id = 'answer-pdfs'
+    and exists (select 1 from public.profiles where id = (select auth.uid()) and is_admin = true)
+  )
+  with check (
+    bucket_id = 'answer-pdfs'
+    and exists (select 1 from public.profiles where id = (select auth.uid()) and is_admin = true)
+  );
 
 -- Seed: existing A-besvarelse-pakker (idempotent)
 insert into public.answer_packages (id, subject_code, term, title, subtitle, description, local_status, sort_order)

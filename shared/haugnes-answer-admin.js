@@ -83,6 +83,11 @@
       '.hf-admin-field textarea{resize:vertical;min-height:74px}',
       '.hf-admin-field input:focus,.hf-admin-field select:focus,.hf-admin-field textarea:focus{border-color:rgba(246,180,60,.55)}',
       '.hf-admin-field select option{background:#0b2148;color:#fff}',
+      '.hf-admin-field input[type=file]{padding:9px 10px;font-size:12px;cursor:pointer}',
+      '.hf-admin-field input[type=file]::file-selector-button{margin-right:10px;border:0;border-radius:9px;padding:7px 11px;cursor:pointer;font:900 11px Lora,Georgia,serif;background:linear-gradient(135deg,#f6b43c,#f09a25);color:#061735}',
+      '.hf-admin-hint{color:#9fb0cf;font-size:11px;font-weight:600;line-height:1.4}',
+      '.hf-admin-or{display:flex;align-items:center;gap:10px;color:#7f91b2;font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}',
+      '.hf-admin-or::before,.hf-admin-or::after{content:"";flex:1;height:1px;background:rgba(255,255,255,.12)}',
       '.hf-admin-modal-row{display:grid;grid-template-columns:1fr 1fr;gap:11px}',
       '.hf-admin-modal-foot{display:flex;justify-content:flex-end;gap:10px;align-items:center;flex-wrap:wrap}',
       '@media(max-width:640px){.hf-admin-modal-row{grid-template-columns:1fr}}'
@@ -104,16 +109,22 @@
 
     var fieldsHtml = fields.map(function (field) {
       var input;
+      if (field.type === 'divider') {
+        return '<div class="hf-admin-or">' + esc(field.label || 'eller') + '</div>';
+      }
       if (field.type === 'textarea') {
         input = '<textarea name="' + esc(field.name) + '" placeholder="' + esc(field.placeholder || '') + '">' + esc(field.value) + '</textarea>';
       } else if (field.type === 'select') {
         input = '<select name="' + esc(field.name) + '">' + (field.options || []).map(function (option) {
           return '<option value="' + esc(option.value) + '"' + (String(option.value) === String(field.value) ? ' selected' : '') + '>' + esc(option.label) + '</option>';
         }).join('') + '</select>';
+      } else if (field.type === 'file') {
+        input = '<input type="file" name="' + esc(field.name) + '" accept="' + esc(field.accept || '') + '"' + (field.multiple ? ' multiple' : '') + '>';
       } else {
         input = '<input type="' + (field.type === 'number' ? 'number' : 'text') + '" name="' + esc(field.name) + '" value="' + esc(field.value) + '" placeholder="' + esc(field.placeholder || '') + '">';
       }
-      return '<label class="hf-admin-field' + (field.half ? ' half' : '') + '"><span>' + esc(field.label) + (field.required ? ' *' : '') + '</span>' + input + '</label>';
+      var hint = field.hint ? '<small class="hf-admin-hint">' + esc(field.hint) + '</small>' : '';
+      return '<label class="hf-admin-field' + (field.half ? ' half' : '') + '"><span>' + esc(field.label) + (field.required ? ' *' : '') + '</span>' + input + hint + '</label>';
     });
 
     // Pair half-width fields into rows
@@ -144,6 +155,12 @@
       var missing = [];
       fields.forEach(function (field) {
         var input = backdrop.querySelector('[name="' + field.name + '"]');
+        if (field.type === 'file') {
+          var picked = input && input.files ? input.files : null;
+          values[field.name] = picked;
+          if (field.required && (!picked || !picked.length)) missing.push(field.label);
+          return;
+        }
         var value = input ? String(input.value).trim() : '';
         values[field.name] = value;
         if (field.required && !value) missing.push(field.label);
@@ -181,6 +198,67 @@
     return id;
   }
 
+  function storageBucket() {
+    var lib = library();
+    return (lib && lib.storageBucket) || 'answer-pdfs';
+  }
+
+  function baseName(filename) {
+    return String(filename || '').replace(/\.[a-z0-9]+$/i, '');
+  }
+
+  // Guess resource kind from a PDF filename so batch uploads land in the right bucket.
+  function detectKind(filename) {
+    var name = String(filename || '').toLowerCase();
+    if (/sensor|veiledn/.test(name)) return 'Sensorveiledning';
+    if (/a[-_ ]?besvar|besvarelse|løsning|losning|answer|fasit/.test(name)) return 'A-besvarelse';
+    if (/eksamen|exam|oppgave?sett|skoleeksamen/.test(name)) return 'Eksamen';
+    if (/notat|sammendrag|kompendium/.test(name)) return 'Notat';
+    if (/oppgav/.test(name)) return 'Oppgavesett';
+    return 'A-besvarelse';
+  }
+
+  function prettyTitle(filename) {
+    var name = baseName(filename).replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!name) return 'Dokument';
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  }
+
+  // Upload one PDF to the private answer bucket under {packageId}/{resourceId}-{slug}.pdf
+  function uploadPdf(packageId, resourceId, file) {
+    var sb = getClient();
+    if (!sb || !sb.storage) return Promise.reject(new Error('Supabase Storage er ikke tilgjengelig'));
+    if (file && file.type && file.type !== 'application/pdf' && !/\.pdf$/i.test(file.name || '')) {
+      return Promise.reject(new Error('Kun PDF-filer kan lastes opp'));
+    }
+    var bucket = storageBucket();
+    var safe = slug(baseName(file.name)) || 'dokument';
+    var path = packageId + '/' + resourceId + '-' + safe + '.pdf';
+    return sb.storage.from(bucket).upload(path, file, { upsert: true, contentType: 'application/pdf' }).then(function (result) {
+      if (result && result.error) throw result.error;
+      return { bucket: bucket, path: path };
+    });
+  }
+
+  function removeStorageObject(bucket, path) {
+    var sb = getClient();
+    if (!sb || !sb.storage || !path) return Promise.resolve();
+    return sb.storage.from(bucket || storageBucket()).remove([path]).then(function () {}, function () {});
+  }
+
+  // Jump the reader/admin view straight into a package after it is created.
+  function navigateToPackage(subjectCode, packageId) {
+    var subj = String(subjectCode || '').toLowerCase();
+    var tail = packageId.indexOf(subj + '-') === 0 ? packageId.slice(subj.length + 1) : packageId;
+    var hash = '#/' + subj + '/' + tail;
+    if (window.location.hash === hash) {
+      var lib = library();
+      if (lib && typeof lib.render === 'function') lib.render();
+    } else {
+      window.location.hash = hash;
+    }
+  }
+
   function savePackage(existing, values) {
     var sb = getClient();
     if (!sb) return Promise.reject(new Error('Supabase er ikke tilgjengelig'));
@@ -198,6 +276,9 @@
     return sb.from('answer_packages').upsert(row).then(function (result) {
       if (result && result.error) throw result.error;
       return reloadLibrary();
+    }).then(function () {
+      // Open the new package straight away so PDFs can be added without hunting for it.
+      if (!existing) navigateToPackage(row.subject_code, row.id);
     });
   }
 
@@ -205,7 +286,14 @@
     if (!window.confirm('Slette pakken «' + pack.title + '» (' + pack.subject + ' ' + pack.term + ') og alle PDF-ene i den?')) return;
     var sb = getClient();
     if (!sb) return;
-    sb.from('answer_packages').delete().eq('id', pack.id).then(function (result) {
+    // Remove any uploaded files first; the DB rows cascade on package delete.
+    var stored = (pack.resources || []).filter(function (r) { return r.storagePath; });
+    var cleanup = stored.length && sb.storage
+      ? sb.storage.from(storageBucket()).remove(stored.map(function (r) { return r.storagePath; })).then(function () {}, function () {})
+      : Promise.resolve();
+    cleanup.then(function () {
+      return sb.from('answer_packages').delete().eq('id', pack.id);
+    }).then(function (result) {
       if (result && result.error) {
         window.alert('Kunne ikke slette: ' + result.error.message);
         return;
@@ -217,22 +305,87 @@
   function saveResource(pack, existing, values) {
     var sb = getClient();
     if (!sb) return Promise.reject(new Error('Supabase er ikke tilgjengelig'));
-    var row = {
-      id: existing ? existing.id : uniqueResourceId(pack.id, values.kind),
-      package_id: pack.id,
-      kind: values.kind,
-      title: values.title,
-      subtitle: values.subtitle || '',
-      description: values.description || '',
-      icon: values.icon || KIND_ICONS[values.kind] || 'D',
-      url: values.url,
-      download_url: values.download_url || values.url,
-      order_index: parseInt(values.order_index, 10) || 0
-    };
-    return sb.from('answer_resources').upsert(row).then(function (result) {
-      if (result && result.error) throw result.error;
-      return reloadLibrary();
+    var id = existing ? existing.id : uniqueResourceId(pack.id, values.kind);
+    var file = values.file && values.file.length ? values.file[0] : null;
+    var hadStorage = existing && existing.storagePath;
+
+    if (!file && !values.url && !hadStorage) {
+      return Promise.reject(new Error('Last opp en PDF, eller lim inn en lenke'));
+    }
+
+    var prep = file ? uploadPdf(pack.id, id, file) : Promise.resolve(null);
+    return prep.then(function (uploaded) {
+      // keepStorage: editing a stored resource without replacing the file or switching to a link.
+      var keepStorage = !uploaded && hadStorage && !values.url;
+      var row = {
+        id: id,
+        package_id: pack.id,
+        kind: values.kind,
+        title: values.title,
+        subtitle: values.subtitle || '',
+        description: values.description || '',
+        icon: values.icon || KIND_ICONS[values.kind] || 'D',
+        url: uploaded || keepStorage ? '' : values.url,
+        download_url: uploaded || keepStorage ? '' : (values.download_url || values.url),
+        storage_bucket: uploaded ? uploaded.bucket : (keepStorage ? (existing.storageBucket || storageBucket()) : null),
+        storage_path: uploaded ? uploaded.path : (keepStorage ? existing.storagePath : null),
+        order_index: parseInt(values.order_index, 10) || 0
+      };
+      return sb.from('answer_resources').upsert(row).then(function (result) {
+        if (result && result.error) throw result.error;
+        // Replaced an uploaded file at a different path? Drop the orphaned object.
+        if (uploaded && hadStorage && existing.storagePath !== uploaded.path) {
+          return removeStorageObject(existing.storageBucket, existing.storagePath);
+        }
+      }).then(function () { return reloadLibrary(); });
     });
+  }
+
+  // Upload several PDFs into a package at once; each becomes its own resource.
+  function saveBatch(pack, values) {
+    var sb = getClient();
+    if (!sb) return Promise.reject(new Error('Supabase er ikke tilgjengelig'));
+    var files = values.file ? Array.prototype.slice.call(values.file) : [];
+    if (!files.length) return Promise.reject(new Error('Velg minst én PDF'));
+    var used = {};
+    function nextId(kind) {
+      var base = pack.id + '-' + (slug(kind) || 'ressurs');
+      var id = base;
+      var n = 2;
+      while (resourceById(id) || used[id]) { id = base + '-' + n; n += 1; }
+      used[id] = true;
+      return id;
+    }
+    var baseOrder = pack.resources.length;
+    var stateEl = document.getElementById('hfAdminModalState');
+    var chain = Promise.resolve();
+    files.forEach(function (file, index) {
+      chain = chain.then(function () {
+        if (stateEl) stateEl.textContent = 'Laster opp ' + (index + 1) + '/' + files.length + '…';
+        var kind = values.kind && values.kind !== 'auto' ? values.kind : detectKind(file.name);
+        var id = nextId(kind);
+        return uploadPdf(pack.id, id, file).then(function (uploaded) {
+          var row = {
+            id: id,
+            package_id: pack.id,
+            kind: kind,
+            title: prettyTitle(file.name),
+            subtitle: '',
+            description: '',
+            icon: KIND_ICONS[kind] || 'D',
+            url: '',
+            download_url: '',
+            storage_bucket: uploaded.bucket,
+            storage_path: uploaded.path,
+            order_index: baseOrder + index + 1
+          };
+          return sb.from('answer_resources').upsert(row).then(function (result) {
+            if (result && result.error) throw result.error;
+          });
+        });
+      });
+    });
+    return chain.then(function () { return reloadLibrary(); });
   }
 
   function deleteResource(resource) {
@@ -244,7 +397,7 @@
         window.alert('Kunne ikke slette: ' + result.error.message);
         return;
       }
-      reloadLibrary();
+      return removeStorageObject(resource.storageBucket, resource.storagePath).then(function () { reloadLibrary(); });
     });
   }
 
@@ -274,20 +427,38 @@
   }
 
   function openResourceForm(pack, existing) {
+    var hasStored = existing && existing.storagePath;
+    var fileHint = hasStored
+      ? 'Ligger allerede som opplastet PDF. Velg en ny fil for å erstatte den, eller la stå.'
+      : 'Last opp PDF-en direkte (maks 50 MB). Filen lagres privat og vises kun for de med tilgang til faget.';
     openModal(
       existing ? 'Rediger PDF' : 'Ny PDF i ' + pack.subject + ' ' + pack.term,
-      'Lim inn en delbar lenke (Google Drive, Supabase Storage eller relativ sti i repoet). Publiseres umiddelbart.',
+      'Last opp en PDF, eller lim inn en delbar lenke. Publiseres umiddelbart.',
       [
         { name: 'kind', label: 'Type', type: 'select', value: existing ? existing.kind : 'A-besvarelse', options: KINDS.map(function (kind) { return { value: kind, label: kind }; }), half: true },
         { name: 'order_index', label: 'Rekkefølge', type: 'number', value: existing ? String(existing.order || 0) : String(pack.resources.length + 1), half: true },
         { name: 'title', label: 'Tittel', type: 'text', value: existing ? existing.title : '', required: true, placeholder: 'A-besvarelse ' + pack.subject + ' ' + pack.term },
         { name: 'subtitle', label: 'Undertittel', type: 'text', value: existing ? existing.subtitle : '', placeholder: 'Makroøkonomi' },
         { name: 'description', label: 'Beskrivelse', type: 'textarea', value: existing ? existing.desc : '', placeholder: 'Eksempel på sterk besvarelse …' },
-        { name: 'url', label: 'Lenke (åpne)', type: 'text', value: existing ? existing.url : '', required: true, placeholder: 'https://drive.google.com/file/d/…/view' },
-        { name: 'download_url', label: 'Lenke (last ned, valgfri)', type: 'text', value: existing ? (existing.download || '') : '', placeholder: 'Tom = samme som åpne-lenken' },
+        { name: 'file', label: 'Last opp PDF', type: 'file', accept: 'application/pdf,.pdf', hint: fileHint },
+        { name: '__or', label: '', type: 'divider' },
+        { name: 'url', label: 'Eller lim inn lenke (åpne)', type: 'text', value: existing && !hasStored ? existing.url : '', placeholder: 'https://drive.google.com/file/d/…/view' },
+        { name: 'download_url', label: 'Lenke (last ned, valgfri)', type: 'text', value: existing && !hasStored ? (existing.download || '') : '', placeholder: 'Tom = samme som åpne-lenken' },
         { name: 'icon', label: 'Ikonbokstav (valgfri)', type: 'text', value: existing ? existing.icon : '', half: true, placeholder: 'A' }
       ],
       function (values) { return saveResource(pack, existing, values); }
+    );
+  }
+
+  function openBatchUploadForm(pack) {
+    openModal(
+      'Last opp flere PDF-er · ' + pack.subject + ' ' + pack.term,
+      'Velg flere PDF-er samtidig (f.eks. en hel mappe). Hver fil blir en egen ressurs. Type gjettes fra filnavnet med mindre du velger en fast type under.',
+      [
+        { name: 'file', label: 'PDF-er', type: 'file', accept: 'application/pdf,.pdf', multiple: true, required: true, hint: 'Hold Ctrl/Cmd for å velge flere. Maks 50 MB per fil.' },
+        { name: 'kind', label: 'Type for alle', type: 'select', value: 'auto', options: [{ value: 'auto', label: 'Gjett fra filnavn' }].concat(KINDS.map(function (kind) { return { value: kind, label: kind }; })) }
+      ],
+      function (values) { return saveBatch(pack, values); }
     );
   }
 
@@ -297,7 +468,8 @@
 
     var pack = state.packageId ? packageById(state.packageId) : null;
     if (pack) {
-      html += '<button type="button" class="hf-admin-btn" data-admin-action="new-resource">＋ Ny PDF i denne pakken</button>';
+      html += '<button type="button" class="hf-admin-btn" data-admin-action="upload-resources">⤴ Last opp PDF-er</button>';
+      html += '<button type="button" class="hf-admin-btn ghost" data-admin-action="new-resource">＋ Ny PDF (fil eller lenke)</button>';
       html += '<button type="button" class="hf-admin-btn ghost" data-admin-action="edit-package" data-id="' + esc(pack.id) + '">Rediger pakke</button>';
       html += '<button type="button" class="hf-admin-btn danger" data-admin-action="delete-package" data-id="' + esc(pack.id) + '">Slett pakke</button>';
     }
@@ -305,7 +477,10 @@
 
     if (pack) {
       html += '<div class="hf-admin-list">' + (pack.resources.length ? pack.resources.map(function (resource) {
-        return '<div class="hf-admin-row"><div><b>' + esc(resource.kind) + ' · ' + esc(resource.title) + '</b><small>' + esc(resource.url) + '</small></div>'
+        var loc = resource.storagePath
+          ? '⤴ Opplastet · ' + esc(String(resource.storagePath).split('/').pop())
+          : esc(resource.url || 'Ingen lenke ennå');
+        return '<div class="hf-admin-row"><div><b>' + esc(resource.kind) + ' · ' + esc(resource.title) + '</b><small>' + loc + '</small></div>'
           + '<div class="hf-admin-actions"><button type="button" class="hf-admin-btn ghost" data-admin-action="edit-resource" data-id="' + esc(resource.id) + '">Rediger</button>'
           + '<button type="button" class="hf-admin-btn danger" data-admin-action="delete-resource" data-id="' + esc(resource.id) + '">Slett</button></div></div>';
       }).join('') : '<div class="hf-admin-row"><div><b>Ingen PDF-er ennå</b><small>Bruk «Ny PDF» for å publisere eksamen, A-besvarelse eller sensorveiledning.</small></div></div>') + '</div>';
@@ -332,6 +507,7 @@
         else if (action === 'edit-package') { var pack = packageById(id); if (pack) openPackageForm(pack); }
         else if (action === 'delete-package') { var doomed = packageById(id); if (doomed) deletePackage(doomed); }
         else if (action === 'new-resource') { var target = packageById(state.packageId); if (target) openResourceForm(target); }
+        else if (action === 'upload-resources') { var batchTarget = packageById(state.packageId); if (batchTarget) openBatchUploadForm(batchTarget); }
         else if (action === 'edit-resource') { var hit = resourceById(id); if (hit) openResourceForm(hit.pack, hit.resource); }
         else if (action === 'delete-resource') { var gone = resourceById(id); if (gone) deleteResource(gone.resource); }
       });

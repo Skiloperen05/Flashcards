@@ -20,6 +20,9 @@
     { code: 'BED1', name: 'Bedriftsøkonomi', accent: '#20b97a', icon: '◆', emblem: '../assets/emblems/BED1.png', summary: 'Første-semesterpakke for kalkyler, investering, resultat og budsjettering.' }
   ];
 
+  var STORAGE_BUCKET = 'answer-pdfs';
+  var SIGNED_URL_TTL = 60 * 60 * 4; // 4 hours – re-signed on every page load.
+
   var PACKAGES = [];
   var packagesLoaded = false;
   var packagesPromise = null;
@@ -76,6 +79,24 @@
   function answerCount() { return allResources().filter(function (r) { return r.kind === 'A-besvarelse'; }).length; }
   function summary() { return { subjects: enabledSubjects().length, packages: enabledPackages().length, publishedPackages: publishedPackages().length, plannedPackages: plannedPackages().length, resources: allResources().length, answers: answerCount() }; }
 
+  // Resources uploaded to Supabase Storage keep only their bucket path in the DB.
+  // Turn those into short-lived signed URLs (open + forced-download) at load time.
+  function signStorageResources(sb, resources) {
+    var stored = resources.filter(function (r) { return r.storage_path; });
+    if (!stored.length || !sb || !sb.storage) return Promise.resolve();
+    var jobs = stored.map(function (r) {
+      var bucket = r.storage_bucket || STORAGE_BUCKET;
+      var open = sb.storage.from(bucket).createSignedUrl(r.storage_path, SIGNED_URL_TTL);
+      var name = String(r.storage_path).split('/').pop() || (r.title || 'dokument') + '.pdf';
+      var dl = sb.storage.from(bucket).createSignedUrl(r.storage_path, SIGNED_URL_TTL, { download: name });
+      return Promise.all([open, dl]).then(function (out) {
+        if (out[0] && out[0].data && out[0].data.signedUrl) r.__signedUrl = out[0].data.signedUrl;
+        if (out[1] && out[1].data && out[1].data.signedUrl) r.__signedDownload = out[1].data.signedUrl;
+      }).catch(function () {});
+    });
+    return Promise.all(jobs).then(function () {});
+  }
+
   function loadPackages(force) {
     if (packagesLoaded && !force) return Promise.resolve(PACKAGES);
     if (packagesPromise && !force) return packagesPromise;
@@ -90,7 +111,7 @@
         catch (e) { return []; }
         return Promise.all([
           sb.from('answer_packages').select('id,subject_code,term,title,subtitle,description,local_status,sort_order').order('sort_order'),
-          sb.from('answer_resources').select('id,package_id,kind,title,subtitle,description,icon,url,download_url,order_index').order('order_index')
+          sb.from('answer_resources').select('id,package_id,kind,title,subtitle,description,icon,url,download_url,order_index,storage_bucket,storage_path').order('order_index')
         ]).then(function (results) {
           var pkgRes = results[0];
           var resRes = results[1];
@@ -98,33 +119,38 @@
           if (resRes && resRes.error) lastLoadError = resRes.error;
           var packages = (pkgRes && pkgRes.data ? pkgRes.data : []);
           var resources = (resRes && resRes.data ? resRes.data : []);
-          return packages.map(function (p) {
-            return {
-              id: p.id,
-              subject: code(p.subject_code),
-              term: p.term,
-              title: p.title,
-              subtitle: p.subtitle,
-              description: p.description || '',
-              localStatus: p.local_status || null,
-              sortOrder: p.sort_order || 0,
-              resources: resources
-                .filter(function (r) { return r.package_id === p.id; })
-                .map(function (r) {
-                  return {
-                    id: r.id,
-                    order: r.order_index || 0,
-                    kind: r.kind,
-                    title: r.title,
-                    subtitle: r.subtitle || '',
-                    desc: r.description || '',
-                    icon: r.icon || '',
-                    url: r.url,
-                    download: r.download_url || r.url
-                  };
-                })
-                .sort(function (a, b) { return (a.order || 0) - (b.order || 0); })
-            };
+          return signStorageResources(sb, resources).then(function () {
+            return packages.map(function (p) {
+              return {
+                id: p.id,
+                subject: code(p.subject_code),
+                term: p.term,
+                title: p.title,
+                subtitle: p.subtitle,
+                description: p.description || '',
+                localStatus: p.local_status || null,
+                sortOrder: p.sort_order || 0,
+                resources: resources
+                  .filter(function (r) { return r.package_id === p.id; })
+                  .map(function (r) {
+                    var stored = r.storage_path && (r.storage_bucket || STORAGE_BUCKET);
+                    return {
+                      id: r.id,
+                      order: r.order_index || 0,
+                      kind: r.kind,
+                      title: r.title,
+                      subtitle: r.subtitle || '',
+                      desc: r.description || '',
+                      icon: r.icon || '',
+                      storagePath: r.storage_path || null,
+                      storageBucket: stored ? (r.storage_bucket || STORAGE_BUCKET) : null,
+                      url: r.__signedUrl || r.url,
+                      download: r.__signedDownload || r.download_url || r.__signedUrl || r.url
+                    };
+                  })
+                  .sort(function (a, b) { return (a.order || 0) - (b.order || 0); })
+              };
+            });
           });
         });
       }).then(function (packages) {
@@ -148,7 +174,7 @@
       var subject = subjectByCode(r.subject) || SUBJECTS[0];
       return { course: r.subject, icon: subject.icon, color: subject.accent, term: r.term, title: r.title, subtitle: r.subtitle, type: (r.kind || '').toLowerCase(), desc: r.desc, meta: [r.kind, 'PDF', r.term], popular: index + 1, url: r.url, download: r.download };
     });
-    window.HaugnesAnswerLibrary = { subjects: enabledSubjects(), packages: enabledPackages(), resources: allResources(), summary: summary, render: render, reload: function () { return loadPackages(true).then(function () { render(); }); } };
+    window.HaugnesAnswerLibrary = { subjects: enabledSubjects(), packages: enabledPackages(), resources: allResources(), summary: summary, render: render, storageBucket: STORAGE_BUCKET, signedUrlTtl: SIGNED_URL_TTL, reload: function () { return loadPackages(true).then(function () { render(); }); } };
   }
 
   function injectStyles() {
