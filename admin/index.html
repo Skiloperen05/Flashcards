@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Adminpanel for Haugnes Flashcards med fagkort, innholdsstatus og raske arbeidsflyter.">
+<title>Admin hjem — Haugnes Flashcards</title>
+<link rel="icon" type="image/png" href="../assets/Flashcardslogo.png">
+<link rel="apple-touch-icon" href="../assets/Flashcardslogo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#06142d;--bg2:#071938;--sidebar:#041026;--panel:#0d2551;--panel2:#0a1d41;--card:#102a5b;--card2:#0b2149;--line:rgba(126,162,255,.18);--line-strong:rgba(255,255,255,.14);--text:#f8fbff;--muted:#97aacf;--soft:#cbd7ef;--blue:#3f73ff;--cyan:#16c7f5;--gold:#f3c469;--green:#24cf86;--orange:#f59e2e;--purple:#a855f7;--red:#ef6075;--shadow:0 24px 70px rgba(0,0,0,.34);--radius:22px}
+html{scroll-behavior:smooth}
+body{font-family:'Lora',Georgia,'Times New Roman',serif;background:radial-gradient(circle at 18% 0%,rgba(47,98,255,.24),transparent 28%),radial-gradient(circle at 88% 7%,rgba(232,188,104,.16),transparent 26%),linear-gradient(180deg,#06142d,#071938 54%,#051126);color:var(--text);min-height:100vh;overflow-x:hidden}
+a{text-decoration:none;color:inherit}button{font:inherit}.app{display:grid;grid-template-columns:256px minmax(0,1fr);min-height:100vh}.sidebar{position:sticky;top:0;height:100vh;padding:22px 16px;background:linear-gradient(180deg,rgba(4,16,38,.97),rgba(6,20,47,.98));border-right:1px solid rgba(126,162,255,.14);display:flex;flex-direction:column;gap:18px}.brand{display:flex;align-items:center;gap:12px;padding:0 6px 10px}.logo-mark{width:46px;height:46px;border-radius:14px;background:#0b244e url('../assets/Flashcardslogo.png') center/contain no-repeat;border:1px solid rgba(255,255,255,.14);box-shadow:0 14px 30px rgba(0,0,0,.28);flex:0 0 46px}.brand-title{font-size:20px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;line-height:1}.brand-sub{font-size:9px;font-weight:900;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);margin-top:5px}.nav-section{margin-top:4px}.nav-kicker{padding:0 12px 8px;color:#7790ba;font-size:10px;font-weight:900;letter-spacing:.16em;text-transform:uppercase}.nav{display:grid;gap:5px}.nav-link{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:13px;color:#c0cfe9;font-size:14px;font-weight:750;transition:background .18s,color .18s,transform .18s}.nav-link:hover{background:rgba(255,255,255,.06);color:#fff;transform:translateX(2px)}.nav-link.active{background:linear-gradient(135deg,#2455ef,#3f73ff);color:#fff;box-shadow:0 12px 26px rgba(47,98,255,.28)}.nav-link svg{width:19px;height:19px;stroke:currentColor;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}.side-bottom{margin-top:auto}.user-mini{display:flex;align-items:center;gap:11px;padding:11px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid var(--line)}.avatar{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#2f62ff,#e8bc68);font-weight:900;color:#fff;flex:0 0 40px}.user-mini-text{flex:1;min-width:0}.user-mini-text strong{display:block;font-size:13px}.user-mini-text span{display:block;color:var(--muted);font-size:11px;margin-top:1px}.main{min-width:0;padding:28px 34px 36px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:20px}.mobile-brand{display:none}.hello h1{font-size:32px;line-height:1.08;letter-spacing:-.045em}.hello p{font-size:15px;color:#c2cee4;margin-top:6px}.top-actions{display:flex;align-items:center;gap:10px}.role-toggle{display:flex;gap:4px;padding:4px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.055)}.role-toggle span{min-width:82px;text-align:center;padding:10px 13px;border-radius:999px;color:#acbddc;font-size:12px;font-weight:900}.role-toggle span.active{background:linear-gradient(135deg,#2d61ff,#4b7dff);color:#fff;box-shadow:0 10px 24px rgba(47,98,255,.28)}.primary-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:46px;padding:0 18px;border:0;border-radius:14px;background:linear-gradient(135deg,#245cff,#4b7dff);color:#fff;font-weight:900;box-shadow:0 18px 34px rgba(47,98,255,.30);cursor:pointer}.mobile-menu{display:none}.metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:24px 0}.metric-card{position:relative;overflow:hidden;padding:18px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.035));border:1px solid var(--line);box-shadow:0 16px 36px rgba(0,0,0,.18)}.metric-card::after{content:"";position:absolute;inset:auto -35px -60px auto;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(47,98,255,.18),transparent 68%)}.metric-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.metric-card b{font-size:30px;line-height:1;font-weight:900;letter-spacing:-.04em}.metric-card span{display:block;margin-top:9px;color:var(--muted);font-size:12px;font-weight:750}.delta{color:var(--green);font-size:12px;font-weight:900}.delta.warn{color:var(--gold)}.dashboard{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px;align-items:start}.column{display:grid;gap:18px}.panel{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(14,39,84,.92),rgba(8,26,58,.94));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}.panel::before{content:"";position:absolute;right:-90px;top:-95px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(47,98,255,.20),transparent 68%);pointer-events:none}.panel-inner{position:relative;z-index:1;padding:22px}.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:15px}.eyebrow{display:flex;align-items:center;gap:8px;color:var(--gold);font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}.eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 14px rgba(243,196,105,.62)}.panel-title{margin-top:7px;font-size:18px;font-weight:900;letter-spacing:-.035em}.link-small{color:#aac0ff;font-size:12px;font-weight:900}.action-list{display:grid;gap:11px}.action-item{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:12px;padding:12px 13px;border-radius:15px;background:rgba(255,255,255,.055);border:1px solid var(--line-strong)}.action-item.hot{background:linear-gradient(90deg,rgba(239,96,117,.20),rgba(168,85,247,.14));border-color:rgba(239,96,117,.30)}.action-item.review{background:linear-gradient(90deg,rgba(243,196,105,.20),rgba(255,255,255,.04));border-color:rgba(243,196,105,.26)}.action-icon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:rgba(255,255,255,.08);color:#e8f0ff}.action-copy strong{display:block;font-size:14px;font-weight:900}.action-copy span{display:block;margin-top:2px;color:#aebddd;font-size:12px;line-height:1.35}.mini-btn{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:0 12px;border-radius:10px;border:1px solid rgba(255,255,255,.17);background:rgba(255,255,255,.065);color:#fff;font-size:11px;font-weight:900}.quick-list{display:grid;gap:10px}.quick-link{display:flex;align-items:center;gap:12px;padding:13px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid var(--line);color:#d7e3f8;font-size:13px;font-weight:900}.quick-link:hover{border-color:rgba(126,162,255,.34);background:rgba(255,255,255,.075)}.quick-link svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}.health-row{display:grid;gap:14px}.bar-line{display:grid;gap:8px}.bar-head{display:flex;justify-content:space-between;gap:10px;color:#d7e3f8;font-size:13px;font-weight:850}.bar{height:8px;border-radius:999px;background:rgba(255,255,255,.10);overflow:hidden}.bar i{display:block;height:100%;width:var(--w);border-radius:inherit;background:var(--c)}.note{margin-top:12px;color:#9dafcf;font-size:12px;line-height:1.55}.sales-list{display:grid;gap:12px}.sales-row{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:10px}.sales-icon{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--c);color:#06142d;font-weight:900}.sales-copy strong{display:block;font-size:13px;font-weight:900}.sales-track{height:5px;margin-top:6px;border-radius:999px;background:rgba(255,255,255,.10);overflow:hidden}.sales-track i{display:block;height:100%;width:var(--w);background:var(--c);border-radius:999px}.sales-count{color:#a9bce0;font-size:12px;font-weight:900}.course-section{margin-top:22px}.course-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:0 0 14px}.course-head h2{font-size:23px;letter-spacing:-.045em}.course-head p{margin-top:7px;color:#9dafcf;font-size:13px;line-height:1.45}.filter-tabs{display:flex;gap:8px;flex-wrap:wrap}.filter-tabs span{padding:9px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.045);color:#b5c6e2;font-size:12px;font-weight:850}.filter-tabs span.active{background:linear-gradient(135deg,#245cff,#4b7dff);color:#fff}.course-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.course-card{position:relative;overflow:hidden;display:flex;flex-direction:column;min-height:352px;padding:18px;border-radius:22px;background:linear-gradient(180deg,rgba(14,39,84,.96),rgba(8,25,56,.96));border:1px solid rgba(255,255,255,.11);border-top:4px solid var(--accent);box-shadow:0 18px 44px rgba(0,0,0,.25);transition:transform .18s,border-color .18s}.course-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.20)}.course-card::before{content:"";position:absolute;right:-68px;top:-92px;width:190px;height:190px;border-radius:999px;background:radial-gradient(circle,var(--accent),transparent 70%);opacity:.23}.course-top{position:relative;z-index:1;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.course-icon{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:var(--accent);color:#06142d;font-size:20px;font-weight:950;box-shadow:0 0 30px color-mix(in srgb,var(--accent),transparent 55%);overflow:hidden}.course-icon img{width:100%;height:100%;object-fit:cover;object-position:center top;background:#fff}.status{padding:7px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);font-size:11px;font-weight:900;color:#c7d5ef}.status.live{color:#74f2ba;background:rgba(36,207,134,.12);border-color:rgba(36,207,134,.25)}.status.work{color:#ffd59a;background:rgba(245,158,46,.13);border-color:rgba(245,158,46,.26)}.course-code{position:relative;z-index:1;margin-top:15px;font-size:20px;font-weight:900;letter-spacing:-.035em}.course-name{position:relative;z-index:1;margin-top:2px;color:#b6c6e0;font-size:12px;font-weight:800}.course-desc{position:relative;z-index:1;margin-top:10px;color:#ccd7ea;font-size:13px;line-height:1.48}.stat-mini{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}.stat-mini div{padding:10px;border-radius:12px;background:rgba(255,255,255,.055);border:1px solid var(--line)}.stat-mini b{display:block;font-size:15px;font-weight:900}.stat-mini span{display:block;margin-top:4px;color:#9dafcf;font-size:10.5px;font-weight:800}.tools{position:relative;z-index:1;margin-top:14px}.tools-label{color:#7f93bd;font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}.tool-grid{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}.tool-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);color:#d9e4f8;font-size:11px;font-weight:800}.tool-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent)}.warning{position:relative;z-index:1;margin-top:12px;padding:9px 10px;border-radius:10px;background:rgba(245,158,46,.14);border:1px solid rgba(245,158,46,.24);color:#ffd8a8;font-size:11.5px;font-weight:850}.progress{position:relative;z-index:1;margin-top:auto;padding-top:14px}.progress-head{display:flex;justify-content:space-between;color:#c9d6ed;font-size:12px;font-weight:850}.progress-bar{height:6px;margin-top:8px;border-radius:999px;background:rgba(255,255,255,.10);overflow:hidden}.progress-bar i{display:block;width:var(--pct);height:100%;border-radius:inherit;background:var(--accent)}.card-actions{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}.card-actions a{display:flex;align-items:center;justify-content:center;min-height:39px;border-radius:11px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.055);font-size:12px;font-weight:900}.engagement{margin-top:18px}.engagement-grid{display:grid;grid-template-columns:1.05fr repeat(3,1fr);gap:12px}.engage-card{padding:15px;border-radius:16px;background:rgba(255,255,255,.055);border:1px solid var(--line)}.engage-card b{display:block;font-size:22px;font-weight:900;color:var(--c,#fff)}.engage-card span{display:block;margin-top:5px;color:#9dafcf;font-size:12px;font-weight:750}.accent-blue{--accent:var(--blue)}.accent-cyan{--accent:var(--cyan)}.accent-orange{--accent:var(--orange)}.accent-green{--accent:var(--green)}.accent-gold{--accent:var(--gold)}.accent-purple{--accent:var(--purple)}
+@media(max-width:1280px){.dashboard{grid-template-columns:1fr}.side-col{grid-template-columns:repeat(3,1fr)}.course-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:980px){.app{grid-template-columns:1fr}.sidebar{display:none}.mobile-brand{display:flex}.mobile-menu{display:inline-flex}.main{padding:20px}.topbar{align-items:flex-start}.metric-grid{grid-template-columns:repeat(2,1fr)}.side-col{grid-template-columns:1fr}.engagement-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:680px){.topbar,.course-head{display:grid}.top-actions{justify-content:space-between}.role-toggle span{min-width:66px}.metric-grid,.course-grid,.engagement-grid{grid-template-columns:1fr}.action-item{grid-template-columns:38px 1fr}.action-item .mini-btn{grid-column:2}.panel-inner{padding:18px}.hello h1{font-size:27px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" aria-label="Adminmeny">
+    <a class="brand" href="../index.html"><span class="logo-mark"></span><span><span class="brand-title">Haugnes</span><span class="brand-sub">Flashcards</span></span></a>
+    <div class="nav-section">
+      <div class="nav-kicker">Læring</div>
+      <nav class="nav">
+        <a class="nav-link active" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg>Hjem</a>
+        <a class="nav-link" href="../flashcards/"><svg viewBox="0 0 24 24"><rect x="4" y="7" width="13" height="13" rx="2"/><path d="M8 3.5h10A1.5 1.5 0 0 1 19.5 5v10"/></svg>Alle flashcards</a>
+        <a class="nav-link" href="../user/studieplan.html"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>Studieplan</a>
+      </nav>
+    </div>
+    <div class="nav-section">
+      <div class="nav-kicker">Innhold</div>
+      <nav class="nav">
+        <a class="nav-link" href="#fag"><svg viewBox="0 0 24 24"><path d="M12 6.5C10.5 5 7.5 4.5 4.5 5v13c3-.5 6 0 7.5 1.5 1.5-1.5 4.5-2 7.5-1.5V5c-3-.5-6 0-7.5 1.5z"/><path d="M12 6.5V20"/></svg>Mine fag</a>
+        <a class="nav-link" href="../user/oppgavebank.html"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h5M8 17h7"/></svg>Oppgavebank</a>
+        <a class="nav-link" href="../user/a-besvarelser.html"><svg viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V20.5H7z"/><path d="M14 3.5V8h4"/><path d="M9.5 12h5M9.5 15.5h4"/></svg>A-besvarelser</a>
+        <a class="nav-link" href="../user/notater.html"><svg viewBox="0 0 24 24"><path d="M6 4.5h12v15H6z"/><path d="M9 8h6M9 11h6M9 14h4"/></svg>Notater</a>
+        <a class="nav-link" href="../user/eksamensanalyse.html"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 3.5h6v3H9z"/><path d="M8.5 11h7M8.5 15h5"/></svg>Eksamensanalyse</a>
+      </nav>
+    </div>
+    <div class="nav-section">
+      <div class="nav-kicker">Administrasjon</div>
+      <nav class="nav">
+        <a class="nav-link" href="#statistikk"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5M12 16V8M16 16v-9"/></svg>Brukerstatistikk</a>
+        <a class="nav-link" href="#betalinger"><svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="2"/><path d="M4 10h16"/></svg>Betalinger</a>
+        <a class="nav-link" href="../user/butikk.html"><svg viewBox="0 0 24 24"><path d="M5 9.5 6.2 4h11.6L19 9.5"/><path d="M6 10v9.5h12V10"/><path d="M9 14h6"/></svg>Butikk</a>
+      </nav>
+    </div>
+    <div class="side-bottom">
+      <a class="user-mini" href="../user/settings.html"><div class="avatar">BH</div><div class="user-mini-text"><strong>Birkhaugnes</strong><span>Administrator</span></div><span>›</span></a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <a class="brand mobile-brand" href="../index.html"><span class="logo-mark"></span><span><span class="brand-title">Haugnes</span><span class="brand-sub">Flashcards</span></span></a>
+      <div class="hello">
+        <h1>Hei Birkhaugnes! 👋</h1>
+        <p><strong>4 ting krever handling i dag</strong> · sist synket <span id="clock">09:41</span></p>
+      </div>
+      <div class="top-actions">
+        <div class="role-toggle" aria-label="Rolle"><span class="active">Admin</span><span>Student</span></div>
+        <a class="primary-btn" href="#fag">+ Legg til nytt fag</a>
+      </div>
+    </header>
+
+    <section class="metric-grid" aria-label="Nøkkeltall">
+      <article class="metric-card"><div class="metric-row"><b>1284</b><span class="delta">+6,2 %</span></div><span>Aktive studenter</span></article>
+      <article class="metric-card"><div class="metric-row"><b>3 240</b><span class="delta">+12 %</span></div><span>Fullførte økter · uke</span></article>
+      <article class="metric-card"><div class="metric-row"><b>47</b><span class="delta">+9</span></div><span>Nye kjøp · uke</span></article>
+      <article class="metric-card"><div class="metric-row"><b>12</b><span class="delta warn">krever handling</span></div><span>Uferdige innholdsoppgaver</span></article>
+    </section>
+
+    <section class="dashboard">
+      <div class="column">
+        <article class="panel">
+          <div class="panel-inner">
+            <div class="panel-head"><div><div class="eyebrow">Krever handling</div><div class="panel-title">Prioriter dagens viktigste oppgaver</div></div><a class="link-small" href="#">Se alle →</a></div>
+            <div class="action-list">
+              <a class="action-item hot" href="#betalinger"><div class="action-icon">!</div><div class="action-copy"><strong>2 betalingsavvik</strong><span>Mislykkede trekk på Vennepass-abonnement</span></div><span class="mini-btn">Se avvik →</span></a>
+              <a class="action-item review" href="../user/a-besvarelser.html"><div class="action-icon">○</div><div class="action-copy"><strong>3 A-besvarelser innsendt</strong><span>Studenter har sendt inn besvarelser til gjennomgang</span></div><span class="mini-btn">Gjennomgå →</span></a>
+              <a class="action-item" href="#"><div class="action-icon">i</div><div class="action-copy"><strong>5 nye meldinger fra studenter</strong><span>Spørsmål og tilbakemeldinger venter i innboksen</span></div><span class="mini-btn">Les meldinger →</span></a>
+              <a class="action-item review" href="#fag"><div class="action-icon">○</div><div class="action-copy"><strong>KOM1 venter på publisering</strong><span>Utkast er klart for kvalitetssjekk</span></div><span class="mini-btn">Publiser →</span></a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <aside class="column side-col">
+        <article class="panel">
+          <div class="panel-inner">
+            <div class="eyebrow">Hurtighandlinger</div>
+            <div class="quick-list" style="margin-top:14px">
+              <a class="quick-link" href="#fag"><svg viewBox="0 0 24 24"><path d="M4 20h4l11-11a2.8 2.8 0 0 0-4-4L4 16z"/></svg>Rediger fag</a>
+              <a class="quick-link" href="#fag"><svg viewBox="0 0 24 24"><path d="M12 4v12"/><path d="M7 9l5-5 5 5"/><path d="M5 20h14"/></svg>Publiser innhold</a>
+              <a class="quick-link" href="#fag"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Kvalitetssjekk kort</a>
+              <a class="quick-link" href="#statistikk"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5M12 16V8M16 16v-9"/></svg>Se brukerstatistikk</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-inner health-row">
+            <div><div class="eyebrow">Innholdshelse</div></div>
+            <div class="bar-line"><div class="bar-head"><span>Publiserte fag</span><b>3 / 5</b></div><div class="bar"><i style="--w:60%;--c:var(--green)"></i></div></div>
+            <div class="bar-line"><div class="bar-head"><span>Kort markert av studenter</span><b>45</b></div><div class="bar"><i style="--w:32%;--c:var(--orange)"></i></div></div>
+            <p class="note">Markeres automatisk når studenter vurderer et kort som vanskelig under øving.</p>
+          </div>
+        </article>
+
+        <article class="panel" id="betalinger">
+          <div class="panel-inner">
+            <div class="panel-head"><div><div class="eyebrow">Mest kjøpte fag · uke</div></div><a class="link-small" href="../user/butikk.html">47 kjøp</a></div>
+            <div class="sales-list">
+              <div class="sales-row"><div class="sales-icon" style="--c:var(--blue)">§</div><div class="sales-copy"><strong>RET1A</strong><div class="sales-track"><i style="--w:100%;--c:var(--blue)"></i></div></div><span class="sales-count">18 kjøp</span></div>
+              <div class="sales-row"><div class="sales-icon" style="--c:var(--green)">◆</div><div class="sales-copy"><strong>BED1</strong><div class="sales-track"><i style="--w:78%;--c:var(--green)"></i></div></div><span class="sales-count">14 kjøp</span></div>
+              <div class="sales-row"><div class="sales-icon" style="--c:var(--orange)">↗</div><div class="sales-copy"><strong>SAM1A</strong><div class="sales-track"><i style="--w:50%;--c:var(--orange)"></i></div></div><span class="sales-count">9 kjøp</span></div>
+              <div class="sales-row"><div class="sales-icon" style="--c:var(--cyan)">%</div><div class="sales-copy"><strong>MET1</strong><div class="sales-track"><i style="--w:39%;--c:var(--cyan)"></i></div></div><span class="sales-count">7 kjøp</span></div>
+            </div>
+          </div>
+        </article>
+      </aside>
+    </section>
+
+    <section class="course-section" id="fag">
+      <div class="course-head">
+        <div><div class="eyebrow">Fagadministrasjon</div><h2>Fag &amp; innhold</h2><p>Fagkortene viser nå tydelig hvilke verktøy studenten får i hvert fag.</p></div>
+        <div class="filter-tabs" aria-label="Filtrer fag"><span class="active">Alle fag</span><span>Publisert</span><span>Utkast</span><span>Trenger arbeid</span></div>
+      </div>
+
+      <div class="course-grid">
+        <article class="course-card accent-blue">
+          <div class="course-top"><div class="course-icon"><img src="../assets/emblems/RET14.png" alt="" onerror="this.remove();this.parentElement.textContent='§'"></div><span class="status live">Publisert</span></div>
+          <h3 class="course-code">RET1A</h3><div class="course-name">Juridiske emner</div>
+          <p class="course-desc">Metode, avtalerett, kjøpsrett og erstatningsrett med eksamensnære forklaringer.</p>
+          <div class="stat-mini"><div><b>142</b><span>kort</span></div><div><b>8</b><span>svake kort</span></div><div><b>312</b><span>studenter</span></div></div>
+          <div class="tools"><div class="tools-label">Inkluderer</div><div class="tool-grid"><span class="tool-pill">A-besvarelser</span><span class="tool-pill">Eksamensanalyse</span><span class="tool-pill">Forelesningsnotater</span><span class="tool-pill">Innleveringsoppgaver</span><span class="tool-pill">Memoar</span><span class="tool-pill">Kompendium</span></div></div>
+          <div class="progress"><div class="progress-head"><span>Gjennomføring</span><b>96%</b></div><div class="progress-bar"><i style="--pct:96%"></i></div></div>
+          <div class="card-actions"><a href="#">Rediger</a><a href="#">Kvalitetssjekk</a></div>
+        </article>
+
+        <article class="course-card accent-cyan">
+          <div class="course-top"><div class="course-icon">%</div><span class="status work">Trenger arbeid</span></div>
+          <h3 class="course-code">MET1</h3><div class="course-name">Matematikk for økonomer</div>
+          <p class="course-desc">Derivasjon, integrasjon og optimering med stegvis løsningsmetode og oppgavespor.</p>
+          <div class="stat-mini"><div><b>88</b><span>kort</span></div><div><b>21</b><span>svake kort</span></div><div><b>298</b><span>studenter</span></div></div>
+          <div class="tools"><div class="tools-label">Inkluderer</div><div class="tool-grid"><span class="tool-pill">Oppgavebank</span><span class="tool-pill">Innleveringsoppgaver</span><span class="tool-pill">Forelesningsnotater</span><span class="tool-pill">Kompendium</span><span class="tool-pill">Eksamensanalyse</span></div></div>
+          <div class="warning">24 kort mangler i kapittel 4–5</div>
+          <div class="progress"><div class="progress-head"><span>Gjennomføring</span><b>61%</b></div><div class="progress-bar"><i style="--pct:61%"></i></div></div>
+          <div class="card-actions"><a href="#">Rediger</a><a href="#">Kvalitetssjekk</a></div>
+        </article>
+
+        <article class="course-card accent-orange">
+          <div class="course-top"><div class="course-icon">↗</div><span class="status live">Publisert</span></div>
+          <h3 class="course-code">SAM1A</h3><div class="course-name">Mikroøkonomi intro</div>
+          <p class="course-desc">Tilbud, etterspørsel, elastisitet og markedslikevekt forklart kort og visuelt.</p>
+          <div class="stat-mini"><div><b>120</b><span>kort</span></div><div><b>5</b><span>svake kort</span></div><div><b>305</b><span>studenter</span></div></div>
+          <div class="tools"><div class="tools-label">Inkluderer</div><div class="tool-grid"><span class="tool-pill">Eksamensanalyse</span><span class="tool-pill">Forelesningsnotater</span><span class="tool-pill">Oppgavebank</span><span class="tool-pill">A-besvarelser</span><span class="tool-pill">Kompendium</span></div></div>
+          <div class="progress"><div class="progress-head"><span>Gjennomføring</span><b>88%</b></div><div class="progress-bar"><i style="--pct:88%"></i></div></div>
+          <div class="card-actions"><a href="#">Rediger</a><a href="#">Kvalitetssjekk</a></div>
+        </article>
+
+        <article class="course-card accent-green">
+          <div class="course-top"><div class="course-icon">◆</div><span class="status live">Publisert</span></div>
+          <h3 class="course-code">BED1</h3><div class="course-name">Bedriftsøkonomi</div>
+          <p class="course-desc">Kostnadsteori, investering og regnskap med korte drillkort og mini-case.</p>
+          <div class="stat-mini"><div><b>156</b><span>kort</span></div><div><b>11</b><span>svake kort</span></div><div><b>288</b><span>studenter</span></div></div>
+          <div class="tools"><div class="tools-label">Inkluderer</div><div class="tool-grid"><span class="tool-pill">Forelesningsnotater</span><span class="tool-pill">Innleveringsoppgaver</span><span class="tool-pill">Memoar</span><span class="tool-pill">Kompendium</span><span class="tool-pill">Oppgavebank</span></div></div>
+          <div class="progress"><div class="progress-head"><span>Gjennomføring</span><b>79%</b></div><div class="progress-bar"><i style="--pct:79%"></i></div></div>
+          <div class="card-actions"><a href="#">Rediger</a><a href="#">Kvalitetssjekk</a></div>
+        </article>
+
+        <article class="course-card accent-gold">
+          <div class="course-top"><div class="course-icon">✎</div><span class="status">Utkast</span></div>
+          <h3 class="course-code">KOM1</h3><div class="course-name">Kommunikasjon</div>
+          <p class="course-desc">Retorikk, presentasjon og skriftlig formidling med maler for oppbygging.</p>
+          <div class="stat-mini"><div><b>40</b><span>kort</span></div><div><b>0</b><span>svake kort</span></div><div><b>0</b><span>studenter</span></div></div>
+          <div class="tools"><div class="tools-label">Inkluderer</div><div class="tool-grid"><span class="tool-pill">Forelesningsnotater</span><span class="tool-pill">Innleveringsoppgaver</span><span class="tool-pill">Kompendium</span></div></div>
+          <div class="warning">Mangler bilder – ikke publisert</div>
+          <div class="progress"><div class="progress-head"><span>Gjennomføring</span><b>0%</b></div><div class="progress-bar"><i style="--pct:0%"></i></div></div>
+          <div class="card-actions"><a href="#">Rediger</a><a href="#">Kvalitetssjekk</a></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel engagement" id="statistikk">
+      <div class="panel-inner">
+        <div class="panel-head"><div><div class="eyebrow">Studentengasjement</div><p class="note" style="margin-top:8px">Studenter fullfører i snitt <strong style="color:var(--green)">2,3 økter/dag</strong> — opp 12 % fra forrige uke.</p></div><span class="mini-btn">Lengste streak: 128 dager</span></div>
+        <div class="engagement-grid">
+          <div class="engage-card" style="--c:var(--gold)"><b>8,4</b><span>Snitt streak (dager)</span></div>
+          <div class="engage-card" style="--c:var(--purple)"><b>214</b><span>Badges tildelt · uke</span></div>
+          <div class="engage-card" style="--c:var(--green)"><b>73 %</b><span>Gjennomføringsrate</span></div>
+          <div class="engage-card" style="--c:var(--blue)"><b>RET1A</b><span>Mest øvde fag</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<script>
+(function(){
+  var clock=document.getElementById('clock');
+  if(clock) clock.textContent=new Date().toLocaleTimeString('no-NO',{hour:'2-digit',minute:'2-digit'});
+})();
+</script>
+</body>
+</html>
