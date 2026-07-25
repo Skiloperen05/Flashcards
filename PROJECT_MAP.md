@@ -1,6 +1,6 @@
 # Project Map
 
-Last updated: 2026-07-08
+Last updated: 2026-07-25
 
 Purpose: make future app changes faster by documenting the stable entry points, data sources, and search paths. Update this file whenever a change moves, renames, adds, or removes app-facing functionality.
 
@@ -14,6 +14,8 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 
 - Static web app deployed from this repository.
 - GitHub Pages is the active frontend host for `bhflashcards.no`: no build command, publish/output directory `.`.
+- The new Kompass app is the active successor being built in Sites. Its source lives in the connected Sites repository, while this repository remains the source for legacy subject pages and the shared Supabase schema/migrations.
+- Kompass has no paywall. Existing Stripe/commerce code remains legacy-only and is not used by the new Kompass clients.
 - Main public landing page: `index.html`.
 - Login/auth entry: `login.html`.
 - Authenticated user pages: `user/`.
@@ -93,6 +95,7 @@ Typical package IDs:
 
 - Project URL in client code: `shared/auth-guard.js`.
 - Edge Function config: `supabase/config.toml`.
+- Kompass migrations: `supabase/migrations/20260725153000_create_kompass_core.sql`, `supabase/migrations/20260725161000_optimize_kompass_rls.sql`, and `supabase/migrations/20260725164500_point_core_resources_to_kompass.sql`.
 - Active Edge Functions:
   - `supabase/functions/timeedit/`: NHH TimeEdit proxy.
   - `supabase/functions/create-stripe-checkout/`: verifies Supabase Auth token, checks entitlements, and creates Stripe Checkout Sessions.
@@ -106,6 +109,14 @@ Typical package IDs:
   - `discount_codes`
   - `answer_packages`
   - `answer_resources`
+  - `kompass_subjects`
+  - `kompass_resources`
+  - `kompass_content_blocks`
+  - `kompass_user_state`
+- Kompass catalog/content is readable by authenticated users. Admin writes are authorized through `profiles.is_admin`; authenticated users cannot update that authorization field themselves.
+- Kompass personal schedule, notes, progress, selected subjects, and settings are stored per user in `kompass_user_state`.
+- The main Flashcards and Notater catalog entries now point to their native Kompass routes; other subject-specific legacy resources still point to `bhflashcards.no` until migrated.
+- Kompass resource uploads use the private `kompass-resources` bucket (100 MB; PDF, image, Office, text/Markdown). Published files are read through short-lived signed URLs; admins manage objects and catalog metadata.
 - RLS/entitlement helper: `public.has_subject_entitlement(text)`.
 - Storage: private bucket `answer-pdfs` for uploaded exam-package PDFs (PDF only, 50 MB). Admins write; entitled users read via signed URLs. Path convention `{package_id}/{file}.pdf`.
 - Payment model: first user-claimed free subject is inserted client-side with `source = 'free'`; paid subjects are inserted by the Supabase Stripe webhook with `source = 'stripe'` and optional Stripe session/customer/payment metadata.
