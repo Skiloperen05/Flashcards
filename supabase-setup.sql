@@ -452,6 +452,26 @@ values
    'Pakkeplass for gamle eksamener, gruppeøvinger og regnetrening fra BED1.', null, 110)
 on conflict (id) do nothing;
 
+-- ---------------------------------------------------------------------------
+-- Kompass shared cloud model
+-- ---------------------------------------------------------------------------
+-- The canonical, repeatable schema and seed SQL for the new Sites + iOS/iPadOS
+-- clients lives in:
+--   supabase/migrations/20260725153000_create_kompass_core.sql
+--   supabase/migrations/20260725161000_optimize_kompass_rls.sql
+--   supabase/migrations/20260725164500_point_core_resources_to_kompass.sql
+--
+-- Those migrations add:
+--   public.kompass_subjects       shared subject catalog
+--   public.kompass_resources      shared links and uploaded resources
+--   public.kompass_content_blocks admin-editable interface copy
+--   public.kompass_user_state     per-user plan, notes, progress and settings
+--   storage bucket kompass-resources (private, signed reads)
+--
+-- Kompass deliberately has no payment or entitlement check. Every authenticated
+-- user can read published catalog content. Only profiles.is_admin users can edit
+-- shared content or upload files, and clients cannot edit profiles.is_admin.
+
 delete from public.answer_packages
 where id in ('sam2-v25', 'met1-h25', 'met2-v25', 'mat10-v25', 'kom1-h25');
 
