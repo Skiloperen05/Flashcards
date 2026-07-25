@@ -95,7 +95,7 @@ Typical package IDs:
 
 - Project URL in client code: `shared/auth-guard.js`.
 - Edge Function config: `supabase/config.toml`.
-- Kompass migrations: `supabase/migrations/20260725153000_create_kompass_core.sql`, `supabase/migrations/20260725161000_optimize_kompass_rls.sql`, and `supabase/migrations/20260725164500_point_core_resources_to_kompass.sql`.
+- Kompass migrations: `supabase/migrations/20260725153000_create_kompass_core.sql`, `supabase/migrations/20260725161000_optimize_kompass_rls.sql`, `supabase/migrations/20260725164500_point_core_resources_to_kompass.sql`, `supabase/migrations/20260725193000_create_kompass_course_workspaces.sql`, and `supabase/migrations/20260725194500_index_kompass_course_workspace_foreign_keys.sql`.
 - Active Edge Functions:
   - `supabase/functions/timeedit/`: NHH TimeEdit proxy.
   - `supabase/functions/create-stripe-checkout/`: verifies Supabase Auth token, checks entitlements, and creates Stripe Checkout Sessions.
@@ -113,8 +113,15 @@ Typical package IDs:
   - `kompass_resources`
   - `kompass_content_blocks`
   - `kompass_user_state`
+  - `kompass_course_folders`
+  - `kompass_course_notes`
+  - `kompass_course_files`
+  - `kompass_course_progress`
 - Kompass catalog/content is readable by authenticated users. Admin writes are authorized through `profiles.is_admin`; authenticated users cannot update that authorization field themselves.
 - Kompass personal schedule, notes, progress, selected subjects, and settings are stored per user in `kompass_user_state`.
+- The active H26 subject workspaces are BED2, SOL2, MET3, and SOL3. Legacy subjects remain in the catalog as archived data.
+- Course-room folders, notes, files, and lecture completion use the four `kompass_course_*` tables. Private items are owner-readable; admins can publish shared folders/notes/files to every authenticated user.
+- BED2 source content is integrated in the Sites client from `Skiloperen05/bed2-h26-laeringsrom-site`: 41 structured lecture notes, 12 topic groups, chapter starters, and the complete compendium.
 - The main Flashcards and Notater catalog entries now point to their native Kompass routes; other subject-specific legacy resources still point to `bhflashcards.no` until migrated.
 - Kompass resource uploads use the private `kompass-resources` bucket (100 MB; PDF, image, Office, text/Markdown). Published files are read through short-lived signed URLs; admins manage objects and catalog metadata.
 - RLS/entitlement helper: `public.has_subject_entitlement(text)`.

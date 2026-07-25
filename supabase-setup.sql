@@ -460,17 +460,24 @@ on conflict (id) do nothing;
 --   supabase/migrations/20260725153000_create_kompass_core.sql
 --   supabase/migrations/20260725161000_optimize_kompass_rls.sql
 --   supabase/migrations/20260725164500_point_core_resources_to_kompass.sql
+--   supabase/migrations/20260725193000_create_kompass_course_workspaces.sql
+--   supabase/migrations/20260725194500_index_kompass_course_workspace_foreign_keys.sql
 --
 -- Those migrations add:
 --   public.kompass_subjects       shared subject catalog
 --   public.kompass_resources      shared links and uploaded resources
 --   public.kompass_content_blocks admin-editable interface copy
 --   public.kompass_user_state     per-user plan, notes, progress and settings
+--   public.kompass_course_folders private student/shared admin folders by subject
+--   public.kompass_course_notes   private student/shared admin notes by subject
+--   public.kompass_course_files   storage metadata for subject files and foils
+--   public.kompass_course_progress per-user lecture completion and course goals
 --   storage bucket kompass-resources (private, signed reads)
 --
 -- Kompass deliberately has no payment or entitlement check. Every authenticated
 -- user can read published catalog content. Only profiles.is_admin users can edit
--- shared content or upload files, and clients cannot edit profiles.is_admin.
+-- shared content or publish shared subject workspaces. Students may create their
+-- own private folders, notes and uploads, and clients cannot edit profiles.is_admin.
 
 delete from public.answer_packages
 where id in ('sam2-v25', 'met1-h25', 'met2-v25', 'mat10-v25', 'kom1-h25');
