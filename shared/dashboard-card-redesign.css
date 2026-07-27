@@ -1,0 +1,45 @@
+.dashboard-subject-group-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px;
+}
+.subject-card{
+  min-height:326px;
+  padding:20px;
+}
+.subject-card .ring{
+  width:72px;
+  height:72px;
+  margin:10px auto 8px;
+}
+.subject-card .ring-label{
+  font-size:18px;
+}
+.subject-card .subject-name{
+  font-size:13px;
+  line-height:1.35;
+}
+.subject-card .subject-cta{
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.subject-tool-pills{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin:12px 0 14px;
+}
+.subject-tool-pills span{
+  padding:6px 8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.11);
+  color:#dce6f7;
+  font-size:10.5px;
+  font-weight:850;
+}
+@media(max-width:960px){
+  .dashboard-subject-group-grid{grid-template-columns:1fr;}
+  .subject-card{min-height:auto;}
+}
