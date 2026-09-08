@@ -381,6 +381,10 @@
   .settings-page .tabs{overflow-x:auto;-webkit-overflow-scrolling:touch}
   .settings-page .tab-btn{flex:0 0 auto;font-size:13px}
 
+  /* ===== Admin/student preview toggle ===== */
+  .hf-admin-toggle.show{bottom:80px!important}
+  body.has-mobile-nav .hf-admin-toggle.show{bottom:80px!important}
+
   /* ===== Misc touch improvements ===== */
   button,a,.card-btn,.hf-btn,.rate-btn,.filter-btn,.topic-btn,.nav-link,.start-btn,.ghost-link,.hero-btn,.hf-secondary-btn{-webkit-tap-highlight-color:transparent}
   input,select,textarea{font-size:16px!important}
