@@ -1,165 +1,341 @@
 (function (window, document) {
   'use strict';
 
-  var STORAGE_KEY = 'hf_studyplan_state_v3';
-  var state = loadState();
-  var currentWeekStart = getMonday(new Date());
-  var activeFilter = 'all';
-  var remoteLoaded = false;
-  var remoteSaving = false;
-  var remoteDirty = false;
-  var remoteTimer = null;
-  var selectedCustomId = null;
-  var toastTimer = null;
-  var fallbackSubjects = [
-    { code: 'RET14', name: 'Skatterett', accent: '#2f62ff' },
-    { code: 'SOL1', name: 'Organisasjonsatferd', accent: '#20b97a' },
-    { code: 'SAM2', name: 'Mikroøkonomi', accent: '#f09828' },
-    { code: 'SAM3', name: 'Makroøkonomi', accent: '#ef4444' },
-    { code: 'MET2', name: 'Metode', accent: '#7c3aed' },
-    { code: 'MAT10', name: 'Matematikk', accent: '#0891b2' }
+  var SUBJECTS = [
+    { code: 'RET14', label: 'Skatterett', color: 'gold' },
+    { code: 'SOL1', label: 'Organisasjonsatferd', color: 'green' },
+    { code: 'SAM2', label: 'Mikroøkonomi', color: 'gold' },
+    { code: 'SAM3', label: 'Makroøkonomi', color: 'green' },
+    { code: 'MET2', label: 'Metode', color: '' },
+    { code: 'MAT10', label: 'Matematikk', color: '' }
   ];
 
+  var typeLabels = { flashcards: 'Flashcards', assignment: 'Oppgaver', notes: 'Notater', exam: 'Eksamen', lecture: 'Forelesning', nhh: 'NHH', custom: 'Egen' };
+  var filter = 'Alle';
+  var selectedEventId = null;
+  var currentWeekStart = getMonday(new Date());
+
   function ready(fn) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
-  function api() { return window.NHHScheduleAPI || null; }
-  function upper(value) { return String(value || '').toUpperCase().replace(/[\s-]+/g, ''); }
-  function esc(value) { return String(value == null ? '' : value).replace(/[&<>"']/g, function (char) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]; }); }
-  function readJson(key, fallback) { try { var raw = window.localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch (_error) { return fallback; } }
-  function writeJson(key, value) { try { window.localStorage.setItem(key, JSON.stringify(value)); } catch (_error) {} }
+  function api() { return window.NHHScheduleAPI; }
+  function readJson(key, fallback) { try { var raw = window.localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; } }
+  function writeJson(key, value) { try { window.localStorage.setItem(key, JSON.stringify(value)); } catch (e) {} }
   function iso(date) { return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0'); }
-  function getMonday(date) { var d = new Date(date.getFullYear(), date.getMonth(), date.getDate()); var weekday = d.getDay() || 7; d.setDate(d.getDate() - weekday + 1); return d; }
-  function addDays(date, count) { var result = new Date(date); result.setDate(result.getDate() + count); return result; }
-  function uid() { return 'plan:' + Date.now().toString(36) + ':' + Math.random().toString(36).slice(2, 8); }
-  function weekNumber(date) { var d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())); var day = d.getUTCDay() || 7; d.setUTCDate(d.getUTCDate() + 4 - day); var start = new Date(Date.UTC(d.getUTCFullYear(), 0, 1)); return Math.ceil((((d - start) / 86400000) + 1) / 7); }
-  function formatDay(date) { return ['Søn', 'Man', 'Tir', 'Ons', 'Tor', 'Fre', 'Lør'][date.getDay()] + ' ' + date.getDate(); }
-  function formatWeek(start) { var end = addDays(start, 6); return 'Uke ' + weekNumber(start) + ' · ' + start.getDate() + '.–' + end.getDate() + '. ' + end.toLocaleDateString('nb-NO', { month: 'long' }); }
-  function formatDuration(minutes) { minutes = Number(minutes) || 0; var hours = Math.floor(minutes / 60), rest = minutes % 60; return hours ? hours + 't' + (rest ? ' ' + rest + 'm' : '') : rest + 'm'; }
+  function parseIso(value) { var parts = String(value || '').split('-').map(Number); return new Date(parts[0], (parts[1] || 1) - 1, parts[2] || 1); }
+  function getMonday(date) { var d = new Date(date.getFullYear(), date.getMonth(), date.getDate()); var day = d.getDay() || 7; d.setDate(d.getDate() - day + 1); return d; }
+  function addDays(date, days) { var d = new Date(date); d.setDate(d.getDate() + days); return d; }
+  function dayName(date) { return ['Søn', 'Man', 'Tir', 'Ons', 'Tor', 'Fre', 'Lør'][date.getDay()] + ' ' + date.getDate(); }
+  function esc(s) { return String(s || '').replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
+  function uid(prefix) { return prefix + ':' + Date.now().toString(36) + ':' + Math.random().toString(36).slice(2, 8); }
+  function subjectsSelected() { return api() ? api().getSelectedSubjects(SUBJECTS.slice(0, 4).map(function (s) { return s.code; })) : SUBJECTS.slice(0, 4).map(function (s) { return s.code; }); }
+  function toast(msg) { var el = document.querySelector('.hf-study-toast'); if (!el) { el = document.createElement('div'); el.className = 'hf-study-toast'; document.body.appendChild(el); } el.textContent = msg; el.classList.add('show'); clearTimeout(el._timer); el._timer = setTimeout(function () { el.classList.remove('show'); }, 2500); }
 
-  function defaultState() { return { version: 3, selectedCourses: [], groups: {}, customEvents: [], hiddenEventIds: [], updatedAt: new Date(0).toISOString() }; }
-  function normalizeState(raw) {
-    var base = defaultState();
-    var next = raw && typeof raw === 'object' ? raw : {};
-    base.selectedCourses = Array.isArray(next.selectedCourses) ? next.selectedCourses.map(upper).filter(Boolean) : [];
-    base.groups = next.groups && typeof next.groups === 'object' ? next.groups : {};
-    base.customEvents = Array.isArray(next.customEvents) ? next.customEvents.filter(function (event) { return event && event.source === 'custom' && event.type === 'study' && event.date && event.title; }) : [];
-    base.hiddenEventIds = Array.isArray(next.hiddenEventIds) ? next.hiddenEventIds : [];
-    base.updatedAt = typeof next.updatedAt === 'string' ? next.updatedAt : base.updatedAt;
-    return base;
+  function injectStyles() {
+    if (document.getElementById('hf-studyplan-css')) return;
+    var style = document.createElement('style');
+    style.id = 'hf-studyplan-css';
+    style.textContent = [
+      '.hf-study-controls{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;margin:18px 0}',
+      '.hf-study-box{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10);border-radius:22px;padding:16px}',
+      '.hf-study-box h3{margin:0 0 10px;color:#fff;font-size:15px}',
+      '.hf-subject-picker{display:flex;flex-wrap:wrap;gap:8px}',
+      '.hf-subject-pill{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.06);color:#becbdf;border-radius:999px;padding:8px 11px;font-weight:900;font-size:12px;cursor:pointer}',
+      '.hf-subject-pill.active{background:linear-gradient(135deg,#245cff,#4b7dff);color:#fff;border-color:rgba(255,255,255,.22)}',
+      '.hf-api-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}',
+      '.hf-api-row button,.hf-study-modal button{border:0;border-radius:12px;padding:10px 12px;font:900 12px Lora,Georgia,serif;cursor:pointer;background:#f3f6ff;color:#10213f}',
+      '.hf-api-row button.primary,.hf-study-modal button.primary{background:linear-gradient(135deg,#245cff,#4b7dff);color:#fff}',
+      '.hf-api-status{font-size:12px;color:#aebddd;line-height:1.5;margin-top:10px}',
+      '.hf-weekbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}',
+      '.hf-weekbar strong{color:#fff;font-size:16px}',
+      '.hf-weekbar div{display:flex;gap:8px;align-items:center}',
+      '.hf-weekbar button{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#cbd7ef;border-radius:12px;padding:8px 10px;font-weight:900;cursor:pointer}',
+      '.calendar-grid .day{min-height:185px}',
+      '.event{position:relative;user-select:none}',
+      '.event .hf-event-actions{display:flex;gap:6px;margin-top:7px}',
+      '.event .hf-event-actions button{border:0;border-radius:8px;background:rgba(255,255,255,.22);color:inherit;font-weight:900;font-size:10px;padding:4px 7px;cursor:pointer}',
+      '.event.nhh{border-left:3px solid #60a5fa}',
+      '.event.exam{border-left:3px solid #ef4444}',
+      '.event.lecture{border-left:3px solid #7c3aed}',
+      '.hf-study-modal-backdrop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.56);z-index:9998;padding:18px}',
+      '.hf-study-modal-backdrop.open{display:flex}',
+      '.hf-study-modal{width:min(560px,100%);border-radius:24px;padding:20px;background:#08172f;border:1px solid rgba(255,255,255,.13);box-shadow:0 24px 70px rgba(0,0,0,.45);color:#fff}',
+      '.hf-study-modal h3{margin:0 0 12px;font-size:18px}',
+      '.hf-study-form{display:grid;grid-template-columns:1fr 1fr;gap:10px}',
+      '.hf-study-form label{display:grid;gap:5px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#91a5c8;font-weight:900}',
+      '.hf-study-form label.wide{grid-column:1/-1}',
+      '.hf-study-form input,.hf-study-form select,.hf-study-form textarea{border:1px solid rgba(255,255,255,.14);border-radius:12px;background:rgba(255,255,255,.06);color:#fff;padding:11px 12px;font:700 13px Lora,Georgia,serif;outline:none}',
+      '.hf-study-form textarea{min-height:80px;resize:vertical}',
+      '.hf-study-modal-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:14px}',
+      '.hf-study-toast{position:fixed;right:18px;bottom:18px;z-index:9999;padding:12px 14px;border-radius:14px;background:rgba(7,23,51,.96);border:1px solid rgba(126,162,255,.28);box-shadow:0 18px 48px rgba(0,0,0,.34);color:#f8fbff;font:800 13px/1.45 Lora,Georgia,serif;opacity:0;transform:translateY(10px);transition:.2s;pointer-events:none}',
+      '.hf-study-toast.show{opacity:1;transform:translateY(0)}',
+      '@media(max-width:900px){.hf-study-controls{grid-template-columns:1fr}.hf-study-form{grid-template-columns:1fr}}'
+    ].join('\n');
+    document.head.appendChild(style);
   }
-  function loadState() { return normalizeState(readJson(STORAGE_KEY, null)); }
-  function saveLocal() { state.updatedAt = new Date().toISOString(); writeJson(STORAGE_KEY, state); }
-  function markChanged() { saveLocal(); scheduleRemoteSave(); }
 
-  function subjectCatalog() {
-    var catalog = window.HaugnesSubjects && typeof window.HaugnesSubjects.getAll === 'function' ? window.HaugnesSubjects.getAll() : fallbackSubjects;
-    return catalog.filter(function (subject) { return subject.status !== 'build'; }).map(function (subject, index) {
-      return { code: upper(subject.code), name: subject.name || subject.label || subject.code, accent: subject.accent || fallbackSubjects[index % fallbackSubjects.length].accent };
+  function ensureControls() {
+    var hero = document.querySelector('.hero-panel');
+    if (!hero || document.querySelector('.hf-study-controls')) return;
+    var controls = document.createElement('section');
+    controls.className = 'hf-study-controls';
+    controls.innerHTML = '<div class="hf-study-box"><h3>Velg fag i planen</h3><div class="hf-subject-picker"></div></div><div class="hf-study-box"><h3>NHH-data</h3><div class="hf-api-row"><button class="primary" data-sync-nhh>Hent fra NHH</button><button data-add-event>Legg til økt</button><button data-add-source>Kilde/API</button></div><div class="hf-api-status">Velg fagene du vil følge. Henting forsøker NHH-kilder og lagrer funn lokalt. Hvis NHH blokkerer direkte nettleserhenting, kan du legge til en egen JSON/proxy-kilde.</div></div>';
+    hero.insertAdjacentElement('afterend', controls);
+    controls.querySelector('[data-sync-nhh]').addEventListener('click', syncNhh);
+    controls.querySelector('[data-add-event]').addEventListener('click', function () { openEventModal(); });
+    controls.querySelector('[data-add-source]').addEventListener('click', addSourcePrompt);
+  }
+
+  function renderSubjectPicker() {
+    var holder = document.querySelector('.hf-subject-picker');
+    if (!holder) return;
+    var selected = subjectsSelected();
+    holder.innerHTML = SUBJECTS.map(function (subject) {
+      return '<button class="hf-subject-pill ' + (selected.indexOf(subject.code) !== -1 ? 'active' : '') + '" data-subject="' + subject.code + '">' + subject.code + ' · ' + subject.label + '</button>';
+    }).join('');
+    holder.querySelectorAll('[data-subject]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var code = btn.getAttribute('data-subject');
+        var next = subjectsSelected();
+        if (next.indexOf(code) !== -1) next = next.filter(function (item) { return item !== code; });
+        else next.push(code);
+        if (api()) api().setSelectedSubjects(next);
+        renderAll();
+      });
     });
   }
-  function ensureSelectedCourses() {
-    var available = subjectCatalog().map(function (subject) { return subject.code; });
-    var chosen = state.selectedCourses.filter(function (code) { return available.indexOf(code) !== -1; });
-    if (!chosen.length && available.length) chosen = available.slice();
-    if (chosen.join(',') !== state.selectedCourses.join(',')) { state.selectedCourses = chosen; saveLocal(); }
-    return chosen;
-  }
-  function subjectFor(code) { return subjectCatalog().filter(function (subject) { return subject.code === upper(code); })[0] || { code: upper(code) || 'PLAN', name: code || 'Studieøkt', accent: '#2f62ff' }; }
-  function groupFor(event) { var match = String((event && event.group) || '').match(/gr(?:uppe)?\s*0?(\d+)/i) || String((event && event.title) + ' ' + (event && event.raw)).match(/\bgr(?:uppe)?\s*0?(\d+)\b/i); return match ? 'Gr' + String(Number(match[1])).padStart(2, '0') : ''; }
-  function groupOptions(course) { var seen = {}; return rawTimeEditEvents().filter(function (event) { return upper(event.subjectCode) === course; }).map(groupFor).filter(function (group) { if (!group || seen[group]) return false; seen[group] = true; return true; }).sort(); }
-  function matchesGroup(event) { var group = groupFor(event); if (!group) return true; var selected = state.groups[upper(event.subjectCode)] || 'all'; return selected === 'all' || selected === group; }
 
-  function rawTimeEditEvents() {
-    var selected = ensureSelectedCourses();
-    var service = api();
-    if (!service || typeof service.getCachedNhhEvents !== 'function') return [];
-    return service.getCachedNhhEvents(selected);
+  function ensureWeekbar() {
+    var panel = document.querySelector('.workspace .panel');
+    var grid = document.querySelector('.calendar-grid');
+    if (!panel || !grid || panel.querySelector('.hf-weekbar')) return;
+    var bar = document.createElement('div');
+    bar.className = 'hf-weekbar';
+    bar.innerHTML = '<strong></strong><div><button data-prev-week>←</button><button data-this-week>Denne uken</button><button data-next-week>→</button><button data-add-week-event>＋ Ny økt</button></div>';
+    panel.insertBefore(bar, grid);
+    bar.querySelector('[data-prev-week]').addEventListener('click', function () { currentWeekStart = addDays(currentWeekStart, -7); renderAll(); });
+    bar.querySelector('[data-next-week]').addEventListener('click', function () { currentWeekStart = addDays(currentWeekStart, 7); renderAll(); });
+    bar.querySelector('[data-this-week]').addEventListener('click', function () { currentWeekStart = getMonday(new Date()); renderAll(); });
+    bar.querySelector('[data-add-week-event]').addEventListener('click', function () { openEventModal({ date: iso(currentWeekStart) }); });
   }
-  function timeEditEvents() {
-    return rawTimeEditEvents().filter(function (event) { return event.type === 'lecture' && state.hiddenEventIds.indexOf(event.id) === -1 && matchesGroup(event); });
+
+  function getDemoEvents() {
+    var monday = currentWeekStart;
+    return [
+      { id: 'demo-ret14', subjectCode: 'RET14', title: 'RET14 · Fradragsrett', type: 'flashcards', date: iso(monday), time: '09:00', durationMin: 20, source: 'demo' },
+      { id: 'demo-a', subjectCode: 'SAM3', title: 'A-besvarelse V25', type: 'assignment', date: iso(monday), time: '13:00', durationMin: 25, source: 'demo' },
+      { id: 'demo-sol1', subjectCode: 'SOL1', title: 'SOL1 · Flashcards', type: 'flashcards', date: iso(addDays(monday, 1)), time: '10:00', durationMin: 25, source: 'demo' },
+      { id: 'demo-sam2', subjectCode: 'SAM2', title: 'SAM2 · Markedssvikt', type: 'assignment', date: iso(addDays(monday, 2)), time: '12:00', durationMin: 30, source: 'demo' },
+      { id: 'demo-sam3', subjectCode: 'SAM3', title: 'SAM3 · AS-AD', type: 'flashcards', date: iso(addDays(monday, 4)), time: '10:00', durationMin: 25, source: 'demo' }
+    ];
   }
+
   function allEvents() {
-    var selected = ensureSelectedCourses();
-    var items = timeEditEvents().concat(state.customEvents).filter(function (event) { return selected.indexOf(upper(event.subjectCode)) !== -1; });
-    if (activeFilter !== 'all') items = items.filter(function (event) {
-      if (activeFilter === 'exam') return event.type === 'exam';
-      if (activeFilter === 'study') return event.source === 'custom';
-      return event.type === 'lecture' || event.type === 'nhh';
+    var selected = subjectsSelected();
+    var items = api() ? api().getAllEvents(selected) : [];
+    if (!items.length) items = getDemoEvents().filter(function (event) { return selected.indexOf(event.subjectCode) !== -1; });
+    if (filter !== 'Alle') {
+      var needle = filter.toLowerCase();
+      items = items.filter(function (event) {
+        return String(typeLabels[event.type] || event.type || '').toLowerCase().indexOf(needle) !== -1 || String(event.type || '').toLowerCase().indexOf(needle) !== -1;
+      });
+    }
+    return items;
+  }
+
+  function classFor(event) {
+    if (event.type === 'exam') return 'exam';
+    if (event.type === 'lecture') return 'lecture';
+    if (event.source === 'nhh') return 'nhh';
+    var subject = SUBJECTS.find(function (s) { return s.code === event.subjectCode; });
+    return subject && subject.color || '';
+  }
+
+  function renderCalendar() {
+    ensureWeekbar();
+    var grid = document.querySelector('.calendar-grid');
+    var title = document.querySelector('.hf-weekbar strong');
+    var searchMini = document.querySelector('.search-mini');
+    if (!grid) return;
+    var end = addDays(currentWeekStart, 6);
+    var titleText = 'Uke ' + getWeekNumber(currentWeekStart) + ' · ' + currentWeekStart.getDate() + '–' + end.getDate() + ' ' + end.toLocaleDateString('no-NO', { month: 'long' });
+    if (title) title.textContent = titleText;
+    if (searchMini) searchMini.textContent = titleText;
+    var events = allEvents();
+    var html = '';
+    for (var i = 0; i < 7; i++) {
+      var date = addDays(currentWeekStart, i);
+      var dateIso = iso(date);
+      var dayEvents = events.filter(function (event) { return event.date === dateIso; });
+      html += '<div class="day" data-date="' + dateIso + '"><strong>' + dayName(date) + '</strong>';
+      if (!dayEvents.length) html += '<div class="event" data-new-date="' + dateIso + '">＋ Legg til</div>';
+      dayEvents.forEach(function (event) {
+        html += '<div class="event ' + classFor(event) + '" data-event-id="' + esc(event.id) + '"><b>' + esc(event.subjectCode || 'Plan') + '</b> · ' + esc(event.title) + '<br>' + esc(event.time || '') + ' · ' + (event.durationMin || 30) + ' min' + (event.source === 'nhh' ? '<br><span>NHH</span>' : '') + '<div class="hf-event-actions"><button data-edit-event="' + esc(event.id) + '">Endre</button><button data-delete-event="' + esc(event.id) + '">Fjern</button></div></div>';
+      });
+      html += '</div>';
+    }
+    grid.innerHTML = html;
+    grid.querySelectorAll('[data-new-date]').forEach(function (el) { el.addEventListener('click', function () { openEventModal({ date: el.getAttribute('data-new-date') }); }); });
+    grid.querySelectorAll('[data-edit-event]').forEach(function (el) { el.addEventListener('click', function (e) { e.stopPropagation(); var event = allEvents().find(function (item) { return item.id === el.getAttribute('data-edit-event'); }); openEventModal(event); }); });
+    grid.querySelectorAll('[data-delete-event]').forEach(function (el) { el.addEventListener('click', function (e) { e.stopPropagation(); removeEvent(el.getAttribute('data-delete-event')); }); });
+    updateHeroStats(events);
+    renderRecommendations(events);
+  }
+
+  function getWeekNumber(d) {
+    var date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    var dayNum = date.getUTCDay() || 7;
+    date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+    var yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+    return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+  }
+
+  function updateHeroStats(events) {
+    var start = iso(currentWeekStart), end = iso(addDays(currentWeekStart, 6));
+    var weekEvents = events.filter(function (e) { return e.date >= start && e.date <= end; });
+    var planned = weekEvents.reduce(function (sum, e) { return sum + (e.durationMin || 30); }, 0);
+    var done = readJson('hf_study_done', {});
+    var completed = weekEvents.filter(function (e) { return done[e.id] || done[e.title]; }).reduce(function (sum, e) { return sum + (e.durationMin || 30); }, 0);
+    var stats = document.querySelectorAll('.hero-stat b');
+    if (stats[0]) stats[0].textContent = formatDuration(planned);
+    if (stats[1]) stats[1].textContent = formatDuration(completed);
+    if (stats[2]) stats[2].textContent = planned ? Math.round(completed / planned * 100) + '%' : '0%';
+    var mini = document.querySelector('.mini-number');
+    if (mini) mini.innerHTML = formatDuration(planned) + ' <span>planlagt</span>';
+  }
+
+  function formatDuration(mins) {
+    var h = Math.floor(mins / 60), m = mins % 60;
+    return h ? h + 't ' + (m ? m + 'm' : '') : m + 'm';
+  }
+
+  function renderRecommendations(events) {
+    var list = document.querySelector('.workspace aside .list');
+    if (!list) return;
+    var upcoming = events.filter(function (e) { return e.date >= iso(new Date()); }).slice(0, 5);
+    if (!upcoming.length) upcoming = events.slice(0, 5);
+    list.innerHTML = upcoming.map(function (event, index) {
+      return '<div class="list-item"><span class="rank">' + (index + 1) + '</span><div><strong>' + esc(event.title) + '</strong><span>' + esc(event.subjectCode || 'Plan') + ' · ' + esc(typeLabels[event.type] || event.type || 'økt') + '</span></div><span class="tag">' + (event.durationMin || 30) + 'm</span></div>';
+    }).join('') || '<div class="list-item"><div><strong>Ingen økter</strong><span>Legg til en økt for å starte planen.</span></div></div>';
+  }
+
+  function renderFilters() {
+    document.querySelectorAll('.chip-row .chip').forEach(function (chip) {
+      chip.classList.toggle('active', chip.textContent.trim() === filter);
+      if (!chip.dataset.bound) {
+        chip.dataset.bound = '1';
+        chip.addEventListener('click', function () { filter = chip.textContent.trim(); renderAll(); });
+      }
     });
-    return items.sort(function (a, b) { return String(a.date + (a.time || '') + a.title).localeCompare(String(b.date + (b.time || '') + b.title)); });
-  }
-  function eventsForWeek() { var start = iso(currentWeekStart), end = iso(addDays(currentWeekStart, 6)); return allEvents().filter(function (event) { return event.date >= start && event.date <= end; }); }
-  function sourceStatus() {
-    var service = api();
-    if (!service || !service.getSyncStatus) return { label: 'TimeEdit klar', detail: 'Hent timeplanen for å oppdatere.' };
-    var info = service.getSyncStatus(ensureSelectedCourses());
-    if (!info.checkedAt) return { label: 'Ikke hentet ennå', detail: 'TimeEdit-data er ikke lagret på denne enheten.' };
-    return { label: 'TimeEdit kontrollert', detail: 'Sist oppdatert ' + new Date(info.checkedAt).toLocaleString('nb-NO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' · ' + info.eventCount + ' hendelser' };
   }
 
-  function render() {
-    if (!document.querySelector('main.main')) return;
-    ensureSelectedCourses();
-    document.querySelector('main.main').classList.add('hf-plan');
-    document.querySelector('main.main').innerHTML = shell();
-    wire();
+  function ensureModal() {
+    var modal = document.querySelector('.hf-study-modal-backdrop');
+    if (modal) return modal;
+    modal = document.createElement('div');
+    modal.className = 'hf-study-modal-backdrop';
+    modal.innerHTML = '<div class="hf-study-modal"><h3>Planlegg økt</h3><form class="hf-study-form"><label>Tittel<input name="title" required></label><label>Fag<select name="subjectCode"></select></label><label>Type<select name="type"><option value="flashcards">Flashcards</option><option value="assignment">Oppgaver</option><option value="notes">Notater</option><option value="lecture">Forelesning</option><option value="exam">Eksamen</option><option value="custom">Egen</option></select></label><label>Dato<input name="date" type="date" required></label><label>Tid<input name="time" type="time" value="10:00"></label><label>Varighet<input name="durationMin" type="number" min="5" step="5" value="30"></label><label class="wide">Notat<textarea name="note" placeholder="Hva skal gjøres?"></textarea></label></form><div class="hf-study-modal-actions"><button data-cancel>Avbryt</button><button data-delete style="display:none">Slett</button><button class="primary" data-save>Lagre</button></div></div>';
+    document.body.appendChild(modal);
+    modal.querySelector('[data-cancel]').addEventListener('click', closeModal);
+    modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+    modal.querySelector('[data-save]').addEventListener('click', saveModalEvent);
+    modal.querySelector('[data-delete]').addEventListener('click', function () { if (selectedEventId) removeEvent(selectedEventId); closeModal(); });
+    var select = modal.querySelector('[name="subjectCode"]');
+    select.innerHTML = SUBJECTS.map(function (s) { return '<option value="' + s.code + '">' + s.code + ' · ' + s.label + '</option>'; }).join('');
+    return modal;
   }
-  function shell() {
-    var status = sourceStatus();
-    return '<header class="topline"><div class="hello"><div class="breadcrumb"><a href="index.html">Dashboard</a><span>›</span><span>Studieplan</span></div><h1>Studieplan</h1><p>TimeEdit setter tid og rom. Du styrer fag, gruppe og egne studieøkter.</p></div></header>'
-      + '<section class="hf-plan-header"><div><div class="hf-plan-eyebrow">Din personlige ukeplan</div><h2>Planlegg med <em>ro og oversikt.</em></h2></div><div class="hf-plan-sync"><i></i><span>' + esc(status.label) + '</span></div></section>'
-      + '<section class="hf-plan-command"><div><h3>Fag i planen</h3><p class="hf-plan-muted">Bare fagene dine vises. Velg hvilke du vil se denne uken.</p><div class="hf-plan-course-list">' + courseButtons() + '</div></div><div class="hf-plan-actions"><button class="hf-plan-button primary" data-sync>Oppdater TimeEdit</button><button class="hf-plan-button" data-add>＋ Egen økt</button></div></section>'
-      + '<section class="hf-plan-filter-row"><div class="hf-plan-filter-list"><label>Vis</label><button class="hf-plan-button" data-filter="all">TimeEdit + egne økter</button><button class="hf-plan-button" data-filter="lecture">Kun undervisning</button><button class="hf-plan-button" data-filter="study">Kun egne økter</button>' + groupControls() + '</div><div class="hf-plan-week"><button class="hf-plan-button" data-prev aria-label="Forrige uke">←</button><strong>' + esc(formatWeek(currentWeekStart)) + '</strong><button class="hf-plan-button" data-next aria-label="Neste uke">→</button><button class="hf-plan-button" data-today>Denne uken</button></div></section>'
-      + '<div class="hf-plan-layout"><section class="hf-plan-calendar"><div class="hf-plan-timeline">' + calendar() + '</div></section><aside class="hf-plan-insight">' + insight() + '</aside></div>'
-      + '<div class="hf-plan-modal-backdrop" id="hfPlanModal" aria-hidden="true"><section class="hf-plan-modal" role="dialog" aria-modal="true" aria-labelledby="hfPlanModalTitle"><div id="hfPlanModalContent"></div></section></div><div class="hf-plan-toast" id="hfPlanToast" role="status" aria-live="polite"></div>';
-  }
-  function courseButtons() { return subjectCatalog().map(function (subject) { var active = state.selectedCourses.indexOf(subject.code) !== -1; return '<button class="hf-plan-course ' + (active ? 'active' : '') + '" style="--course:' + esc(subject.accent) + '" data-course="' + esc(subject.code) + '">' + esc(subject.code) + ' · ' + esc(subject.name) + '</button>'; }).join('') || '<span class="hf-plan-muted">Du har ingen aktive fag ennå.</span>'; }
-  function groupControls() { return state.selectedCourses.map(function (course) { var options = groupOptions(course); if (!options.length) return ''; var selected = state.groups[course] || 'all'; return '<label>' + esc(course) + ' gruppe <select class="hf-plan-select" data-group-course="' + esc(course) + '"><option value="all">Alle grupper</option>' + options.map(function (group) { return '<option value="' + group + '"' + (group === selected ? ' selected' : '') + '>' + group + '</option>'; }).join('') + '</select></label>'; }).join(''); }
-  function eventClass(event) { return (event.type === 'exam' ? 'exam ' : '') + (event.source === 'custom' ? 'custom ' : '') + (/oblig/i.test(event.title + ' ' + event.raw) ? 'mandatory' : ''); }
-  function calendar() { var weekEvents = eventsForWeek(), today = iso(new Date()); return Array.from({ length: 7 }, function (_, index) { var date = addDays(currentWeekStart, index), dateIso = iso(date), events = weekEvents.filter(function (event) { return event.date === dateIso; }); return '<article class="hf-plan-day ' + (dateIso === today ? 'today' : '') + '"><div class="hf-plan-day-head"><span>' + formatDay(date) + '</span><small>' + (events.length ? events.length + ' økt' + (events.length === 1 ? '' : 'er') : 'ledig') + '</small></div><div class="hf-plan-event-stack">' + (events.map(eventCard).join('') || '<div class="hf-plan-empty">Ingen planlagte økter</div>') + '</div><button class="hf-plan-add-day" data-add-date="' + dateIso + '">＋ Legg til økt</button></article>'; }).join(''); }
-  function eventCard(event) { var subject = subjectFor(event.subjectCode), group = groupFor(event), meta = [event.time || 'Hele dagen', event.durationMin ? formatDuration(event.durationMin) : '', group].filter(Boolean).join(' · '); return '<button class="hf-plan-event ' + eventClass(event) + '" style="--course:' + esc(subject.accent) + '" data-event="' + esc(event.id) + '"><strong>' + esc(subject.code) + ' · ' + esc(event.title) + '</strong><span>' + esc(meta) + '</span></button>'; }
-  function insight() {
-    var weekEvents = eventsForWeek(), upcoming = weekEvents.filter(function (event) { return event.date >= iso(new Date()); });
-    var exam = weekEvents.filter(function (event) { return event.type === 'exam'; })[0];
-    var focus = exam || upcoming[0] || weekEvents[0];
-    var minutes = weekEvents.reduce(function (total, event) { return total + (Number(event.durationMin) || 0); }, 0);
-    var mandatory = weekEvents.filter(function (event) { return /oblig/i.test(event.title + ' ' + event.raw); });
-    var overlaps = conflicts(weekEvents);
-    return '<div><h3>Ukas kontrollrom</h3><p class="hf-plan-status">' + weekEvents.length + ' økter · ' + formatDuration(minutes) + ' planlagt</p></div>'
-      + '<div class="hf-plan-focus"><strong>' + (focus ? esc(subjectFor(focus.subjectCode).code + ' først') : 'Plass til fokus') + '</strong><p>' + (focus ? esc(focus.title + ' · ' + focus.date) : 'Legg til en studieøkt, eller oppdater TimeEdit for å starte uken.') + '</p></div>'
-      + '<div class="hf-plan-insight-section"><h4>Obligatorisk</h4>' + list(mandatory, 'Ingen obligatoriske økter registrert.') + '</div>'
-      + '<div class="hf-plan-insight-section"><h4>TimeEdit-data</h4><p class="hf-plan-muted">Kun undervisningstid fra TimeEdit vises automatisk. Fag som ikke undervises denne uken, står tomme.</p></div>'
-      + '<div class="hf-plan-insight-section"><h4>Kollisjoner</h4>' + (overlaps.length ? '<ul class="hf-plan-list">' + overlaps.map(function (pair) { return '<li><b>' + esc(pair.date) + '</b><br>' + esc(pair.first.title) + ' ↔ ' + esc(pair.second.title) + '</li>'; }).join('') + '</ul>' : '<p class="hf-plan-muted">Ingen overlapp i det som vises.</p>') + '</div>';
-  }
-  function list(events, empty) { return events.length ? '<ul class="hf-plan-list">' + events.slice(0, 4).map(function (event) { return '<li><b>' + esc(event.time || '') + ' ' + esc(subjectFor(event.subjectCode).code) + '</b><br>' + esc(event.title) + '</li>'; }).join('') + '</ul>' : '<p class="hf-plan-muted">' + esc(empty) + '</p>'; }
-  function conflicts(events) { var result = []; events.forEach(function (event, index) { events.slice(index + 1).forEach(function (other) { if (event.date !== other.date || !event.time || !other.time) return; var a = timeValue(event.time), b = a + (Number(event.durationMin) || 0), c = timeValue(other.time), d = c + (Number(other.durationMin) || 0); if (a < d && c < b) result.push({ date: event.date, first: event, second: other }); }); }); return result; }
-  function timeValue(value) { var pieces = String(value || '00:00').split(':').map(Number); return (pieces[0] || 0) * 60 + (pieces[1] || 0); }
 
-  function wire() {
-    document.querySelectorAll('[data-course]').forEach(function (button) { button.addEventListener('click', function () { var code = button.getAttribute('data-course'), selected = state.selectedCourses.slice(), index = selected.indexOf(code); if (index === -1) selected.push(code); else selected.splice(index, 1); state.selectedCourses = selected; markChanged(); render(); }); });
-    document.querySelectorAll('[data-filter]').forEach(function (button) { button.classList.toggle('primary', button.getAttribute('data-filter') === activeFilter); button.addEventListener('click', function () { activeFilter = button.getAttribute('data-filter'); render(); }); });
-    document.querySelectorAll('[data-group-course]').forEach(function (select) { select.addEventListener('change', function () { state.groups[select.getAttribute('data-group-course')] = select.value; markChanged(); render(); }); });
-    document.querySelector('[data-prev]').addEventListener('click', function () { currentWeekStart = addDays(currentWeekStart, -7); render(); });
-    document.querySelector('[data-next]').addEventListener('click', function () { currentWeekStart = addDays(currentWeekStart, 7); render(); });
-    document.querySelector('[data-today]').addEventListener('click', function () { currentWeekStart = getMonday(new Date()); render(); });
-    document.querySelector('[data-sync]').addEventListener('click', syncTimeEdit);
-    document.querySelector('[data-add]').addEventListener('click', function () { openCustomModal({ date: iso(new Date()) }); });
-    document.querySelectorAll('[data-add-date]').forEach(function (button) { button.addEventListener('click', function () { openCustomModal({ date: button.getAttribute('data-add-date') }); }); });
-    document.querySelectorAll('[data-event]').forEach(function (button) { button.addEventListener('click', function () { var id = button.getAttribute('data-event'), event = allEvents().filter(function (item) { return item.id === id; })[0]; if (event) openEventModal(event); }); });
+  function openEventModal(event) {
+    var modal = ensureModal();
+    selectedEventId = event && event.id || null;
+    var form = modal.querySelector('form');
+    var defaults = Object.assign({ title: '', subjectCode: subjectsSelected()[0] || 'RET14', type: 'flashcards', date: iso(new Date()), time: '10:00', durationMin: 30, note: '' }, event || {});
+    Object.keys(defaults).forEach(function (key) { if (form.elements[key]) form.elements[key].value = defaults[key]; });
+    modal.querySelector('[data-delete]').style.display = selectedEventId ? '' : 'none';
+    modal.classList.add('open');
+    setTimeout(function () { form.elements.title.focus(); }, 30);
   }
-  function syncTimeEdit() { var service = api(), codes = ensureSelectedCourses(), button = document.querySelector('[data-sync]'); if (!service || !codes.length) { showToast(codes.length ? 'TimeEdit-klienten er ikke tilgjengelig ennå.' : 'Velg minst ett fag først.'); return; } button.disabled = true; button.textContent = 'Henter …'; service.sync(codes).then(function (result) { var count = result && result.events ? result.events.length : 0; showToast(count ? count + ' TimeEdit-hendelser er oppdatert.' : 'Ingen TimeEdit-hendelser ble funnet for de valgte fagene.'); render(); }).catch(function () { showToast('Kunne ikke oppdatere TimeEdit akkurat nå. Prøv igjen senere.'); }).finally(function () { if (button && button.isConnected) { button.disabled = false; button.textContent = 'Oppdater TimeEdit'; } }); }
-  function ensureModal() { return document.getElementById('hfPlanModal'); }
-  function openEventModal(event) { if (event.source === 'custom') return openCustomModal(event); var modal = ensureModal(), subject = subjectFor(event.subjectCode); modal.querySelector('#hfPlanModalContent').innerHTML = '<h3 id="hfPlanModalTitle">TimeEdit-hendelse</h3><p class="hf-plan-muted"><b>' + esc(subject.code) + '</b> · ' + esc(event.title) + '</p><p class="hf-plan-muted">' + esc(event.date + ' · ' + (event.time || '') + ' · ' + (event.durationMin ? formatDuration(event.durationMin) : '')) + '<br>Dette er hentet fra NHH TimeEdit. Tid og rom oppdateres ved neste synkronisering.</p><div class="hf-plan-modal-actions"><button class="hf-plan-button" data-close>Lukk</button><button class="hf-plan-button" data-hide>Skjul fra min plan</button></div>'; modal.classList.add('open'); modal.querySelector('[data-close]').addEventListener('click', closeModal); modal.querySelector('[data-hide]').addEventListener('click', function () { state.hiddenEventIds.push(event.id); state.hiddenEventIds = state.hiddenEventIds.filter(function (id, index, all) { return all.indexOf(id) === index; }); markChanged(); closeModal(); render(); }); }
-  function openCustomModal(event) { var modal = ensureModal(), isEdit = !!event.id; selectedCustomId = isEdit ? event.id : null; var subjects = ensureSelectedCourses(); modal.querySelector('#hfPlanModalContent').innerHTML = '<h3 id="hfPlanModalTitle">' + (isEdit ? 'Endre egen økt' : 'Legg til egen økt') + '</h3><form class="hf-plan-form" id="hfPlanForm"><label class="wide">Tittel<input name="title" required value="' + esc(event.title || '') + '" placeholder="For eksempel: Repetisjon av kapittel 4"></label><label>Fag<select name="subjectCode">' + subjects.map(function (code) { return '<option value="' + esc(code) + '"' + (upper(event.subjectCode) === code ? ' selected' : '') + '>' + esc(code + ' · ' + subjectFor(code).name) + '</option>'; }).join('') + '</select></label><label>Dato<input name="date" type="date" required value="' + esc(event.date || iso(new Date())) + '"></label><label>Tid<input name="time" type="time" value="' + esc(event.time || '10:00') + '"></label><label>Varighet (min)<input name="durationMin" type="number" min="5" step="5" value="' + esc(event.durationMin || 45) + '"></label><label class="wide">Notat<textarea name="note" placeholder="Valgfri huskelapp">' + esc(event.note || '') + '</textarea></label></form><div class="hf-plan-modal-actions">' + (isEdit ? '<button class="hf-plan-button" data-delete>Slett</button>' : '') + '<button class="hf-plan-button" data-close>Avbryt</button><button class="hf-plan-button primary" data-save>Lagre økt</button></div>'; modal.classList.add('open'); modal.querySelector('[data-close]').addEventListener('click', closeModal); modal.querySelector('[data-save]').addEventListener('click', saveCustom); if (isEdit) modal.querySelector('[data-delete]').addEventListener('click', deleteCustom); }
-  function closeModal() { var modal = ensureModal(); if (modal) modal.classList.remove('open'); selectedCustomId = null; }
-  function saveCustom() { var form = document.getElementById('hfPlanForm'); if (!form.reportValidity()) return; var event = { id: selectedCustomId || uid(), source: 'custom', type: 'study', title: form.elements.title.value.trim(), subjectCode: upper(form.elements.subjectCode.value), date: form.elements.date.value, time: form.elements.time.value, durationMin: Number(form.elements.durationMin.value) || 45, note: form.elements.note.value.trim() }; var index = state.customEvents.findIndex(function (item) { return item.id === event.id; }); if (index === -1) state.customEvents.push(event); else state.customEvents[index] = event; markChanged(); closeModal(); showToast('Studieøkten er lagret og synkroniseres til kontoen din.'); render(); }
-  function deleteCustom() { if (!selectedCustomId) return; state.customEvents = state.customEvents.filter(function (event) { return event.id !== selectedCustomId; }); markChanged(); closeModal(); showToast('Studieøkten er fjernet.'); render(); }
-  function showToast(message) { var toast = document.getElementById('hfPlanToast'); if (!toast) return; toast.textContent = message; toast.classList.add('show'); window.clearTimeout(toastTimer); toastTimer = window.setTimeout(function () { toast.classList.remove('show'); }, 3000); }
 
-  function remoteContext() { if (!window.AuthGuard || typeof window.AuthGuard.getClient !== 'function' || typeof window.AuthGuard.getSession !== 'function') return null; var session = window.AuthGuard.getSession(); if (!session || !session.user || !session.user.id || session.user.email === 'dev@student.local') return null; try { return { sb: window.AuthGuard.getClient(), userId: session.user.id }; } catch (_error) { return null; } }
-  function scheduleRemoteSave() { remoteDirty = true; if (!remoteLoaded) return; window.clearTimeout(remoteTimer); remoteTimer = window.setTimeout(saveRemote, 450); }
-  function saveRemote() { var context = remoteContext(); if (!context || !remoteDirty) return; if (remoteSaving) { scheduleRemoteSave(); return; } remoteSaving = true; remoteDirty = false; return context.sb.from('user_custom_data').select('data').eq('user_id', context.userId).maybeSingle().then(function (result) { var data = result && result.data && result.data.data && typeof result.data.data === 'object' ? result.data.data : {}; data.studyplan = state; return context.sb.from('user_custom_data').upsert({ user_id: context.userId, data: data, updated_at: new Date().toISOString() }); }).then(function (result) { if (result && result.error) throw result.error; }).catch(function () { remoteDirty = true; }).finally(function () { remoteSaving = false; if (remoteDirty) scheduleRemoteSave(); }); }
-  function loadRemote(attempt) { var context = remoteContext(); if (!context) { if ((attempt || 0) < 20) return window.setTimeout(function () { loadRemote((attempt || 0) + 1); }, 250); remoteLoaded = true; return; } return context.sb.from('user_custom_data').select('data').eq('user_id', context.userId).maybeSingle().then(function (result) { var data = result && result.data && result.data.data && typeof result.data.data === 'object' ? result.data.data : {}, remote = normalizeState(data.studyplan); remoteLoaded = true; if (Date.parse(remote.updatedAt) > Date.parse(state.updatedAt)) { state = remote; saveLocal(); render(); } else { remoteDirty = true; saveRemote(); } }).catch(function () { remoteLoaded = true; }); }
-  function install() { if (!/\/user\/studieplan\.html$/.test(window.location.pathname) || !api()) { window.setTimeout(install, 80); return; } render(); loadRemote(0); window.HaugnesStudyplan = { render: render, sync: syncTimeEdit }; }
+  function closeModal() { var modal = document.querySelector('.hf-study-modal-backdrop'); if (modal) modal.classList.remove('open'); selectedEventId = null; }
+
+  function saveModalEvent() {
+    var modal = ensureModal();
+    var form = modal.querySelector('form');
+    if (!form.reportValidity()) return;
+    var event = {
+      id: selectedEventId || uid('custom'),
+      source: 'custom',
+      title: form.elements.title.value.trim(),
+      subjectCode: form.elements.subjectCode.value,
+      type: form.elements.type.value,
+      date: form.elements.date.value,
+      time: form.elements.time.value,
+      durationMin: parseInt(form.elements.durationMin.value || '30', 10),
+      note: form.elements.note.value.trim()
+    };
+    if (api()) api().upsertCustomEvent(event);
+    closeModal();
+    toast('Økten er lagret.');
+    renderAll();
+  }
+
+  function removeEvent(id) {
+    if (!id) return;
+    if (!window.confirm('Fjerne denne økten fra planen?')) return;
+    if (api()) api().deleteEvent(id);
+    toast('Økten er fjernet.');
+    renderAll();
+  }
+
+  function addSourcePrompt() {
+    var url = window.prompt('Legg inn URL for JSON/HTML-kilde. Bruk {code} der fagkode skal settes inn.\nEksempel: https://din-proxy.no/nhh?subject={code}');
+    if (!url) return;
+    var label = window.prompt('Navn på kilden?', 'Egen NHH-kilde') || 'Egen NHH-kilde';
+    var kind = /json/i.test(url) ? 'json' : 'html';
+    var sources = api().getSourceConfig().filter(function (s) { return s.id.indexOf('custom:') === 0; });
+    sources.push({ id: 'custom:' + Date.now(), label: label, kind: kind, url: url });
+    api().setSourceConfig(sources);
+    toast('Kilden er lagt til.');
+  }
+
+  function syncNhh() {
+    if (!api()) return;
+    var status = document.querySelector('.hf-api-status');
+    var codes = subjectsSelected();
+    if (!codes.length) { toast('Velg minst ett fag først.'); return; }
+    if (status) status.textContent = 'Henter NHH-data for ' + codes.join(', ') + ' ...';
+    api().sync(codes).then(function (result) {
+      var found = result.events.length;
+      var errors = result.results.reduce(function (sum, item) { return sum + (item.errors || []).length; }, 0);
+      if (status) status.textContent = found ? 'Fant ' + found + ' hendelser. Lagret lokalt for valgte fag.' : 'Ingen hendelser funnet automatisk. NHH kan blokkere direkte henting; legg eventuelt inn egen JSON/proxy-kilde.' + (errors ? ' (' + errors + ' kilder feilet)' : '');
+      renderAll();
+    }).catch(function (err) {
+      if (status) status.textContent = 'Kunne ikke hente fra NHH: ' + (err && err.message || err);
+    });
+  }
+
+  function wireTopAddButton() {
+    var add = document.querySelector('.top-actions .icon-btn');
+    if (add && !add.dataset.hfStudyBound) {
+      add.dataset.hfStudyBound = '1';
+      add.addEventListener('click', function () { openEventModal(); });
+    }
+  }
+
+  function renderAll() {
+    renderSubjectPicker();
+    renderFilters();
+    renderCalendar();
+  }
+
+  function install() {
+    if (!/\/user\/studieplan\.html$/.test(window.location.pathname)) return;
+    if (!window.NHHScheduleAPI) { setTimeout(install, 80); return; }
+    injectStyles();
+    ensureControls();
+    ensureWeekbar();
+    wireTopAddButton();
+    renderAll();
+    window.HaugnesStudyplan = { render: renderAll, openEventModal: openEventModal, syncNhh: syncNhh };
+  }
+
   ready(install);
-  window.addEventListener('haugnes:subject-access-changed', function () { window.setTimeout(render, 0); });
 })(window, document);

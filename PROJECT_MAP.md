@@ -1,6 +1,6 @@
 # Project Map
 
-Last updated: 2026-07-25
+Last updated: 2026-09-08
 
 Purpose: make future app changes faster by documenting the stable entry points, data sources, and search paths. Update this file whenever a change moves, renames, adds, or removes app-facing functionality.
 
@@ -13,6 +13,8 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 ## App Shape
 
 - Static web app deployed from this repository.
+- Local and container development/serving: `server.js` using Express on port 3000, serving root static assets with clean HTML extension routing and mounting `/api/timeedit`.
+- Local development auth bypass: Append `?dev=1` on localhost/127.0.0.1 (e.g. `http://localhost:3000/user/?dev=1`) to simulate an authenticated student (`dev@student.local`) without Supabase credentials.
 - GitHub Pages is the active frontend host for `bhflashcards.no`: no build command, publish/output directory `.`.
 - The new Kompass app is the active successor being built in Sites. Its source lives in the connected Sites repository, while this repository remains the source for legacy subject pages and the shared Supabase schema/migrations.
 - Kompass has no paywall. Existing Stripe/commerce code remains legacy-only and is not used by the new Kompass clients.
@@ -31,14 +33,15 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 ## User Pages
 
 - Dashboard: `user/index.html`.
+- Admin-hub & Fagstudio: `user/admin.html`. Sentral kontrollside for administratorer (`birkhaugnes@gmail.com`) for opprettelse av nye fagskall, styring av fagoversikt, seksjonssynlighet (vis/skjul moduler med direktelenker til redigering), viktige temaer, anbefalt øvingsløp, eksamensradarer, A-besvarelser & eksamensløsninger (med PDF-opplasting/nedlasting), forelesningsnotater (med PDF-opplasting/nedlasting), fagspesifikk oppgavebank og flashcards. Inkluderer sanntids forhåndsvisning i delt studio med student-/admin-visningsbryter og dypkobling via `?subject=<kode>&tab=<modul>`.
 - Subject management: `user/subjects.html`.
 - Shop/entitlement claiming, Stripe checkout entry, discount field, and admin commerce editor for subjects, bundles, Vennepass, prices, and rabattkoder: `user/butikk.html`.
 - Exam analysis catalog with only published/direct analysis links: `user/eksamensanalyse.html`.
 - A-besvarelser / eksamensarkiv shell: `user/a-besvarelser.html`.
-- Oppgavebank shell: `user/oppgavebank.html`.
-- Study plan shell: `user/studieplan.html`. Its interactive calendar is rendered by `shared/haugnes-studyplan.js` and styled by `shared/haugnes-studyplan.css`. The calendar automatically shows only TimeEdit teaching events; subjects with no teaching in the selected week are deliberately empty. Users can additionally create explicit private study sessions. Subject choices, group choices, hidden TimeEdit items, and private study sessions are stored under `user_custom_data.data.studyplan`; TimeEdit cache data remains local to the device.
+- Study plan shell: `user/studieplan.html`.
+- Memoarer overview: `user/memoarer.html`.
 - Notes/settings: `user/notater.html`, `user/settings.html`. Settings live in `localStorage` key `hf_user_settings_v2` and sync to Supabase `user_custom_data.data.settings`; they are applied app-wide by `shared/user-settings.js` (theme/identity) and `shared/haugnes-flashcard-session.js` (session behavior).
-- Removed user pages: `user/progress.html`, `user/achievements.html`.
+- Removed user pages: `user/oppgavebank.html` (erstattet av fagspesifikk oppgavebank direkte på hver fagside), `user/progress.html`, `user/achievements.html`.
 - User-page loader/enhancer: `user/auth-guard.js`.
 
 ## Shared Core Scripts
@@ -49,22 +52,34 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Subject page rendering/data/enhancements: `shared/subject-page-renderer.js`, `shared/subject-page-data.js`, `shared/subject-page-enhancements.js`, `shared/subject-resources.js`.
 - Dashboard dynamic progress/recommendations and some legacy SAM3 package pointers: `shared/haugnes-dashboard-progress.js`.
 - A-besvarelser / eksamensarkiv dynamic package UI: `shared/haugnes-answer-library.js`.
-- User sidebar normalization: `shared/user-sidebar.js`. It is the source of truth for the grouped left menu used across user/app pages: Hjem, Mine fag, Butikk, Studieplan, Eksamensanalyse, Oppgavebank, A-besvarelser, Memoarer, Notater, Alle flashcards, Innstillinger.
+- User sidebar normalization: `shared/user-sidebar.js`. It is the source of truth for the grouped left menu used across user/app pages: Hjem, Mine fag, Butikk, Studieplan, Eksamensanalyse, A-besvarelser, Memoarer, Notater, Alle flashcards, Innstillinger.
 - Logo normalization: `shared/logo-normalizer.js`. Re-applies the logo image if later branding scripts clear an already normalized logo mark.
 - Global user-settings applier: `shared/user-settings.js`. Loaded on every app page from `shared/auth-guard.js` (`loadGlobalPolish`). Reads `hf_user_settings_v2` (plus a one-shot pull from `user_custom_data.data.settings` when newer) and applies accent color, background theme, font-size scaling, reduced motion, high contrast, avatar/display name in sidebars, the friendly check-in banner, and hides recommendation panels when disabled. Exposes `window.HaugnesUserSettings`.
-- TimeEdit/NHH schedule integration: `shared/timeedit-fetch-proxy.js`, `shared/nhh-schedule-api.js`, `shared/nhh-schedule-normalizer.js`, `shared/nhh-strict-course-filter.js`, `shared/haugnes-studyplan.js`, and `shared/haugnes-studyplan.css`. Runtime proxy target is the Supabase `timeedit` Edge Function. The API reports its latest cached TimeEdit check to the study-plan UI and resolves TimeEdit object search using aliases for all current subject codes.
+- TimeEdit/NHH schedule integration: `shared/timeedit-fetch-proxy.js`, `shared/nhh-schedule-api.js`, `shared/nhh-schedule-normalizer.js`, `shared/nhh-strict-course-filter.js`, `shared/haugnes-studyplan.js`. Runtime proxy targets are the local `/api/timeedit` endpoint (via `server.js` and `api/timeedit.js`) and the Supabase `timeedit` Edge Function.
 - Flashcard session shared logic: `shared/haugnes-flashcard-session.js`, `shared/haugnes-flashcards-structure.js`. The session script also applies learning settings from `hf_user_settings_v2`: session length cap, default start filter (`startWith`), difficult-first ordering (`autoDiff`), exam-topic priority (`examMode`), and optional sound feedback.
 
 ## Subject Areas
 
-- `sam3/`: SAM3 Makroøkonomi hub, flashcards, formula quiz, mock exam, models, model PDFs, and exam radar.
-- `sam3/eksamenspakker/`: local SAM3 exam package PDFs. Current known package: `v26/` with exam, A-besvarelse, and sensorveiledning PDFs.
-- `sam2/`: SAM2 Mikroøkonomi hub, memoar, exam radar, oppgaver, and clickable task bank.
-- `sam2/memoar/`: SAM2 memoar page plus downloadable source DOCX (`SAM2-memoar.docx`). First SAM2 unlock redirects to `sam2/?memoar=ny`.
-- `ret14/`: RET14 Skatterett hub, exam radar, pensum, quiz, and progress.
-- `sol1/`: SOL1 subject pages and flashcard data.
-- `sam1a/`, `met1/`, `kom1/`, `ret1a/`, `bed1/`, `mat10/`, `met2/`: MVP or planned subject hubs.
-- `flashcards/`: generic flashcard app entry. The start surface is a faggruppert "Alle flashcards" catalog with search/semester filters; `shared/flashcards-library-fallback.js` keeps the catalog visible if the full flashcard app init has not rendered cards yet.
+- Deep/Dedicated Subject Hubs:
+  - `sam3/`: SAM3 Makroøkonomi hub, flashcards, formula quiz, mock exam, models, model PDFs, and exam radar (`eksamensradar-v3.html`).
+  - `sam3/eksamenspakker/`: local SAM3 exam package PDFs. Current known package: `v26/` with exam, A-besvarelse, and sensorveiledning PDFs.
+  - `sam2/`: SAM2 Mikroøkonomi hub, memoar, exam radar, oppgaver, and clickable task bank (`oppgaver-klikkbar/`).
+  - `sam2/memoar/`: SAM2 memoar page plus downloadable source DOCX (`SAM2-memoar.docx`). First SAM2 unlock redirects to `sam2/?memoar=ny`.
+  - `ret14/`: RET14 Skatterett hub, exam radar (`eksamen/`), pensum (`pensum/`), quiz (`quiz/`), and progress (`progresjon/`).
+  - `sol1/`: SOL1 subject pages, complete/advanced flashcards (`flashcards-2-avansert.html`, `flashcards-2-komplett.html`), and theory writing (`teorideler-teoriskriving.html`).
+- Lightweight / Template Hubs (driven by `shared/subject-page-renderer.js` and `shared/learning-content.js`):
+  - `sam1a/`, `met1/`, `kom1/`, `ret1a/`, `bed1/`, `mat10/`, `met2/`: Clean template subject hubs providing overview, learning tools, topics, recommended study paths, and flashcard links.
+  - `subject/`: Universal dynamic subject shell (`subject/index.html`). Accepts query parameter `?id=<kode>` or `?subject=<kode>`. Renders all 6 subject shell modules (Fagoversikt, Eksamensradar, A-besvarelser, Forelesningsnotater, Oppgavebank, Flashcards) for newly created and existing courses. Injects a top admin toolbar when viewed by an administrator, med direkte in-page CRUD-redigering for «Viktige temaer» og «Anbefalt øvingsløp», samt live preview-visningsbryter (Admin-modus vs. Studentvisning).
+- Generic Flashcard Application:
+  - `flashcards/`: generic flashcard app entry (`flashcards/index.html`). Supports parameters `?subject=<id>` (e.g. `ret14`, `subj_sol1`, `sam2`, `sam3`, `met2`, `mat10`, `bed1`, etc.) and `&mode=quiz`. Fallback library keeps catalog visible if card initialization is pending.
+
+## Learning Content & Data Pipeline
+
+- Source of truth for learning metadata and subject decks: `data/learning-content.json`.
+- Generator script: `scripts/generate-learning-content.mjs`.
+  - Compiles `data/learning-content.json` into `shared/learning-content.js`.
+  - Validation check: `npm run check:learning` (runs `--check`).
+- Client API: `window.HaugnesLearningContent` exposes quality metrics, subject tools, topics, and study path recommendations consumed by `shared/subject-page-renderer.js` and `shared/subject-meta.js`.
 
 ## A-besvarelser / Exam Packages
 
@@ -133,6 +148,9 @@ Typical package IDs:
 
 ## Build And Checks
 
+- Dev server: `npm run dev` (starts `server.js` on port 3000).
+- Production start: `npm run start` (`node server.js`).
+- Build check: `npm run build` (`npm run check:js && npm run check:smoke`).
 - JS check: `npm run check:js`.
 - Smoke check: `npm run check:smoke`.
 - Full check: `npm run check`.

@@ -4,7 +4,6 @@
     'butikk.html': { label: 'Butikk', icon: '⚷', subtitle: 'Lås opp fag' },
     'eksamensanalyse.html': { label: 'Eksamensanalyse', icon: '◈', subtitle: 'Åpne faktiske analyser' },
     'a-besvarelser.html': { label: 'A-besvarelser', icon: '▤', subtitle: 'Se sterke tidligere svar' },
-    'oppgavebank.html': { label: 'Oppgavebank', icon: '▣', subtitle: 'Øv på eksamensnære oppgaver' },
     'notater.html': { label: 'Notater', icon: '▥', subtitle: 'Samle egne fagnotater' },
     'studieplan.html': { label: 'Studieplan', icon: '☷', subtitle: 'Planlegg ukens økter' },
     'settings.html': { label: 'Innstillinger', icon: '⚙', subtitle: 'Profil og preferanser' }
@@ -15,7 +14,6 @@
     { href: 'butikk.html', label: 'Butikk', icon: '⚷' },
     { href: 'eksamensanalyse.html', label: 'Eksamensanalyse', icon: '◈' },
     { href: 'a-besvarelser.html', label: 'A-besvarelser', icon: '▤' },
-    { href: 'oppgavebank.html', label: 'Oppgavebank', icon: '▣' },
     { href: 'notater.html', label: 'Notater', icon: '▥' },
     { href: 'studieplan.html', label: 'Studieplan', icon: '☷' },
     { href: 'settings.html', label: 'Innstillinger', icon: '⚙' }
@@ -75,7 +73,6 @@
   function addPageStylesheet() {
     var page = currentUserPage();
     if (page === 'subjects.html') addStylesheet('haugnes-subjects-css', '../shared/haugnes-subjects.css');
-    else if (page === 'studieplan.html') addStylesheet('haugnes-studyplan-css', '../shared/haugnes-studyplan.css?v=20260908b');
     else if (!isModelPage(page)) addStylesheet('haugnes-dashboard-css', '../shared/haugnes-dashboard.css');
   }
 
@@ -203,7 +200,7 @@
   function installDashboardShortcuts() {
     var shortcuts = document.querySelector('.side-col .small-list');
     if (!shortcuts) return;
-    ['a-besvarelser.html', 'oppgavebank.html', 'notater.html', 'studieplan.html', 'settings.html'].forEach(function (href) {
+    ['a-besvarelser.html', 'notater.html', 'studieplan.html', 'settings.html'].forEach(function (href) {
       if (shortcuts.querySelector('a[href="' + href + '"]')) return;
       var config = MODEL_PAGES[href];
       var item = document.createElement('a');
@@ -221,7 +218,7 @@
         addScript('nhh-schedule-api-js', '../shared/nhh-schedule-api.js', function () {
           addScript('nhh-schedule-normalizer-js', '../shared/nhh-schedule-normalizer.js', function () {
             addScript('nhh-strict-course-filter-js', '../shared/nhh-strict-course-filter.js', function () {
-              addScript('haugnes-studyplan-js', '../shared/haugnes-studyplan.js?v=20260908b', function () {
+              addScript('haugnes-studyplan-js', '../shared/haugnes-studyplan.js', function () {
                 if (window.HaugnesStudyplan && typeof window.HaugnesStudyplan.render === 'function') window.HaugnesStudyplan.render();
                 if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.enhanceCurrentPage === 'function') window.HaugnesSubjectAccess.enhanceCurrentPage();
               });

@@ -47,9 +47,14 @@
       memos: '<svg viewBox="0 0 24 24"><path d="M6.5 3.5h11v17l-5.5-3.4-5.5 3.4z"/><path d="M9.5 8h5M9.5 11.5h5"/></svg>',
       notes: '<svg viewBox="0 0 24 24"><path d="M6 4.5h12v15H6z"/><path d="M9 8h6M9 11h6M9 14h4"/></svg>',
       flashcards: '<svg viewBox="0 0 24 24"><rect x="4" y="7" width="13" height="13" rx="2"/><path d="M8 3.5h10A1.5 1.5 0 0 1 19.5 5v10"/></svg>',
-      settings: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 0 0-.1-1.1l2-1.5-2-3.4-2.4 1a7.2 7.2 0 0 0-1.9-1.1L14.3 3h-4.6l-.3 2.9A7.2 7.2 0 0 0 7.5 7L5.1 6l-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .4 0 .8.1 1.1l-2 1.5 2 3.4 2.4-1a7.2 7.2 0 0 0 1.9 1.1l.3 2.9h4.6l.3-2.9a7.2 7.2 0 0 0 1.9-1.1l2.4 1 2-3.4-2-1.5c.1-.4.1-.7.1-1.1z"/></svg>'
+      settings: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 0 0-.1-1.1l2-1.5-2-3.4-2.4 1a7.2 7.2 0 0 0-1.9-1.1L14.3 3h-4.6l-.3 2.9A7.2 7.2 0 0 0 7.5 7L5.1 6l-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .4 0 .8.1 1.1l-2 1.5 2 3.4 2.4-1a7.2 7.2 0 0 0 1.9 1.1l.3 2.9h4.6l.3-2.9a7.2 7.2 0 0 0 1.9-1.1l2.4 1 2-3.4-2-1.5c.1-.4.1-.7.1-1.1z"/></svg>',
+      admin: '<svg viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>'
     };
     return icons[name] || '';
+  }
+
+  function isAdminUser() {
+    return !!(window.HaugnesEntitlements && typeof window.HaugnesEntitlements.effectiveAdmin === 'function' && window.HaugnesEntitlements.effectiveAdmin());
   }
 
   var MENU = [
@@ -58,7 +63,6 @@
     { id: 'shop', label: 'Butikk', href: 'user/butikk.html', icon: 'shop' },
     { id: 'plan', label: 'Studieplan', href: 'user/studieplan.html', icon: 'plan' },
     { id: 'exam', label: 'Eksamensanalyse', href: 'user/eksamensanalyse.html', icon: 'exam' },
-    { id: 'tasks', label: 'Oppgavebank', href: 'user/oppgavebank.html', icon: 'tasks' },
     { id: 'answers', label: 'A-besvarelser', href: 'user/a-besvarelser.html', icon: 'answers' },
     { id: 'memos', label: 'Memoarer', href: 'user/memoarer.html', icon: 'memos' },
     { id: 'notes', label: 'Notater', href: 'user/notater.html', icon: 'notes' },
@@ -66,12 +70,23 @@
     { id: 'settings', label: 'Innstillinger', href: 'user/settings.html', icon: 'settings' }
   ];
 
-  var SECTIONS = [
-    { label: 'Oversikt', items: MENU.slice(0, 3) },
-    { label: 'Studier', items: MENU.slice(3, 6) },
-    { label: 'Innhold', items: MENU.slice(6, 10) },
-    { label: 'Konto', items: MENU.slice(10) }
-  ];
+  function getSections() {
+    var admin = isAdminUser();
+    var konto = [
+      { id: 'settings', label: 'Innstillinger', href: 'user/settings.html', icon: 'settings' }
+    ];
+    if (admin) {
+      konto.unshift({ id: 'admin', label: 'Admin-hub', href: 'user/admin.html', icon: 'admin' });
+    }
+    return [
+      { label: 'Oversikt', items: MENU.slice(0, 3) },
+      { label: 'Studier', items: MENU.slice(3, 5) },
+      { label: 'Innhold', items: MENU.slice(5, 9) },
+      { label: 'Konto', items: konto }
+    ];
+  }
+
+  var SECTIONS = getSections();
 
   function activeId() {
     var page = pageName();
@@ -86,6 +101,7 @@
     if (page === 'memoarer.html' || /\/memoar\//.test(path)) return 'memos';
     if (page === 'notater.html') return 'notes';
     if (/\/flashcards\//.test(path) || /flashcards/.test(page)) return 'flashcards';
+    if (page === 'admin.html') return 'admin';
     if (page === 'settings.html') return 'settings';
     return '';
   }
@@ -174,7 +190,7 @@
 
   function navHtml() {
     var active = activeId();
-    return '<nav class="nav" aria-label="Brukermeny">' + SECTIONS.map(function (section) { return sectionHtml(section, active); }).join('') + '</nav>';
+    return '<nav class="nav" aria-label="Brukermeny">' + getSections().map(function (section) { return sectionHtml(section, active); }).join('') + '</nav>';
   }
 
   function renderLocal() {
@@ -267,6 +283,7 @@
   else run();
   window.addEventListener('hashchange', render);
   window.addEventListener('haugnes:subject-access-changed', render);
+  window.addEventListener('haugnes:entitlements-changed', render);
 
   window.HaugnesUserSidebar = { run: run, render: render, sections: SECTIONS.slice(), menu: MENU.slice() };
 })(window, document);
