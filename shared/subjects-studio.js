@@ -283,7 +283,16 @@
       updated_by: userId()
     });
     if (payload.origin && payload.origin !== 'builtin') payload.origin = 'custom';
-    return sb.from('subject_pages').upsert(payload, { onConflict: 'subject_code' }).select().maybeSingle().then(function (result) {
+    // Postgres evaluates the INSERT row's NOT NULL constraints before the
+    // ON CONFLICT branch, so a partial patch (e.g. saving only memo copy)
+    // would fail on `name IS NOT NULL` even when the row already exists.
+    // Route partial patches through UPDATE and reserve UPSERT for creates
+    // that carry the required NOT NULL fields.
+    var isCreate = !!payload.name;
+    var query = isCreate
+      ? sb.from('subject_pages').upsert(payload, { onConflict: 'subject_code' })
+      : sb.from('subject_pages').update(payload).eq('subject_code', payload.subject_code);
+    return query.select().maybeSingle().then(function (result) {
       if (result && result.error) throw result.error;
       invalidateSubject(payload.subject_code);
       return normalizePage(result && result.data);
