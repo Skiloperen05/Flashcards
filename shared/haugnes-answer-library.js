@@ -106,6 +106,7 @@
   ];
 
   var PACKAGES = [];
+  var PACKAGE_ACCESS_IDS = [];
   var packagesLoaded = false;
   var packagesPromise = null;
   var lastLoadError = null;
@@ -127,9 +128,8 @@
     return [];
   }
 
-  // Access to the archive is driven purely by subject ownership: unlocking a
-  // subject unlocks its A-besvarelser. (The Mine fag selection no longer hides
-  // the archive – locked subjects are shown with a padlock instead.)
+  // Subject owners have access to every package in their subject. A standalone
+  // package purchase grants only that one package, never the whole subject.
   function availableCodes() {
     var owned = entitledCodes();
     if (!owned.length && /^(localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname) && new URLSearchParams(window.location.search).get('dev') === '1') {
@@ -140,6 +140,18 @@
 
   function isUnlocked(c) {
     return availableCodes().indexOf(code(c)) !== -1;
+  }
+
+  function hasAdminBypass() {
+    return !!(window.HaugnesEntitlements && window.HaugnesEntitlements.hasBypass && window.HaugnesEntitlements.hasBypass());
+  }
+
+  function hasPackageAccess(pack) {
+    return !!pack && (hasAdminBypass() || isUnlocked(pack.subject) || PACKAGE_ACCESS_IDS.indexOf(pack.id) !== -1);
+  }
+
+  function subjectHasPackageAccess(subjectCode) {
+    return PACKAGES.some(function (pack) { return pack.subject === code(subjectCode) && hasPackageAccess(pack); });
   }
 
   function shopUrl() {
@@ -154,13 +166,12 @@
   }
 
   function enabledPackages() {
-    var available = availableCodes();
-    return PACKAGES.filter(function (p) { return available.indexOf(p.subject) !== -1; });
+    return PACKAGES.filter(hasPackageAccess);
   }
 
   function subjectByCode(c) { return SUBJECTS.find(function (s) { return s.code === code(c); }); }
-  function packagesForSubject(c) { return enabledPackages().filter(function (p) { return p.subject === code(c); }); }
-  function packageById(id) { return enabledPackages().find(function (p) { return p.id === id; }); }
+  function packagesForSubject(c) { return PACKAGES.filter(function (p) { return p.subject === code(c); }); }
+  function packageById(id) { return PACKAGES.find(function (p) { return p.id === id; }); }
   function allResources() { return enabledPackages().reduce(function (out, p) { return out.concat(p.resources.map(function (r) { return Object.assign({ subject: p.subject, term: p.term, packageId: p.id, packageTitle: p.title }, r); })); }, []).sort(function (a, b) { return (a.subject + a.order).localeCompare(b.subject + b.order); }); }
   function publishedPackages() { return enabledPackages().filter(function (p) { return p.resources.length > 0; }); }
   function plannedPackages() { return enabledPackages().filter(function (p) { return p.resources.length === 0; }); }
@@ -221,13 +232,17 @@
         try { sb = window.AuthGuard.getClient(); }
         catch (e) { return []; }
         return Promise.all([
-          sb.from('answer_packages').select('id,subject_code,term,title,subtitle,description,local_status,sort_order').order('sort_order'),
-          sb.from('answer_resources').select('id,package_id,kind,title,subtitle,description,icon,url,download_url,order_index,storage_bucket,storage_path').order('order_index')
+          sb.from('answer_packages').select('id,subject_code,term,title,subtitle,description,local_status,sort_order,price_nok_ore,sale_active,published').order('sort_order'),
+          sb.from('answer_resources').select('id,package_id,kind,title,subtitle,description,icon,url,download_url,order_index,storage_bucket,storage_path').order('order_index'),
+          sb.from('answer_package_entitlements').select('package_id')
         ]).then(function (results) {
           var pkgRes = results[0];
           var resRes = results[1];
+          var entitlementRes = results[2];
           if (pkgRes && pkgRes.error) lastLoadError = pkgRes.error;
           if (resRes && resRes.error) lastLoadError = resRes.error;
+          if (entitlementRes && entitlementRes.error) lastLoadError = entitlementRes.error;
+          PACKAGE_ACCESS_IDS = (entitlementRes && entitlementRes.data ? entitlementRes.data : []).map(function (row) { return row.package_id; });
           var packages = (pkgRes && pkgRes.data ? pkgRes.data : []);
           var resources = (resRes && resRes.data ? resRes.data : []);
           return signStorageResources(sb, resources).then(function () {
@@ -240,6 +255,9 @@
                 subtitle: p.subtitle,
                 description: p.description || '',
                 localStatus: p.local_status || null,
+                priceOre: Number(p.price_nok_ore || 0),
+                saleActive: p.sale_active !== false,
+                published: p.published !== false,
                 sortOrder: p.sort_order || 0,
                 resources: resources
                   .filter(function (r) { return r.package_id === p.id; })
@@ -270,6 +288,7 @@
         return PACKAGES;
       }).catch(function (e) {
         lastLoadError = e;
+        PACKAGE_ACCESS_IDS = [];
         PACKAGES = mergePackages([]);
         packagesLoaded = true;
         return PACKAGES;
@@ -285,7 +304,7 @@
       var subject = subjectByCode(r.subject) || SUBJECTS[0];
       return { course: r.subject, icon: subject.icon, color: subject.accent, term: r.term, title: r.title, subtitle: r.subtitle, type: (r.kind || '').toLowerCase(), desc: r.desc, meta: [r.kind, /\.pdf($|[?#])/i.test(r.url || r.download || '') ? 'PDF' : 'Dokument', r.term], popular: index + 1, url: r.url, download: r.download };
     });
-    window.HaugnesAnswerLibrary = { subjects: enabledSubjects(), packages: enabledPackages(), resources: allResources(), summary: summary, render: render, storageBucket: STORAGE_BUCKET, signedUrlTtl: SIGNED_URL_TTL, reload: function () { return loadPackages(true).then(function () { render(); }); } };
+    window.HaugnesAnswerLibrary = { subjects: SUBJECTS.slice(), packages: PACKAGES.slice(), resources: allResources(), summary: summary, render: render, storageBucket: STORAGE_BUCKET, signedUrlTtl: SIGNED_URL_TTL, reload: function () { return loadPackages(true).then(function () { render(); }); } };
   }
 
   function injectStyles() {
@@ -348,7 +367,7 @@
     if (heading) heading.textContent = 'Eksamensarkiv';
     if (intro) intro.textContent = 'Fag → eksamenspakker → PDF-er som faktisk ligger ute.';
     if (heroTitle) heroTitle.innerHTML = 'Finn riktig <span>eksamenspakke</span>.';
-    if (heroCopy) heroCopy.textContent = 'Fag du har låst opp er åpne. Fag du ikke eier vises med hengelås til du låser dem opp i Butikken.';
+    if (heroCopy) heroCopy.textContent = 'Fageiere får alle pakker gratis. Enkelte pakker kan også kjøpes separat.';
     if (stats[0]) stats[0].textContent = s.resources;
     if (stats[1]) stats[1].textContent = s.packages;
     if (stats[2]) stats[2].textContent = s.answers;
@@ -358,8 +377,10 @@
   }
 
   function setHash(subject, packageId) { var hash = subject ? '#/' + subject.toLowerCase() + (packageId ? '/' + packageId.replace(subject.toLowerCase() + '-', '') : '') : ''; if (window.location.hash !== hash) window.location.hash = hash; else route(); }
-  function parseHash() { var parts = window.location.hash.replace(/^#\/?/, '').split('/').filter(Boolean); state.subject = parts[0] ? parts[0].toUpperCase() : null; state.packageId = state.subject && parts[1] ? state.subject.toLowerCase() + '-' + parts[1] : null; if (state.subject && availableCodes().indexOf(state.subject) === -1) { state.subject = null; state.packageId = null; } }
+  function parseHash() { var parts = window.location.hash.replace(/^#\/?/, '').split('/').filter(Boolean); state.subject = parts[0] ? parts[0].toUpperCase() : null; state.packageId = state.subject && parts[1] ? state.subject.toLowerCase() + '-' + parts[1] : null; if (state.subject && !isUnlocked(state.subject) && !PACKAGES.some(function (p) { return p.subject === state.subject; })) { state.subject = null; state.packageId = null; } }
   function breadcrumb() { var html = '<div class="hf-answer-breadcrumb"><button type="button" data-route="home">Fag</button>'; if (state.subject) html += '<span>›</span><button type="button" data-route="subject" data-subject="' + esc(state.subject) + '">' + esc(state.subject) + '</button>'; if (state.packageId) { var pack = packageById(state.packageId); html += '<span>›</span><span>' + esc(pack ? pack.title : 'Pakke') + '</span>'; } return html + '</div>'; }
+  function priceLabel(pack) { return Math.round((pack.priceOre || 0) / 100).toLocaleString('nb-NO') + ' kr'; }
+  function canBuyPack(pack) { return !!(pack && pack.published !== false && pack.saleActive !== false && Number(pack.priceOre || 0) >= 100); }
 
   function renderSubjects() {
     // Wait for entitlements so we don't briefly show owned subjects as locked.
@@ -373,8 +394,12 @@
     var toolbar = '<div class="hf-answer-toolbar"><input class="hf-answer-search" id="hfAnswerSearch" type="search" placeholder="Søk i fag..." value="' + esc(state.query) + '"><span class="hf-answer-muted">' + s.subjects + ' av ' + SUBJECTS.length + ' fag låst opp · ' + s.resources + ' dokumenter ute</span></div>';
     if (!subjects.length) return breadcrumb() + toolbar + '<div class="hf-empty-panel">Ingen fag matcher søket.</div>';
     return breadcrumb() + toolbar + '<div class="hf-subject-grid">' + subjects.map(function (subject) {
-      if (!isUnlocked(subject.code)) {
-        return '<div class="hf-subject-tile hf-locked" style="--accent:' + subject.accent + '"><div class="hf-tile-top"><span class="hf-tile-icon">🔒</span><span class="hf-status-pill locked">Låst</span></div><h3>' + subject.code + '<br>' + subject.name + '</h3><p>Lås opp ' + subject.code + ' i Butikken for å få tilgang til eksamenspakker, A-besvarelser og sensorveiledninger.</p><div class="hf-tile-meta"><a class="hf-primary" href="' + esc(shopHref) + '">Lås opp i Butikk →</a></div></div>';
+      if (!isUnlocked(subject.code) && !subjectHasPackageAccess(subject.code)) {
+        var offered = packagesForSubject(subject.code).find(canBuyPack);
+        var lockedAction = offered
+          ? '<button class="hf-primary" type="button" data-subject="' + subject.code + '">Se ' + priceLabel(offered) + '-pakke →</button>'
+          : '<a class="hf-primary" href="' + esc(shopHref) + '">Lås opp i Butikk →</a>';
+        return '<div class="hf-subject-tile hf-locked" style="--accent:' + subject.accent + '"><div class="hf-tile-top"><span class="hf-tile-icon">🔒</span><span class="hf-status-pill locked">Låst</span></div><h3>' + subject.code + '<br>' + subject.name + '</h3><p>' + (offered ? 'Du kan kjøpe en eksamenspakke separat, eller låse opp hele faget i Butikken.' : 'Lås opp ' + subject.code + ' i Butikken for å få tilgang til eksamenspakker, A-besvarelser og sensorveiledninger.') + '</p><div class="hf-tile-meta">' + lockedAction + '</div></div>';
       }
       var packs = packagesForSubject(subject.code);
       var count = packs.reduce(function (sum, p) { return sum + p.resources.length; }, 0);
@@ -385,18 +410,25 @@
 
   function renderSubject() {
     var subject = subjectByCode(state.subject);
-    if (!subject || availableCodes().indexOf(subject.code) === -1) return renderSubjects();
+    if (!subject) return renderSubjects();
     var packs = packagesForSubject(subject.code);
-    return breadcrumb() + '<div class="hf-answer-toolbar"><div><strong style="color:#fff">' + subject.code + ' · ' + subject.name + '</strong><div class="hf-answer-muted">Velg semester/eksamenspakke. Pakker uten PDF-er er tydelig markert.</div></div><button class="hf-secondary" type="button" data-route="home">Alle fag</button></div><div class="hf-package-list">' + packs.map(function (p) {
+    if (!packs.length) return renderSubjects();
+    return breadcrumb() + '<div class="hf-answer-toolbar"><div><strong style="color:#fff">' + subject.code + ' · ' + subject.name + '</strong><div class="hf-answer-muted">Fageiere får alle pakker gratis. Enkeltpakker kan kjøpes separat.</div></div><button class="hf-secondary" type="button" data-route="home">Alle fag</button></div><div class="hf-package-list">' + packs.map(function (p) {
       var live = p.resources.length > 0;
       var answerCount = p.resources.filter(function (r) { return r.kind === 'A-besvarelse'; }).length;
-      return '<article class="hf-package-card" style="--accent:' + subject.accent + '"><div><div class="hf-resource-kind">' + subject.code + ' · ' + p.term + '</div><h3>' + p.title + '</h3><p>' + p.description + '</p><div class="hf-tile-meta"><span class="hf-meta">' + p.resources.length + ' dokumenter</span><span class="hf-meta">' + answerCount + ' A-besvarelse</span><span class="hf-meta">' + (p.localStatus || (live ? 'Publisert' : 'Venter på filer')) + '</span></div></div><div class="hf-package-actions"><button class="hf-primary" type="button" data-package="' + p.id + '">' + (live ? 'Åpne pakke →' : 'Se pakkeplass →') + '</button></div></article>';
+      var accessible = hasPackageAccess(p);
+      var action = accessible
+        ? '<button class="hf-primary" type="button" data-package="' + p.id + '">' + (live ? 'Åpne pakke →' : 'Se pakkeplass →') + '</button>'
+        : canBuyPack(p)
+          ? '<button class="hf-primary" type="button" data-buy-package="' + p.id + '">Kjøp pakken · ' + priceLabel(p) + '</button><a class="hf-secondary" href="' + esc(shopHref) + '">Hele faget</a>'
+          : '<a class="hf-secondary" href="' + esc(shopHref) + '">Lås opp hele faget</a>';
+      return '<article class="hf-package-card" style="--accent:' + subject.accent + '"><div><div class="hf-resource-kind">' + subject.code + ' · ' + p.term + '</div><h3>' + p.title + '</h3><p>' + p.description + '</p><div class="hf-tile-meta"><span class="hf-meta">' + (accessible ? p.resources.length + ' dokumenter' : 'Enkelttilgang') + '</span><span class="hf-meta">' + (accessible ? answerCount + ' A-besvarelse' : (canBuyPack(p) ? priceLabel(p) : 'Kun fageiere')) + '</span><span class="hf-meta">' + (p.localStatus || (live ? 'Publisert' : 'Venter på filer')) + '</span></div></div><div class="hf-package-actions">' + action + '</div></article>';
     }).join('') + '</div>';
   }
 
   function renderPackage() {
     var pack = packageById(state.packageId);
-    if (!pack) return renderSubject();
+    if (!pack || !hasPackageAccess(pack)) return renderSubject();
     var subject = subjectByCode(pack.subject);
     var resources = pack.resources.slice().sort(function (a, b) { return (a.order || 0) - (b.order || 0); }).filter(function (r) { var q = state.query.toLowerCase().trim(); return !q || (r.title + ' ' + r.kind + ' ' + r.desc + ' ' + r.subtitle).toLowerCase().indexOf(q) !== -1; });
     var html = breadcrumb() + '<div class="hf-answer-toolbar"><input class="hf-answer-search" id="hfAnswerSearch" type="search" placeholder="Søk i ' + esc(pack.title) + '..." value="' + esc(state.query) + '"><button class="hf-secondary" type="button" data-route="subject" data-subject="' + pack.subject + '">Til ' + pack.subject + '</button></div>';
@@ -422,11 +454,34 @@
     try { window.dispatchEvent(new CustomEvent('haugnes:answer-library-rendered', { detail: { subject: state.subject, packageId: state.packageId } })); } catch (e) {}
   }
 
+  function startPackageCheckout(packageId, button) {
+    var session = window.AuthGuard && window.AuthGuard.getSession ? window.AuthGuard.getSession() : null;
+    if (!session || !session.access_token) { window.location.href = shopUrl(); return; }
+    var original = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Sender til Stripe…';
+    fetch('https://qnwjhheoekpqqqhevztw.supabase.co/functions/v1/create-stripe-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+      body: JSON.stringify({ packageId: packageId })
+    }).then(function (response) {
+      return response.json().then(function (data) { return { ok: response.ok, data: data }; });
+    }).then(function (result) {
+      if (!result.ok || !result.data || !result.data.url) throw new Error(result.data && result.data.error || 'Kunne ikke starte betaling.');
+      window.location.href = result.data.url;
+    }).catch(function (error) {
+      button.disabled = false;
+      button.textContent = original;
+      window.alert(error && error.message ? error.message : 'Kunne ikke starte Stripe-betaling.');
+    });
+  }
+
   function bind() {
     document.querySelectorAll('[data-subject]').forEach(function (el) { el.addEventListener('click', function () { setHash(el.getAttribute('data-subject')); }); });
     document.querySelectorAll('[data-package]').forEach(function (el) { el.addEventListener('click', function () { setHash(state.subject, el.getAttribute('data-package')); }); });
     document.querySelectorAll('[data-route="home"]').forEach(function (el) { el.addEventListener('click', function () { state.query = ''; setHash(null); }); });
     document.querySelectorAll('[data-route="subject"]').forEach(function (el) { el.addEventListener('click', function () { state.query = ''; setHash(el.getAttribute('data-subject') || state.subject); }); });
+    document.querySelectorAll('[data-buy-package]').forEach(function (el) { el.addEventListener('click', function () { startPackageCheckout(el.getAttribute('data-buy-package'), el); }); });
     var search = document.getElementById('hfAnswerSearch'); if (search) search.addEventListener('input', function () { state.query = search.value || ''; render(); });
   }
 

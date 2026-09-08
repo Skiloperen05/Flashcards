@@ -300,6 +300,53 @@
     return subject ? subject.id : id;
   }
 
+  // The embedded list keeps the public site usable without a network request.
+  // On signed-in pages it is extended from the admin-managed catalogue so a new
+  // course appears in "Mine fag" without a static-site deployment.
+  function applyRemoteCatalog(rows) {
+    var byCode = {};
+    subjects.forEach(function (subject) { byCode[code(subject.code)] = subject; });
+    (rows || []).forEach(function (row) {
+      var subjectCode = code(row.code);
+      if (!subjectCode) return;
+      var previous = byCode[subjectCode] || {};
+      var categoryId = categoryById[row.category_id] ? row.category_id : (previous.categoryId || 'electives');
+      byCode[subjectCode] = withCategory({
+        id: previous.id || subjectCode.toLowerCase(),
+        aliases: previous.aliases || [],
+        code: subjectCode,
+        name: row.name || previous.name || subjectCode,
+        icon: row.icon || previous.icon || '✦',
+        emblem: row.emblem || previous.emblem || '',
+        accent: row.accent || previous.accent || '#2f62ff',
+        status: row.status || previous.status || 'active',
+        statusText: previous.statusText || 'Aktiv',
+        progress: previous.progress || 0,
+        decks: previous.decks || '—',
+        cards: previous.cards || '—',
+        tools: previous.tools || '3',
+        path: row.path || previous.path || ('../flashcards/?subject=' + encodeURIComponent(subjectCode.toLowerCase())),
+        flashcards: row.flashcards_path || previous.flashcards || ('../flashcards/?subject=' + encodeURIComponent(subjectCode.toLowerCase())),
+        description: row.description || previous.description || 'Fagressurser, flashcards og eksamensforberedelser.'
+      }, categoryId, Number(row.sort_order || previous.sortOrder || 999));
+    });
+    subjects = Object.keys(byCode).map(function (key) { return byCode[key]; });
+    try { window.dispatchEvent(new CustomEvent('haugnes:subject-catalog-changed')); } catch (e) {}
+  }
+
+  function loadRemoteCatalog(attempt) {
+    if (!/\/user\//.test(window.location.pathname)) return;
+    var client = window.AuthGuard && typeof window.AuthGuard.getClient === 'function' ? window.AuthGuard.getClient() : null;
+    if (!client) {
+      if ((attempt || 0) < 30) window.setTimeout(function () { loadRemoteCatalog((attempt || 0) + 1); }, 150);
+      return;
+    }
+    client.from('app_subjects').select('code,name,description,category_id,accent,icon,emblem,path,flashcards_path,status,published,sort_order').eq('published', true).order('sort_order').then(function (result) {
+      if (!result || result.error || !result.data) return;
+      applyRemoteCatalog(result.data);
+    });
+  }
+
   window.HaugnesSubjects = {
     getAll: getAll,
     getCatalog: getCatalog,
@@ -325,4 +372,5 @@
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadRatingAdminEditor);
   else loadRatingAdminEditor();
+  window.setTimeout(function () { loadRemoteCatalog(0); }, 0);
 })(window);

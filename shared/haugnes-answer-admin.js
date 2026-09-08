@@ -259,6 +259,11 @@
     }
   }
 
+  function kronerToOre(value) {
+    var amount = Number(String(value == null ? '' : value).replace(',', '.'));
+    return Number.isFinite(amount) && amount >= 0 ? Math.round(amount * 100) : 0;
+  }
+
   function savePackage(existing, values) {
     var sb = getClient();
     if (!sb) return Promise.reject(new Error('Supabase er ikke tilgjengelig'));
@@ -270,6 +275,9 @@
       subtitle: values.subtitle || (values.subject_code.toUpperCase() + ' ' + values.term),
       description: values.description || '',
       local_status: values.local_status || null,
+      price_nok_ore: kronerToOre(values.package_price),
+      sale_active: values.sale_active === 'true',
+      published: values.published !== 'false',
       sort_order: parseInt(values.sort_order, 10) || 0,
       updated_at: new Date().toISOString()
     };
@@ -415,13 +423,16 @@
   function openPackageForm(existing, presetSubject) {
     openModal(
       existing ? 'Rediger pakke' : 'Ny eksamenspakke',
-      existing ? 'Endringer publiseres umiddelbart til alle med tilgang til faget.' : 'Pakken vises i arkivet med en gang. PDF-er legger du til etterpå med «Ny PDF».',
+      existing ? 'Fageiere har alltid gratis tilgang. Du kan i tillegg selge denne enkeltpakken separat.' : 'Opprett pakken først, og last deretter opp PDF-ene. Fageiere får gratis tilgang automatisk.',
       [
         { name: 'subject_code', label: 'Fag', type: 'select', value: existing ? existing.subject : (presetSubject || 'SAM3'), options: subjectOptions(), half: true },
         { name: 'term', label: 'Semester (f.eks. V26)', type: 'text', value: existing ? existing.term : '', required: true, half: true, placeholder: 'V26' },
         { name: 'title', label: 'Tittel', type: 'text', value: existing ? existing.title : '', required: true, placeholder: 'Våren 2026' },
         { name: 'subtitle', label: 'Undertittel', type: 'text', value: existing ? existing.subtitle : '', placeholder: 'SAM3 Makroøkonomi' },
         { name: 'description', label: 'Beskrivelse', type: 'textarea', value: existing ? existing.description : '', placeholder: 'Komplett eksamenspakke med originaloppgave, A-besvarelse og sensorveiledning.' },
+        { name: 'package_price', label: 'Pakkepris (kr)', type: 'number', value: existing ? String((existing.priceOre || 0) / 100) : '0', half: true, placeholder: '0', hint: '0 betyr at pakken ikke kan kjøpes separat. Fageiere har alltid gratis tilgang.' },
+        { name: 'sale_active', label: 'Selges separat', type: 'select', value: existing && existing.saleActive === false ? 'false' : 'true', half: true, options: [{ value: 'true', label: 'Ja' }, { value: 'false', label: 'Nei' }] },
+        { name: 'published', label: 'Synlighet', type: 'select', value: existing && existing.published === false ? 'false' : 'true', half: true, options: [{ value: 'true', label: 'Publisert' }, { value: 'false', label: 'Kladd (skjult)' }] },
         { name: 'local_status', label: 'Statusmerke (valgfritt)', type: 'text', value: existing ? (existing.localStatus || '') : '', half: true, placeholder: 'F.eks. «Kommer snart»' },
         { name: 'sort_order', label: 'Sortering', type: 'number', value: existing ? String(existing.sortOrder || 0) : '0', half: true }
       ],
@@ -433,7 +444,7 @@
     var hasStored = existing && existing.storagePath;
     var fileHint = hasStored
       ? 'Ligger allerede som opplastet PDF. Velg en ny fil for å erstatte den, eller la stå.'
-      : 'Last opp PDF-en direkte (maks 50 MB). Filen lagres privat og vises kun for de med tilgang til faget.';
+      : 'Last opp PDF-en direkte (maks 50 MB). Filen lagres privat og vises kun for fageiere eller kjøpere av denne pakken.';
     openModal(
       existing ? 'Rediger PDF' : 'Ny PDF i ' + pack.subject + ' ' + pack.term,
       'Last opp en PDF, eller lim inn en delbar lenke. Publiseres umiddelbart.',

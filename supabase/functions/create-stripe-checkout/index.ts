@@ -27,7 +27,7 @@ const SUBJECTS: Record<string, string> = {
 
 const ALL_SUBJECT_CODES = Object.keys(SUBJECTS);
 
-type ProductKind = "subject" | "bundle" | "pass";
+type ProductKind = "subject" | "bundle" | "pass" | "package";
 
 type CheckoutProduct = {
   id: string;
@@ -37,6 +37,7 @@ type CheckoutProduct = {
   unitAmount: number;
   subjectCodes: string[];
   source: string;
+  packageId?: string;
 };
 
 type DiscountCode = {
@@ -236,6 +237,21 @@ async function subjectPriceOre(subjectCode: string) {
   return Number.isFinite(price) && price >= 0 ? price : DEFAULT_PRICE_NOK_ORE;
 }
 
+async function publishedSubjectName(subjectCode: string) {
+  const params = new URLSearchParams({
+    code: `eq.${subjectCode}`,
+    published: "eq.true",
+    select: "name",
+    limit: "1",
+  });
+  const response = await fetchWithRetry(`${SUPABASE_URL}/rest/v1/app_subjects?${params.toString()}`, {
+    headers: adminHeaders(),
+  });
+  if (!response.ok) return SUBJECTS[subjectCode] || null;
+  const rows = await response.json();
+  return Array.isArray(rows) && rows[0]?.name ? String(rows[0].name) : (SUBJECTS[subjectCode] || null);
+}
+
 async function productPriceOre(product: CheckoutProduct) {
   if (product.kind === "subject") return product.unitAmount;
 
@@ -292,6 +308,39 @@ async function commerceProduct(productIdValue: string) {
     unitAmount: Number(row.price_nok_ore),
     subjectCodes: codes,
     source: kind === "pass" ? "stripe_friend_pass" : "stripe_bundle",
+  } satisfies CheckoutProduct;
+}
+
+async function answerPackageProduct(packageIdValue: unknown) {
+  const packageId = productId(packageIdValue);
+  if (!packageId) return null;
+
+  const params = new URLSearchParams({
+    id: `eq.${packageId}`,
+    select: "id,subject_code,title,subtitle,description,price_nok_ore,sale_active,published",
+    limit: "1",
+  });
+  const response = await fetchWithRetry(`${SUPABASE_URL}/rest/v1/answer_packages?${params.toString()}`, {
+    headers: adminHeaders(),
+  });
+  if (!response.ok) return null;
+  const rows = await response.json();
+  const row = Array.isArray(rows) ? rows[0] : null;
+  if (!row || row.published === false || row.sale_active === false) return null;
+  const amount = Number(row.price_nok_ore || 0);
+  if (!Number.isFinite(amount) || amount < 100) return null;
+  const subjectCode = code(row.subject_code);
+  if (!subjectCode) return null;
+
+  return {
+    id: `package-${packageId}`,
+    packageId,
+    kind: "package",
+    name: `${subjectCode} · ${row.title || packageId}`,
+    description: row.description || row.subtitle || "Tilgang til eksamenspakken på Haugnes Flashcards.",
+    unitAmount: amount,
+    subjectCodes: [subjectCode],
+    source: "stripe_package",
   } satisfies CheckoutProduct;
 }
 
@@ -417,6 +466,9 @@ async function getProfile(userId: string) {
 }
 
 async function productFromPayload(payload: Record<string, unknown>) {
+  const packageProduct = await answerPackageProduct(payload.packageId);
+  if (packageProduct) return packageProduct;
+
   const requestedProductId = productId(payload.productId || payload.bundleCode);
   const managedProduct = await commerceProduct(requestedProductId);
   if (managedProduct) return managedProduct;
@@ -425,7 +477,7 @@ async function productFromPayload(payload: Record<string, unknown>) {
   if (bundle) return { ...bundle, unitAmount: await productPriceOre(bundle) };
 
   const subjectCode = code(payload.subjectCode);
-  const subjectName = SUBJECTS[subjectCode];
+  const subjectName = await publishedSubjectName(subjectCode);
   if (!subjectName) return null;
 
   return {
@@ -439,8 +491,19 @@ async function productFromPayload(payload: Record<string, unknown>) {
   } satisfies CheckoutProduct;
 }
 
-function isProductOwned(product: CheckoutProduct, productOwnedCodes: string[], profile: { is_admin?: boolean; is_friend?: boolean }) {
+async function ownsPackage(userId: string, packageId: string) {
+  const params = new URLSearchParams({ user_id: `eq.${userId}`, package_id: `eq.${packageId}`, select: "id", limit: "1" });
+  const response = await fetchWithRetry(`${SUPABASE_URL}/rest/v1/answer_package_entitlements?${params.toString()}`, { headers: adminHeaders() });
+  if (!response.ok) throw new Error("Kunne ikke sjekke pakketilgang.");
+  const rows = await response.json();
+  return Array.isArray(rows) && rows.length > 0;
+}
+
+async function isProductOwned(product: CheckoutProduct, userId: string, productOwnedCodes: string[], profile: { is_admin?: boolean; is_friend?: boolean }) {
   if (profile.is_admin || profile.is_friend) return true;
+  if (product.kind === "package" && product.packageId) {
+    return productOwnedCodes.includes(product.subjectCodes[0]) || await ownsPackage(userId, product.packageId);
+  }
   return product.subjectCodes.every((subjectCode) => productOwnedCodes.includes(subjectCode));
 }
 
@@ -460,10 +523,14 @@ async function createCheckoutSession(req: Request, user: { id?: string; email?: 
   const baseUrl = siteUrl(req);
   const finalAmount = applyDiscount(pricing.payableAmount, discount);
   if (finalAmount < 100) throw new Error("Beløpet er for lavt for Stripe-betaling.");
-  const successQuery = product.kind === "subject"
+  const successQuery = product.kind === "package"
+    ? `pakke=${encodeURIComponent(product.packageId || product.id)}`
+    : product.kind === "subject"
     ? `fag=${encodeURIComponent(product.subjectCodes[0])}`
     : `produkt=${encodeURIComponent(product.id)}`;
-  const cancelQuery = product.kind === "subject"
+  const cancelQuery = product.kind === "package"
+    ? `pakke=${encodeURIComponent(product.packageId || product.id)}`
+    : product.kind === "subject"
     ? `fag=${encodeURIComponent(product.subjectCodes[0])}`
     : `produkt=${encodeURIComponent(product.id)}`;
   const params = new URLSearchParams();
@@ -482,6 +549,7 @@ async function createCheckoutSession(req: Request, user: { id?: string; email?: 
   params.set("metadata[product_kind]", product.kind);
   params.set("metadata[subject_codes]", product.subjectCodes.join(","));
   params.set("metadata[source]", product.source);
+  if (product.packageId) params.set("metadata[package_id]", product.packageId);
   params.set("metadata[original_amount]", String(pricing.baseAmount));
   params.set("metadata[owned_bundle_credit_amount]", String(pricing.ownedCreditAmount));
   params.set("metadata[adjusted_amount]", String(pricing.payableAmount));
@@ -542,7 +610,7 @@ Deno.serve(async (req: Request) => {
     if (!user?.id) throw new Error("Kunne ikke lese bruker.");
 
     const [entitlements, profile] = await Promise.all([getEntitlements(user.id), getProfile(user.id)]);
-    if (isProductOwned(product, ownedCodes(entitlements), profile)) {
+    if (await isProductOwned(product, user.id, ownedCodes(entitlements), profile)) {
       return json(req, 409, { error: "Du har allerede tilgang til dette produktet." });
     }
 

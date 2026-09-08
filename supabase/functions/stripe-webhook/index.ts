@@ -175,6 +175,26 @@ async function grantFriendPass(userId: string) {
   if (!response.ok) throw new Error(`Kunne ikke aktivere Vennepass (${response.status}).`);
 }
 
+async function grantPackageEntitlement(session: Record<string, unknown>, userId: string, packageId: string) {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/answer_package_entitlements?on_conflict=user_id,package_id`, {
+    method: "POST",
+    headers: adminHeaders({
+      "Content-Type": "application/json",
+      Prefer: "resolution=ignore-duplicates,return=minimal",
+    }),
+    body: JSON.stringify({
+      user_id: userId,
+      package_id: packageId,
+      source: "stripe_package",
+      stripe_checkout_session_id: session.id || null,
+      stripe_customer_id: session.customer || null,
+      amount_paid: session.amount_total || null,
+      currency: session.currency || null,
+    }),
+  });
+  if (!response.ok) throw new Error(`Kunne ikke lagre pakketilgang (${response.status}).`);
+}
+
 async function markDiscountRedeemed(discountCode: string) {
   const normalized = code(discountCode);
   if (!normalized) return;
@@ -209,9 +229,13 @@ async function grantPurchase(session: Record<string, unknown>) {
   const source = String(metadata.source || (productKind === "bundle" ? "stripe_bundle" : "stripe"));
   const discountCode = code(metadata.discount_code);
 
-  if (!userId || !subjectCodes.length) throw new Error("Stripe-session mangler kjøpsmetadata.");
+  const packageId = String(metadata.package_id || "").trim();
+  if (!userId || (productKind === "package" ? !packageId : !subjectCodes.length)) {
+    throw new Error("Stripe-session mangler kjøpsmetadata.");
+  }
 
-  await grantSubjectEntitlements(session, userId, subjectCodes, source);
+  if (productKind === "package") await grantPackageEntitlement(session, userId, packageId);
+  else await grantSubjectEntitlements(session, userId, subjectCodes, source);
   if (productKind === "pass") await grantFriendPass(userId);
   if (discountCode) await markDiscountRedeemed(discountCode);
 }

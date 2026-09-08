@@ -1,6 +1,6 @@
 # Project Map
 
-Last updated: 2026-07-25
+Last updated: 2026-09-09
 
 Purpose: make future app changes faster by documenting the stable entry points, data sources, and search paths. Update this file whenever a change moves, renames, adds, or removes app-facing functionality.
 
@@ -33,6 +33,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Dashboard: `user/index.html`.
 - Subject management: `user/subjects.html`.
 - Shop/entitlement claiming, Stripe checkout entry, discount field, and admin commerce editor for subjects, bundles, Vennepass, prices, and rabattkoder: `user/butikk.html`.
+- Admin Hub: `user/admin-hub.html`. Admin-only course catalogue, subject pricing, standalone exam-package pricing, activity overview, user list, and ownership counts.
 - Exam analysis catalog with only published/direct analysis links: `user/eksamensanalyse.html`.
 - A-besvarelser / eksamensarkiv shell: `user/a-besvarelser.html`.
 - Oppgavebank shell: `user/oppgavebank.html`.
@@ -71,7 +72,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 Active UI:
 - Shell page: `user/a-besvarelser.html`.
 - Dynamic package renderer: `shared/haugnes-answer-library.js`.
-- Data source: Supabase tables `answer_packages` and `answer_resources`.
+- Data source: Supabase tables `answer_packages`, `answer_resources`, and `answer_package_entitlements`.
 - Schema, RLS policies, and seed reference: `supabase-setup.sql`.
 
 Admin authoring (`shared/haugnes-answer-admin.js`, admins only):
@@ -82,6 +83,7 @@ Admin authoring (`shared/haugnes-answer-admin.js`, admins only):
 
 Important behavior:
 - The renderer fetches packages/resources from Supabase after auth and entitlement checks.
+- Owning a subject opens every one of its exam packages at no extra cost. A published package can also be sold separately; that grants only the package through `answer_package_entitlements`, not the subject.
 - Uploaded PDFs are stored in the private `answer-pdfs` bucket and served as short-lived signed URLs (`storage_bucket` / `storage_path` columns on `answer_resources`); link-based resources still use `url` / `download_url`.
 - PDF URLs are intended to stay in Supabase-protected metadata, not hardcoded in public client bundles, unless a package is intentionally local/public.
 - Legacy V25 SAM3 Google Drive links also exist in `shared/haugnes-dashboard-progress.js`.
@@ -109,6 +111,8 @@ Typical package IDs:
   - `discount_codes`
   - `answer_packages`
   - `answer_resources`
+  - `answer_package_entitlements`
+  - `app_subjects` (admin-managed legacy subject catalogue; published entries extend `shared/subject-meta.js` and the shop at runtime)
   - `kompass_subjects`
   - `kompass_resources`
   - `kompass_content_blocks`
@@ -127,7 +131,8 @@ Typical package IDs:
 - RLS/entitlement helper: `public.has_subject_entitlement(text)`.
 - Storage: private bucket `answer-pdfs` for uploaded exam-package PDFs (PDF only, 50 MB). Admins write; entitled users read via signed URLs. Path convention `{package_id}/{file}.pdf`.
 - Payment model: first user-claimed free subject is inserted client-side with `source = 'free'`; paid subjects are inserted by the Supabase Stripe webhook with `source = 'stripe'` and optional Stripe session/customer/payment metadata.
-- Bundle/payment model: `user/butikk.html` can send `subjectCode` or `productId` to `supabase/functions/create-stripe-checkout/`. Storefront products and prices come from `subject_prices` and `commerce_products` when available. Bundles insert multiple `subject_entitlements` rows with `source = 'stripe_bundle'`; Vennepass inserts all current subjects with `source = 'stripe_friend_pass'` and sets `profiles.is_friend = true`.
+- Bundle/payment model: `user/butikk.html` can send `subjectCode` or `productId`; `shared/haugnes-answer-library.js` can send `packageId` to `supabase/functions/create-stripe-checkout/`. Storefront products and prices come from `app_subjects`, `subject_prices`, and `commerce_products` when available. Bundles insert multiple `subject_entitlements` rows with `source = 'stripe_bundle'`; standalone packages insert one `answer_package_entitlements` row with `source = 'stripe_package'`; Vennepass inserts all current subjects with `source = 'stripe_friend_pass'` and sets `profiles.is_friend = true`.
+- Admin analytics is returned only to admins by the security-definer RPC `public.admin_dashboard_snapshot()`.
 - Discount model: admins manage `discount_codes` in `user/butikk.html`; checkout validates active codes server-side, stores discount metadata on Stripe Checkout Sessions, and `stripe-webhook` increments `redeemed_count` after paid completion.
 - Rule from repo policy: DB schema changes must be mirrored in `supabase-setup.sql`.
 

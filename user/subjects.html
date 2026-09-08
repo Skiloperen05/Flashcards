@@ -496,6 +496,10 @@ window.onUserAuthorized = function(session){
   renderSubjects();
   loadRatingsRemote(session).then(function(){ renderSubjects(); });
 };
+window.addEventListener('haugnes:subject-catalog-changed', function(){
+  SUBJECTS = window.HaugnesSubjects ? window.HaugnesSubjects.getAll() : SUBJECTS;
+  renderSubjects();
+});
 renderSubjects();
 </script>
 </body>

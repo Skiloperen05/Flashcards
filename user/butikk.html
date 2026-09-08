@@ -170,7 +170,7 @@ a{text-decoration:none;color:inherit}button,input,select{font-family:inherit}
       <div class="admin-head">
         <div>
           <strong>Admin commerce</strong>
-          <span>Endre pakker, priser og rabattkoder direkte fra appen.</span>
+          <span>Endre pakker, priser og rabattkoder direkte fra appen. <a href="admin-hub.html" style="color:#ffd98f;text-decoration:underline">Åpne Admin Hub →</a></span>
         </div>
         <button class="admin-close" id="adminCloseBtn" type="button">Lukk</button>
         <div class="admin-state" id="adminState"></div>
@@ -258,6 +258,7 @@ a{text-decoration:none;color:inherit}button,input,select{font-family:inherit}
   </main>
 </div>
 
+<script src="../shared/subject-meta.js"></script>
 <script src="../shared/auth-guard.js"></script>
 <script>
 var SUBJECTS = [
@@ -274,12 +275,27 @@ var SUBJECTS = [
   { code: 'BED1', name: 'Bedriftsøkonomi', accent: '#20b97a', icon: '◆', emblem: '../assets/emblems/BED1.png', summary: 'Kalkyler, investering, resultat og budsjettering.' }
 ];
 
+function syncSubjectsFromCatalog(){
+  if (!window.HaugnesSubjects || typeof window.HaugnesSubjects.getCatalog !== 'function') return;
+  SUBJECTS=window.HaugnesSubjects.getCatalog().map(function(subject){
+    return { code:subject.code, name:subject.name, accent:subject.accent, icon:subject.icon, emblem:subject.emblem, summary:subject.description || '' };
+  });
+  BUNDLES.forEach(function(bundle){
+    if (bundle.kind==='pass') bundle.subjectCodes=SUBJECTS.map(function(subject){return subject.code;});
+  });
+}
+
 var BUNDLES = [
   { id: 'semester-1', kind: 'bundle', title: '1. semesterpakke', sub: 'RET1A · MET1 · SAM1A · BED1 · KOM1', accent: '#3b82f6', icon: '1', price: '199 kr', priceOre: 19900, priceSub: '5 fag samlet', cta: 'Kjøp semesterpakke', summary: 'Alt for første semester samlet i én tilgang. Best når du vil rydde opp hele startpakken med én gang.', subjectCodes: ['RET1A','MET1','SAM1A','BED1','KOM1'] },
   { id: 'semester-2', kind: 'bundle', title: '2. semesterpakke', sub: 'MET2 · SAM2 · SOL1', accent: '#20b97a', icon: '2', price: '149 kr', priceOre: 14900, priceSub: '3 fag samlet', cta: 'Kjøp semesterpakke', summary: 'Metode, mikro og organisasjonsatferd i samme pakke, med oppgaver, memo og eksamensrettede verktøy.', subjectCodes: ['MET2','SAM2','SOL1'] },
   { id: 'valgfag', kind: 'bundle', title: 'Valgfagspakke', sub: 'RET14 · MAT10 · SAM3', accent: '#e8bc68', icon: 'V', price: '179 kr', priceOre: 17900, priceSub: 'valgfag', cta: 'Kjøp valgfagspakke', summary: 'For deg som vil ha de tyngre fagene samlet: skatterett, matematikk og makroverktøy.', subjectCodes: ['RET14','MAT10','SAM3'] },
   { id: 'vennepass', kind: 'pass', title: 'Vennepass', sub: 'Alle fag · nye fag inkludert', accent: '#f09828', icon: '★', price: '350 kr', priceOre: 35000, priceSub: 'all-access', cta: 'Kjøp Vennepass', summary: 'Gir tilgang til alle fag som ligger ute nå, og alle nye fag som publiseres senere.', subjectCodes: SUBJECTS.map(function(s){return s.code}) }
 ];
+window.addEventListener('haugnes:subject-catalog-changed', function(){
+  syncSubjectsFromCatalog();
+  if (typeof render === 'function') render();
+});
+syncSubjectsFromCatalog();
 
 var SUBJECT_PRICE_LABEL = '49 kr';
 var FIRST_FREE_LABEL = 'Gratis første fag';
