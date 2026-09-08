@@ -36,7 +36,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Exam analysis catalog with only published/direct analysis links: `user/eksamensanalyse.html`.
 - A-besvarelser / eksamensarkiv shell: `user/a-besvarelser.html`.
 - Oppgavebank shell: `user/oppgavebank.html`.
-- Study plan shell: `user/studieplan.html`. Its interactive calendar is rendered by `shared/haugnes-studyplan.js` and styled by `shared/haugnes-studyplan.css`. The plan uses TimeEdit as the source for teaching times/exams and stores each user's selected subjects, group choices, hidden TimeEdit items, and custom study sessions under `user_custom_data.data.studyplan`; TimeEdit cache data remains local to the device.
+- Study plan shell: `user/studieplan.html`. Its interactive calendar is rendered by `shared/haugnes-studyplan.js` and styled by `shared/haugnes-studyplan.css`. The calendar automatically shows only TimeEdit teaching events; subjects with no teaching in the selected week are deliberately empty. Users can additionally create explicit private study sessions. Subject choices, group choices, hidden TimeEdit items, and private study sessions are stored under `user_custom_data.data.studyplan`; TimeEdit cache data remains local to the device.
 - Notes/settings: `user/notater.html`, `user/settings.html`. Settings live in `localStorage` key `hf_user_settings_v2` and sync to Supabase `user_custom_data.data.settings`; they are applied app-wide by `shared/user-settings.js` (theme/identity) and `shared/haugnes-flashcard-session.js` (session behavior).
 - Removed user pages: `user/progress.html`, `user/achievements.html`.
 - User-page loader/enhancer: `user/auth-guard.js`.

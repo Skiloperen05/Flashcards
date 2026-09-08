@@ -75,7 +75,7 @@
   function addPageStylesheet() {
     var page = currentUserPage();
     if (page === 'subjects.html') addStylesheet('haugnes-subjects-css', '../shared/haugnes-subjects.css');
-    else if (page === 'studieplan.html') addStylesheet('haugnes-studyplan-css', '../shared/haugnes-studyplan.css');
+    else if (page === 'studieplan.html') addStylesheet('haugnes-studyplan-css', '../shared/haugnes-studyplan.css?v=20260908b');
     else if (!isModelPage(page)) addStylesheet('haugnes-dashboard-css', '../shared/haugnes-dashboard.css');
   }
 
@@ -221,7 +221,7 @@
         addScript('nhh-schedule-api-js', '../shared/nhh-schedule-api.js', function () {
           addScript('nhh-schedule-normalizer-js', '../shared/nhh-schedule-normalizer.js', function () {
             addScript('nhh-strict-course-filter-js', '../shared/nhh-strict-course-filter.js', function () {
-              addScript('haugnes-studyplan-js', '../shared/haugnes-studyplan.js', function () {
+              addScript('haugnes-studyplan-js', '../shared/haugnes-studyplan.js?v=20260908b', function () {
                 if (window.HaugnesStudyplan && typeof window.HaugnesStudyplan.render === 'function') window.HaugnesStudyplan.render();
                 if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.enhanceCurrentPage === 'function') window.HaugnesSubjectAccess.enhanceCurrentPage();
               });
