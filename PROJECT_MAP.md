@@ -36,7 +36,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Exam analysis catalog with only published/direct analysis links: `user/eksamensanalyse.html`.
 - A-besvarelser / eksamensarkiv shell: `user/a-besvarelser.html`.
 - Oppgavebank shell: `user/oppgavebank.html`.
-- Study plan shell: `user/studieplan.html`.
+- Study plan shell: `user/studieplan.html`. Its interactive calendar is rendered by `shared/haugnes-studyplan.js` and styled by `shared/haugnes-studyplan.css`. The plan uses TimeEdit as the source for teaching times/exams and stores each user's selected subjects, group choices, hidden TimeEdit items, and custom study sessions under `user_custom_data.data.studyplan`; TimeEdit cache data remains local to the device.
 - Notes/settings: `user/notater.html`, `user/settings.html`. Settings live in `localStorage` key `hf_user_settings_v2` and sync to Supabase `user_custom_data.data.settings`; they are applied app-wide by `shared/user-settings.js` (theme/identity) and `shared/haugnes-flashcard-session.js` (session behavior).
 - Removed user pages: `user/progress.html`, `user/achievements.html`.
 - User-page loader/enhancer: `user/auth-guard.js`.
@@ -52,7 +52,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - User sidebar normalization: `shared/user-sidebar.js`. It is the source of truth for the grouped left menu used across user/app pages: Hjem, Mine fag, Butikk, Studieplan, Eksamensanalyse, Oppgavebank, A-besvarelser, Memoarer, Notater, Alle flashcards, Innstillinger.
 - Logo normalization: `shared/logo-normalizer.js`. Re-applies the logo image if later branding scripts clear an already normalized logo mark.
 - Global user-settings applier: `shared/user-settings.js`. Loaded on every app page from `shared/auth-guard.js` (`loadGlobalPolish`). Reads `hf_user_settings_v2` (plus a one-shot pull from `user_custom_data.data.settings` when newer) and applies accent color, background theme, font-size scaling, reduced motion, high contrast, avatar/display name in sidebars, the friendly check-in banner, and hides recommendation panels when disabled. Exposes `window.HaugnesUserSettings`.
-- TimeEdit/NHH schedule integration: `shared/timeedit-fetch-proxy.js`, `shared/nhh-schedule-api.js`, `shared/nhh-schedule-normalizer.js`, `shared/nhh-strict-course-filter.js`, `shared/haugnes-studyplan.js`. Runtime proxy target is the Supabase `timeedit` Edge Function.
+- TimeEdit/NHH schedule integration: `shared/timeedit-fetch-proxy.js`, `shared/nhh-schedule-api.js`, `shared/nhh-schedule-normalizer.js`, `shared/nhh-strict-course-filter.js`, `shared/haugnes-studyplan.js`, and `shared/haugnes-studyplan.css`. Runtime proxy target is the Supabase `timeedit` Edge Function. The API reports its latest cached TimeEdit check to the study-plan UI and resolves TimeEdit object search using aliases for all current subject codes.
 - Flashcard session shared logic: `shared/haugnes-flashcard-session.js`, `shared/haugnes-flashcards-structure.js`. The session script also applies learning settings from `hf_user_settings_v2`: session length cap, default start filter (`startWith`), difficult-first ordering (`autoDiff`), exam-topic priority (`examMode`), and optional sound feedback.
 
 ## Subject Areas

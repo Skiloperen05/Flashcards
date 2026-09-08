@@ -75,6 +75,7 @@
   function addPageStylesheet() {
     var page = currentUserPage();
     if (page === 'subjects.html') addStylesheet('haugnes-subjects-css', '../shared/haugnes-subjects.css');
+    else if (page === 'studieplan.html') addStylesheet('haugnes-studyplan-css', '../shared/haugnes-studyplan.css');
     else if (!isModelPage(page)) addStylesheet('haugnes-dashboard-css', '../shared/haugnes-dashboard.css');
   }
 
