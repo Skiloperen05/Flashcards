@@ -1,6 +1,6 @@
 # Project Map
 
-Last updated: 2026-09-08
+Last updated: 2026-09-08 (Subject Studio rewrite)
 
 Purpose: make future app changes faster by documenting the stable entry points, data sources, and search paths. Update this file whenever a change moves, renames, adds, or removes app-facing functionality.
 
@@ -33,7 +33,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 ## User Pages
 
 - Dashboard: `user/index.html`.
-- Admin-hub & Fagstudio: `user/admin.html`. Sentral kontrollside for administratorer (`birkhaugnes@gmail.com`) for opprettelse av nye fagskall, styring av fagoversikt, seksjonssynlighet (vis/skjul moduler med direktelenker til redigering), viktige temaer, anbefalt øvingsløp, eksamensradarer, A-besvarelser & eksamensløsninger (med PDF-opplasting/nedlasting), forelesningsnotater (med PDF-opplasting/nedlasting), fagspesifikk oppgavebank og flashcards. Inkluderer sanntids forhåndsvisning i delt studio med student-/admin-visningsbryter og dypkobling via `?subject=<kode>&tab=<modul>`.
+- Admin-hub & Fagstudio: `user/admin.html`. Sentral kontrollside for administratorer (`profiles.is_admin = true`) bygd på `shared/subjects-studio.js`. Redigerer alle fag (både innebygde og egne) fra én katalog med akkordeon-editor: fag-header (kode, navn, kicker, ikon, farge, semester), publisering, memo & studietips (intro/eksamen/studieråd), seksjonssynlighet-brytere, viktige temaer, anbefalt øvingsløp, eksamensradar (m/prioritet), A-besvarelser og forelesningsnotater med PDF-opplasting til Supabase Storage (`subject-files` bucket, signerte URL-er), oppgavebank med trinnvis fasit, samt flashcard-innstillinger. Inkluderer live forhåndsvisning i iframe (student- eller admin-visning) og førstegangs-migrering av gammel localStorage-data. Alle endringer publiseres umiddelbart til studenter med entitlement via Supabase Realtime.
 - Subject management: `user/subjects.html`.
 - Shop/entitlement claiming, Stripe checkout entry, discount field, and admin commerce editor for subjects, bundles, Vennepass, prices, and rabattkoder: `user/butikk.html`.
 - Exam analysis catalog with only published/direct analysis links: `user/eksamensanalyse.html`.
@@ -50,6 +50,8 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Entitlements and subject access: `shared/entitlements.js`, `shared/subject-access.js`, `shared/subject-gate.js`.
 - Subject metadata: `shared/subject-meta.js`.
 - Subject page rendering/data/enhancements: `shared/subject-page-renderer.js`, `shared/subject-page-data.js`, `shared/subject-page-enhancements.js`, `shared/subject-resources.js`.
+- Subject Studio API (single source of truth for admin-editable subject pages): `shared/subjects-studio.js`. Reads/writes `subject_pages`, `subject_page_blocks` and `subject_files` (Storage bucket `subject-files`) in Supabase. Legacy localStorage keys (`hf_custom_subjects_v1`, `hf_custom_subject_pages_v1`, `hf_custom_packages_v1`, `hf_custom_memos_v1`, `hf_custom_tasks_v1`) are migrated once per admin and then untouched. Exposes `window.SubjectsStudio` (listSubjects/getSubject/upsertSubject/upsertBlock/reorderBlocks/deleteBlock/uploadFile/updateFile/deleteFile/signedUrl/subscribeChanges).
+- Subject-page ↔ Studio bridge: `shared/subject-page-studio-bridge.js`. Patches `HaugnesSubjectPages.get`/`.savePage` so the student subject shell (`subject/index.html`) reads fresh data from Studio and inline edits are persisted to Supabase. Publishes signed PDF URLs to the existing renderer and re-renders on `haugnes:subject-studio-changed`.
 - Dashboard dynamic progress/recommendations and some legacy SAM3 package pointers: `shared/haugnes-dashboard-progress.js`.
 - A-besvarelser / eksamensarkiv dynamic package UI: `shared/haugnes-answer-library.js`.
 - User sidebar normalization: `shared/user-sidebar.js`. It is the source of truth for the grouped left menu used across user/app pages: Hjem, Mine fag, Butikk, Studieplan, Eksamensanalyse, A-besvarelser, Memoarer, Notater, Alle flashcards, Innstillinger.
@@ -124,6 +126,9 @@ Typical package IDs:
   - `discount_codes`
   - `answer_packages`
   - `answer_resources`
+  - `subject_pages` (admin-editable subject metadata, memo copy, visibility, publish flag)
+  - `subject_page_blocks` (ordered topics/plan/radar/tips/formula/compendium/checklist)
+  - `subject_files` (per-subject PDFs / attachments; Storage bucket `subject-files`)
   - `kompass_subjects`
   - `kompass_resources`
   - `kompass_content_blocks`
