@@ -19,11 +19,7 @@
     }
   };
 
-  var SUBJECT_ALIASES = {
-    SOL1: ['SOL1', 'SOL 1'], RET14: ['RET14'], SAM2: ['SAM2', 'SAM 2'], SAM3: ['SAM3', 'SAM 3'], MET2: ['MET2', 'MET 2'], MAT10: ['MAT10', 'MAT 10'],
-    SAM1A: ['SAM1A', 'SAM 1A'], MET1: ['MET1', 'MET 1'], KOM1: ['KOM1', 'KOM 1'], RET1A: ['RET1A', 'RET 1A'], BED1: ['BED1', 'BED 1'],
-    BED2: ['BED2', 'BED 2'], SOL2: ['SOL2', 'SOL 2'], MET3: ['MET3', 'MET 3'], SOL3: ['SOL3', 'SOL 3']
-  };
+  var SUBJECT_ALIASES = { SOL1: ['SOL1', 'SOL 1'], RET14: ['RET14'], SAM2: ['SAM2'], SAM3: ['SAM3'], MET2: ['MET2'], MAT10: ['MAT10'] };
 
   function readJson(key, fallback) { try { var raw = window.localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; } }
   function writeJson(key, value) { try { window.localStorage.setItem(key, JSON.stringify(value)); } catch (e) {} }
@@ -104,11 +100,9 @@
     var html = String(text || '');
     var re = /(?:data-id|data-object-id|objectid|oid|id)=["']?(\d{3,})["']?[^>]{0,500}>([^<]{0,220})/ig, m;
     while ((m = re.exec(html))) add(m[1], m[2], m[0]);
-    var aliases = SUBJECT_ALIASES[upper(code)] || [upper(code)];
-    var aliasPattern = aliases.map(function (alias) { return alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s*'); }).join('|');
-    re = new RegExp('(\\d{3,})[^\\n\\r]{0,180}((?:' + aliasPattern + ')[^\\n\\r<]{0,180})', 'ig');
+    re = /(\d{3,})[^\n\r]{0,180}((?:RET14|SAM\s*2|SAM\s*3|SOL\s*1|MET2|MAT10)[^\n\r<]{0,180})/ig;
     while ((m = re.exec(html))) add(m[1], m[2], m[0]);
-    re = new RegExp('((?:' + aliasPattern + ')[^\\n\\r<]{0,180})[^\\n\\r]{0,80}(\\d{3,})', 'ig');
+    re = /((?:RET14|SAM\s*2|SAM\s*3|SOL\s*1|MET2|MAT10)[^\n\r<]{0,180})[^\n\r]{0,80}(\d{3,})/ig;
     while ((m = re.exec(html))) add(m[2], m[1], m[0]);
     return objects;
   }
@@ -297,19 +291,6 @@
     selected.forEach(function (code) { if (cache[code] && Array.isArray(cache[code].events)) events = events.concat(cache[code].events); });
     return events;
   }
-  function getSyncStatus(codes) {
-    var cache = readJson(STORAGE.cache, {});
-    var selected = (codes || getSelectedSubjects()).map(upper);
-    var checkedAt = '';
-    var eventCount = 0;
-    selected.forEach(function (code) {
-      var item = cache[code];
-      if (!item) return;
-      eventCount += Array.isArray(item.events) ? item.events.length : 0;
-      if (item.checkedAt && (!checkedAt || item.checkedAt > checkedAt)) checkedAt = item.checkedAt;
-    });
-    return { checkedAt: checkedAt, eventCount: eventCount };
-  }
   function getCustomEvents() { return readJson(STORAGE.custom, []); }
   function saveCustomEvents(events) { writeJson(STORAGE.custom, events || []); }
   function upsertCustomEvent(event) { var events = getCustomEvents(); var item = Object.assign({ id: uid('custom'), source: 'custom' }, event || {}); var i = events.findIndex(function (e) { return e.id === item.id; }); if (i >= 0) events[i] = item; else events.push(item); saveCustomEvents(events); return item; }
@@ -324,7 +305,7 @@
     getSourceConfig: getSourceConfig, setSourceConfig: setSourceConfig,
     getSelectedSubjects: getSelectedSubjects, setSelectedSubjects: setSelectedSubjects,
     fetchForSubject: fetchForSubject, sync: sync, clearTimeEditCache: clearTimeEditCache,
-    getCachedNhhEvents: getCachedNhhEvents, getSyncStatus: getSyncStatus, getCustomEvents: getCustomEvents,
+    getCachedNhhEvents: getCachedNhhEvents, getCustomEvents: getCustomEvents,
     upsertCustomEvent: upsertCustomEvent, deleteEvent: deleteEvent, hideEvent: hideEvent,
     getAllEvents: getAllEvents, importEvents: importEvents,
     parseHtmlEvents: parseHtmlEvents, parseJsonEvents: parseJsonEvents,

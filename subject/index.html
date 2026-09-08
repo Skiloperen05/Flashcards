@@ -1,0 +1,2078 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fagside — Haugnes Flashcards</title>
+<link rel="icon" href="../assets/haugnes-logo-mark.svg">
+<link rel="apple-touch-icon" href="../assets/haugnes-logo-mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/haugnes-theme.css">
+<link rel="stylesheet" href="../shared/haugnes-subject.css">
+<style>
+.hf-section-box {
+  margin: 36px 0;
+  padding: 26px 28px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(14,39,84,.85), rgba(8,26,58,.92));
+  border: 1px solid rgba(126,162,255,.2);
+}
+.hf-section-head-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.hf-section-title-sub {
+  color: #8fa5ca;
+  font-size: 14px;
+  margin-top: 4px;
+}
+.hf-radar-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+.hf-radar-table th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: #8fa5ca;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.hf-radar-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  font-size: 14px;
+  vertical-align: top;
+}
+.hf-tag-tier {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 850;
+  background: rgba(232,188,104,.14);
+  color: #ffd98f;
+  border: 1px solid rgba(232,188,104,.25);
+}
+.hf-tag-tier.tier2 {
+  background: rgba(47,98,255,.15);
+  color: #9eb7ff;
+  border-color: rgba(47,98,255,.3);
+}
+.hf-packages-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+  margin-top: 14px;
+}
+.hf-pkg-card {
+  padding: 20px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform .18s ease, border-color .18s ease;
+}
+.hf-pkg-card:hover {
+  border-color: rgba(126,162,255,.35);
+  transform: translateY(-2px);
+}
+.hf-pkg-term {
+  font-size: 11px;
+  font-weight: 850;
+  color: #ffd98f;
+  background: rgba(232,188,104,.12);
+  padding: 3px 8px;
+  border-radius: 999px;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+.hf-pkg-term.accent {
+  background: rgba(47,98,255,.18);
+  color: #9db5ff;
+}
+.hf-pkg-title {
+  font-size: 16px;
+  font-weight: 850;
+  margin-bottom: 6px;
+  color: #fff;
+  line-height: 1.35;
+}
+.hf-pkg-desc {
+  font-size: 13px;
+  color: #b8c9df;
+  line-height: 1.55;
+  margin-bottom: 14px;
+}
+.hf-pdf-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  background: rgba(239,68,68,.16);
+  color: #fca5a5;
+  border: 1px solid rgba(239,68,68,.25);
+  margin-bottom: 10px;
+}
+.hf-pkg-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.hf-pkg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: linear-gradient(135deg,#2455ef,#3f73ff);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 850;
+  text-decoration: none;
+  cursor: pointer;
+  border: 0;
+}
+.hf-pkg-btn.secondary {
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+  color: #dce6f7;
+}
+.hf-pkg-btn.secondary:hover {
+  background: rgba(255,255,255,.14);
+}
+.hf-empty-box {
+  padding: 26px;
+  text-align: center;
+  color: #91a5c8;
+  font-size: 13.5px;
+  border: 1px dashed rgba(126,162,255,.2);
+  border-radius: 16px;
+  background: rgba(255,255,255,.02);
+}
+/* Oppgavebank i faget */
+.hf-task-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.hf-filter-pill {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  color: #c2d2ea;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.hf-filter-pill.active, .hf-filter-pill:hover {
+  background: #2563eb;
+  color: #fff;
+  border-color: #3b82f6;
+}
+.hf-task-card {
+  padding: 22px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  margin-bottom: 16px;
+  transition: border-color .18s ease;
+}
+.hf-task-card:hover {
+  border-color: rgba(126,162,255,.3);
+}
+.hf-task-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.hf-task-title {
+  font-size: 16px;
+  font-weight: 850;
+  color: #fff;
+}
+.hf-diff-badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .02em;
+}
+.hf-diff-badge.lett {
+  background: rgba(16,185,129,.16);
+  color: #6ee7b7;
+  border: 1px solid rgba(16,185,129,.3);
+}
+.hf-diff-badge.middels {
+  background: rgba(245,158,11,.16);
+  color: #fcd34d;
+  border: 1px solid rgba(245,158,11,.3);
+}
+.hf-diff-badge.eksamen {
+  background: rgba(168,85,247,.18);
+  color: #d8b4fe;
+  border: 1px solid rgba(168,85,247,.3);
+}
+.hf-task-prompt {
+  font-size: 13.5px;
+  color: #d8e3f4;
+  line-height: 1.6;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(0,0,0,.25);
+  border: 1px solid rgba(255,255,255,.06);
+  margin: 12px 0;
+  white-space: pre-wrap;
+}
+.hf-solution-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.1);
+  color: #ffd98f;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+.hf-solution-toggle:hover {
+  background: rgba(255,255,255,.12);
+}
+.hf-solution-body {
+  display: none;
+  margin-top: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(232,188,104,.06);
+  border: 1px solid rgba(232,188,104,.2);
+  color: #fef0c7;
+  font-size: 13px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+.hf-solution-body.open {
+  display: block;
+}
+/* In-Page Admin Toolbar */
+.hf-admin-top-bar {
+  background: linear-gradient(90deg, #0d265a, #1a3f8b);
+  border-bottom: 1px solid rgba(232,188,104,.35);
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
+}
+.hf-admin-bar-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 850;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.15);
+  color: #fff;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.hf-admin-bar-btn:hover {
+  background: rgba(255,255,255,.2);
+}
+.hf-admin-bar-btn.gold {
+  background: rgba(232,188,104,.2);
+  border-color: rgba(232,188,104,.4);
+  color: #ffd98f;
+}
+/* Live Preview Toggle & Mode Controls */
+.hf-preview-toggle-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hf-toggle-switch-pill {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.35);
+  border: 1px solid rgba(255,255,255,.16);
+}
+.hf-pill-opt {
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 850;
+  border: 0;
+  cursor: pointer;
+  background: transparent;
+  color: #a9bede;
+  transition: all .15s ease;
+  white-space: nowrap;
+}
+.hf-pill-opt:hover {
+  color: #fff;
+}
+.hf-pill-opt.active {
+  background: #2563eb;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(37,99,235,.45);
+}
+.hf-subject-admin-bar {
+  background: linear-gradient(90deg, rgba(37,99,235,.16), rgba(232,188,104,.1));
+  border: 1px solid rgba(126,162,255,.25);
+  border-radius: 14px;
+  padding: 10px 16px;
+  margin-bottom: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.hf-live-preview-banner {
+  background: linear-gradient(90deg, rgba(16,185,129,.16), rgba(6,95,70,.25));
+  border: 1px solid rgba(52,211,153,.35);
+  border-radius: 14px;
+  padding: 12px 18px;
+  margin-bottom: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.hf-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hf-banner-pulse-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 10px #10b981;
+  animation: hfPulse 1.8s infinite;
+}
+@keyframes hfPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .4; transform: scale(.85); }
+}
+.hf-card-head-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.hf-admin-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.hf-item-admin-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 6px;
+}
+.hf-mini-action-btn {
+  padding: 4px 7px;
+  font-size: 11px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.08);
+  color: #fff;
+  cursor: pointer;
+  line-height: 1;
+  transition: all .12s ease;
+}
+.hf-mini-action-btn:hover {
+  background: rgba(255,255,255,.18);
+  border-color: rgba(255,255,255,.3);
+}
+.hf-mini-action-btn.danger:hover {
+  background: rgba(239,68,68,.3);
+  border-color: #ef4444;
+}
+.hf-add-inline-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px dashed rgba(126,162,255,.3);
+  background: rgba(255,255,255,.02);
+  color: #9eb5dd;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all .15s ease;
+  text-align: center;
+}
+.hf-add-inline-btn:hover {
+  background: rgba(47,98,255,.1);
+  border-color: #3b82f6;
+  color: #fff;
+}
+.hf-pill-btn {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 850;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.08);
+  color: #fff;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.hf-pill-btn:hover {
+  background: rgba(255,255,255,.16);
+}
+.notice-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 12px 20px;
+  background: #0d265a;
+  color: #ffd98f;
+  border: 1px solid rgba(232,188,104,.4);
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 800;
+  box-shadow: 0 10px 30px rgba(0,0,0,.6);
+  z-index: 999999;
+  display: none;
+  animation: hfToastIn .2s ease forwards;
+}
+@keyframes hfToastIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* When student preview is active, hide all editing buttons for 100% authentic preview */
+body.hf-student-preview-active .hf-admin-actions,
+body.hf-student-preview-active .hf-item-admin-actions,
+body.hf-student-preview-active .hf-add-inline-btn,
+body.hf-student-preview-active #radarAdminBtn,
+body.hf-student-preview-active #answerAdminBtn,
+body.hf-student-preview-active #memoAdminBtn,
+body.hf-student-preview-active #taskAdminBtn,
+body.hf-student-preview-active #subjectAdminModeBar,
+body.hf-student-preview-active #btnVisibilityTopBar,
+body.hf-student-preview-active #btnNewNoteTopBar,
+body.hf-student-preview-active #btnNewAnswerTopBar,
+body.hf-student-preview-active #btnNewTaskTopBar {
+  display: none !important;
+}
+/* Modal styling */
+.hf-modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(3,10,25,.75);
+  backdrop-filter: blur(4px);
+  z-index: 99999;
+  place-items: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+.hf-modal-card {
+  background: #091a38;
+  border: 1px solid rgba(126,162,255,.3);
+  border-radius: 20px;
+  padding: 26px;
+  width: 100%;
+  max-width: 560px;
+  box-shadow: 0 16px 40px rgba(0,0,0,.6);
+  color: #fff;
+}
+.hf-form-group {
+  margin-top: 14px;
+}
+.hf-form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 850;
+  color: #c2d4ee;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.hf-form-group input, .hf-form-group textarea, .hf-form-group select {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.12);
+  color: #fff;
+  font-size: 13.5px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+.hf-form-group input:focus, .hf-form-group textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: rgba(255,255,255,.1);
+}
+.hf-file-dropzone {
+  border: 2px dashed rgba(126,162,255,.35);
+  border-radius: 12px;
+  padding: 18px;
+  text-align: center;
+  background: rgba(255,255,255,.02);
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease;
+}
+.hf-file-dropzone:hover {
+  background: rgba(47,98,255,.08);
+  border-color: #3b82f6;
+}
+.hf-file-info {
+  display: none;
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(16,185,129,.15);
+  border: 1px solid rgba(16,185,129,.3);
+  color: #6ee7b7;
+  font-size: 12px;
+  align-items: center;
+  gap: 8px;
+}
+.hf-vis-toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.04);
+  margin-bottom: 8px;
+  border: 1px solid rgba(255,255,255,.07);
+}
+.hf-vis-toggle-row input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../shared/auth-guard.js"></script>
+<script>
+AuthGuard.requireAuth();
+</script>
+</head>
+<body class="haugnes-app">
+<!-- Admin Toppbar ved admin-tilgang -->
+<div id="adminSubjectTopBar" class="hf-admin-top-bar" style="display:none">
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="font-size:16px">👑</span>
+    <strong style="font-size:13px;color:#ffd98f" id="adminBarTitle">Admin-modus</strong>
+    <span style="font-size:12px;color:#a2b9dc" id="adminBarSub">Redigerer fagsiden live</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <!-- Live Preview Toggle -->
+    <div class="hf-preview-toggle-bar">
+      <div class="hf-toggle-switch-pill" id="topBarPreviewToggle" title="Bytt mellom live admin-redigering og ren studentvisning">
+        <button type="button" class="hf-pill-opt active" id="pillModeAdmin" onclick="setSubjectPreviewMode('admin')">✏️ Redigering</button>
+        <button type="button" class="hf-pill-opt" id="pillModeStudent" onclick="setSubjectPreviewMode('student')">👁️ Live studentvisning</button>
+      </div>
+    </div>
+    <button class="hf-admin-bar-btn gold" id="btnVisibilityTopBar" onclick="openSubjectVisibilityModal()">👁️ Seksjonssynlighet</button>
+    <button class="hf-admin-bar-btn" id="btnNewNoteTopBar" onclick="openSubjectNoteModal()">➕ Nytt notat (PDF)</button>
+    <button class="hf-admin-bar-btn" id="btnNewAnswerTopBar" onclick="openSubjectAnswerModal()">➕ Ny eksamensløsning (PDF)</button>
+    <button class="hf-admin-bar-btn" id="btnNewTaskTopBar" onclick="openSubjectTaskModal()">➕ Ny oppgave</button>
+    <a class="hf-admin-bar-btn" id="adminHubDeepLink" href="../user/admin.html" target="_blank">🛠️ Fagstudio ↗</a>
+  </div>
+</div>
+
+<header class="hf-shell hf-topbar">
+  <a class="hf-brand" href="../user/index.html">
+    <span class="hf-logo"></span>
+    <span><span class="hf-brand-title">Haugnes</span><span class="hf-brand-sub">Flashcards</span></span>
+  </a>
+  <nav class="hf-nav" aria-label="Navigasjon">
+    <a href="../user/index.html">Dashboard</a>
+    <a href="../user/subjects.html">Mine fag</a>
+    <a class="primary" href="../flashcards/">Alle flashcards</a>
+  </nav>
+</header>
+
+<section class="hf-shell hf-hero">
+  <div class="hf-kicker" id="subjectKicker">Fag · Haugnes</div>
+  <div class="hf-hero-grid">
+    <div>
+      <h1 class="hf-title" id="subjectTitle">Laster <span>fag...</span></h1>
+      <p class="hf-lead" id="subjectLead">Henter fagdata og læringsverktøy...</p>
+      <div class="hf-tabbar" id="subjectTabBar">
+        <a class="active" href="#oversikt">Oversikt</a>
+        <a id="tabRadar" href="#eksamensradar">Eksamensradar</a>
+        <a id="tabAnswers" href="#besvarelser">A-besvarelser</a>
+        <a id="tabNotes" href="#notater">Notater</a>
+        <a id="tabTasks" href="#oppgaver">Oppgavebank</a>
+        <a id="flashcardsTabLink" href="../flashcards/">Flashcards</a>
+      </div>
+      <div class="hf-hero-actions">
+        <a class="hf-btn" id="heroPrimaryAction" href="../flashcards/">Start øving →</a>
+        <a class="hf-secondary-btn" href="../user/subjects.html">Mine fag</a>
+      </div>
+    </div>
+    <aside class="hf-panel">
+      <div class="hf-panel-inner">
+        <div class="hf-stats" id="subjectStats"></div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<main class="hf-main">
+  <div class="hf-shell hf-subject-layout">
+    <div>
+      <!-- Live Preview Banner and Admin Mode Bar inside .hf-subject-layout -->
+      <div id="subjectLivePreviewBanner" class="hf-live-preview-banner" style="display:none">
+        <div class="hf-banner-left">
+          <span class="hf-banner-pulse-dot"></span>
+          <div>
+            <strong id="previewBannerTitle" style="font-size:13.5px;color:#fff">Studentvisning aktiv (Live forhåndsvisning)</strong>
+            <div id="previewBannerSub" style="font-size:12px;color:#9eb5dd">Viser fagsiden slik en student ser den uten admin-knapper.</div>
+          </div>
+        </div>
+        <div class="hf-banner-actions">
+          <button type="button" class="hf-btn" id="btnToggleFromBanner" style="font-size:12px;padding:6px 14px" onclick="setSubjectPreviewMode('admin')">✏️ Bytt til Admin-redigering</button>
+        </div>
+      </div>
+
+      <div id="subjectAdminModeBar" class="hf-subject-admin-bar" style="display:none">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:14px">👑</span>
+          <span style="font-size:12.5px;color:#ffd98f;font-weight:800">Admin-modus:</span>
+          <span style="font-size:12px;color:#bdcde8">Du kan redigere temaer, øvingsløp, oppgaver, notater og radar direkte live på denne siden.</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button type="button" class="hf-pill-btn" onclick="setSubjectPreviewMode('student')">👁️ Se som student (Live preview)</button>
+        </div>
+      </div>
+
+      <div class="hf-section-head">
+        <div>
+          <h2 class="hf-section-title">Læringsverktøy</h2>
+        </div>
+        <p class="hf-section-copy">Strukturert oversikt over verktøy, øving og eksamensmateriell for faget.</p>
+      </div>
+      <div class="hf-card-grid" id="toolGrid"></div>
+
+      <div class="hf-wide-grid" id="topicsAndPlanGrid">
+        <section class="hf-info-card" id="topicsCard">
+          <div class="hf-card-head-row">
+            <h3 style="margin:0">Viktige temaer</h3>
+            <div class="hf-admin-actions" id="topicsAdminActions" style="display:none">
+              <button type="button" class="hf-btn" id="topicsAdminBtn" style="font-size:11.5px;padding:5px 11px" onclick="openSubjectTopicsModal()">✏️ Rediger temaer</button>
+              <button type="button" class="hf-btn secondary" id="topicsQuickAddBtn" style="font-size:11.5px;padding:5px 10px" onclick="openAddTopicQuickModal()">+ Nytt tema</button>
+            </div>
+          </div>
+          <div id="topicList"></div>
+        </section>
+        <section class="hf-info-card" id="planCard">
+          <div class="hf-card-head-row">
+            <h3 style="margin:0">Anbefalt øvingsløp</h3>
+            <div class="hf-admin-actions" id="planAdminActions" style="display:none">
+              <button type="button" class="hf-btn" id="planAdminBtn" style="font-size:11.5px;padding:5px 11px" onclick="openSubjectPlanModal()">✏️ Rediger øvingsløp</button>
+              <button type="button" class="hf-btn secondary" id="planQuickAddBtn" style="font-size:11.5px;padding:5px 10px" onclick="openAddPlanQuickModal()">+ Nytt steg</button>
+            </div>
+          </div>
+          <div id="planList"></div>
+        </section>
+      </div>
+
+      <!-- Seksjon: Eksamensradar -->
+      <section class="hf-section-box" id="eksamensradar">
+        <div class="hf-section-head-row">
+          <div>
+            <h3 style="font-size:20px;font-weight:850">📋 Eksamensradar & Sensorveiledning</h3>
+            <div class="hf-section-title-sub">Hva sensor ser etter, typisk eksamensvekt og vanlige fallgruver.</div>
+          </div>
+          <button class="hf-btn" id="radarAdminBtn" style="font-size:12px;padding:6px 12px;display:none" onclick="openSubjectRadarModal()">✏️ Rediger radar</button>
+        </div>
+        <div id="radarContent"></div>
+      </section>
+
+      <!-- Seksjon: A-besvarelser & Eksamenssett -->
+      <section class="hf-section-box" id="besvarelser">
+        <div class="hf-section-head-row">
+          <div>
+            <h3 style="font-size:20px;font-weight:850">📝 Eksamensarkiv & A-besvarelser</h3>
+            <div class="hf-section-title-sub">Tidligere eksamenssett, sensorveiledninger og fullstendige besvarelser med PDF-nedlasting.</div>
+          </div>
+          <button class="hf-btn" id="answerAdminBtn" style="font-size:12px;padding:6px 12px;display:none" onclick="openSubjectAnswerModal()">➕ Last opp eksamensløsning</button>
+        </div>
+        <div id="packagesList"></div>
+      </section>
+
+      <!-- Seksjon: Forelesningsnotater & Pensumkart -->
+      <section class="hf-section-box" id="notater">
+        <div class="hf-section-head-row">
+          <div>
+            <h3 style="font-size:20px;font-weight:850">📚 Forelesningsnotater & Pensumkart</h3>
+            <div class="hf-section-title-sub">Korte sammendrag og nedlastbare fullengde forelesningsnotater (PDF).</div>
+          </div>
+          <button class="hf-btn" id="memoAdminBtn" style="font-size:12px;padding:6px 12px;display:none" onclick="openSubjectNoteModal()">➕ Legg til notat</button>
+        </div>
+        <div id="notesList"></div>
+      </section>
+
+      <!-- Seksjon: Fagspesifikk Oppgavebank -->
+      <section class="hf-section-box" id="oppgaver">
+        <div class="hf-section-head-row">
+          <div>
+            <h3 style="font-size:20px;font-weight:850">🎯 Oppgavebank & Regneøkter</h3>
+            <div class="hf-section-title-sub" id="taskSubTitle">Fagspesifikke oppgaver med trinnvise løsningsforslag og fasit.</div>
+          </div>
+          <button class="hf-btn" id="taskAdminBtn" style="font-size:12px;padding:6px 12px;display:none" onclick="openSubjectTaskModal()">➕ Legg til oppgave</button>
+        </div>
+        <div class="hf-task-filters" id="taskFilterBar">
+          <button class="hf-filter-pill active" data-filter="all">Alle oppgaver</button>
+          <button class="hf-filter-pill" data-filter="Lett">Lett</button>
+          <button class="hf-filter-pill" data-filter="Middels">Middels</button>
+          <button class="hf-filter-pill" data-filter="Eksamensnivå">Eksamensnivå</button>
+        </div>
+        <div id="tasksList"></div>
+      </section>
+
+      <div class="hf-cta">
+        <div>
+          <strong>Neste naturlige steg</strong>
+          <p id="nextStep" style="margin:5px 0 0;color:#becbdf;font-size:14px"></p>
+        </div>
+        <a class="hf-btn" id="ctaAction" href="../flashcards/">Gå til flashcards →</a>
+      </div>
+    </div>
+
+    <aside class="hf-subject-aside">
+      <section class="hf-info-card">
+        <h3>Fagstatus</h3>
+        <div style="display:flex;align-items:center;gap:18px">
+          <div class="hf-score"><strong id="progressValue">0%</strong></div>
+          <div>
+            <strong style="display:block;color:#fff;font-size:18px" id="categoryName">NHH-fag</strong>
+            <span style="color:#8fa5ca;font-size:13px" id="statusLabel">Aktivt pensum</span>
+          </div>
+        </div>
+      </section>
+      <section class="hf-info-card">
+        <h3>Snarveier</h3>
+        <div class="hf-priority"><a href="../user/index.html">Dashboard</a><span>→</span></div>
+        <div class="hf-priority"><a href="../user/subjects.html">Mine fag</a><span>→</span></div>
+        <div class="hf-priority"><a href="#besvarelser">A-besvarelser</a><span>→</span></div>
+        <div class="hf-priority"><a href="#notater">Forelesningsnotater</a><span>→</span></div>
+        <div class="hf-priority"><a href="#oppgaver">Oppgavebank</a><span>→</span></div>
+        <div class="hf-priority"><a id="asideFlashcardsLink" href="../flashcards/">Flashcards</a><span>→</span></div>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<footer class="hf-footer">
+  <div class="hf-shell">
+    <a href="../user/subjects.html">← Tilbake til Mine fag</a>
+  </div>
+</footer>
+
+<!-- MODAL 1: Seksjonssynlighet -->
+<div class="hf-modal-backdrop" id="modalSubjectVisibility">
+  <div class="hf-modal-card">
+    <h3 style="font-size:18px;font-weight:850;margin-bottom:6px">👁️ Seksjonssynlighet på fagsiden</h3>
+    <p style="color:#8fa5ca;font-size:13px;margin-bottom:16px">Velg hvilke deler og moduler som skal vises for studentene på denne fagsiden.</p>
+    <form onsubmit="handleSaveVisibility(event)">
+      <div class="hf-vis-toggle-row">
+        <div><strong>📋 Eksamensradar</strong><br><span style="font-size:12px;color:#8fa5ca">Vises i toppmeny og som egen seksjon</span></div>
+        <input type="checkbox" id="visRadar" checked>
+      </div>
+      <div class="hf-vis-toggle-row">
+        <div><strong>📝 A-besvarelser & Eksamensløsninger</strong><br><span style="font-size:12px;color:#8fa5ca">Tidligere besvarelser og PDF-er</span></div>
+        <input type="checkbox" id="visAnswers" checked>
+      </div>
+      <div class="hf-vis-toggle-row">
+        <div><strong>📚 Forelesningsnotater</strong><br><span style="font-size:12px;color:#8fa5ca">Kort beskrivelse og PDF-nedlasting</span></div>
+        <input type="checkbox" id="visNotes" checked>
+      </div>
+      <div class="hf-vis-toggle-row">
+        <div><strong>🎯 Oppgavebank</strong><br><span style="font-size:12px;color:#8fa5ca">Fagspesifikke oppgaver og løsningsforslag</span></div>
+        <input type="checkbox" id="visTasks" checked>
+      </div>
+      <div class="hf-vis-toggle-row">
+        <div><strong>⚡ Flashcards</strong><br><span style="font-size:12px;color:#8fa5ca">Lenker til flashcard-økter</span></div>
+        <input type="checkbox" id="visFlashcards" checked>
+      </div>
+      <div class="hf-vis-toggle-row">
+        <div><strong>📌 Viktige temaer</strong><br><span style="font-size:12px;color:#8fa5ca">Oversikt over kjernetemaer i pensum</span></div>
+        <input type="checkbox" id="visTopics" checked>
+      </div>
+      <div class="hf-vis-toggle-row">
+        <div><strong>📅 Anbefalt øvingsløp</strong><br><span style="font-size:12px;color:#8fa5ca">Steg-for-steg studieplan for faget</span></div>
+        <input type="checkbox" id="visPlan" checked>
+      </div>
+      <div style="margin-top:20px;display:flex;justify-content:flex-end;gap:10px">
+        <button type="button" class="hf-pkg-btn secondary" onclick="closeSubjectModal('modalSubjectVisibility')">Avbryt</button>
+        <button type="submit" class="hf-pkg-btn">Lagre innstillinger</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL 2: Nytt Forelesningsnotat med PDF -->
+<div class="hf-modal-backdrop" id="modalSubjectNote">
+  <div class="hf-modal-card">
+    <h3 style="font-size:18px;font-weight:850;margin-bottom:6px">📚 Legg til forelesningsnotat</h3>
+    <p style="color:#8fa5ca;font-size:13px;margin-bottom:14px">Legg ut en kort beskrivelse, med mulighet for å laste ned lengre PDF-notater.</p>
+    <form onsubmit="handleSaveNote(event)">
+      <div class="hf-form-group">
+        <label for="noteTitle">Tittel på notat *</label>
+        <input type="text" id="noteTitle" placeholder="F.eks. Forelesning 1: Introduksjon og kjernebegreper" required>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="hf-form-group">
+          <label for="noteSource">Kilde / Foreleser</label>
+          <input type="text" id="noteSource" placeholder="F.eks. Professor X / Pensumkurs">
+        </div>
+        <div class="hf-form-group">
+          <label for="noteDate">Dato / Semester</label>
+          <input type="text" id="noteDate" placeholder="F.eks. Uke 36 / Høst 2026">
+        </div>
+      </div>
+      <div class="hf-form-group">
+        <label for="noteDesc">Kort beskrivelse / Ingress *</label>
+        <textarea id="noteDesc" style="min-height:75px" placeholder="Kort sammendrag av hva forelesningen dekker og hva som er viktig..." required></textarea>
+      </div>
+      <div class="hf-form-group">
+        <label>Last opp PDF-notat (valgfritt)</label>
+        <div class="hf-file-dropzone" onclick="document.getElementById('notePdfInput').click()">
+          <div style="font-size:24px;margin-bottom:4px">📄</div>
+          <strong style="font-size:13px;color:#fff">Klikk eller dra inn PDF-fil</strong>
+          <div style="font-size:12px;color:#8fa5ca;margin-top:4px">Støtter fulle forelesningsnotater og sammendrag</div>
+          <input type="file" id="notePdfInput" accept="application/pdf" style="display:none" onchange="handleFileSelected(this, 'notePdfInfo', 'notePdfData', 'notePdfName', 'notePdfSize')">
+        </div>
+        <div id="notePdfInfo" class="hf-file-info">
+          <span>✓</span> <strong id="notePdfName"></strong> (<span id="notePdfSize"></span>)
+        </div>
+        <input type="hidden" id="notePdfData">
+      </div>
+      <div class="hf-form-group">
+        <label for="noteExternalUrl">Eller ekstern lenke til PDF / Canvas (valgfritt)</label>
+        <input type="text" id="noteExternalUrl" placeholder="https://...">
+      </div>
+      <div class="hf-form-group">
+        <label for="noteBody">Utdypende tekst / kulepunkter (valgfritt)</label>
+        <textarea id="noteBody" style="min-height:90px" placeholder="## Nøkkelmomenter&#10;- Definisjon av...&#10;- Forutsetning 1..."></textarea>
+      </div>
+      <div style="margin-top:20px;display:flex;justify-content:flex-end;gap:10px">
+        <button type="button" class="hf-pkg-btn secondary" onclick="closeSubjectModal('modalSubjectNote')">Avbryt</button>
+        <button type="submit" class="hf-pkg-btn">Publiser notat</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL 3: Eksamensløsning med PDF -->
+<div class="hf-modal-backdrop" id="modalSubjectAnswer">
+  <div class="hf-modal-card">
+    <h3 style="font-size:18px;font-weight:850;margin-bottom:6px">📝 Legg til eksamensløsning / A-besvarelse</h3>
+    <p style="color:#8fa5ca;font-size:13px;margin-bottom:14px">Last opp tidligere eksamensbesvarelser, sensorveiledninger og løsningssett med PDF.</p>
+    <form onsubmit="handleSaveAnswer(event)">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="hf-form-group">
+          <label for="ansTerm">Semester *</label>
+          <input type="text" id="ansTerm" placeholder="F.eks. V26 eller H25" required>
+        </div>
+        <div class="hf-form-group">
+          <label for="ansGrade">Type / Karakter</label>
+          <input type="text" id="ansGrade" placeholder="F.eks. Karakter A / Sensorveiledning" value="Karakter A">
+        </div>
+      </div>
+      <div class="hf-form-group">
+        <label for="ansTitle">Tittel *</label>
+        <input type="text" id="ansTitle" placeholder="F.eks. Fullstendig A-besvarelse med sensorkommentarer" required>
+      </div>
+      <div class="hf-form-group">
+        <label for="ansDesc">Kort beskrivelse</label>
+        <textarea id="ansDesc" style="min-height:75px" placeholder="Hva skiller denne besvarelsen ut, og hvilke oppgaver dekkes..."></textarea>
+      </div>
+      <div class="hf-form-group">
+        <label>Last opp besvarelse som PDF (valgfritt)</label>
+        <div class="hf-file-dropzone" onclick="document.getElementById('ansPdfInput').click()">
+          <div style="font-size:24px;margin-bottom:4px">📥</div>
+          <strong style="font-size:13px;color:#fff">Klikk eller dra inn PDF-fil</strong>
+          <div style="font-size:12px;color:#8fa5ca;margin-top:4px">Last opp hele eksamenssettet eller sensorveiledningen</div>
+          <input type="file" id="ansPdfInput" accept="application/pdf" style="display:none" onchange="handleFileSelected(this, 'ansPdfInfo', 'ansPdfData', 'ansPdfName', 'ansPdfSize')">
+        </div>
+        <div id="ansPdfInfo" class="hf-file-info">
+          <span>✓</span> <strong id="ansPdfName"></strong> (<span id="ansPdfSize"></span>)
+        </div>
+        <input type="hidden" id="ansPdfData">
+      </div>
+      <div class="hf-form-group">
+        <label for="ansExternalUrl">Eller ekstern fil-URL</label>
+        <input type="text" id="ansExternalUrl" placeholder="https://...">
+      </div>
+      <div style="margin-top:20px;display:flex;justify-content:flex-end;gap:10px">
+        <button type="button" class="hf-pkg-btn secondary" onclick="closeSubjectModal('modalSubjectAnswer')">Avbryt</button>
+        <button type="submit" class="hf-pkg-btn">Lagre eksamensløsning</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL 4: Ny Oppgave til Oppgavebanken i faget -->
+<div class="hf-modal-backdrop" id="modalSubjectTask">
+  <div class="hf-modal-card">
+    <h3 style="font-size:18px;font-weight:850;margin-bottom:6px">🎯 Legg til oppgave for faget</h3>
+    <p style="color:#8fa5ca;font-size:13px;margin-bottom:14px">Lag en fagspesifikk oppgave med trinnvist løsningsforslag/fasit for studentene.</p>
+    <form onsubmit="handleSaveTask(event)">
+      <div class="hf-form-group">
+        <label for="taskTitleInput">Oppgavetittel *</label>
+        <input type="text" id="taskTitleInput" placeholder="F.eks. Oppgave 1: Regnskapsanalyse og likviditet" required>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="hf-form-group">
+          <label for="taskDiffInput">Vanskelighetsgrad</label>
+          <select id="taskDiffInput">
+            <option value="Lett">Lett (Grunnleggende formeldrill)</option>
+            <option value="Middels" selected>Middels (Typisk øvingsoppgave)</option>
+            <option value="Eksamensnivå">Eksamensnivå (Krevende eksamenscase)</option>
+          </select>
+        </div>
+        <div class="hf-form-group">
+          <label for="taskTopicInput">Tema / Pensumdel</label>
+          <input type="text" id="taskTopicInput" placeholder="F.eks. Kontantstrøm / Nøkkeltall">
+        </div>
+      </div>
+      <div class="hf-form-group">
+        <label for="taskQuestionInput">Oppgavetekst / Case *</label>
+        <textarea id="taskQuestionInput" style="min-height:90px" placeholder="Beskriv problemstillingen og tallopplysningene..." required></textarea>
+      </div>
+      <div class="hf-form-group">
+        <label for="taskSolutionInput">Løsningsforslag / Trinnvis fasit *</label>
+        <textarea id="taskSolutionInput" style="min-height:120px" placeholder="Trinn 1: Still opp forutsetningene...&#10;Trinn 2: Utregning...&#10;Trinn 3: Konklusjon og tolkning..." required></textarea>
+      </div>
+      <div class="hf-form-group">
+        <label>Valgfri oppgave-PDF / sensorvedlegg</label>
+        <div class="hf-file-dropzone" onclick="document.getElementById('taskPdfInput').click()">
+          <div style="font-size:22px;margin-bottom:4px">📎</div>
+          <strong style="font-size:12.5px;color:#fff">Klikk eller dra inn oppgave-PDF</strong>
+          <input type="file" id="taskPdfInput" accept="application/pdf" style="display:none" onchange="handleFileSelected(this, 'taskPdfInfo', 'taskPdfData', 'taskPdfName', 'taskPdfSize')">
+        </div>
+        <div id="taskPdfInfo" class="hf-file-info">
+          <span>✓</span> <strong id="taskPdfName"></strong> (<span id="taskPdfSize"></span>)
+        </div>
+        <input type="hidden" id="taskPdfData">
+      </div>
+      <div style="margin-top:20px;display:flex;justify-content:flex-end;gap:10px">
+        <button type="button" class="hf-pkg-btn secondary" onclick="closeSubjectModal('modalSubjectTask')">Avbryt</button>
+        <button type="submit" class="hf-pkg-btn">Lagre oppgave</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Administrer temaer (Oversikt og rekkefølge) -->
+<div class="hf-modal-backdrop" id="modalSubjectTopicsManager">
+  <div class="hf-modal-card" style="max-width:680px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <div>
+        <h3 style="font-size:18px;font-weight:850;margin:0">📌 Administrer viktige temaer</h3>
+        <p style="color:#8fa5ca;font-size:13px;margin-top:3px">Endre rekkefølge, vekting og sensorfokus for faget.</p>
+      </div>
+      <button type="button" class="hf-btn" style="font-size:12px;padding:6px 12px" onclick="openAddTopicQuickModal()">➕ Nytt tema</button>
+    </div>
+    <div style="max-height:380px;overflow-y:auto;margin-bottom:16px">
+      <table class="hf-radar-table" style="font-size:13px">
+        <thead>
+          <tr>
+            <th>Tema</th>
+            <th>Vekt</th>
+            <th>Fokus / Sensorveiledning</th>
+            <th style="text-align:right">Handlinger</th>
+          </tr>
+        </thead>
+        <tbody id="topicsManagerTableBody"></tbody>
+      </table>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:10px">
+      <button type="button" class="hf-pkg-btn secondary" onclick="closeSubjectModal('modalSubjectTopicsManager')">Lukk</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Rediger / Legg til enkelt-tema -->
+<div class="hf-modal-backdrop" id="modalSubjectTopic">
+  <div class="hf-modal-card">
+    <h3 id="modalTopicTitle" style="font-size:18px;font-weight:850;margin-bottom:6px">Legg til tema</h3>
+    <p style="color:#8fa5ca;font-size:13px;margin-bottom:14px">Definer kjernetema og eksamensvekt for pensum.</p>
+    <form onsubmit="handleSaveTopicItem(event)">
+      <input type="hidden" id="topicEditIndex" value="-1">
+      <div class="hf-form-group">
+        <label for="topicNameInput">Tema / Kjerneområde *</label>
+        <input type="text" id="topicNameInput" placeholder="F.eks. Derivasjon og optimering" required>
+      </div>
+      <div class="hf-form-group">
+        <label for="topicWeightInput">Vekt / Eksamensandel</label>
+        <input type="text" id="topicWeightInput" placeholder="F.eks. 85% eller Høy eksamensvekt">
+      </div>
+      <div class="hf-form-group">
+        <label for="topicDescInput">Fokus & Sensorveiledning</label>
+        <textarea id="topicDescInput" style="min-height:85px" placeholder="Beskriv hva studenten må mestre, typiske fallgruver eller pensumfokus..."></textarea>
+      </div>
+      <div style="margin-top:20px;display:flex;justify-content:flex-end;gap:10px">
+        <button type="button" class="hf-pkg-btn secondary" onclick="closeSubjectModal('modalSubjectTopic')">Avbryt</button>
+        <button type="submit" class="hf-pkg-btn">Lagre tema</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Administrer øvingsløp (Oversikt og rekkefølge) -->
+<div class="hf-modal-backdrop" id="modalSubjectPlanManager">
+  <div class="hf-modal-card" style="max-width:680px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <div>
+        <h3 style="font-size:18px;font-weight:850;margin:0">📅 Administrer anbefalt øvingsløp</h3>
+        <p style="color:#8fa5ca;font-size:13px;margin-top:3px">Strukturer studentenes læringsløp trinn for trinn.</p>
+      </div>
+      <button type="button" class="hf-btn" style="font-size:12px;padding:6px 12px" onclick="openAddPlanQuickModal()">➕ Nytt steg</button>
+    </div>
+    <div style="max-height:380px;overflow-y:auto;margin-bottom:16px">
+      <table class="hf-radar-table" style="font-size:13px">
+        <thead>
+          <tr>
+            <th>Steg</th>
+            <th>Tidsbruk</th>
+            <th>Beskrivelse</th>
+            <th style="text-align:right">Handlinger</th>
+          </tr>
+        </thead>
+        <tbody id="planManagerTableBody"></tbody>
+      </table>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:10px">
+      <button type="button" class="hf-pkg-btn secondary" onclick="closeSubjectModal('modalSubjectPlanManager')">Lukk</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Rediger / Legg til enkelt-steg i øvingsløp -->
+<div class="hf-modal-backdrop" id="modalSubjectPlan">
+  <div class="hf-modal-card">
+    <h3 id="modalPlanTitle" style="font-size:18px;font-weight:850;margin-bottom:6px">Legg til steg i øvingsløpet</h3>
+    <p style="color:#8fa5ca;font-size:13px;margin-bottom:14px">Planlegg anbefalt progresjon for studenten.</p>
+    <form onsubmit="handleSavePlanItem(event)">
+      <input type="hidden" id="planEditIndex" value="-1">
+      <div class="hf-form-group">
+        <label for="planStepInput">Steg / Fase *</label>
+        <input type="text" id="planStepInput" placeholder="F.eks. 1. Teorigrunnlag & formeldrill" required>
+      </div>
+      <div class="hf-form-group">
+        <label for="planTimeInput">Estimert tidsbruk / Uke</label>
+        <input type="text" id="planTimeInput" placeholder="F.eks. 20 min eller Uke 1-3">
+      </div>
+      <div class="hf-form-group">
+        <label for="planDescInput">Beskrivelse av steget</label>
+        <textarea id="planDescInput" style="min-height:85px" placeholder="Hva bør studenten gjøre i dette steget for å få mest utbytte?"></textarea>
+      </div>
+      <div style="margin-top:20px;display:flex;justify-content:flex-end;gap:10px">
+        <button type="button" class="hf-pkg-btn secondary" onclick="closeSubjectModal('modalSubjectPlan')">Avbryt</button>
+        <button type="submit" class="hf-pkg-btn">Lagre steg</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Global toast notification -->
+<div id="toast" class="notice-toast"></div>
+
+<script src="../shared/learning-content.js"></script>
+<script src="../shared/subject-meta.js"></script>
+<script src="../shared/subject-page-data.js"></script>
+<script src="../shared/subject-resources.js"></script>
+<script src="../shared/subject-page-renderer.js"></script>
+<script>
+(function () {
+  function getSubjectCode() {
+    var sp = new URLSearchParams(window.location.search);
+    return sp.get('id') || sp.get('subject') || 'ret14';
+  }
+
+  var subjectId = getSubjectCode();
+  var isPreview = new URLSearchParams(window.location.search).get('preview') === '1';
+
+  function formatBytes(bytes) {
+    if (!bytes || bytes === 0) return '0 B';
+    var k = 1024;
+    var sizes = ['B', 'KB', 'MB', 'GB'];
+    var i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  }
+
+  function esc(value) {
+    return String(value == null ? '' : value).replace(/[&<>"']/g, function (char) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char];
+    });
+  }
+
+  function showToast(msg) {
+    var toast = document.getElementById('toast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.style.display = 'block';
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(function () {
+      toast.style.display = 'none';
+    }, 2800);
+  }
+
+  var isStudentPreviewActive = false;
+  var isAdmin = isPreview || (window.HaugnesEntitlements && typeof window.HaugnesEntitlements.effectiveAdmin === 'function' && window.HaugnesEntitlements.effectiveAdmin());
+
+  function broadcastPageUpdate(updatedPage) {
+    window.dispatchEvent(new CustomEvent('haugnes:page-updated', { detail: { subjectId: subjectId, data: updatedPage } }));
+    if (window.parent && window.parent !== window) {
+      try {
+        window.parent.postMessage({
+          type: 'HAUGNES_PREVIEW_UPDATE',
+          subjectId: subjectId,
+          pageData: updatedPage
+        }, '*');
+      } catch (err) {}
+    }
+  }
+
+  window.setSubjectPreviewMode = function (mode) {
+    isStudentPreviewActive = (mode === 'student');
+    try {
+      sessionStorage.setItem('hf_preview_mode_' + subjectId, isStudentPreviewActive ? 'student' : 'admin');
+    } catch (e) {}
+
+    var body = document.body;
+    var banner = document.getElementById('subjectLivePreviewBanner');
+    var adminBar = document.getElementById('subjectAdminModeBar');
+    var pillAdmin = document.getElementById('pillModeAdmin');
+    var pillStudent = document.getElementById('pillModeStudent');
+    var barSub = document.getElementById('adminBarSub');
+
+    if (isStudentPreviewActive) {
+      body.classList.add('hf-student-preview-active');
+      if (banner) banner.style.display = 'flex';
+      if (adminBar) adminBar.style.display = 'none';
+      if (pillAdmin) pillAdmin.classList.remove('active');
+      if (pillStudent) pillStudent.classList.add('active');
+      if (barSub) barSub.textContent = '👁️ Studentvisning aktiv (Live)';
+      showToast('Byttet til studentvisning (Live forhåndsvisning)');
+    } else {
+      body.classList.remove('hf-student-preview-active');
+      if (banner) banner.style.display = 'none';
+      if (adminBar && isAdmin) adminBar.style.display = 'flex';
+      if (pillAdmin) pillAdmin.classList.add('active');
+      if (pillStudent) pillStudent.classList.remove('active');
+      if (barSub) barSub.textContent = 'Redigerer fagsiden live';
+      showToast('Byttet til Admin-redigering');
+    }
+
+    var currentPage = window.HaugnesSubjectPages ? window.HaugnesSubjectPages.get(subjectId) : null;
+    if (currentPage) {
+      renderSubjectPage(currentPage);
+    }
+  };
+
+  // File selection helper
+  window.handleFileSelected = function (input, infoId, dataId, nameId, sizeId) {
+    if (!input.files || !input.files[0]) return;
+    var file = input.files[0];
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      document.getElementById(dataId).value = e.target.result;
+      document.getElementById(nameId).textContent = file.name;
+      document.getElementById(sizeId).textContent = formatBytes(file.size);
+      var info = document.getElementById(infoId);
+      if (info) info.style.display = 'flex';
+    };
+    reader.readAsDataURL(file);
+  };
+
+  window.downloadPdfFile = function (dataUrl, fileName) {
+    if (!dataUrl) return;
+    if (dataUrl.indexOf('http') === 0) {
+      window.open(dataUrl, '_blank');
+      return;
+    }
+    var a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = fileName || 'dokument.pdf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  window.openPdfFile = function (dataUrl) {
+    if (!dataUrl) return;
+    if (dataUrl.indexOf('http') === 0) {
+      window.open(dataUrl, '_blank');
+      return;
+    }
+    var win = window.open();
+    if (win) {
+      win.document.write('<iframe src="' + dataUrl + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>');
+    }
+  };
+
+  window.closeSubjectModal = function (id) {
+    var m = document.getElementById(id);
+    if (m) m.style.display = 'none';
+  };
+
+  window.openSubjectModal = function (id) {
+    var m = document.getElementById(id);
+    if (m) m.style.display = 'grid';
+  };
+
+  window.openSubjectVisibilityModal = function () {
+    var page = window.HaugnesSubjectPages ? window.HaugnesSubjectPages.get(subjectId) : {};
+    var v = Object.assign({
+      radar: true,
+      answers: true,
+      notes: true,
+      tasks: true,
+      flashcards: true,
+      topics: true,
+      plan: true
+    }, page && page.visibility ? page.visibility : {});
+
+    document.getElementById('visRadar').checked = v.radar !== false;
+    document.getElementById('visAnswers').checked = v.answers !== false;
+    document.getElementById('visNotes').checked = v.notes !== false;
+    document.getElementById('visTasks').checked = v.tasks !== false;
+    document.getElementById('visFlashcards').checked = v.flashcards !== false;
+    document.getElementById('visTopics').checked = v.topics !== false;
+    document.getElementById('visPlan').checked = v.plan !== false;
+    openSubjectModal('modalSubjectVisibility');
+  };
+
+  window.openSubjectNoteModal = function () {
+    document.getElementById('noteTitle').value = '';
+    document.getElementById('noteSource').value = 'Forelesningsrekke ' + (subjectId || '').toUpperCase();
+    document.getElementById('noteDate').value = 'Høst 2026';
+    document.getElementById('noteDesc').value = '';
+    document.getElementById('notePdfData').value = '';
+    document.getElementById('notePdfInfo').style.display = 'none';
+    document.getElementById('noteExternalUrl').value = '';
+    document.getElementById('noteBody').value = '';
+    openSubjectModal('modalSubjectNote');
+  };
+
+  window.openSubjectAnswerModal = function () {
+    document.getElementById('ansTerm').value = 'V26';
+    document.getElementById('ansGrade').value = 'Karakter A';
+    document.getElementById('ansTitle').value = (subjectId || '').toUpperCase() + ' Fullstendig Sensorveiledning & Modellbesvarelse';
+    document.getElementById('ansDesc').value = '';
+    document.getElementById('ansPdfData').value = '';
+    document.getElementById('ansPdfInfo').style.display = 'none';
+    document.getElementById('ansExternalUrl').value = '';
+    openSubjectModal('modalSubjectAnswer');
+  };
+
+  window.openSubjectTaskModal = function () {
+    document.getElementById('taskTitleInput').value = '';
+    document.getElementById('taskTopicInput').value = '';
+    document.getElementById('taskQuestionInput').value = '';
+    document.getElementById('taskSolutionInput').value = '';
+    document.getElementById('taskPdfData').value = '';
+    document.getElementById('taskPdfInfo').style.display = 'none';
+    openSubjectModal('modalSubjectTask');
+  };
+
+  window.openSubjectRadarModal = function () {
+    window.location.href = '../user/admin.html?subject=' + encodeURIComponent(subjectId) + '&tab=radar';
+  };
+
+  // Toggle Task Solution Accordion
+  window.toggleTaskSolution = function (btn) {
+    var card = btn.closest('.hf-task-card');
+    if (!card) return;
+    var body = card.querySelector('.hf-solution-body');
+    if (!body) return;
+    var isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    var chev = btn.querySelector('.chevron');
+    if (chev) chev.textContent = isOpen ? '▼' : '▲';
+    var lbl = btn.querySelector('.lbl');
+    if (lbl) lbl.textContent = isOpen ? 'Vis trinnvis fasit' : 'Skjul fasit';
+  };
+
+  // Toggle Note Summary Accordion
+  window.toggleNoteSummary = function (btn) {
+    var card = btn.closest('.hf-pkg-card');
+    if (!card) return;
+    var body = card.querySelector('.hf-note-summary-body');
+    if (!body) return;
+    var isOpen = body.style.display === 'block';
+    body.style.display = isOpen ? 'none' : 'block';
+    btn.textContent = isOpen ? '📖 Les utdypende sammendrag ▼' : '▲ Lukk sammendrag';
+  };
+
+  // Save Visibility
+  window.handleSaveVisibility = function (e) {
+    e.preventDefault();
+    var page = window.HaugnesSubjectPages ? window.HaugnesSubjectPages.get(subjectId) : {};
+    var vis = {
+      radar: document.getElementById('visRadar').checked,
+      answers: document.getElementById('visAnswers').checked,
+      notes: document.getElementById('visNotes').checked,
+      tasks: document.getElementById('visTasks').checked,
+      flashcards: document.getElementById('visFlashcards').checked,
+      topics: document.getElementById('visTopics').checked,
+      plan: document.getElementById('visPlan').checked
+    };
+    var updated = Object.assign({}, page, { visibility: vis });
+    window.HaugnesSubjectPages.savePage(subjectId, updated).then(function () {
+      closeSubjectModal('modalSubjectVisibility');
+      renderSubjectPage(updated);
+      broadcastPageUpdate(updated);
+      showToast('Seksjonssynlighet oppdatert!');
+    });
+  };
+
+  // Save Note
+  window.handleSaveNote = function (e) {
+    e.preventDefault();
+    var page = window.HaugnesSubjectPages ? window.HaugnesSubjectPages.get(subjectId) : {};
+    var title = document.getElementById('noteTitle').value.trim();
+    var source = document.getElementById('noteSource').value.trim();
+    var date = document.getElementById('noteDate').value.trim();
+    var desc = document.getElementById('noteDesc').value.trim();
+    var pdfData = document.getElementById('notePdfData').value;
+    var pdfName = document.getElementById('notePdfName').textContent || 'notat.pdf';
+    var pdfSize = document.getElementById('notePdfSize').textContent || '';
+    var extUrl = document.getElementById('noteExternalUrl').value.trim();
+    var body = document.getElementById('noteBody').value.trim();
+
+    var notes = page.notes ? page.notes.slice() : [];
+    notes.push({
+      id: 'note_' + Date.now(),
+      title: title,
+      source: source,
+      date: date,
+      desc: desc,
+      pdfData: pdfData || null,
+      pdfName: pdfName,
+      pdfSize: pdfSize,
+      pdfUrl: extUrl || null,
+      body: body
+    });
+
+    var updated = Object.assign({}, page, { notes: notes });
+    window.HaugnesSubjectPages.savePage(subjectId, updated).then(function () {
+      closeSubjectModal('modalSubjectNote');
+      renderSubjectPage(updated);
+      broadcastPageUpdate(updated);
+      showToast('Notat lagret!');
+    });
+  };
+
+  // Save Exam Answer
+  window.handleSaveAnswer = function (e) {
+    e.preventDefault();
+    var page = window.HaugnesSubjectPages ? window.HaugnesSubjectPages.get(subjectId) : {};
+    var term = document.getElementById('ansTerm').value.trim();
+    var grade = document.getElementById('ansGrade').value.trim();
+    var title = document.getElementById('ansTitle').value.trim();
+    var desc = document.getElementById('ansDesc').value.trim();
+    var pdfData = document.getElementById('ansPdfData').value;
+    var pdfName = document.getElementById('ansPdfName').textContent || 'eksamenslosning.pdf';
+    var pdfSize = document.getElementById('ansPdfSize').textContent || '';
+    var extUrl = document.getElementById('ansExternalUrl').value.trim();
+
+    var answers = page.answers ? page.answers.slice() : [];
+    answers.push({
+      id: 'ans_' + Date.now(),
+      term: term,
+      grade: grade,
+      title: title,
+      desc: desc,
+      pdfData: pdfData || null,
+      pdfName: pdfName,
+      pdfSize: pdfSize,
+      pdfUrl: extUrl || null
+    });
+
+    var updated = Object.assign({}, page, { answers: answers });
+    window.HaugnesSubjectPages.savePage(subjectId, updated).then(function () {
+      closeSubjectModal('modalSubjectAnswer');
+      renderSubjectPage(updated);
+      broadcastPageUpdate(updated);
+      showToast('Eksamensløsning lagret!');
+    });
+  };
+
+  // Save Task
+  window.handleSaveTask = function (e) {
+    e.preventDefault();
+    var page = window.HaugnesSubjectPages ? window.HaugnesSubjectPages.get(subjectId) : {};
+    var title = document.getElementById('taskTitleInput').value.trim();
+    var difficulty = document.getElementById('taskDiffInput').value;
+    var topic = document.getElementById('taskTopicInput').value.trim();
+    var question = document.getElementById('taskQuestionInput').value.trim();
+    var solution = document.getElementById('taskSolutionInput').value.trim();
+    var pdfData = document.getElementById('taskPdfData').value;
+    var pdfName = document.getElementById('taskPdfName').textContent || 'oppgave.pdf';
+    var pdfSize = document.getElementById('taskPdfSize').textContent || '';
+
+    var tasks = page.tasks ? page.tasks.slice() : [];
+    tasks.push({
+      id: 'task_' + Date.now(),
+      title: title,
+      difficulty: difficulty,
+      topic: topic,
+      question: question,
+      solution: solution,
+      pdfData: pdfData || null,
+      pdfName: pdfName,
+      pdfSize: pdfSize
+    });
+
+    var updated = Object.assign({}, page, { tasks: tasks });
+    window.HaugnesSubjectPages.savePage(subjectId, updated).then(function () {
+      closeSubjectModal('modalSubjectTask');
+      renderSubjectPage(updated);
+      broadcastPageUpdate(updated);
+      showToast('Oppgave lagret i oppgavebanken!');
+    });
+  };
+
+  // --- VIKTIGE TEMAER: DIREKTE REDIGERING ---
+  function renderTopicsManagerRows(topics) {
+    var tbody = document.getElementById('topicsManagerTableBody');
+    if (!tbody) return;
+    if (!topics || !topics.length) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#8fa5ca;padding:24px">Ingen temaer registrert ennå. Klikk "+ Nytt tema" over for å opprette det første temaet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = topics.map(function (topic, idx) {
+      var title = Array.isArray(topic) ? topic[0] : (topic.title || topic.name || topic.theme || '');
+      var desc = Array.isArray(topic) ? (topic[2] && topic[2].indexOf('%') !== -1 ? topic[1] : (topic[2] || topic[1])) : (topic.desc || topic.subtitle || '');
+      var pct = Array.isArray(topic) ? (topic[2] && topic[2].indexOf('%') !== -1 ? topic[2] : topic[1]) : (topic.pct || topic.weight || '80%');
+      return '<tr>'
+        + '<td style="font-weight:800;color:#fff">' + esc(title) + '</td>'
+        + '<td style="font-weight:800;color:#ffd98f">' + esc(pct) + '</td>'
+        + '<td style="color:#b8c9df;line-height:1.45">' + esc(desc) + '</td>'
+        + '<td style="text-align:right;white-space:nowrap">'
+        + '<button type="button" class="hf-mini-action-btn" title="Flytt opp" onclick="moveTopicRow(' + idx + ', -1)" ' + (idx === 0 ? 'disabled style="opacity:.3"' : '') + '>▲</button> '
+        + '<button type="button" class="hf-mini-action-btn" title="Flytt ned" onclick="moveTopicRow(' + idx + ', 1)" ' + (idx === topics.length - 1 ? 'disabled style="opacity:.3"' : '') + '>▼</button> '
+        + '<button type="button" class="hf-mini-action-btn" title="Rediger" onclick="editSingleTopic(' + idx + ')">✏️</button> '
+        + '<button type="button" class="hf-mini-action-btn danger" title="Slett" onclick="deleteSingleTopic(' + idx + ')">🗑️</button>'
+        + '</td>'
+        + '</tr>';
+    }).join('');
+  }
+
+  window.openSubjectTopicsModal = function () {
+    var page = window.HaugnesSubjectPages ? window.HaugnesSubjectPages.get(subjectId) : {};
+    renderTopicsManagerRows(page.topics || []);
+    openSubjectModal('modalSubjectTopicsManager');
+  };
+
+  window.openAddTopicQuickModal = function () {
+    document.getElementById('topicEditIndex').value = '-1';
+    document.getElementById('modalTopicTitle').textContent = 'Legg til tema';
+    document.getElementById('topicNameInput').value = '';
+    document.getElementById('topicWeightInput').value = '85%';
+    document.getElementById('topicDescInput').value = '';
+    openSubjectModal('modalSubjectTopic');
+  };
+
+  window.editSingleTopic = function (idx) {
+    var page = window.HaugnesSubjectPages ? window.HaugnesSubjectPages.get(subjectId) : {};
+    var topics = page.topics || [];
+    var topic = topics[idx];
+    if (!topic) return;
+    var title = Array.isArray(topic) ? topic[0] : (topic.title || topic.name || topic.theme || '');
+    var desc = Array.isArray(topic) ? (topic[2] && topic[2].indexOf('%') !== -1 ? topic[1] : (topic[2] || topic[1])) : (topic.desc || topic.subtitle || '');
+    var pct = Array.isArray(topic) ? (topic[2] && topic[2].indexOf('%') !== -1 ? topic[2] : topic[1]) : (topic.pct || topic.weight || '80%');
+
+    document.getElementById('topicEditIndex').value = String(idx);
+    document.getElementById('modalTopicTitle').textContent = 'Rediger tema';
+    document.getElementById('topicNameInput').value = title;
+    document.getElementById('topicWeightInput').value = pct;
+    document.getElementById('topicDescInput').value = desc;
+    openSubjectModal('modalSubjectTopic');
+  };
+
+  window.deleteSingleTopic = function (idx) {
+    var page = window.HaugnesSubjectPages ? window.HaugnesSubjectPages.get(subjectId) : {};
+    var topics = (page.topics || []).slice();
+    if (!topics[idx]) return;
+    var topicTitle = Array.isArray(topics[idx]) ? topics[idx][0] : (topics[idx].title || 'dette temaet');
+    if (!confirm('Vil du slette temaet "' + topicTitle + '"?')) return;
+    topics.splice(idx, 1);
+    var updated = Object.assign({}, page, { topics: topics });
+    window.HaugnesSubjectPages.savePage(subjectId, updated).then(function () {
+      renderTopicsManagerRows(topics);
+      renderSubjectPage(updated);
+      broadcastPageUpdate(updated);
+      showToast('Tema slettet');
+    });
+  };
+
+  window.moveTopicRow = function (idx, direction) {
+    var page = window.HaugnesSubjectPages ? window.HaugnesSubjectPages.get(subjectId) : {};
+    var topics = (page.topics || []).slice();
+    var target = idx + direction;
+    if (target < 0 || target >= topics.length) return;
+    var temp = topics[idx];
+    topics[idx] = topics[target];
+    topics[target] = temp;
+    var updated = Object.assign({}, page, { topics: topics });
+    window.HaugnesSubjectPages.savePage(subjectId, updated).then(function () {
+      renderTopicsManagerRows(topics);
+      renderSubjectPage(updated);
+      broadcastPageUpdate(updated);
+      showToast('Rekkefølge oppdatert');
+    });
+  };
+
+  window.handleSaveTopicItem = function (e) {
+    e.preventDefault();
+    var page = window.HaugnesSubjectPages ? window.HaugnesSubjectPages.get(subjectId) : {};
+    var topics = (page.topics || []).slice();
+    var idx = parseInt(document.getElementById('topicEditIndex').value, 10);
+    var title = document.getElementById('topicNameInput').value.trim();
+    var weight = document.getElementById('topicWeightInput').value.trim() || '80%';
+    var desc = document.getElementById('topicDescInput').value.trim();
+
+    var newItem = [title, desc, weight];
+    if (idx >= 0 && idx < topics.length) {
+      topics[idx] = newItem;
+    } else {
+      topics.push(newItem);
+    }
+    var updated = Object.assign({}, page, { topics: topics });
+    window.HaugnesSubjectPages.savePage(subjectId, updated).then(function () {
+      closeSubjectModal('modalSubjectTopic');
+      renderTopicsManagerRows(topics);
+      renderSubjectPage(updated);
+      broadcastPageUpdate(updated);
+      showToast(idx >= 0 ? 'Tema oppdatert!' : 'Nytt tema lagret!');
+    });
+  };
+
+  // --- ANBEFALT ØVINGSLØP: DIREKTE REDIGERING ---
+  function renderPlanManagerRows(plan) {
+    var tbody = document.getElementById('planManagerTableBody');
+    if (!tbody) return;
+    if (!plan || !plan.length) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#8fa5ca;padding:24px">Ingen steg registrert ennå. Klikk "+ Nytt steg" over for å opprette første steg i øvingsløpet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = plan.map(function (item, idx) {
+      var step = Array.isArray(item) ? item[0] : (item.step || item.title || '');
+      var desc = Array.isArray(item) ? item[1] : (item.desc || '');
+      var time = Array.isArray(item) ? item[2] : (item.time || item.duration || '30 min');
+      return '<tr>'
+        + '<td style="font-weight:800;color:#fff">' + esc(step) + '</td>'
+        + '<td style="font-weight:800;color:#ffd98f">' + esc(time) + '</td>'
+        + '<td style="color:#b8c9df;line-height:1.45">' + esc(desc) + '</td>'
+        + '<td style="text-align:right;white-space:nowrap">'
+        + '<button type="button" class="hf-mini-action-btn" title="Flytt opp" onclick="movePlanRow(' + idx + ', -1)" ' + (idx === 0 ? 'disabled style="opacity:.3"' : '') + '>▲</button> '
+        + '<button type="button" class="hf-mini-action-btn" title="Flytt ned" onclick="movePlanRow(' + idx + ', 1)" ' + (idx === plan.length - 1 ? 'disabled style="opacity:.3"' : '') + '>▼</button> '
+        + '<button type="button" class="hf-mini-action-btn" title="Rediger" onclick="editSinglePlan(' + idx + ')">✏️</button> '
+        + '<button type="button" class="hf-mini-action-btn danger" title="Slett" onclick="deleteSinglePlan(' + idx + ')">🗑️</button>'
+        + '</td>'
+        + '</tr>';
+    }).join('');
+  }
+
+  window.openSubjectPlanModal = function () {
+    var page = window.HaugnesSubjectPages ? window.HaugnesSubjectPages.get(subjectId) : {};
+    renderPlanManagerRows(page.plan || []);
+    openSubjectModal('modalSubjectPlanManager');
+  };
+
+  window.openAddPlanQuickModal = function () {
+    document.getElementById('planEditIndex').value = '-1';
+    document.getElementById('modalPlanTitle').textContent = 'Legg til steg i øvingsløpet';
+    document.getElementById('planStepInput').value = '';
+    document.getElementById('planTimeInput').value = '30 min';
+    document.getElementById('planDescInput').value = '';
+    openSubjectModal('modalSubjectPlan');
+  };
+
+  window.editSinglePlan = function (idx) {
+    var page = window.HaugnesSubjectPages ? window.HaugnesSubjectPages.get(subjectId) : {};
+    var plan = page.plan || [];
+    var item = plan[idx];
+    if (!item) return;
+    var step = Array.isArray(item) ? item[0] : (item.step || item.title || '');
+    var desc = Array.isArray(item) ? item[1] : (item.desc || '');
+    var time = Array.isArray(item) ? item[2] : (item.time || item.duration || '30 min');
+
+    document.getElementById('planEditIndex').value = String(idx);
+    document.getElementById('modalPlanTitle').textContent = 'Rediger steg i øvingsløpet';
+    document.getElementById('planStepInput').value = step;
+    document.getElementById('planTimeInput').value = time;
+    document.getElementById('planDescInput').value = desc;
+    openSubjectModal('modalSubjectPlan');
+  };
+
+  window.deleteSinglePlan = function (idx) {
+    var page = window.HaugnesSubjectPages ? window.HaugnesSubjectPages.get(subjectId) : {};
+    var plan = (page.plan || []).slice();
+    if (!plan[idx]) return;
+    var stepTitle = Array.isArray(plan[idx]) ? plan[idx][0] : (plan[idx].step || 'dette steget');
+    if (!confirm('Vil du slette steget "' + stepTitle + '"?')) return;
+    plan.splice(idx, 1);
+    var updated = Object.assign({}, page, { plan: plan });
+    window.HaugnesSubjectPages.savePage(subjectId, updated).then(function () {
+      renderPlanManagerRows(plan);
+      renderSubjectPage(updated);
+      broadcastPageUpdate(updated);
+      showToast('Steg slettet');
+    });
+  };
+
+  window.movePlanRow = function (idx, direction) {
+    var page = window.HaugnesSubjectPages ? window.HaugnesSubjectPages.get(subjectId) : {};
+    var plan = (page.plan || []).slice();
+    var target = idx + direction;
+    if (target < 0 || target >= plan.length) return;
+    var temp = plan[idx];
+    plan[idx] = plan[target];
+    plan[target] = temp;
+    var updated = Object.assign({}, page, { plan: plan });
+    window.HaugnesSubjectPages.savePage(subjectId, updated).then(function () {
+      renderPlanManagerRows(plan);
+      renderSubjectPage(updated);
+      broadcastPageUpdate(updated);
+      showToast('Rekkefølge oppdatert');
+    });
+  };
+
+  window.handleSavePlanItem = function (e) {
+    e.preventDefault();
+    var page = window.HaugnesSubjectPages ? window.HaugnesSubjectPages.get(subjectId) : {};
+    var plan = (page.plan || []).slice();
+    var idx = parseInt(document.getElementById('planEditIndex').value, 10);
+    var step = document.getElementById('planStepInput').value.trim();
+    var time = document.getElementById('planTimeInput').value.trim() || '30 min';
+    var desc = document.getElementById('planDescInput').value.trim();
+
+    var newItem = [step, desc, time];
+    if (idx >= 0 && idx < plan.length) {
+      plan[idx] = newItem;
+    } else {
+      plan.push(newItem);
+    }
+    var updated = Object.assign({}, page, { plan: plan });
+    window.HaugnesSubjectPages.savePage(subjectId, updated).then(function () {
+      closeSubjectModal('modalSubjectPlan');
+      renderPlanManagerRows(plan);
+      renderSubjectPage(updated);
+      broadcastPageUpdate(updated);
+      showToast(idx >= 0 ? 'Steg oppdatert!' : 'Nytt steg lagret!');
+    });
+  };
+
+  // Filter Tasks
+  var activeTaskFilter = 'all';
+  function setupTaskFilters() {
+    var pills = document.querySelectorAll('#taskFilterBar .hf-filter-pill');
+    pills.forEach(function (pill) {
+      pill.onclick = function () {
+        pills.forEach(function (p) { p.classList.remove('active'); });
+        pill.classList.add('active');
+        activeTaskFilter = pill.dataset.filter || 'all';
+        var page = window.HaugnesSubjectPages ? window.HaugnesSubjectPages.get(subjectId) : null;
+        if (page) renderTasks(page);
+      };
+    });
+  }
+
+  // Render Tasks
+  function renderTasks(page) {
+    var host = document.getElementById('tasksList');
+    if (!host) return;
+    var allTasks = page.tasks || [];
+    var filtered = activeTaskFilter === 'all'
+      ? allTasks
+      : allTasks.filter(function (t) { return (t.difficulty || '').toLowerCase().indexOf(activeTaskFilter.toLowerCase()) !== -1; });
+
+    var subTitle = document.getElementById('taskSubTitle');
+    if (subTitle) {
+      subTitle.textContent = allTasks.length
+        ? (allTasks.length + ' oppgaver tilpasset pensum i ' + (page.code || subjectId).toUpperCase() + '.')
+        : 'Ingen oppgaver lagt ut for dette faget ennå.';
+    }
+
+    if (!filtered.length) {
+      host.innerHTML = '<div class="hf-empty-box">'
+        + (allTasks.length ? 'Ingen oppgaver matcher det valgte filteret.' : 'Ingen oppgaver er publisert i oppgavebanken for dette faget ennå.')
+        + '<br><button class="hf-pkg-btn" style="margin-top:12px" onclick="openSubjectTaskModal()">➕ Legg til oppgave</button>'
+        + '</div>';
+      return;
+    }
+
+    var html = '';
+    filtered.forEach(function (task) {
+      var diff = task.difficulty || 'Middels';
+      var diffClass = diff.toLowerCase().indexOf('lett') !== -1 ? 'lett' : (diff.toLowerCase().indexOf('eksamen') !== -1 ? 'eksamen' : 'middels');
+      html += '<div class="hf-task-card">'
+        + '<div class="hf-task-head">'
+        + '<div>'
+        + '<h4 class="hf-task-title">' + task.title + '</h4>'
+        + (task.topic ? '<span style="font-size:12px;color:#8fa5ca;margin-top:2px;display:inline-block">Tema: ' + task.topic + '</span>' : '')
+        + '</div>'
+        + '<span class="hf-diff-badge ' + diffClass + '">' + diff + '</span>'
+        + '</div>'
+        + '<div class="hf-task-prompt">' + task.question + '</div>'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">'
+        + '<button class="hf-solution-toggle" onclick="toggleTaskSolution(this)"><span class="lbl">Vis trinnvis fasit</span> <span class="chevron">▼</span></button>'
+        + (task.pdfData ? '<button class="hf-pkg-btn secondary" style="font-size:11.5px;padding:6px 12px" onclick="downloadPdfFile(\'' + task.pdfData + '\', \'' + (task.pdfName || 'oppgave.pdf') + '\')">📥 Last ned oppgave-PDF (' + (task.pdfSize || 'PDF') + ')</button>' : '')
+        + '</div>'
+        + '<div class="hf-solution-body"><strong>Løsningsforslag / Trinnvis fasit:</strong>\n\n' + task.solution + '</div>'
+        + '</div>';
+    });
+    host.innerHTML = html;
+  }
+
+  // Render Notes
+  function renderNotes(page) {
+    var host = document.getElementById('notesList');
+    if (!host) return;
+    var notes = page.notes || [];
+    if (!notes.length) {
+      host.innerHTML = '<div class="hf-empty-box">Ingen forelesningsnotater lagt ut for dette faget ennå.<br><button class="hf-pkg-btn" style="margin-top:12px" onclick="openSubjectNoteModal()">➕ Legg til notat</button></div>';
+      return;
+    }
+
+    var html = '<div class="hf-packages-grid">';
+    notes.forEach(function (note) {
+      var hasPdf = !!(note.pdfData || note.pdfUrl);
+      html += '<div class="hf-pkg-card">'
+        + '<div>'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+        + '<span class="hf-pkg-term accent">' + (note.date || 'Forelesning') + '</span>'
+        + (hasPdf ? '<span class="hf-pdf-badge">📄 PDF ' + (note.pdfSize ? '(' + note.pdfSize + ')' : '') + '</span>' : '')
+        + '</div>'
+        + '<h4 class="hf-pkg-title">' + note.title + '</h4>'
+        + (note.source ? '<div style="font-size:11.5px;color:#8fa5ca;margin-bottom:8px">Kilde: ' + note.source + '</div>' : '')
+        + '<p class="hf-pkg-desc">' + (note.desc || '') + '</p>'
+        + '</div>'
+        + '<div>'
+        + '<div class="hf-pkg-actions">'
+        + (hasPdf ? '<button class="hf-pkg-btn" onclick="downloadPdfFile(\'' + (note.pdfData || note.pdfUrl) + '\', \'' + (note.pdfName || 'notat.pdf') + '\')">📥 Last ned PDF</button>' : '')
+        + (hasPdf ? '<button class="hf-pkg-btn secondary" onclick="openPdfFile(\'' + (note.pdfData || note.pdfUrl) + '\')">👁️ Åpne</button>' : '')
+        + (note.body ? '<button class="hf-pkg-btn secondary" onclick="toggleNoteSummary(this)">📖 Les utdypende sammendrag ▼</button>' : '')
+        + '</div>'
+        + (note.body ? '<div class="hf-note-summary-body" style="display:none;margin-top:12px;padding:12px;border-radius:10px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);font-size:12.5px;color:#d8e2f4;line-height:1.6;white-space:pre-wrap">' + note.body + '</div>' : '')
+        + '</div>'
+        + '</div>';
+    });
+    html += '</div>';
+    host.innerHTML = html;
+  }
+
+  // Render Answers
+  function renderAnswers(page) {
+    var host = document.getElementById('packagesList');
+    if (!host) return;
+    var answers = page.answers || [];
+    if (!answers.length) {
+      host.innerHTML = '<div class="hf-empty-box">Ingen eksamensløsninger lagt ut for dette faget ennå.<br><button class="hf-pkg-btn" style="margin-top:12px" onclick="openSubjectAnswerModal()">➕ Last opp eksamensløsning</button></div>';
+      return;
+    }
+
+    var html = '<div class="hf-packages-grid">';
+    answers.forEach(function (ans) {
+      var hasPdf = !!(ans.pdfData || ans.pdfUrl);
+      html += '<div class="hf-pkg-card">'
+        + '<div>'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+        + '<span class="hf-pkg-term">' + (ans.term || 'Eksamen') + '</span>'
+        + '<span class="hf-tag-tier">' + (ans.grade || 'Karakter A') + '</span>'
+        + '</div>'
+        + '<h4 class="hf-pkg-title">' + ans.title + '</h4>'
+        + '<p class="hf-pkg-desc">' + (ans.desc || 'Tidligere eksamensbesvarelse og sensorveiledning.') + '</p>'
+        + '</div>'
+        + '<div>'
+        + (hasPdf ? '<div class="hf-pdf-badge" style="margin-bottom:8px">📄 PDF-vedlegg ' + (ans.pdfSize ? '(' + ans.pdfSize + ')' : '') + '</div>' : '')
+        + '<div class="hf-pkg-actions">'
+        + (hasPdf ? '<button class="hf-pkg-btn" onclick="downloadPdfFile(\'' + (ans.pdfData || ans.pdfUrl) + '\', \'' + (ans.pdfName || 'eksamensbesvarelse.pdf') + '\')">📥 Last ned PDF</button>' : '')
+        + (hasPdf ? '<button class="hf-pkg-btn secondary" onclick="openPdfFile(\'' + (ans.pdfData || ans.pdfUrl) + '\')">👁️ Åpne</button>' : '')
+        + '</div>'
+        + '</div>'
+        + '</div>';
+    });
+    html += '</div>';
+    host.innerHTML = html;
+  }
+
+  // Main Render Function
+  function renderSubjectPage(page) {
+    if (!page) return;
+    var vis = Object.assign({
+      radar: true,
+      answers: true,
+      notes: true,
+      tasks: true,
+      flashcards: true,
+      topics: true,
+      plan: true
+    }, page.visibility || {});
+
+    // Visibility of sections
+    var secRadar = document.getElementById('eksamensradar');
+    if (secRadar) secRadar.style.display = vis.radar !== false ? 'block' : 'none';
+    var tabRadar = document.getElementById('tabRadar');
+    if (tabRadar) tabRadar.style.display = vis.radar !== false ? 'inline-block' : 'none';
+
+    var secAnswers = document.getElementById('besvarelser');
+    if (secAnswers) secAnswers.style.display = vis.answers !== false ? 'block' : 'none';
+    var tabAnswers = document.getElementById('tabAnswers');
+    if (tabAnswers) tabAnswers.style.display = vis.answers !== false ? 'inline-block' : 'none';
+
+    var secNotes = document.getElementById('notater');
+    if (secNotes) secNotes.style.display = vis.notes !== false ? 'block' : 'none';
+    var tabNotes = document.getElementById('tabNotes');
+    if (tabNotes) tabNotes.style.display = vis.notes !== false ? 'inline-block' : 'none';
+
+    var secTasks = document.getElementById('oppgaver');
+    if (secTasks) secTasks.style.display = vis.tasks !== false ? 'block' : 'none';
+    var tabTasks = document.getElementById('tabTasks');
+    if (tabTasks) tabTasks.style.display = vis.tasks !== false ? 'inline-block' : 'none';
+
+    var tabFlash = document.getElementById('flashcardsTabLink');
+    if (tabFlash) tabFlash.style.display = vis.flashcards !== false ? 'inline-block' : 'none';
+    var heroFlash = document.getElementById('heroPrimaryAction');
+    if (heroFlash) heroFlash.style.display = vis.flashcards !== false ? 'inline-flex' : 'none';
+
+    var cardTopics = document.getElementById('topicsCard');
+    if (cardTopics) cardTopics.style.display = vis.topics !== false ? 'block' : 'none';
+    var cardPlan = document.getElementById('planCard');
+    if (cardPlan) cardPlan.style.display = vis.plan !== false ? 'block' : 'none';
+
+    var gridWide = document.getElementById('topicsAndPlanGrid');
+    if (gridWide) {
+      gridWide.style.display = (vis.topics !== false || vis.plan !== false) ? 'grid' : 'none';
+    }
+
+    // Render Topics
+    var showTopicsAdmin = isAdmin && !isStudentPreviewActive;
+    var topicsAdminBox = document.getElementById('topicsAdminActions');
+    if (topicsAdminBox) topicsAdminBox.style.display = showTopicsAdmin ? 'flex' : 'none';
+
+    var topicList = document.getElementById('topicList');
+    if (topicList) {
+      var topics = page.topics || [];
+      if (!topics.length) {
+        topicList.innerHTML = '<div class="hf-empty-box" style="padding:16px;font-size:12.5px">'
+          + 'Ingen temaer oppgitt ennå.'
+          + (showTopicsAdmin ? '<br><button type="button" class="hf-pkg-btn" style="margin-top:10px" onclick="openAddTopicQuickModal()">➕ Legg til første tema</button>' : '')
+          + '</div>';
+      } else {
+        var topicsHtml = topics.map(function (topic, idx) {
+          var title = Array.isArray(topic) ? topic[0] : (topic.title || topic.name || topic.theme || '');
+          var desc = Array.isArray(topic) ? (topic[2] && topic[2].indexOf('%') !== -1 ? topic[1] : (topic[2] || topic[1])) : (topic.desc || topic.subtitle || '');
+          var pct = Array.isArray(topic) ? (topic[2] && topic[2].indexOf('%') !== -1 ? topic[2] : topic[1]) : (topic.pct || topic.weight || '80%');
+          return '<div class="hf-topic">'
+            + '<div style="flex:1;min-width:0">'
+            + '<strong style="display:block;color:#fff">' + esc(title) + '</strong>'
+            + (desc ? '<span style="display:block;color:#aebddd;font-size:12px;margin-top:3px">' + esc(desc) + '</span>' : '')
+            + '</div>'
+            + '<div style="display:flex;align-items:center;gap:10px;flex-shrink:0">'
+            + '<div class="hf-meter" style="--accent:' + (page.accent || '#2563eb') + ';--p:' + esc(pct) + '"><i style="width:' + esc(pct) + '"></i></div>'
+            + '<span style="font-size:12px;font-weight:800;color:#ffd98f;min-width:34px;text-align:right">' + esc(pct) + '</span>'
+            + (showTopicsAdmin ? '<div class="hf-item-admin-actions">'
+              + '<button type="button" class="hf-mini-action-btn" title="Rediger tema" onclick="editSingleTopic(' + idx + ')">✏️</button>'
+              + '<button type="button" class="hf-mini-action-btn danger" title="Slett tema" onclick="deleteSingleTopic(' + idx + ')">🗑️</button>'
+              + '</div>' : '')
+            + '</div>'
+            + '</div>';
+        }).join('');
+
+        if (showTopicsAdmin) {
+          topicsHtml += '<button type="button" class="hf-add-inline-btn" onclick="openAddTopicQuickModal()">➕ Legg til tema</button>';
+        }
+        topicList.innerHTML = topicsHtml;
+      }
+    }
+
+    // Render Plan
+    var showPlanAdmin = isAdmin && !isStudentPreviewActive;
+    var planAdminBox = document.getElementById('planAdminActions');
+    if (planAdminBox) planAdminBox.style.display = showPlanAdmin ? 'flex' : 'none';
+
+    var planList = document.getElementById('planList');
+    if (planList) {
+      var plan = page.plan || [];
+      if (!plan.length) {
+        planList.innerHTML = '<div class="hf-empty-box" style="padding:16px;font-size:12.5px">'
+          + 'Ingen steg i øvingsløpet registrert ennå.'
+          + (showPlanAdmin ? '<br><button type="button" class="hf-pkg-btn" style="margin-top:10px" onclick="openAddPlanQuickModal()">➕ Legg til første steg</button>' : '')
+          + '</div>';
+      } else {
+        var planHtml = plan.map(function (item, idx) {
+          var step = Array.isArray(item) ? item[0] : (item.step || item.title || '');
+          var desc = Array.isArray(item) ? item[1] : (item.desc || '');
+          var time = Array.isArray(item) ? item[2] : (item.time || item.duration || '30 min');
+          return '<div class="hf-priority">'
+            + '<div style="flex:1;min-width:0">'
+            + '<b style="display:block;color:#fff">' + esc(step) + '</b>'
+            + (desc ? '<span style="display:block;color:#aebddd;font-size:12px;margin-top:3px">' + esc(desc) + '</span>' : '')
+            + '</div>'
+            + '<div style="display:flex;align-items:center;gap:10px;flex-shrink:0">'
+            + '<span style="font-size:12px;font-weight:800;color:#ffd98f">' + esc(time) + '</span>'
+            + (showPlanAdmin ? '<div class="hf-item-admin-actions">'
+              + '<button type="button" class="hf-mini-action-btn" title="Rediger steg" onclick="editSinglePlan(' + idx + ')">✏️</button>'
+              + '<button type="button" class="hf-mini-action-btn danger" title="Slett steg" onclick="deleteSinglePlan(' + idx + ')">🗑️</button>'
+              + '</div>' : '')
+            + '</div>'
+            + '</div>';
+        }).join('');
+
+        if (showPlanAdmin) {
+          planHtml += '<button type="button" class="hf-add-inline-btn" onclick="openAddPlanQuickModal()">➕ Legg til steg i øvingsløpet</button>';
+        }
+        planList.innerHTML = planHtml;
+      }
+    }
+
+    // Render Radar
+    var radarHost = document.getElementById('radarContent');
+    if (radarHost) {
+      var radarRows = page.examRadar || [];
+      if (radarRows.length) {
+        var rHtml = '<table class="hf-radar-table"><thead><tr>'
+          + '<th>Tema / Modul</th>'
+          + '<th>Eksamensandel</th>'
+          + '<th>Sensorveiledning & Fallgruver</th>'
+          + '<th>Prioritet</th>'
+          + '</tr></thead><tbody>';
+        radarRows.forEach(function (row) {
+          var pClass = (row.priority || '').indexOf('1') !== -1 ? 'hf-tag-tier' : 'hf-tag-tier tier2';
+          rHtml += '<tr>'
+            + '<td style="font-weight:800;color:#fff">' + (row.theme || row[0] || '') + '</td>'
+            + '<td style="font-weight:800;color:#ffd98f">' + (row.weight || row[1] || '') + '</td>'
+            + '<td style="color:#b8c9df;line-height:1.5">' + (row.notes || row[2] || '') + '</td>'
+            + '<td><span class="' + pClass + '">' + (row.priority || row[3] || 'Tier 1') + '</span></td>'
+            + '</tr>';
+        });
+        rHtml += '</tbody></table>';
+        radarHost.innerHTML = rHtml;
+      } else {
+        radarHost.innerHTML = '<div class="hf-empty-box">Ingen eksamensradar registrert for dette faget ennå.<br><button class="hf-pkg-btn" style="margin-top:12px" onclick="openSubjectRadarModal()">✏️ Bygg eksamensradar</button></div>';
+      }
+    }
+
+    renderAnswers(page);
+    renderNotes(page);
+    renderTasks(page);
+  }
+
+  // Initialize
+  var page = window.HaugnesSubjectPages ? window.HaugnesSubjectPages.get(subjectId) : null;
+  if (page) {
+    // Check admin status
+    isAdmin = isPreview || (window.HaugnesEntitlements && typeof window.HaugnesEntitlements.effectiveAdmin === 'function' && window.HaugnesEntitlements.effectiveAdmin());
+
+    renderSubjectPage(page);
+    setupTaskFilters();
+
+    if (isAdmin) {
+      var topBar = document.getElementById('adminSubjectTopBar');
+      if (topBar) {
+        topBar.style.display = 'flex';
+        var barTitle = document.getElementById('adminBarTitle');
+        if (barTitle) barTitle.textContent = 'Admin-modus: ' + (page.code || subjectId).toUpperCase();
+      }
+      var deepLink = document.getElementById('adminHubDeepLink');
+      if (deepLink) deepLink.href = '../user/admin.html?subject=' + encodeURIComponent(page.code || subjectId);
+
+      ['radarAdminBtn', 'answerAdminBtn', 'memoAdminBtn', 'taskAdminBtn'].forEach(function (btnId) {
+        var el = document.getElementById(btnId);
+        if (el) el.style.display = 'inline-flex';
+      });
+
+      var urlMode = new URLSearchParams(window.location.search).get('mode');
+      var storedMode = '';
+      try { storedMode = sessionStorage.getItem('hf_preview_mode_' + subjectId); } catch (e) {}
+      if (urlMode === 'student' || storedMode === 'student') {
+        window.setSubjectPreviewMode('student');
+      } else {
+        window.setSubjectPreviewMode('admin');
+      }
+    }
+  }
+
+  function applyPageUpdate(targetPage) {
+    var p = targetPage || (window.HaugnesSubjectPages ? window.HaugnesSubjectPages.get(subjectId) : null);
+    if (!p) return;
+    if (window.HaugnesSubjectRenderer && typeof window.HaugnesSubjectRenderer.render === 'function') {
+      window.HaugnesSubjectRenderer.render(p);
+    }
+    renderSubjectPage(p);
+  }
+
+  // Listen for real-time live preview updates from Admin-hub
+  window.addEventListener('message', function (event) {
+    if (event.data) {
+      if (event.data.type === 'HAUGNES_PREVIEW_UPDATE') {
+        applyPageUpdate(event.data.pageData);
+      } else if (event.data.type === 'HAUGNES_SET_VIEW_MODE') {
+        if (typeof window.setSubjectPreviewMode === 'function') {
+          window.setSubjectPreviewMode(event.data.mode);
+        }
+      }
+    }
+  });
+
+  // Listen for custom event when saved on same window
+  window.addEventListener('haugnes:page-updated', function (e) {
+    applyPageUpdate(e.detail && e.detail.data);
+  });
+
+  // Listen for storage events across tabs
+  window.addEventListener('storage', function (e) {
+    if (e.key === 'hf_custom_subject_pages_v1' || e.key === 'hf_custom_subjects_v1') {
+      applyPageUpdate();
+    }
+  });
+})();
+</script>
+</body>
+</html>

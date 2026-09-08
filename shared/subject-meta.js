@@ -2,8 +2,12 @@
   var categories = [
     { id: 'semester1', label: 'Første semester', shortLabel: '1. semester', order: 10 },
     { id: 'semester2', label: 'Andre semester', shortLabel: '2. semester', order: 20 },
+    { id: 'semester3', label: 'Tredje semester', shortLabel: '3. semester', order: 30 },
     { id: 'semester4', label: 'Fjerde semester', shortLabel: '4. semester', order: 40 },
-    { id: 'electives', label: 'Valgfag', shortLabel: 'Valgfag', order: 90 }
+    { id: 'semester5', label: 'Femte semester', shortLabel: '5. semester', order: 50 },
+    { id: 'semester6', label: 'Sjette semester', shortLabel: '6. semester', order: 60 },
+    { id: 'electives', label: 'Valgfag', shortLabel: 'Valgfag', order: 90 },
+    { id: 'master', label: 'Masterfag', shortLabel: 'Master', order: 95 }
   ];
 
   var categoryById = categories.reduce(function (out, category) {
@@ -252,17 +256,195 @@
     return subject;
   }
 
+  var CUSTOM_SUBJECTS_KEY = 'hf_custom_subjects_v1';
+  var DB_CONTENT_KEY = 'custom_subjects';
+
+  function getSupabaseClient() {
+    if (window.HaugnesAuth && typeof window.HaugnesAuth.getClient === 'function') {
+      var client = window.HaugnesAuth.getClient();
+      if (client) return client;
+    }
+    if (window.supabase && typeof window.supabase.createClient === 'function' && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
+      return window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+    }
+    return null;
+  }
+
+  function loadCustomSubjectsLocal() {
+    try {
+      var raw = window.localStorage.getItem(CUSTOM_SUBJECTS_KEY);
+      if (!raw) return [];
+      var parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveCustomSubjectsLocal(list) {
+    try {
+      window.localStorage.setItem(CUSTOM_SUBJECTS_KEY, JSON.stringify(list || []));
+    } catch (e) {}
+  }
+
+  function allSubjectList() {
+    var custom = loadCustomSubjectsLocal();
+    var map = {};
+    var list = [];
+    subjects.forEach(function (s) {
+      map[code(s.code)] = true;
+      list.push(s);
+    });
+    custom.forEach(function (c) {
+      var cCode = code(c.code);
+      if (!map[cCode]) {
+        map[cCode] = true;
+        var decorated = withCategory(Object.assign({}, c), c.categoryId || 'electives', c.sortOrder || 99);
+        list.push(decorated);
+      } else {
+        var idx = list.findIndex(function (item) { return code(item.code) === cCode; });
+        if (idx !== -1) {
+          list[idx] = withCategory(Object.assign({}, list[idx], c), c.categoryId || list[idx].categoryId || 'electives', c.sortOrder || list[idx].sortOrder || 99);
+        }
+      }
+    });
+    return list;
+  }
+
+  function saveCustomSubject(data) {
+    if (!data || !data.code || !data.name) return Promise.reject(new Error('Fagkode og fagnavn er påkrevd.'));
+    var cleanCode = String(data.code).trim().toUpperCase();
+    var cleanId = (data.id ? String(data.id) : cleanCode.toLowerCase()).trim().toLowerCase();
+    var cleanName = String(data.name).trim();
+    var categoryId = data.categoryId || 'electives';
+    var accent = data.accent || '#2563eb';
+    var iconStr = data.icon || '📚';
+    var path = data.path || ('../subject/?id=' + cleanId);
+    var flashcards = data.flashcards || ('../flashcards/?subject=' + cleanId);
+    var description = data.description || ('Fagside og læringsløp for ' + cleanName + '.');
+    var kicker = data.kicker || (cleanName + ' · ' + cleanCode);
+
+    var subjectItem = Object.assign({}, data, {
+      id: cleanId,
+      code: cleanCode,
+      name: cleanName,
+      categoryId: categoryId,
+      accent: accent,
+      icon: iconStr,
+      emblem: data.emblem || '../assets/Flashcardslogo.png',
+      path: path,
+      flashcards: flashcards,
+      status: data.status || 'active',
+      statusText: data.statusText || 'Aktiv',
+      progress: data.progress || 0,
+      decks: data.decks || '0',
+      cards: data.cards || '0',
+      tools: data.tools || '5',
+      kicker: kicker,
+      description: description,
+      updated_at: new Date().toISOString()
+    });
+
+    var custom = loadCustomSubjectsLocal();
+    var existingIndex = custom.findIndex(function (s) { return code(s.code) === cleanCode || s.id === cleanId; });
+    if (existingIndex !== -1) {
+      custom[existingIndex] = Object.assign({}, custom[existingIndex], subjectItem);
+    } else {
+      custom.push(subjectItem);
+    }
+    saveCustomSubjectsLocal(custom);
+
+    try {
+      var currentSelected = selectedCodes();
+      if (currentSelected.indexOf(cleanCode) === -1) {
+        currentSelected.push(cleanCode);
+        window.localStorage.setItem(SELECTED_STORAGE_KEY, JSON.stringify(currentSelected));
+      }
+    } catch (e) {}
+
+    if (typeof window.dispatchEvent === 'function') {
+      window.dispatchEvent(new CustomEvent('haugnes:subjects-updated', { detail: subjectItem }));
+      window.dispatchEvent(new CustomEvent('haugnes:subject-access-changed'));
+    }
+
+    var sb = getSupabaseClient();
+    if (!sb) return Promise.resolve(subjectItem);
+
+    var session = window.AuthGuard && typeof window.AuthGuard.getSession === 'function' ? window.AuthGuard.getSession() : null;
+    return Promise.resolve(sb.from('admin_content').upsert({
+      key: DB_CONTENT_KEY,
+      content: { subjects: custom },
+      updated_by: session && session.user ? session.user.id : null,
+      updated_at: new Date().toISOString()
+    })).then(function (result) {
+      if (result && result.error) console.warn('[subject-meta] Cloud persist warning:', result.error);
+      return subjectItem;
+    }).catch(function (err) {
+      console.warn('[subject-meta] Cloud persist error:', err);
+      return subjectItem;
+    });
+  }
+
+  function deleteCustomSubject(id) {
+    var needle = String(id || '').trim().toLowerCase();
+    var custom = loadCustomSubjectsLocal();
+    var filtered = custom.filter(function (s) {
+      return s.id.toLowerCase() !== needle && code(s.code) !== needle.toUpperCase();
+    });
+    saveCustomSubjectsLocal(filtered);
+
+    if (typeof window.dispatchEvent === 'function') {
+      window.dispatchEvent(new CustomEvent('haugnes:subjects-updated', { detail: { id: needle, deleted: true } }));
+      window.dispatchEvent(new CustomEvent('haugnes:subject-access-changed'));
+    }
+
+    var sb = getSupabaseClient();
+    if (!sb) return Promise.resolve(true);
+
+    var session = window.AuthGuard && typeof window.AuthGuard.getSession === 'function' ? window.AuthGuard.getSession() : null;
+    return Promise.resolve(sb.from('admin_content').upsert({
+      key: DB_CONTENT_KEY,
+      content: { subjects: filtered },
+      updated_by: session && session.user ? session.user.id : null,
+      updated_at: new Date().toISOString()
+    })).then(function () { return true; }).catch(function () { return true; });
+  }
+
+  function syncCustomSubjects() {
+    var sb = getSupabaseClient();
+    if (!sb) return Promise.resolve(loadCustomSubjectsLocal());
+    return Promise.resolve(sb.from('admin_content').select('content').eq('key', DB_CONTENT_KEY).maybeSingle()).then(function (result) {
+      var cloud = result && result.data && result.data.content && Array.isArray(result.data.content.subjects) ? result.data.content.subjects : null;
+      if (cloud) {
+        var local = loadCustomSubjectsLocal();
+        var merged = cloud.slice();
+        var map = {};
+        cloud.forEach(function (s) { map[code(s.code)] = true; });
+        local.forEach(function (l) {
+          if (!map[code(l.code)]) merged.push(l);
+        });
+        saveCustomSubjectsLocal(merged);
+        if (typeof window.dispatchEvent === 'function') {
+          window.dispatchEvent(new CustomEvent('haugnes:subjects-updated'));
+        }
+      }
+      return loadCustomSubjectsLocal();
+    }).catch(function () {
+      return loadCustomSubjectsLocal();
+    });
+  }
+
   function decorateSubjects(list) {
     return list.map(decorateSubject);
   }
 
   function getCatalog() {
-    return decorateSubjects(clone(subjects)).sort(sortSubjects);
+    return decorateSubjects(clone(allSubjectList())).sort(sortSubjects);
   }
 
   function getAll() {
     var selected = selectedCodes();
-    return decorateSubjects(clone(subjects.filter(function (subject) {
+    return decorateSubjects(clone(allSubjectList().filter(function (subject) {
       return selected.indexOf(code(subject.code)) !== -1;
     }))).sort(sortSubjects);
   }
@@ -289,7 +471,7 @@
 
   function findById(id) {
     var needle = String(id || '').toLowerCase();
-    var subject = subjects.find(function (s) {
+    var subject = allSubjectList().find(function (s) {
       return s.id.toLowerCase() === needle || s.code.toLowerCase() === needle || (s.aliases || []).some(function (alias) { return alias.toLowerCase() === needle; });
     });
     return subject ? decorateSubject(clone(subject)) : null;
@@ -307,8 +489,14 @@
     getCategories: getCategories,
     groupByCategory: groupByCategory,
     findById: findById,
-    getFlashcardSubjectId: getFlashcardSubjectId
+    getFlashcardSubjectId: getFlashcardSubjectId,
+    getCustomSubjects: loadCustomSubjectsLocal,
+    saveCustomSubject: saveCustomSubject,
+    deleteCustomSubject: deleteCustomSubject,
+    syncCustomSubjects: syncCustomSubjects
   };
+
+  syncCustomSubjects();
 
   function loadRatingAdminEditor() {
     if (!/\/user\/subjects\.html$/.test(window.location.pathname)) return;

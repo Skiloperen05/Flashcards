@@ -485,12 +485,218 @@
     };
   });
 
+  var CUSTOM_PAGES_KEY = 'hf_custom_subject_pages_v1';
+  var DB_PAGES_KEY = 'custom_subject_pages';
+
+  function getSupabaseClient() {
+    if (window.HaugnesAuth && typeof window.HaugnesAuth.getClient === 'function') {
+      var client = window.HaugnesAuth.getClient();
+      if (client) return client;
+    }
+    if (window.supabase && typeof window.supabase.createClient === 'function' && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
+      return window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+    }
+    return null;
+  }
+
+  function loadCustomPagesLocal() {
+    try {
+      var raw = window.localStorage.getItem(CUSTOM_PAGES_KEY);
+      if (!raw) return {};
+      var parsed = JSON.parse(raw);
+      return (parsed && typeof parsed === 'object') ? parsed : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveCustomPagesLocal(dict) {
+    try {
+      window.localStorage.setItem(CUSTOM_PAGES_KEY, JSON.stringify(dict || {}));
+    } catch (e) {}
+  }
+
+  function synthesizeDefaultPage(subject) {
+    if (!subject) return null;
+    var sCode = String(subject.code || subject.id).toUpperCase();
+    var sName = String(subject.name || sCode);
+    var sId = String(subject.id || sCode).toLowerCase();
+    var accent = subject.accent || '#2563eb';
+    var kicker = subject.kicker || (sName + ' · ' + sCode);
+    var lead = subject.description || ('Fagside, læringsløp og eksamensmateriell for ' + sName + '.');
+
+    return {
+      id: sId,
+      code: sCode,
+      name: sName,
+      kicker: kicker,
+      accent: accent,
+      lead: lead,
+      progress: subject.progress ? (subject.progress + '%') : '0%',
+      visibility: {
+        radar: true,
+        answers: true,
+        notes: true,
+        tasks: true,
+        flashcards: true,
+        topics: true,
+        plan: true
+      },
+      stats: [
+        ['100%', 'relevant'],
+        ['Klar', 'status'],
+        ['Aktiv', 'modus']
+      ],
+      tools: [
+        ['⚡', 'Flashcards', 'Øv på begreper, modeller og teorier.', 'Kort', '../flashcards/?subject=' + sId, accent],
+        ['📋', 'Eksamensradar', 'Oversikt over temaer, eksamensandel og sensorveiledning.', 'Radar', '#eksamensradar', '#2f62ff'],
+        ['📝', 'A-besvarelser', 'Tidligere eksamensbesvarelser og sensorveiledning.', 'Pakker', '#besvarelser', '#e8bc68'],
+        ['📚', 'Forelesningsnotater', 'Sammendrag, memoarer og pensumkart.', 'Notater', '#notater', '#20b97a'],
+        ['🎯', 'Oppgavebank', 'Regneøkter og eksamensoppgaver med fasit.', 'Oppgaver', '#oppgaver', '#7c3aed']
+      ],
+      notes: [
+        {
+          id: 'note_1',
+          title: 'Forelesning 1: Introduksjon og kjernebegreper',
+          source: 'Forelesningsrekke ' + sCode,
+          date: 'Semesterkurs',
+          desc: 'Kort oppsummering av modeller, definisjoner og pensumkrav for ' + sCode + '.',
+          body: '## Hovedpunkter\n- Grunnleggende definisjoner\n- Kjerneforutsetninger i pensum\n- Sentrale eksamensmomenter'
+        }
+      ],
+      answers: [
+        {
+          id: 'ans_1',
+          term: 'V26',
+          title: sCode + ' Sensorveiledning & Modellbesvarelse',
+          desc: 'Strukturert besvarelse av eksamensoppgavene med sensorkommentarer og poengfordeling.',
+          grade: 'Karakter A'
+        }
+      ],
+      tasks: [
+        {
+          id: 'task_1',
+          title: 'Oppgave 1: Kjerneanalyse og metodevalg',
+          topic: 'Metode og teori',
+          difficulty: 'Middels',
+          question: 'Gjør rede for hovedforutsetningene bak modellen og drøft hvordan endringer i forutsetningene påvirker konklusjonen for ' + sCode + '.',
+          solution: 'Trinn 1: Klargjør problemstillingen og definer sentrale begreper.\nTrinn 2: Still opp analyseverktøyet og vis trinnvise beregninger.\nTrinn 3: Drøft fallgruver som sensor ofte ser etter.'
+        }
+      ],
+      topics: [
+        ['Introduksjon og kjernebegreper', '90%', 'Grunnleggende modeller og rammeverk som danner fundamentet for faget.'],
+        ['Metode, analyse og beregninger', '80%', 'Sentrale beregningsmetoder og analyser som kreves til eksamen.'],
+        ['Integrert case og drøfting', '85%', 'Anvendelse av teori på praktiske problemstillinger og caseoppgaver.']
+      ],
+      plan: [
+        ['1. Teorigrunnlag og flashcards', '15 min', 'Lær deg definisjoner, kjerneformler og begreper utenat først.'],
+        ['2. Oppgaver og regneøkter', '30 min', 'Jobb gjennom typiske øvingsoppgaver med løsningsforslag.'],
+        ['3. A-besvarelser og eksamensradar', '45 min', 'Analyser sensorveiledninger og skriv på tidligere eksamener.']
+      ],
+      examRadar: [
+        { theme: 'Kjernemodeller og begrepsforståelse', weight: '85%', notes: 'Sensor tester grundig om kandidaten kan forklare intuisjonen bak modellene, ikke bare gjengi formler.', priority: 'Tier 1' },
+        { theme: 'Metodisk analyse og beregninger', weight: '75%', notes: 'Deloppgaver med utregning krever tydelige mellomregninger og begrunnelse for valgte forutsetninger.', priority: 'Tier 1' },
+        { theme: 'Drøfting og case-anvendelse', weight: '60%', notes: 'Tydelig struktur med påstand, begrunnelse og nyansert motargumentasjon skiller A fra C.', priority: 'Tier 2' }
+      ],
+      memo: {
+        intro: lead,
+        exam: 'Eksamensfokus og sensorveiledning for ' + sCode + '. Vær nøye med presise begreper og vis strukturert drøfting.',
+        studyAdvice: 'Start med flashcards for begrepene, drill deretter oppgaver i oppgavebanken, og avslutt med A-besvarelsene.'
+      },
+      next: 'Gå til flashcards for å starte repetisjonen av nøkkelbegrepene.'
+    };
+  }
+
+  function saveCustomPage(id, pageData) {
+    if (!id || !pageData) return Promise.reject(new Error('ID og pagedata er påkrevd.'));
+    var key = pageKey(id);
+    var custom = loadCustomPagesLocal();
+    var existing = custom[key] || {};
+    custom[key] = Object.assign({}, existing, pageData, {
+      id: key,
+      updated_at: new Date().toISOString()
+    });
+    saveCustomPagesLocal(custom);
+
+    if (typeof window.dispatchEvent === 'function') {
+      window.dispatchEvent(new CustomEvent('haugnes:page-updated', { detail: { id: key, data: custom[key] } }));
+    }
+
+    var sb = getSupabaseClient();
+    if (!sb) return Promise.resolve(custom[key]);
+
+    var session = window.AuthGuard && typeof window.AuthGuard.getSession === 'function' ? window.AuthGuard.getSession() : null;
+    return Promise.resolve(sb.from('admin_content').upsert({
+      key: DB_PAGES_KEY,
+      content: { pages: custom },
+      updated_by: session && session.user ? session.user.id : null,
+      updated_at: new Date().toISOString()
+    })).then(function () {
+      return custom[key];
+    }).catch(function (err) {
+      console.warn('[subject-page-data] Cloud persist error:', err);
+      return custom[key];
+    });
+  }
+
+  function deleteCustomPage(id) {
+    var key = pageKey(id);
+    var custom = loadCustomPagesLocal();
+    delete custom[key];
+    saveCustomPagesLocal(custom);
+
+    var sb = getSupabaseClient();
+    if (!sb) return Promise.resolve(true);
+
+    var session = window.AuthGuard && typeof window.AuthGuard.getSession === 'function' ? window.AuthGuard.getSession() : null;
+    return Promise.resolve(sb.from('admin_content').upsert({
+      key: DB_PAGES_KEY,
+      content: { pages: custom },
+      updated_by: session && session.user ? session.user.id : null,
+      updated_at: new Date().toISOString()
+    })).then(function () { return true; }).catch(function () { return true; });
+  }
+
+  function syncCustomPages() {
+    var sb = getSupabaseClient();
+    if (!sb) return Promise.resolve(loadCustomPagesLocal());
+    return Promise.resolve(sb.from('admin_content').select('content').eq('key', DB_PAGES_KEY).maybeSingle()).then(function (result) {
+      var cloud = result && result.data && result.data.content && typeof result.data.content.pages === 'object' ? result.data.content.pages : null;
+      if (cloud) {
+        var local = loadCustomPagesLocal();
+        var merged = Object.assign({}, cloud, local);
+        saveCustomPagesLocal(merged);
+      }
+      return loadCustomPagesLocal();
+    }).catch(function () {
+      return loadCustomPagesLocal();
+    });
+  }
+
   window.HaugnesSubjectPages = {
     get: function (id) {
       var key = pageKey(id);
-      if (pages[key]) return pages[key];
+      var custom = loadCustomPagesLocal();
+      var staticPage = pages[key] || null;
       var learning = learningContent();
-      return learning && typeof learning.pageFor === 'function' ? learning.pageFor(id) : null;
-    }
+      var fromLearning = learning && typeof learning.pageFor === 'function' ? learning.pageFor(id) : null;
+      var subject = window.HaugnesSubjects && typeof window.HaugnesSubjects.findById === 'function' ? window.HaugnesSubjects.findById(id) : null;
+      var synthesized = subject ? synthesizeDefaultPage(subject) : null;
+      var base = staticPage || fromLearning || synthesized || {};
+
+      if (custom[key]) {
+        return Object.assign({}, base, custom[key]);
+      }
+      if (staticPage) return staticPage;
+      if (fromLearning) return fromLearning;
+      if (synthesized) return synthesized;
+      return null;
+    },
+    savePage: saveCustomPage,
+    deletePage: deleteCustomPage,
+    getCustomPages: loadCustomPagesLocal,
+    syncWithCloud: syncCustomPages
   };
+
+  syncCustomPages();
 })(window);
