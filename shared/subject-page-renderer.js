@@ -13,11 +13,17 @@
   }
 
   function topicHtml(topic, accent) {
-    return '<div class="hf-topic"><div><strong>' + esc(topic[0]) + '</strong><span>' + esc(topic[1]) + '</span></div><div class="hf-meter" style="--accent:' + esc(accent) + ';--p:' + esc(topic[2]) + '"><i></i></div></div>';
+    var title = Array.isArray(topic) ? topic[0] : (topic.title || topic.name || topic.theme || '');
+    var desc = Array.isArray(topic) ? topic[1] : (topic.desc || topic.subtitle || topic.weight || '');
+    var pct = Array.isArray(topic) ? topic[2] : (topic.pct || topic.weight || '80%');
+    return '<div class="hf-topic"><div><strong>' + esc(title) + '</strong><span>' + esc(desc) + '</span></div><div class="hf-meter" style="--accent:' + esc(accent) + ';--p:' + esc(pct) + '"><i></i></div></div>';
   }
 
   function planHtml(item) {
-    return '<div class="hf-priority"><div><b>' + esc(item[0]) + '</b><span>' + esc(item[1]) + '</span></div><span>' + esc(item[2]) + '</span></div>';
+    var step = Array.isArray(item) ? item[0] : (item.step || item.title || '');
+    var desc = Array.isArray(item) ? item[1] : (item.desc || '');
+    var time = Array.isArray(item) ? item[2] : (item.time || item.duration || '30 min');
+    return '<div class="hf-priority"><div><b>' + esc(step) + '</b><span>' + esc(desc) + '</span></div><span>' + esc(time) + '</span></div>';
   }
 
   function sourcesHtml(items) {
@@ -157,21 +163,53 @@
     });
   }
 
+  function isAdminUser() {
+    return !!(window.HaugnesEntitlements && typeof window.HaugnesEntitlements.effectiveAdmin === 'function' && window.HaugnesEntitlements.effectiveAdmin());
+  }
+
+  function adminBarHtml(page) {
+    if (!isAdminUser()) return '';
+    var code = page.code || page.id;
+    return '<div class="hf-admin-subject-bar" style="background:rgba(47,98,255,.14);border:1px solid rgba(126,162,255,.28);border-radius:14px;padding:10px 16px;margin:16px auto;max-width:1200px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">'
+      + '<div style="display:flex;align-items:center;gap:10px">'
+      + '<span style="background:#2563eb;color:#fff;font-size:11px;font-weight:900;text-transform:uppercase;padding:4px 8px;border-radius:999px;letter-spacing:.08em">Admin-modus</span>'
+      + '<span style="color:#dce6f7;font-size:13px;font-weight:700">Du administrerer <strong>' + esc(code) + '</strong></span>'
+      + '</div>'
+      + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'
+      + '<a href="../user/admin.html?subject=' + encodeURIComponent(code) + '&tab=overview" class="hf-btn" style="padding:6px 12px;font-size:12px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);border-radius:10px">✏️ Rediger fagoversikt</a>'
+      + '<a href="../user/admin.html?subject=' + encodeURIComponent(code) + '&tab=radar" class="hf-btn" style="padding:6px 12px;font-size:12px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);border-radius:10px">📋 Eksamensradar</a>'
+      + '<a href="../user/admin.html?subject=' + encodeURIComponent(code) + '&tab=answers" class="hf-btn" style="padding:6px 12px;font-size:12px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);border-radius:10px">➕ A-besvarelse</a>'
+      + '<a href="../user/admin.html?subject=' + encodeURIComponent(code) + '&tab=memos" class="hf-btn" style="padding:6px 12px;font-size:12px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);border-radius:10px">📚 Forelesningsnotat</a>'
+      + '<a href="../user/admin.html?subject=' + encodeURIComponent(code) + '&tab=tasks" class="hf-btn" style="padding:6px 12px;font-size:12px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);border-radius:10px">🎯 Oppgave</a>'
+      + '</div>'
+      + '</div>';
+  }
+
   function render(page) {
+    if (!page) return;
     document.title = page.code + ' ' + page.name + ' — Haugnes Flashcards';
     document.body.style.setProperty('--subject-accent', page.accent);
     document.body.style.setProperty('--subject-progress', page.progress);
-    document.getElementById('subjectKicker').textContent = page.kicker + ' · ' + page.code;
-    document.getElementById('subjectTitle').innerHTML = esc(page.code) + ' <span>' + esc(page.name) + '</span>';
-    document.getElementById('subjectLead').textContent = page.lead;
-    document.getElementById('subjectStats').innerHTML = page.stats.map(function (stat) {
-      return '<div class="hf-stat"><b>' + esc(stat[0]) + '</b><span>' + esc(stat[1]) + '</span></div>';
-    }).join('');
-    document.getElementById('toolGrid').innerHTML = page.tools.map(toolHtml).join('');
-    document.getElementById('topicList').innerHTML = page.topics.map(function (topic) { return topicHtml(topic, page.accent); }).join('');
-    document.getElementById('planList').innerHTML = page.plan.map(planHtml).join('');
+    var kicker = document.getElementById('subjectKicker');
+    if (kicker) kicker.textContent = page.kicker + ' · ' + page.code;
+    var title = document.getElementById('subjectTitle');
+    if (title) title.innerHTML = esc(page.code) + ' <span>' + esc(page.name) + '</span>';
+    var lead = document.getElementById('subjectLead');
+    if (lead) lead.textContent = page.lead;
+    var stats = document.getElementById('subjectStats');
+    if (stats && page.stats) {
+      stats.innerHTML = page.stats.map(function (stat) {
+        return '<div class="hf-stat"><b>' + esc(stat[0]) + '</b><span>' + esc(stat[1]) + '</span></div>';
+      }).join('');
+    }
+    var toolGrid = document.getElementById('toolGrid');
+    if (toolGrid && page.tools) toolGrid.innerHTML = page.tools.map(toolHtml).join('');
+    var topicList = document.getElementById('topicList');
+    if (topicList && page.topics) topicList.innerHTML = page.topics.map(function (topic) { return topicHtml(topic, page.accent); }).join('');
+    var planList = document.getElementById('planList');
+    if (planList && page.plan) planList.innerHTML = page.plan.map(planHtml).join('');
     addLearningTabs(page);
-    var planHost = document.getElementById('planList').closest('.hf-wide-grid');
+    var planHost = planList ? planList.closest('.hf-wide-grid') : null;
     if (planHost && page.memo && !document.getElementById('memo')) {
       planHost.insertAdjacentHTML('beforebegin', memoHtml(page.memo));
     }
@@ -188,10 +226,86 @@
       (sourceCard || planHost).insertAdjacentHTML('afterend', learningHtml(page));
       bindPractice(page);
     }
-    document.getElementById('nextStep').textContent = page.next;
-    document.getElementById('progressValue').textContent = page.progress;
+    var nextStep = document.getElementById('nextStep');
+    if (nextStep && page.next) nextStep.textContent = page.next;
+    var progressVal = document.getElementById('progressValue');
+    if (progressVal && page.progress) progressVal.textContent = page.progress;
+
+    // Apply section visibility
+    var vis = Object.assign({
+      radar: true,
+      answers: true,
+      notes: true,
+      tasks: true,
+      flashcards: true,
+      topics: true,
+      plan: true
+    }, page.visibility || {});
+
+    var topicsCard = document.getElementById('topicsCard');
+    if (topicsCard) topicsCard.style.display = vis.topics !== false ? '' : 'none';
+
+    var planCard = document.getElementById('planCard');
+    if (planCard) planCard.style.display = vis.plan !== false ? '' : 'none';
+
+    var wideGrid = document.getElementById('topicsAndPlanGrid');
+    if (wideGrid) wideGrid.style.display = (vis.topics !== false || vis.plan !== false) ? '' : 'none';
+
+    var radarSec = document.getElementById('eksamensradar');
+    if (radarSec) radarSec.style.display = vis.radar !== false ? '' : 'none';
+    var radarTab = document.getElementById('tabRadar');
+    if (radarTab) radarTab.style.display = vis.radar !== false ? '' : 'none';
+
+    var answersSec = document.getElementById('besvarelser');
+    if (answersSec) answersSec.style.display = vis.answers !== false ? '' : 'none';
+    var answersTab = document.getElementById('tabAnswers');
+    if (answersTab) answersTab.style.display = vis.answers !== false ? '' : 'none';
+
+    var notesSec = document.getElementById('notater') || document.getElementById('memo');
+    if (notesSec) notesSec.style.display = vis.notes !== false ? '' : 'none';
+    var notesTab = document.getElementById('tabNotes');
+    if (notesTab) notesTab.style.display = vis.notes !== false ? '' : 'none';
+
+    var tasksSec = document.getElementById('oppgaver');
+    if (tasksSec) tasksSec.style.display = vis.tasks !== false ? '' : 'none';
+    var tasksTab = document.getElementById('tabTasks');
+    if (tasksTab) tasksTab.style.display = vis.tasks !== false ? '' : 'none';
+
+    var flashTab = document.getElementById('flashcardsTabLink');
+    if (flashTab) flashTab.style.display = vis.flashcards !== false ? '' : 'none';
+    var heroFlash = document.getElementById('heroPrimaryAction');
+    if (heroFlash) heroFlash.style.display = vis.flashcards !== false ? '' : 'none';
+    var ctaFlash = document.getElementById('ctaAction');
+    if (ctaFlash) ctaFlash.style.display = vis.flashcards !== false ? '' : 'none';
+    var asideFlash = document.getElementById('asideFlashcardsLink');
+    if (asideFlash && asideFlash.parentElement) asideFlash.parentElement.style.display = vis.flashcards !== false ? '' : 'none';
+
+    var adminHost = document.querySelector('.hf-hero') || document.querySelector('.page-hero') || document.querySelector('.hf-main');
+    if (adminHost && !document.querySelector('.hf-admin-subject-bar')) {
+      adminHost.insertAdjacentHTML('beforebegin', adminBarHtml(page));
+    }
   }
 
-  var page = window.HaugnesSubjectPages && window.HaugnesSubjectPages.get(window.HAUGNES_SUBJECT_ID);
+  function resolveSubjectId() {
+    if (window.HAUGNES_SUBJECT_ID) return window.HAUGNES_SUBJECT_ID;
+    if (window.location.search) {
+      var sp = new URLSearchParams(window.location.search);
+      var param = sp.get('id') || sp.get('subject');
+      if (param) return param;
+    }
+    var parts = window.location.pathname.split('/').filter(Boolean);
+    if (parts.length && parts[0] !== 'user' && parts[0] !== 'flashcards' && parts[0] !== 'subject') {
+      return parts[0];
+    }
+    return null;
+  }
+
+  var targetId = resolveSubjectId();
+  var page = window.HaugnesSubjectPages && targetId ? window.HaugnesSubjectPages.get(targetId) : null;
   if (page) render(page);
+
+  window.HaugnesSubjectRenderer = {
+    render: render,
+    resolveSubjectId: resolveSubjectId
+  };
 })();

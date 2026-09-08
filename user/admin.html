@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin-hub & Fagstudio — Haugnes Flashcards</title>
+<link rel="icon" href="../assets/haugnes-logo-mark.svg">
+<link rel="apple-touch-icon" href="../assets/haugnes-logo-mark.svg">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/haugnes-subjects.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06142d; --panel:#0b2148; --panel2:#102b5a; --card:#0f2a5c; --card2:#0a1d43;
+  --line:rgba(255,255,255,.11); --line2:rgba(126,162,255,.20);
+  --text:#f8fbff; --muted:#91a5c8; --soft:#cbd7ef;
+  --blue:#2f62ff; --blue2:#6f96ff; --gold:#e8bc68;
+  --green:#20b97a; --orange:#f09828; --red:#ef4444;
+  --shadow:0 24px 60px rgba(0,0,0,.30);
+  --radius:22px; --radius2:16px;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Lora',Georgia,'Times New Roman',serif;
+  background:radial-gradient(circle at 18% 12%,rgba(47,98,255,.18),transparent 25%),radial-gradient(circle at 82% 5%,rgba(232,188,104,.11),transparent 24%),linear-gradient(180deg,#06142d,#071835 56%,#06142d);
+  color:var(--text); min-height:100vh; overflow-x:hidden;
+}
+a{text-decoration:none;color:inherit}
+button,input,select,textarea{font-family:inherit}
+
+.app{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;padding:22px 18px;background:linear-gradient(180deg,rgba(4,16,38,.96),rgba(7,23,51,.96));border-right:1px solid var(--line);display:flex;flex-direction:column;gap:22px}
+.brand{display:flex;align-items:center;gap:12px;padding:0 6px 12px;color:#fff}
+.logo-mark{width:46px;height:46px;border-radius:14px;background:#0b244e url('../assets/haugnes-logo-mark.svg') center/78% no-repeat;border:1px solid rgba(255,255,255,.14);box-shadow:0 14px 30px rgba(0,0,0,.28);flex:0 0 46px}
+.brand-title{font-size:20px;font-weight:850;letter-spacing:.22em;text-transform:uppercase;line-height:1}
+.brand-sub{font-size:9px;font-weight:900;letter-spacing:.44em;text-transform:uppercase;color:var(--gold);margin-top:5px}
+.nav{display:grid;gap:7px}
+
+.main{min-width:0;padding:20px 26px 42px}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:16px;flex-wrap:wrap}
+.breadcrumb{color:#9fb0cf;font-size:12.5px;font-weight:750;margin-bottom:4px}
+.breadcrumb a{color:#b8c9ee}
+.hello h1{font-size:26px;line-height:1.05;letter-spacing:-.04em}
+.hello h1 span{color:var(--gold)}
+.hello p{font-size:13px;color:#c2cee4;margin-top:4px}
+.status-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:850;background:rgba(32,185,122,.15);color:#6ee7b7;border:1px solid rgba(32,185,122,.3)}
+
+.workspace{display:grid;grid-template-columns:280px minmax(0,1fr) minmax(360px,440px);gap:18px;align-items:start}
+@media(max-width:1500px){.workspace{grid-template-columns:260px minmax(0,1fr)}.preview-col{display:none}}
+@media(max-width:1080px){.app{grid-template-columns:1fr}.sidebar{display:none}.workspace{grid-template-columns:1fr}}
+
+.catalog-col,.editor-col,.preview-col{min-width:0}
+
+.catalog-panel{position:sticky;top:16px;background:linear-gradient(180deg,rgba(15,43,92,.9),rgba(8,25,56,.94));border:1px solid var(--line2);border-radius:var(--radius);padding:16px 14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px;max-height:calc(100vh - 32px)}
+.catalog-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.catalog-head h3{font-size:15px;font-weight:900;letter-spacing:-.02em}
+.catalog-count{font-size:11px;color:#9fb0cf;background:rgba(255,255,255,.06);border:1px solid var(--line);padding:3px 8px;border-radius:999px}
+.catalog-search{width:100%;padding:9px 12px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid var(--line);color:#fff;font-size:13px;outline:0}
+.catalog-search:focus{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(47,98,255,.18)}
+.catalog-list{display:flex;flex-direction:column;gap:5px;overflow-y:auto;flex:1;padding-right:2px}
+.catalog-list::-webkit-scrollbar{width:6px}
+.catalog-list::-webkit-scrollbar-thumb{background:rgba(126,162,255,.25);border-radius:99px}
+.catalog-item{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid transparent;cursor:pointer;transition:all .15s ease;text-align:left}
+.catalog-item:hover{background:rgba(255,255,255,.07);border-color:var(--line)}
+.catalog-item.active{background:linear-gradient(135deg,rgba(47,98,255,.22),rgba(63,115,255,.15));border-color:rgba(126,162,255,.4)}
+.catalog-icon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:16px;flex:0 0 34px;background:#0b244e;border:1px solid var(--line)}
+.catalog-item-text{min-width:0;flex:1}
+.catalog-item-text strong{display:block;font-size:13px;font-weight:850;color:#fff;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.catalog-item-text span{display:block;font-size:11px;color:#9fb0cf;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.catalog-item .pill{font-size:9.5px;font-weight:900;padding:2px 7px;border-radius:99px;background:rgba(232,188,104,.14);color:#ffd98f;letter-spacing:.05em}
+.catalog-item .pill.custom{background:rgba(126,162,255,.16);color:#c6d5ff}
+.catalog-item .pill.hidden{background:rgba(239,68,68,.14);color:#fca5a5}
+.catalog-new{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 12px;border-radius:12px;background:linear-gradient(135deg,#2455ef,#3f73ff);color:#fff;font-size:13px;font-weight:900;border:0;cursor:pointer;box-shadow:0 10px 22px rgba(47,98,255,.28)}
+.catalog-new:hover{transform:translateY(-1px)}
+
+.editor-panel{background:linear-gradient(180deg,rgba(15,43,92,.9),rgba(8,25,56,.94));border:1px solid var(--line2);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px}
+.editor-empty{padding:60px 30px;text-align:center;color:#9fb0cf}
+.editor-empty h2{font-size:22px;color:#fff;margin-bottom:8px}
+.editor-empty p{font-size:14px;line-height:1.55;margin-bottom:20px}
+.editor-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:4px}
+.editor-title{display:flex;align-items:center;gap:14px;min-width:0;flex:1}
+.editor-icon{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:24px;flex:0 0 52px}
+.editor-title-text{min-width:0}
+.editor-title-text strong{font-size:20px;font-weight:900;color:#fff;letter-spacing:-.02em;display:block}
+.editor-title-text span{font-size:12px;color:#9fb0cf;margin-top:3px;display:block}
+.editor-toolbar{display:flex;gap:8px;flex-wrap:wrap}
+
+.action-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:9px 15px;border-radius:12px;background:linear-gradient(135deg,#2455ef,#3f73ff);color:#fff;font-size:12.5px;font-weight:850;border:0;cursor:pointer;box-shadow:0 8px 18px rgba(47,98,255,.28);transition:all .15s ease;text-decoration:none}
+.action-btn:hover{transform:translateY(-1px);box-shadow:0 12px 24px rgba(47,98,255,.35)}
+.action-btn.small{padding:6px 11px;font-size:11.5px}
+.action-btn.secondary{background:rgba(255,255,255,.07);border:1px solid var(--line);box-shadow:none;color:#cad7ee}
+.action-btn.secondary:hover{background:rgba(255,255,255,.13);color:#fff}
+.action-btn.danger{background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.32);color:#fca5a5;box-shadow:none}
+.action-btn.danger:hover{background:rgba(239,68,68,.22);color:#fff}
+.action-btn.gold{background:linear-gradient(135deg,#f6b43c,#f09a25);color:#061735;box-shadow:0 8px 18px rgba(240,154,37,.28)}
+.action-btn:disabled{opacity:.55;cursor:not-allowed}
+
+/* Accordion sections */
+.section{border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.025);overflow:hidden}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 16px;cursor:pointer;user-select:none}
+.section-head:hover{background:rgba(255,255,255,.04)}
+.section-title{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:850;color:#fff}
+.section-title small{font-size:11px;color:#9fb0cf;font-weight:600;margin-left:4px}
+.section-meta{display:flex;align-items:center;gap:8px;font-size:11px;color:#9fb0cf}
+.section-vis-pill{font-size:10px;font-weight:900;padding:2px 8px;border-radius:99px;background:rgba(16,185,129,.14);color:#6ee7b7}
+.section-vis-pill.off{background:rgba(239,68,68,.14);color:#fca5a5}
+.section-chevron{color:#9fb0cf;transition:transform .15s ease}
+.section.open .section-chevron{transform:rotate(90deg)}
+.section-body{padding:0 16px 16px;display:none;border-top:1px solid var(--line)}
+.section.open .section-body{display:block}
+.section-body-inner{padding-top:16px;display:flex;flex-direction:column;gap:12px}
+
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.form-grid.full{grid-template-columns:1fr}
+.form-group{display:grid;gap:5px}
+.form-group label{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#a8b9d6}
+.form-group input,.form-group select,.form-group textarea{
+  width:100%;padding:9px 12px;border-radius:10px;background:rgba(255,255,255,.06);
+  border:1px solid var(--line);color:#fff;font-size:13.5px;outline:0;transition:border-color .15s ease;
+}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{
+  border-color:var(--blue2);box-shadow:0 0 0 3px rgba(47,98,255,.18);
+}
+.form-group textarea{min-height:74px;resize:vertical;line-height:1.5;font-family:inherit}
+.form-group textarea.tall{min-height:120px}
+.color-row{display:flex;align-items:center;gap:10px}
+.color-input{width:44px;height:38px;padding:2px;border-radius:9px;cursor:pointer;border:0}
+.color-presets{display:flex;gap:7px}
+.color-swatch{width:26px;height:26px;border-radius:50%;cursor:pointer;border:2px solid rgba(255,255,255,.16);transition:transform .15s ease}
+.color-swatch:hover{transform:scale(1.13);border-color:#fff}
+.color-swatch.selected{border-color:#fff;box-shadow:0 0 8px #fff}
+
+/* Toggle switch */
+.switch{position:relative;display:inline-block;width:44px;height:24px;flex:0 0 44px}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;inset:0;background:rgba(255,255,255,.12);border-radius:99px;transition:.18s;border:1px solid var(--line)}
+.slider::before{content:"";position:absolute;height:18px;width:18px;left:2px;bottom:2px;background:#fff;border-radius:50%;transition:.18s;box-shadow:0 2px 5px rgba(0,0,0,.2)}
+.switch input:checked + .slider{background:linear-gradient(135deg,#10b981,#059669);border-color:transparent}
+.switch input:checked + .slider::before{transform:translateX(20px)}
+
+.vis-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;padding:9px 12px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
+.vis-row-label{font-size:13px;font-weight:800;color:#dce6f7}
+.vis-row-label small{display:block;font-size:11px;color:#9fb0cf;margin-top:2px;font-weight:600}
+
+/* Row list (topics/plan/radar) */
+.row-list{display:flex;flex-direction:column;gap:8px}
+.row-item{display:grid;grid-template-columns:20px 1fr auto;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.row-drag{color:#546687;cursor:grab;font-size:15px;user-select:none;text-align:center}
+.row-drag:active{cursor:grabbing}
+.row-body{min-width:0}
+.row-body strong{display:block;font-size:13.5px;font-weight:800;color:#fff;letter-spacing:-.01em}
+.row-body span{display:block;font-size:12px;color:#b8c9df;margin-top:3px;line-height:1.45}
+.row-weight{font-size:11.5px;font-weight:900;color:#ffd98f;background:rgba(232,188,104,.12);padding:3px 8px;border-radius:99px;margin-right:6px}
+.row-actions{display:flex;gap:6px}
+.row-mini{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid var(--line);color:#cad7ee;cursor:pointer;font-size:13px;display:grid;place-items:center;transition:all .15s ease}
+.row-mini:hover{background:rgba(255,255,255,.12);color:#fff}
+.row-mini.danger{color:#fca5a5}
+.row-mini.danger:hover{background:rgba(239,68,68,.2);color:#fff}
+
+.file-card{display:grid;grid-template-columns:44px 1fr auto;gap:14px;align-items:center;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.file-icon{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;background:rgba(239,68,68,.14);color:#fca5a5;font-weight:900;font-size:16px}
+.file-icon.memo{background:rgba(32,185,122,.14);color:#6ee7b7}
+.file-icon.task{background:rgba(124,58,237,.16);color:#c4b5fd}
+.file-body{min-width:0}
+.file-body strong{display:block;font-size:13.5px;font-weight:800;color:#fff}
+.file-body span{display:block;font-size:12px;color:#9fb0cf;margin-top:2px}
+.file-body .meta{font-size:11px;color:#ffd98f;font-weight:800;margin-top:3px}
+
+.empty-hint{padding:18px;text-align:center;color:#9fb0cf;font-size:12.5px;border:1px dashed var(--line2);border-radius:12px;background:rgba(255,255,255,.02)}
+.empty-hint b{color:#fff;display:block;margin-bottom:6px;font-size:13.5px}
+
+/* Rich-text (markdown) editor toolbar */
+.rt-editor{display:flex;flex-direction:column;gap:6px}
+.rt-toolbar{display:flex;flex-wrap:wrap;gap:4px;padding:5px;background:rgba(0,0,0,.15);border:1px solid var(--line);border-radius:10px}
+.rt-btn{padding:4px 9px;background:rgba(255,255,255,.06);border:1px solid transparent;border-radius:6px;color:#dce6f7;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.rt-btn:hover{background:rgba(255,255,255,.14);color:#fff}
+.rt-hint{font-size:10.5px;color:#7f91b2;padding-left:2px}
+
+/* Dropzone */
+.dropzone{border:2px dashed rgba(126,162,255,.32);border-radius:12px;padding:22px 16px;text-align:center;background:rgba(255,255,255,.02);cursor:pointer;transition:all .15s ease}
+.dropzone:hover,.dropzone.dragover{background:rgba(47,98,255,.09);border-color:#3b82f6}
+.dropzone strong{display:block;color:#fff;font-size:13.5px;font-weight:800;margin-top:4px}
+.dropzone span{display:block;font-size:11.5px;color:#9fb0cf;margin-top:3px}
+.upload-progress{margin-top:8px;height:6px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;display:none}
+.upload-progress i{display:block;height:100%;background:linear-gradient(90deg,#2455ef,#3f73ff);border-radius:99px;transition:width .18s ease}
+
+/* Preview column */
+.preview-panel{position:sticky;top:16px;background:linear-gradient(180deg,#091a38,#051124);border:1px solid var(--line2);border-radius:var(--radius);padding:14px;box-shadow:0 16px 36px rgba(0,0,0,.4)}
+.preview-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.preview-toolbar strong{font-size:12.5px;color:#e2e8f0;font-weight:900}
+.preview-mode-switch{display:flex;background:rgba(255,255,255,.07);padding:3px;border-radius:9px;border:1px solid var(--line)}
+.preview-mode-btn{padding:4px 10px;border-radius:7px;font-size:11px;font-weight:800;color:#9eb5d8;background:transparent;border:0;cursor:pointer;transition:all .15s ease}
+.preview-mode-btn.active{background:#2563eb;color:#fff}
+.preview-viewport{width:100%;background:#020713;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
+.preview-viewport iframe{width:100%;height:70vh;min-height:520px;border:0;background:#08162f;display:block}
+.preview-viewport.mobile{max-width:380px;margin:0 auto;border:6px solid #1c2b48;border-radius:28px}
+.preview-viewport.mobile iframe{max-width:370px;margin:0 auto;display:block}
+.preview-foot{margin-top:8px;display:flex;justify-content:space-between;font-size:10.5px;color:#8fa5ca}
+.preview-foot a{color:#60a5fa;text-decoration:underline}
+
+/* Modal */
+.modal-backdrop{position:fixed;inset:0;background:rgba(3,10,26,.75);backdrop-filter:blur(4px);display:none;place-items:center;padding:20px;z-index:9998;overflow-y:auto}
+.modal-backdrop.open{display:grid}
+.modal-card{width:min(560px,100%);max-height:calc(100vh - 40px);overflow-y:auto;border-radius:18px;border:1px solid var(--line2);background:linear-gradient(180deg,#0d2757,#081938);box-shadow:0 30px 80px rgba(0,0,0,.5);padding:22px;color:#fff}
+.modal-card h3{font-size:18px;font-weight:900;letter-spacing:-.02em;margin-bottom:6px}
+.modal-card p.intro{font-size:12.5px;color:#9fb0cf;margin-bottom:14px;line-height:1.5}
+.modal-actions{margin-top:18px;display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.modal-state{font-size:12px;color:#9fb0cf;margin-right:auto;align-self:center}
+
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 18px;border-radius:12px;background:#10b981;color:#fff;font-weight:850;font-size:13px;box-shadow:0 16px 36px rgba(0,0,0,.4);z-index:9999;display:none;align-items:center;gap:10px}
+.toast.error{background:#ef4444}
+.toast.show{display:flex}
+
+/* Google Drive & Storage Tabs */
+.storage-tabs{display:flex;gap:6px;margin-bottom:12px;background:rgba(255,255,255,.05);padding:4px;border-radius:10px;border:1px solid var(--line)}
+.storage-tab-btn{flex:1;padding:8px 10px;border-radius:8px;font-size:12px;font-weight:800;color:#9eb5d8;background:transparent;border:0;cursor:pointer;transition:all .15s ease;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px}
+.storage-tab-btn.active{background:#2563eb;color:#fff;box-shadow:0 4px 12px rgba(37,99,235,.3)}
+.drive-panel{border:1px solid rgba(66,133,244,.35);border-radius:14px;background:linear-gradient(180deg,rgba(66,133,244,.08),rgba(15,30,60,.4));padding:16px}
+.drive-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.drive-badge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:800;color:#93c5fd;background:rgba(59,130,246,.15);padding:4px 10px;border-radius:999px;border:1px solid rgba(59,130,246,.3)}
+.drive-search-bar{display:flex;gap:8px;margin-bottom:12px}
+.drive-search-bar input{flex:1;padding:8px 12px;border-radius:9px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.14);color:#fff;font-size:12px}
+.drive-file-list{max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding-right:4px}
+.drive-file-card{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;transition:all .12s ease;gap:10px}
+.drive-file-card:hover{background:rgba(66,133,244,.12);border-color:rgba(66,133,244,.4)}
+.drive-file-card.selected{border-color:#3b82f6;background:rgba(37,99,235,.2)}
+.drive-file-info{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.drive-file-icon{font-size:18px;flex:0 0 24px;text-align:center}
+.drive-file-names{min-width:0;flex:1}
+.drive-file-title{font-size:12.5px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drive-file-meta{font-size:11px;color:#8fa5ca;margin-top:2px}
+.drive-select-btn{padding:5px 11px;border-radius:7px;font-size:11.5px;font-weight:800;background:#2563eb;color:#fff;border:0;cursor:pointer;white-space:nowrap;transition:background .12s ease}
+.drive-select-btn:hover{background:#1d4ed8}
+.drive-empty{padding:20px;text-align:center;font-size:12px;color:#8fa5ca;line-height:1.5}
+.selected-file-banner{display:flex;align-items:center;justify-content:space-between;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.35);padding:10px 14px;border-radius:10px;margin-top:10px}
+.selected-file-banner strong{font-size:12.5px;color:#6ee7b7;display:block}
+.selected-file-banner span{font-size:11px;color:#a7f3d0}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <a class="brand" href="index.html">
+      <span class="logo-mark"></span>
+      <span><span class="brand-title">Haugnes</span><span class="brand-sub">Flashcards</span></span>
+    </a>
+    <nav class="nav" aria-label="Brukermeny"></nav>
+  </aside>
+
+  <main class="main">
+    <header class="topline">
+      <div class="hello">
+        <div class="breadcrumb"><a href="index.html">Dashboard</a> › Admin-hub</div>
+        <h1>Admin-hub & <span>Fagstudio</span></h1>
+        <p>Rediger fag, seksjoner, PDF-er og tips til studentene. Alle endringer publiseres umiddelbart.</p>
+      </div>
+      <span class="status-badge" id="adminStatusBadge">✓ Administrator</span>
+    </header>
+
+    <div class="workspace">
+      <div class="catalog-col">
+        <div class="catalog-panel">
+          <div class="catalog-head">
+            <h3>Fag-katalog</h3>
+            <span class="catalog-count" id="catalogCount">0</span>
+          </div>
+          <input type="search" id="catalogSearch" class="catalog-search" placeholder="Søk etter fag …">
+          <button type="button" class="catalog-new" id="btnNewSubject">＋ Nytt fag</button>
+          <div id="catalogList" class="catalog-list"></div>
+        </div>
+      </div>
+
+      <div class="editor-col">
+        <div id="editorPanel" class="editor-panel">
+          <div class="editor-empty">
+            <h2>Velg et fag fra katalogen</h2>
+            <p>Klikk på et fag til venstre for å redigere fagoversikt, seksjonssynlighet, temaer, øvingsløp, eksamensradar, A-besvarelser, forelesningsnotater og oppgaver.<br>Eller opprett et helt nytt fag.</p>
+            <button type="button" class="action-btn" id="btnNewSubjectEmpty">＋ Opprett nytt fag</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="preview-col">
+        <div class="preview-panel">
+          <div class="preview-toolbar">
+            <strong id="previewLabel">Live forhåndsvisning</strong>
+            <div class="preview-mode-switch">
+              <button type="button" class="preview-mode-btn active" id="pmStudent" data-mode="student">🎓 Student</button>
+              <button type="button" class="preview-mode-btn" id="pmAdmin" data-mode="admin">👑 Admin</button>
+            </div>
+          </div>
+          <div class="preview-viewport" id="previewViewport">
+            <iframe id="previewFrame" src="about:blank" title="Fagside-forhåndsvisning"></iframe>
+          </div>
+          <div class="preview-foot">
+            <span>Oppdateres automatisk</span>
+            <a id="previewOpen" href="#" target="_blank" rel="noopener">Åpne i ny fane ↗</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Generic block modal (topic / plan / radar) -->
+<div class="modal-backdrop" id="modalBlock">
+  <div class="modal-card">
+    <h3 id="modalBlockTitle">Legg til rad</h3>
+    <p class="intro" id="modalBlockIntro"></p>
+    <form id="modalBlockForm">
+      <input type="hidden" id="blockId" value="">
+      <input type="hidden" id="blockSection" value="">
+      <div class="form-group">
+        <label for="blockTitle">Tittel *</label>
+        <input type="text" id="blockTitle" required>
+      </div>
+      <div class="form-grid" style="margin-top:12px">
+        <div class="form-group">
+          <label for="blockWeight" id="blockWeightLabel">Vekt</label>
+          <input type="text" id="blockWeight" placeholder="F.eks. 80% eller 20 min">
+        </div>
+        <div class="form-group" id="blockPriorityGroup" style="display:none">
+          <label for="blockPriority">Prioritet</label>
+          <select id="blockPriority">
+            <option value="Tier 1">Tier 1 · Kjerne</option>
+            <option value="Tier 2">Tier 2 · Høy verdi</option>
+            <option value="Tier 3">Tier 3 · Sekundært</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:12px">
+        <label for="blockBody" id="blockBodyLabel">Beskrivelse / Sensorveiledning</label>
+        <textarea id="blockBody"></textarea>
+      </div>
+      <div class="modal-actions">
+        <span class="modal-state" id="modalBlockState"></span>
+        <button type="button" class="action-btn secondary" data-close-modal="modalBlock">Avbryt</button>
+        <button type="submit" class="action-btn">Lagre</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- File modal (answer / memo / task) -->
+<div class="modal-backdrop" id="modalFile">
+  <div class="modal-card">
+    <h3 id="modalFileTitle">Last opp</h3>
+    <p class="intro" id="modalFileIntro"></p>
+    <form id="modalFileForm">
+      <input type="hidden" id="fileId" value="">
+      <input type="hidden" id="fileKind" value="">
+      <div class="form-grid" id="fileMetaGrid">
+        <div class="form-group" id="fileTermGroup">
+          <label for="fileTerm">Semester</label>
+          <input type="text" id="fileTerm" placeholder="F.eks. V26 / H25">
+        </div>
+        <div class="form-group" id="fileGradeGroup">
+          <label for="fileGrade">Type / Karakter</label>
+          <input type="text" id="fileGrade" placeholder="F.eks. Karakter A, Sensorveiledning">
+        </div>
+        <div class="form-group" id="fileTopicGroup" style="display:none">
+          <label for="fileTopic">Tema / Pensumdel</label>
+          <input type="text" id="fileTopic" placeholder="F.eks. Kapitalstruktur">
+        </div>
+        <div class="form-group" id="fileDifficultyGroup" style="display:none">
+          <label for="fileDifficulty">Vanskelighetsgrad</label>
+          <select id="fileDifficulty">
+            <option value="Lett">Lett</option>
+            <option value="Middels" selected>Middels</option>
+            <option value="Eksamensnivå">Eksamensnivå</option>
+          </select>
+        </div>
+        <div class="form-group" id="fileSourceGroup" style="display:none">
+          <label for="fileSource">Kilde / Foreleser</label>
+          <input type="text" id="fileSource" placeholder="F.eks. Foreleser Y">
+        </div>
+        <div class="form-group" id="fileDateGroup" style="display:none">
+          <label for="fileDate">Dato / Uke</label>
+          <input type="text" id="fileDate" placeholder="F.eks. Uke 4 · 28. jan">
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:12px">
+        <label for="fileTitle">Tittel *</label>
+        <input type="text" id="fileTitle" required>
+      </div>
+      <div class="form-group" style="margin-top:12px">
+        <label for="fileDesc" id="fileDescLabel">Kort beskrivelse</label>
+        <textarea id="fileDesc"></textarea>
+      </div>
+      <div class="form-group" id="fileBodyGroup" style="margin-top:12px;display:none">
+        <label for="fileBody" id="fileBodyLabel">Utdypende tekst / tips til studentene</label>
+        <div class="rt-editor">
+          <div class="rt-toolbar" data-target="fileBody">
+            <button type="button" class="rt-btn" data-md="**|**">B</button>
+            <button type="button" class="rt-btn" data-md="_|_"><i>i</i></button>
+            <button type="button" class="rt-btn" data-md="\n- |">• liste</button>
+            <button type="button" class="rt-btn" data-md="\n### |">H3</button>
+            <button type="button" class="rt-btn" data-md="[|](https://)">🔗</button>
+          </div>
+          <textarea id="fileBody" class="tall" placeholder="## Nøkkelmomenter&#10;- Definisjon av …&#10;- Fallgruve: …&#10;- Tips: …"></textarea>
+          <div class="rt-hint">Markdown-lite: **fet**, _kursiv_, - liste, ### overskrift, [tekst](url).</div>
+        </div>
+      </div>
+      <div class="form-group" id="fileTaskGroup" style="margin-top:12px;display:none">
+        <label for="fileTaskSolution">Løsningsforslag / Trinnvis fasit *</label>
+        <textarea id="fileTaskSolution" class="tall" placeholder="Trinn 1: Still opp forutsetningene …&#10;Trinn 2: Utregning …&#10;Trinn 3: Konklusjon …"></textarea>
+      </div>
+      <div class="form-group" style="margin-top:14px">
+        <label>Fillagring & kilde (PDF / dokument)</label>
+        <div class="storage-tabs" id="fileStorageTabs">
+          <button type="button" class="storage-tab-btn active" data-storage-tab="drive">☁️ Google Drive (5 TB)</button>
+          <button type="button" class="storage-tab-btn" data-storage-tab="local">💾 Lokal PDF</button>
+          <button type="button" class="storage-tab-btn" data-storage-tab="url">🔗 Ekstern URL</button>
+        </div>
+
+        <!-- Tab 1: Google Drive (5 TB Sky) -->
+        <div class="drive-panel" id="tabContentDrive">
+          <div class="drive-header">
+            <span class="drive-badge">☁️ Google Drive (5 TB Skylagring)</span>
+            <span id="driveStatusPill" style="display:none;font-size:11px;font-weight:800;padding:3px 8px;border-radius:99px;background:rgba(32,185,122,.14);color:#6ee7b7;border:1px solid rgba(32,185,122,.28)"></span>
+            <button type="button" class="action-btn small" id="btnConnectGoogleDrive" style="background:#4285f4;border-color:#3367d6">🔗 Koble til Google Drive</button>
+          </div>
+          <p style="font-size:11.5px;color:#9fb0cf;margin-bottom:8px;line-height:1.5">
+            Filer fra din Google Drive strømmes til studenter <strong>kun etter godkjent betaling</strong>. Rå Drive-ID-er og -lenker slippes aldri til klienten — alt går via <code>/api/drive</code>-proxyen med Supabase-JWT og entitlement-sjekk.
+          </p>
+          <div style="font-size:11px;color:#fca5a5;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.22);border-radius:9px;padding:8px 10px;margin-bottom:12px;line-height:1.5">
+            ⚠️ <strong>Del filene KUN privat</strong> med Google-kontoen du kobler til her. Sett <em>ikke</em> «Alle med lenken» — da vil noen som får tak i Drive-ID-en kunne omgå betalingsmuren direkte på drive.google.com.
+          </div>
+
+          <div id="driveConnectedSection" style="display:none">
+            <div class="drive-search-bar">
+              <input type="text" id="driveSearchInput" placeholder="Søk etter filer i din Google Drive …">
+              <button type="button" class="action-btn small secondary" id="btnDriveRefresh">↻ Oppdater</button>
+            </div>
+            <div class="drive-file-list" id="driveFileList">
+              <div class="drive-empty">Laster filer fra din Google Drive …</div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;border-top:1px solid rgba(255,255,255,.08);padding-top:10px">
+            <label for="driveManualInput" style="font-size:11px;color:#8fa5ca">Eller lim inn Google Drive-lenke / fil-ID direkte:</label>
+            <div style="display:flex;gap:6px;margin-top:4px">
+              <input type="text" id="driveManualInput" placeholder="https://drive.google.com/file/d/1A2B3C…/view" style="flex:1">
+              <button type="button" class="action-btn small secondary" id="btnApplyDriveManual">Hent fil</button>
+            </div>
+          </div>
+
+          <div id="selectedDriveBanner" class="selected-file-banner" style="display:none">
+            <div>
+              <strong id="selectedDriveName">filnavn.pdf</strong>
+              <span id="selectedDriveMeta">Google Drive · Beskyttet bak betalingsmur</span>
+            </div>
+            <button type="button" class="action-btn small secondary" id="btnRemoveSelectedDrive" style="padding:4px 8px;font-size:11px">Fjern</button>
+          </div>
+        </div>
+
+        <!-- Tab 2: Local upload (Supabase Storage) -->
+        <div id="tabContentLocal" style="display:none">
+          <div class="dropzone" id="fileDropzone">
+            <div style="font-size:22px">📄</div>
+            <strong id="fileDropLabel">Klikk eller dra inn PDF-fil</strong>
+            <span id="fileDropSize">Maks 50 MB. Lagres privat i Supabase Storage.</span>
+            <input type="file" id="filePicker" accept="application/pdf,.pdf,.doc,.docx,.png,.jpg,.jpeg" style="display:none">
+          </div>
+          <div class="upload-progress" id="fileProgress"><i style="width:0%"></i></div>
+        </div>
+
+        <!-- Tab 3: External URL -->
+        <div id="tabContentUrl" style="display:none">
+          <input type="text" id="fileExtUrl" placeholder="https://…">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <span class="modal-state" id="modalFileState"></span>
+        <button type="button" class="action-btn secondary" data-close-modal="modalFile">Avbryt</button>
+        <button type="submit" class="action-btn" id="modalFileSaveBtn">Lagre</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- New subject modal -->
+<div class="modal-backdrop" id="modalNewSubject">
+  <div class="modal-card">
+    <h3>Opprett nytt fag</h3>
+    <p class="intro">Definér grunndata for faget. Alt annet (temaer, øvingsløp, PDF-er) redigerer du etterpå.</p>
+    <form id="newSubjectForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="nsCode">Fagkode *</label>
+          <input type="text" id="nsCode" required maxlength="10" placeholder="F.eks. FIN1">
+        </div>
+        <div class="form-group">
+          <label for="nsName">Fagnavn *</label>
+          <input type="text" id="nsName" required placeholder="F.eks. Finans og investering">
+        </div>
+      </div>
+      <div class="form-grid" style="margin-top:12px">
+        <div class="form-group">
+          <label for="nsCategory">Semester / Kategori</label>
+          <select id="nsCategory">
+            <option value="semester1">1. semester</option>
+            <option value="semester2">2. semester</option>
+            <option value="semester3">3. semester</option>
+            <option value="semester4">4. semester</option>
+            <option value="semester5">5. semester</option>
+            <option value="semester6">6. semester</option>
+            <option value="electives" selected>Valgfag</option>
+            <option value="master">Mastergrad</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="nsIcon">Ikon</label>
+          <input type="text" id="nsIcon" value="📚" maxlength="4">
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:12px">
+        <label>Aksentfarge</label>
+        <div class="color-row">
+          <input type="color" id="nsAccent" class="color-input" value="#2563eb">
+          <div class="color-presets" id="nsColorPresets">
+            <span class="color-swatch selected" style="background:#2563eb" data-color="#2563eb"></span>
+            <span class="color-swatch" style="background:#10b981" data-color="#10b981"></span>
+            <span class="color-swatch" style="background:#ef4444" data-color="#ef4444"></span>
+            <span class="color-swatch" style="background:#f59e0b" data-color="#f59e0b"></span>
+            <span class="color-swatch" style="background:#8b5cf6" data-color="#8b5cf6"></span>
+            <span class="color-swatch" style="background:#06b6d4" data-color="#06b6d4"></span>
+          </div>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:12px">
+        <label for="nsKicker">Kicker / Undertittel</label>
+        <input type="text" id="nsKicker" placeholder="F.eks. Investering og portefølje">
+      </div>
+      <div class="form-group" style="margin-top:12px">
+        <label for="nsLead">Ingress / Fagoversikt</label>
+        <textarea id="nsLead" placeholder="Kort introduksjon til hva faget dekker …"></textarea>
+      </div>
+      <div class="modal-actions">
+        <span class="modal-state" id="modalNewState"></span>
+        <button type="button" class="action-btn secondary" data-close-modal="modalNewSubject">Avbryt</button>
+        <button type="submit" class="action-btn">✨ Opprett fag</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="../shared/learning-content.js"></script>
+<script src="../shared/subject-meta.js"></script>
+<script src="../shared/subject-page-data.js"></script>
+<script src="../shared/user-sidebar.js"></script>
+<script src="auth-guard.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var state = {
+    catalog: [],
+    filteredCatalog: [],
+    query: '',
+    activeSubject: null,
+    activeSubjectCode: null,
+    openSections: { header: true, memo: true },
+    previewMode: 'student'
+  };
+
+  function esc(value) {
+    return String(value == null ? '' : value).replace(/[&<>"']/g, function (c) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+    });
+  }
+
+  function toast(msg, kind) {
+    var el = document.getElementById('toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = 'toast show' + (kind === 'error' ? ' error' : '');
+    window.clearTimeout(el._t);
+    el._t = window.setTimeout(function () { el.className = 'toast'; }, 2600);
+  }
+
+  function studio() { return window.SubjectsStudio; }
+
+  function waitForStudio() {
+    return new Promise(function (resolve) {
+      if (studio()) return resolve(studio());
+      var tries = 0;
+      var t = window.setInterval(function () {
+        tries += 1;
+        if (studio()) { window.clearInterval(t); resolve(studio()); }
+        else if (tries > 100) { window.clearInterval(t); resolve(null); }
+      }, 100);
+    });
+  }
+
+  function openModal(id) { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  document.querySelectorAll('[data-close-modal]').forEach(function (btn) {
+    btn.addEventListener('click', function () { closeModal(btn.getAttribute('data-close-modal')); });
+  });
+  document.querySelectorAll('.modal-backdrop').forEach(function (bd) {
+    bd.addEventListener('click', function (e) { if (e.target === bd) bd.classList.remove('open'); });
+  });
+
+  // ----------- Catalog -----------
+  function renderCatalog() {
+    var list = document.getElementById('catalogList');
+    var count = document.getElementById('catalogCount');
+    var q = state.query.trim().toLowerCase();
+    state.filteredCatalog = state.catalog.filter(function (s) {
+      if (!q) return true;
+      return s.subject_code.toLowerCase().indexOf(q) !== -1 || (s.name || '').toLowerCase().indexOf(q) !== -1;
+    });
+    count.textContent = String(state.catalog.length);
+    if (!state.filteredCatalog.length) {
+      list.innerHTML = '<div class="empty-hint"><b>Ingen fag ennå</b>Klikk «＋ Nytt fag» over for å komme i gang.</div>';
+      return;
+    }
+    list.innerHTML = state.filteredCatalog.map(function (s) {
+      var pill = s.origin === 'custom' ? '<span class="pill custom">EGET</span>' : '<span class="pill">Innebygd</span>';
+      if (!s.is_published) pill = '<span class="pill hidden">SKJULT</span>';
+      var active = state.activeSubjectCode === s.subject_code ? ' active' : '';
+      return '<button type="button" class="catalog-item' + active + '" data-code="' + esc(s.subject_code) + '">'
+        + '<div class="catalog-icon" style="background:' + esc(s.accent || '#2f62ff') + '20;border-color:' + esc(s.accent || '#2f62ff') + '55">' + esc(s.icon || '📚') + '</div>'
+        + '<div class="catalog-item-text"><strong>' + esc(s.subject_code) + '</strong><span>' + esc(s.name || '') + '</span></div>'
+        + pill
+        + '</button>';
+    }).join('');
+    list.querySelectorAll('.catalog-item').forEach(function (btn) {
+      btn.addEventListener('click', function () { selectSubject(btn.getAttribute('data-code')); });
+    });
+  }
+
+  function loadCatalog(force) {
+    return studio().listSubjects({ force: !!force }).then(function (rows) {
+      state.catalog = rows;
+      renderCatalog();
+    });
+  }
+
+  document.getElementById('catalogSearch').addEventListener('input', function (e) {
+    state.query = e.target.value;
+    renderCatalog();
+  });
+
+  // ----------- Selection & editor rendering -----------
+  function selectSubject(codeStr) {
+    state.activeSubjectCode = codeStr;
+    renderCatalog();
+    renderPreview();
+    return studio().getSubject(codeStr, { force: true }).then(function (full) {
+      if (!full) {
+        document.getElementById('editorPanel').innerHTML = '<div class="editor-empty"><h2>Fant ikke faget</h2><p>Kanskje det ble slettet, eller du mangler tilgang.</p></div>';
+        return;
+      }
+      state.activeSubject = full;
+      renderEditor();
+    });
+  }
+
+  function renderEditor() {
+    var s = state.activeSubject;
+    if (!s) return;
+    var vis = s.visibility || {};
+    var host = document.getElementById('editorPanel');
+    host.innerHTML =
+      headerBlock(s, vis) +
+      publishBlock(s) +
+      memoBlock(s) +
+      visibilityBlock(s, vis) +
+      listSection('topics', 'Viktige temaer', '📌', 'Kjernetemaer med eksamensvekt', s.blocks.topics, 'block') +
+      listSection('plan', 'Anbefalt øvingsløp', '📅', 'Trinnvis fremgang', s.blocks.plan, 'block') +
+      listSection('radar', 'Eksamensradar', '📋', 'Sensorveiledning og fallgruver', s.blocks.radar, 'block') +
+      fileSection('answer', 'A-besvarelser & eksamensløsninger', '📝', 'PDF fra Storage — bare synlig for studenter med tilgang', s.files.answer) +
+      fileSection('memo', 'Forelesningsnotater', '📚', 'PDF + utdypende tekst / tips', s.files.memo) +
+      fileSection('task', 'Oppgavebank', '🎯', 'Oppgaver med trinnvis fasit', s.files.task) +
+      flashcardsBlock(s) +
+      dangerBlock(s);
+    bindEditor();
+  }
+
+  function sectionOpenClass(key, defaultOpen) {
+    var open = state.openSections[key];
+    if (typeof open === 'undefined') open = !!defaultOpen;
+    return open ? ' open' : '';
+  }
+
+  function toggleSection(key, defaultOpen) {
+    var cur = state.openSections[key];
+    if (typeof cur === 'undefined') cur = !!defaultOpen;
+    state.openSections[key] = !cur;
+  }
+
+  function chevronSvg() {
+    return '<span class="section-chevron">▸</span>';
+  }
+
+  function headerBlock(s, vis) {
+    return '<div class="editor-head">'
+      + '<div class="editor-title"><div class="editor-icon" style="background:' + esc(s.accent) + '30;border:1px solid ' + esc(s.accent) + '77">' + esc(s.icon) + '</div>'
+      + '<div class="editor-title-text"><strong>' + esc(s.subject_code) + ' · ' + esc(s.name) + '</strong><span>' + esc(s.kicker || 'Ingen kicker angitt') + ' · ' + (s.is_published ? 'Publisert' : 'Skjult') + '</span></div></div>'
+      + '<div class="editor-toolbar">'
+      + '<a class="action-btn secondary small" href="../subject/?id=' + encodeURIComponent(s.subject_code.toLowerCase()) + '&admin=1" target="_blank">👑 Rediger live på fagsiden ↗</a>'
+      + '</div>'
+      + '</div>'
+      + '<div class="section' + sectionOpenClass('header', true) + '" data-section-key="header">'
+      + '<div class="section-head" data-toggle="header"><div class="section-title">🏷️ Fag-header <small>navn, kicker, farge, ikon, semester</small></div>' + chevronSvg() + '</div>'
+      + '<div class="section-body"><div class="section-body-inner">'
+      + '<div class="form-grid">'
+      + '<div class="form-group"><label>Fagkode</label><input type="text" value="' + esc(s.subject_code) + '" disabled></div>'
+      + '<div class="form-group"><label>Fagnavn *</label><input type="text" data-header="name" value="' + esc(s.name) + '"></div>'
+      + '</div>'
+      + '<div class="form-grid" style="margin-top:12px">'
+      + '<div class="form-group"><label>Kicker / undertittel</label><input type="text" data-header="kicker" value="' + esc(s.kicker) + '"></div>'
+      + '<div class="form-group"><label>Ikon</label><input type="text" data-header="icon" value="' + esc(s.icon) + '" maxlength="4"></div>'
+      + '</div>'
+      + '<div class="form-grid" style="margin-top:12px">'
+      + '<div class="form-group"><label>Semester / kategori</label>'
+      + '<select data-header="category_id">'
+      + ['semester1','semester2','semester3','semester4','semester5','semester6','electives','master'].map(function (c) {
+        var labels = { semester1: '1. semester', semester2: '2. semester', semester3: '3. semester', semester4: '4. semester', semester5: '5. semester', semester6: '6. semester', electives: 'Valgfag', master: 'Master' };
+        return '<option value="' + c + '"' + (s.category_id === c ? ' selected' : '') + '>' + labels[c] + '</option>';
+      }).join('')
+      + '</select></div>'
+      + '<div class="form-group"><label>Status-tekst</label><input type="text" data-header="status_text" value="' + esc(s.status_text) + '"></div>'
+      + '</div>'
+      + '<div class="form-group" style="margin-top:12px"><label>Aksentfarge</label>'
+      + '<div class="color-row"><input type="color" class="color-input" data-header="accent" value="' + esc(s.accent) + '">'
+      + '<div class="color-presets">'
+      + ['#2f62ff','#20b97a','#ef4444','#f09828','#7c3aed','#06b6d4','#0891b2','#e8bc68'].map(function (c) {
+        var sel = s.accent && s.accent.toLowerCase() === c.toLowerCase() ? ' selected' : '';
+        return '<span class="color-swatch' + sel + '" style="background:' + c + '" data-preset="' + c + '"></span>';
+      }).join('')
+      + '</div></div></div>'
+      + '<div class="form-group" style="margin-top:12px"><label>Ingress / fagoversikt</label><textarea class="tall" data-header="lead">' + esc(s.lead) + '</textarea></div>'
+      + '<div class="form-group" style="margin-top:12px"><label>Anbefalt neste steg</label><input type="text" data-header="next_step" value="' + esc(s.next_step) + '" placeholder="F.eks. Gå gjennom formelark før eksamensdrill"></div>'
+      + '<div style="margin-top:12px;display:flex;gap:8px"><button type="button" class="action-btn small" id="btnSaveHeader">💾 Lagre header</button></div>'
+      + '</div></div>'
+      + '</div>';
+  }
+
+  function publishBlock(s) {
+    return '<div class="section' + sectionOpenClass('publish', false) + '" data-section-key="publish">'
+      + '<div class="section-head" data-toggle="publish"><div class="section-title">📢 Publisering</div>'
+      + '<div class="section-meta"><span class="section-vis-pill' + (s.is_published ? '' : ' off') + '">' + (s.is_published ? 'Publisert' : 'Skjult') + '</span>' + chevronSvg() + '</div></div>'
+      + '<div class="section-body"><div class="section-body-inner">'
+      + '<div class="vis-row"><div class="vis-row-label">Publisert i katalogen<small>Skjulte fag vises kun for administratorer.</small></div>'
+      + '<label class="switch"><input type="checkbox" id="togglePublished"' + (s.is_published ? ' checked' : '') + '><span class="slider"></span></label></div>'
+      + '</div></div></div>';
+  }
+
+  function memoBlock(s) {
+    return '<div class="section' + sectionOpenClass('memo', true) + '" data-section-key="memo">'
+      + '<div class="section-head" data-toggle="memo"><div class="section-title">📝 Memo & studietips <small>tre korte kort som vises på fagsiden</small></div>' + chevronSvg() + '</div>'
+      + '<div class="section-body"><div class="section-body-inner">'
+      + '<div class="form-group"><label>Kort intro (memo)</label><textarea data-header="memo_intro" placeholder="Hva handler faget om og hva bør studenten kunne …">' + esc(s.memo_intro) + '</textarea></div>'
+      + '<div class="form-group" style="margin-top:12px"><label>Eksamen</label><textarea data-header="memo_exam" placeholder="Hva ser sensor etter, typiske fallgruver …">' + esc(s.memo_exam) + '</textarea></div>'
+      + '<div class="form-group" style="margin-top:12px"><label>Slik bruker du siden</label><textarea data-header="memo_study_advice" placeholder="Hvordan komme i gang, rekkefølge på verktøy …">' + esc(s.memo_study_advice) + '</textarea></div>'
+      + '<div style="margin-top:12px;display:flex;gap:8px"><button type="button" class="action-btn small" id="btnSaveMemo">💾 Lagre memo</button></div>'
+      + '</div></div></div>';
+  }
+
+  function visibilityBlock(s, vis) {
+    var rows = [
+      ['topics', '📌 Viktige temaer'],
+      ['plan', '📅 Anbefalt øvingsløp'],
+      ['radar', '📋 Eksamensradar'],
+      ['answers', '📝 A-besvarelser'],
+      ['notes', '📚 Forelesningsnotater'],
+      ['tasks', '🎯 Oppgavebank'],
+      ['flashcards', '⚡ Flashcards'],
+      ['overview', '📖 Ingress & memo']
+    ];
+    return '<div class="section' + sectionOpenClass('visibility', false) + '" data-section-key="visibility">'
+      + '<div class="section-head" data-toggle="visibility"><div class="section-title">👁️ Seksjonssynlighet <small>skjul/vis moduler for studentene</small></div>' + chevronSvg() + '</div>'
+      + '<div class="section-body"><div class="section-body-inner">'
+      + rows.map(function (r) {
+        var on = vis[r[0]] !== false;
+        return '<div class="vis-row"><div class="vis-row-label">' + r[1] + '</div>'
+          + '<label class="switch"><input type="checkbox" data-vis="' + r[0] + '"' + (on ? ' checked' : '') + '><span class="slider"></span></label></div>';
+      }).join('')
+      + '</div></div></div>';
+  }
+
+  function listSection(section, title, icon, sub, rows, kind) {
+    var count = rows.length ? '<span class="section-meta">' + rows.length + ' rader</span>' : '';
+    var body = rows.length
+      ? '<div class="row-list">' + rows.map(function (r) { return blockRowHtml(section, r); }).join('') + '</div>'
+      : '<div class="empty-hint"><b>Ingen ' + esc(title.toLowerCase()) + ' ennå</b>Klikk «Legg til» for å lage første rad.</div>';
+    return '<div class="section' + sectionOpenClass('sec-' + section, true) + '" data-section-key="sec-' + section + '">'
+      + '<div class="section-head" data-toggle="sec-' + section + '"><div class="section-title">' + icon + ' ' + esc(title) + ' <small>' + esc(sub) + '</small></div>'
+      + count + chevronSvg() + '</div>'
+      + '<div class="section-body"><div class="section-body-inner">'
+      + '<div style="display:flex;justify-content:flex-end"><button type="button" class="action-btn small" data-add-block="' + section + '">＋ Legg til</button></div>'
+      + body
+      + '</div></div></div>';
+  }
+
+  function blockRowHtml(section, block) {
+    var showWeight = block.weight ? '<span class="row-weight">' + esc(block.weight) + '</span>' : '';
+    var priority = section === 'radar' && block.priority ? '<span class="row-weight" style="background:rgba(126,162,255,.18);color:#c6d5ff;margin-left:4px">' + esc(block.priority) + '</span>' : '';
+    return '<div class="row-item" data-block-id="' + esc(block.id) + '">'
+      + '<span class="row-drag" title="Endre rekkefølge (bruk piltastene)">⋮⋮</span>'
+      + '<div class="row-body"><strong>' + esc(block.title) + '</strong>'
+      + (block.body ? '<span>' + esc(block.body) + '</span>' : '')
+      + '</div>'
+      + '<div class="row-actions">'
+      + showWeight + priority
+      + '<button type="button" class="row-mini" title="Flytt opp" data-move-block="up" data-section="' + section + '" data-id="' + esc(block.id) + '">▲</button>'
+      + '<button type="button" class="row-mini" title="Flytt ned" data-move-block="down" data-section="' + section + '" data-id="' + esc(block.id) + '">▼</button>'
+      + '<button type="button" class="row-mini" title="Rediger" data-edit-block="' + section + '" data-id="' + esc(block.id) + '">✏️</button>'
+      + '<button type="button" class="row-mini danger" title="Slett" data-delete-block="' + esc(block.id) + '" data-section="' + section + '">🗑️</button>'
+      + '</div></div>';
+  }
+
+  function fileSection(kind, title, icon, sub, files) {
+    var count = files.length ? '<span class="section-meta">' + files.length + ' filer</span>' : '';
+    var body = files.length
+      ? files.map(function (f) { return fileCardHtml(kind, f); }).join('')
+      : '<div class="empty-hint"><b>Ingen ' + esc(title.toLowerCase()) + ' ennå</b>Klikk «Legg til» for å laste opp PDF eller lime inn en lenke.</div>';
+    return '<div class="section' + sectionOpenClass('sec-file-' + kind, true) + '" data-section-key="sec-file-' + kind + '">'
+      + '<div class="section-head" data-toggle="sec-file-' + kind + '"><div class="section-title">' + icon + ' ' + esc(title) + ' <small>' + esc(sub) + '</small></div>'
+      + count + chevronSvg() + '</div>'
+      + '<div class="section-body"><div class="section-body-inner">'
+      + '<div style="display:flex;justify-content:flex-end;margin-bottom:6px"><button type="button" class="action-btn small" data-add-file="' + kind + '">＋ Legg til</button></div>'
+      + '<div style="display:flex;flex-direction:column;gap:8px">' + body + '</div>'
+      + '</div></div></div>';
+  }
+
+  function fileCardHtml(kind, file) {
+    var isDrive = file.storage_bucket === 'google_drive' || (file.meta && file.meta.source === 'google_drive');
+    var badge = isDrive ? '☁️ Google Drive (5 TB)' : (file.storage_path ? '📄 PDF (Supabase)' : (file.external_url ? '🔗 Lenke' : '📝 Tekst'));
+    var meta = [];
+    if (file.term) meta.push(file.term);
+    if (file.grade) meta.push(file.grade);
+    if ((file.meta || {}).difficulty) meta.push(file.meta.difficulty);
+    if ((file.meta || {}).topic) meta.push('Tema: ' + file.meta.topic);
+    if ((file.meta || {}).source) meta.push('Kilde: ' + file.meta.source);
+    if ((file.meta || {}).date) meta.push(file.meta.date);
+    var previewUrl = '/api/drive?id=' + encodeURIComponent(file.id) + '&code=' + encodeURIComponent(file.subject_code);
+    return '<div class="file-card" data-file-id="' + esc(file.id) + '">'
+      + '<div class="file-icon ' + esc(kind) + '">' + (kind === 'memo' ? '📚' : (kind === 'task' ? '🎯' : '📝')) + '</div>'
+      + '<div class="file-body"><strong>' + esc(file.title || '(uten tittel)') + '</strong>'
+      + (file.description ? '<span>' + esc(file.description) + '</span>' : '')
+      + (meta.length ? '<div class="meta">' + esc(meta.join(' · ')) + '</div>' : '')
+      + '<span style="font-size:10.5px;color:#8fa5ca;margin-top:2px">' + badge + '</span></div>'
+      + '<div class="row-actions">'
+      + '<button type="button" class="row-mini" title="Forhåndsvis fil" onclick="window.open(\'' + previewUrl + '\', \'_blank\')">👁️</button>'
+      + '<button type="button" class="row-mini" title="Rediger" data-edit-file="' + esc(kind) + '" data-id="' + esc(file.id) + '">✏️</button>'
+      + '<button type="button" class="row-mini danger" title="Slett" data-delete-file="' + esc(file.id) + '">🗑️</button>'
+      + '</div></div>';
+  }
+
+  function flashcardsBlock(s) {
+    var url = s.flashcards_url || ('../flashcards/?subject=' + s.subject_code.toLowerCase());
+    return '<div class="section' + sectionOpenClass('flashcards', false) + '" data-section-key="flashcards">'
+      + '<div class="section-head" data-toggle="flashcards"><div class="section-title">⚡ Flashcards</div>' + chevronSvg() + '</div>'
+      + '<div class="section-body"><div class="section-body-inner">'
+      + '<div class="form-group"><label>Kicker på flashcard-seksjonen</label><input type="text" data-header="flashcards_kicker" value="' + esc(s.flashcards_kicker) + '" placeholder="F.eks. Kjernebegreper til eksamen"></div>'
+      + '<div class="form-group" style="margin-top:12px"><label>Egendefinert flashcard-lenke (valgfritt)</label><input type="text" data-header="flashcards_url" value="' + esc(s.flashcards_url) + '" placeholder="' + esc(url) + '"></div>'
+      + '<div style="margin-top:12px;display:flex;gap:8px"><button type="button" class="action-btn small" id="btnSaveFlashcards">💾 Lagre flashcard-innstillinger</button>'
+      + '<a class="action-btn small secondary" href="' + esc(url) + '" target="_blank">Åpne flashcards ↗</a></div>'
+      + '</div></div></div>';
+  }
+
+  function dangerBlock(s) {
+    if (s.origin === 'builtin') return '';
+    return '<div class="section' + sectionOpenClass('danger', false) + '" data-section-key="danger">'
+      + '<div class="section-head" data-toggle="danger"><div class="section-title" style="color:#fca5a5">⚠️ Fare-sonen</div>' + chevronSvg() + '</div>'
+      + '<div class="section-body"><div class="section-body-inner">'
+      + '<div class="empty-hint" style="border-color:rgba(239,68,68,.32);color:#fca5a5"><b style="color:#fca5a5">Slett faget</b>Dette fjerner katalogoppføring, alle blokker og alle opplastede filer. Kan ikke angres.</div>'
+      + '<button type="button" class="action-btn danger" id="btnDeleteSubject">Slett fag permanent</button>'
+      + '</div></div></div>';
+  }
+
+  // ----------- Bind interactions -----------
+  function bindEditor() {
+    document.querySelectorAll('.section-head[data-toggle]').forEach(function (head) {
+      head.addEventListener('click', function () {
+        var key = head.getAttribute('data-toggle');
+        var defaultOpen = head.closest('.section').classList.contains('open');
+        toggleSection(key, defaultOpen);
+        head.closest('.section').classList.toggle('open');
+      });
+    });
+
+    document.querySelectorAll('[data-preset]').forEach(function (sw) {
+      sw.addEventListener('click', function () {
+        var color = sw.getAttribute('data-preset');
+        var input = document.querySelector('[data-header="accent"]');
+        if (input) input.value = color;
+        document.querySelectorAll('[data-preset]').forEach(function (s) { s.classList.remove('selected'); });
+        sw.classList.add('selected');
+      });
+    });
+
+    var saveHeaderBtn = document.getElementById('btnSaveHeader');
+    if (saveHeaderBtn) saveHeaderBtn.addEventListener('click', function () { saveHeaderFields(['name', 'kicker', 'icon', 'category_id', 'status_text', 'accent', 'lead', 'next_step']); });
+
+    var saveMemoBtn = document.getElementById('btnSaveMemo');
+    if (saveMemoBtn) saveMemoBtn.addEventListener('click', function () { saveHeaderFields(['memo_intro', 'memo_exam', 'memo_study_advice']); });
+
+    var saveFcBtn = document.getElementById('btnSaveFlashcards');
+    if (saveFcBtn) saveFcBtn.addEventListener('click', function () { saveHeaderFields(['flashcards_url', 'flashcards_kicker']); });
+
+    var togglePub = document.getElementById('togglePublished');
+    if (togglePub) togglePub.addEventListener('change', function () {
+      studio().upsertSubject({ subject_code: state.activeSubject.subject_code, is_published: togglePub.checked }).then(function () {
+        toast(togglePub.checked ? 'Faget er publisert' : 'Faget er skjult');
+        loadCatalog(true);
+        selectSubject(state.activeSubjectCode);
+      });
+    });
+
+    document.querySelectorAll('[data-vis]').forEach(function (input) {
+      input.addEventListener('change', function () {
+        var vis = Object.assign({}, state.activeSubject.visibility || {});
+        vis[input.getAttribute('data-vis')] = input.checked;
+        studio().upsertSubject({ subject_code: state.activeSubject.subject_code, visibility: vis }).then(function () {
+          state.activeSubject.visibility = vis;
+          notifyPreview();
+          toast('Seksjonssynlighet oppdatert');
+        });
+      });
+    });
+
+    document.getElementById('btnDeleteSubject') && document.getElementById('btnDeleteSubject').addEventListener('click', function () {
+      if (!window.confirm('Slette ' + state.activeSubject.subject_code + ' ' + state.activeSubject.name + '?\nDette fjerner alt innhold og alle filer permanent.')) return;
+      studio().deleteSubject(state.activeSubject.subject_code).then(function () {
+        toast('Fag slettet');
+        state.activeSubject = null;
+        state.activeSubjectCode = null;
+        document.getElementById('editorPanel').innerHTML = '<div class="editor-empty"><h2>Faget er slettet</h2><p>Velg et annet fag fra katalogen.</p></div>';
+        loadCatalog(true);
+      }).catch(function (e) { toast('Kunne ikke slette: ' + (e.message || e), 'error'); });
+    });
+
+    document.querySelectorAll('[data-add-block]').forEach(function (btn) {
+      btn.addEventListener('click', function () { openBlockModal(btn.getAttribute('data-add-block'), null); });
+    });
+    document.querySelectorAll('[data-edit-block]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var section = btn.getAttribute('data-edit-block');
+        var id = btn.getAttribute('data-id');
+        var block = (state.activeSubject.blocks[section] || []).find(function (b) { return b.id === id; });
+        openBlockModal(section, block);
+      });
+    });
+    document.querySelectorAll('[data-delete-block]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (!window.confirm('Slett denne raden?')) return;
+        studio().deleteBlock(btn.getAttribute('data-delete-block'), state.activeSubject.subject_code).then(function () {
+          toast('Rad slettet');
+          selectSubject(state.activeSubjectCode);
+        });
+      });
+    });
+    document.querySelectorAll('[data-move-block]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var direction = btn.getAttribute('data-move-block') === 'up' ? -1 : 1;
+        var section = btn.getAttribute('data-section');
+        var id = btn.getAttribute('data-id');
+        var rows = (state.activeSubject.blocks[section] || []).slice();
+        var idx = rows.findIndex(function (r) { return r.id === id; });
+        var target = idx + direction;
+        if (idx === -1 || target < 0 || target >= rows.length) return;
+        var swap = rows[idx]; rows[idx] = rows[target]; rows[target] = swap;
+        studio().reorderBlocks(state.activeSubject.subject_code, section, rows.map(function (r) { return r.id; })).then(function () {
+          selectSubject(state.activeSubjectCode);
+        });
+      });
+    });
+
+    document.querySelectorAll('[data-add-file]').forEach(function (btn) {
+      btn.addEventListener('click', function () { openFileModal(btn.getAttribute('data-add-file'), null); });
+    });
+    document.querySelectorAll('[data-edit-file]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var kind = btn.getAttribute('data-edit-file');
+        var id = btn.getAttribute('data-id');
+        var file = (state.activeSubject.files[kind] || []).find(function (f) { return f.id === id; });
+        openFileModal(kind, file);
+      });
+    });
+    document.querySelectorAll('[data-delete-file]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-delete-file');
+        var file = null;
+        ['answer','memo','task','attachment'].forEach(function (k) {
+          (state.activeSubject.files[k] || []).forEach(function (f) { if (f.id === id) file = f; });
+        });
+        if (!file) return;
+        if (!window.confirm('Slette «' + file.title + '»?\nBåde raden og PDF-en fjernes fra Storage.')) return;
+        studio().deleteFile(file).then(function () {
+          toast('Fil slettet');
+          selectSubject(state.activeSubjectCode);
+        }).catch(function (e) { toast('Kunne ikke slette: ' + (e.message || e), 'error'); });
+      });
+    });
+  }
+
+  function saveHeaderFields(fields) {
+    var patch = { subject_code: state.activeSubject.subject_code };
+    fields.forEach(function (f) {
+      var el = document.querySelector('[data-header="' + f + '"]');
+      if (!el) return;
+      if (el.type === 'number') patch[f] = Number(el.value) || 0;
+      else patch[f] = el.value;
+    });
+    studio().upsertSubject(patch).then(function () {
+      Object.assign(state.activeSubject, patch);
+      toast('Lagret');
+      loadCatalog(true);
+      notifyPreview();
+    }).catch(function (e) { toast('Kunne ikke lagre: ' + (e.message || e), 'error'); });
+  }
+
+  // ----------- Block modal -----------
+  function openBlockModal(section, block) {
+    document.getElementById('blockId').value = block ? block.id : '';
+    document.getElementById('blockSection').value = section;
+    document.getElementById('blockTitle').value = block ? block.title : '';
+    document.getElementById('blockBody').value = block ? block.body : '';
+    document.getElementById('blockWeight').value = block ? block.weight : (section === 'plan' ? '30 min' : '80%');
+    var priorityGroup = document.getElementById('blockPriorityGroup');
+    var priorityInput = document.getElementById('blockPriority');
+    if (section === 'radar') {
+      priorityGroup.style.display = '';
+      priorityInput.value = (block && block.priority) || 'Tier 1';
+    } else {
+      priorityGroup.style.display = 'none';
+    }
+    document.getElementById('blockWeightLabel').textContent = section === 'plan' ? 'Tidsbruk / uke' : 'Vekt / eksamensandel';
+    document.getElementById('blockBodyLabel').textContent = section === 'radar' ? 'Sensorveiledning & fallgruver' : 'Beskrivelse';
+
+    var titles = { topics: 'Viktig tema', plan: 'Steg i øvingsløpet', radar: 'Eksamensradar-tema' };
+    document.getElementById('modalBlockTitle').textContent = (block ? 'Rediger ' : 'Legg til ') + (titles[section] || section);
+    document.getElementById('modalBlockIntro').textContent = 'Endringer publiseres umiddelbart til alle med tilgang til faget.';
+    openModal('modalBlock');
+    setTimeout(function () { document.getElementById('blockTitle').focus(); }, 30);
+  }
+
+  document.getElementById('modalBlockForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var payload = {
+      id: document.getElementById('blockId').value || undefined,
+      subject_code: state.activeSubject.subject_code,
+      section: document.getElementById('blockSection').value,
+      title: document.getElementById('blockTitle').value.trim(),
+      body: document.getElementById('blockBody').value.trim(),
+      weight: document.getElementById('blockWeight').value.trim(),
+      priority: document.getElementById('blockPriority').value
+    };
+    if (!payload.id) {
+      var existing = state.activeSubject.blocks[payload.section] || [];
+      payload.sort_order = existing.length;
+    }
+    var stateEl = document.getElementById('modalBlockState');
+    stateEl.textContent = 'Lagrer …';
+    studio().upsertBlock(payload).then(function () {
+      stateEl.textContent = '';
+      closeModal('modalBlock');
+      toast('Lagret');
+      selectSubject(state.activeSubjectCode);
+    }).catch(function (err) { stateEl.textContent = 'Kunne ikke lagre: ' + (err.message || err); });
+  });
+
+  // ----------- File modal & Google Drive 5 TB Skylagring -----------
+  var pendingFile = null;
+  var pendingDriveFile = null;
+  var currentGoogleToken = null;
+  var gisTokenClient = null;
+
+  function initGoogleAuth() {
+    if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) {
+      setTimeout(initGoogleAuth, 500);
+      return;
+    }
+    gisTokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: '57830964125-fafaak3b2vdmhs5ot02k1v19k9maf66m.apps.googleusercontent.com',
+      scope: 'https://www.googleapis.com/auth/drive.readonly',
+      callback: function (resp) {
+        if (resp.error) {
+          toast('Google-innlogging feilet: ' + resp.error, 'error');
+          return;
+        }
+        currentGoogleToken = resp.access_token;
+        var expiresIn = Number(resp.expires_in) || 3600;
+        currentGoogleTokenExpiresAt = Date.now() + (expiresIn * 1000);
+        toast('Google Drive tilkoblet!');
+        renderDriveStatus();
+        var connSec = document.getElementById('driveConnectedSection');
+        if (connSec) connSec.style.display = 'block';
+
+        // Cache token on backend so student streams can use it. The server
+        // holds it in memory only — a redeploy or process restart requires
+        // the admin to reconnect. The status pill above surfaces the
+        // remaining freshness.
+        var s = window.AuthGuard && window.AuthGuard.getSession ? window.AuthGuard.getSession() : null;
+        if (s && s.access_token) {
+          fetch('/api/drive?action=cache_token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + s.access_token },
+            body: JSON.stringify({ google_token: resp.access_token, expires_in: expiresIn })
+          }).catch(function () {});
+        }
+
+        loadGoogleDriveFiles();
+      }
+    });
+  }
+
+  var currentGoogleTokenExpiresAt = 0;
+  function renderDriveStatus() {
+    var pill = document.getElementById('driveStatusPill');
+    var connBtn = document.getElementById('btnConnectGoogleDrive');
+    var fresh = currentGoogleToken && currentGoogleTokenExpiresAt > Date.now();
+    if (pill) {
+      if (fresh) {
+        var minsLeft = Math.max(1, Math.round((currentGoogleTokenExpiresAt - Date.now()) / 60000));
+        pill.style.display = 'inline-flex';
+        pill.textContent = '● Tilkoblet · fornyes om ' + minsLeft + ' min';
+        pill.style.background = 'rgba(32,185,122,.14)';
+        pill.style.color = '#6ee7b7';
+        pill.style.borderColor = 'rgba(32,185,122,.28)';
+      } else if (currentGoogleToken) {
+        pill.style.display = 'inline-flex';
+        pill.textContent = '● Utløpt — koble til på nytt';
+        pill.style.background = 'rgba(239,68,68,.14)';
+        pill.style.color = '#fca5a5';
+        pill.style.borderColor = 'rgba(239,68,68,.28)';
+      } else {
+        pill.style.display = 'none';
+      }
+    }
+    if (connBtn) {
+      if (fresh) {
+        connBtn.textContent = '✅ Tilkoblet Google Drive';
+        connBtn.style.background = '#10b981';
+        connBtn.style.borderColor = '#059669';
+      } else {
+        connBtn.textContent = '🔗 Koble til Google Drive';
+        connBtn.style.background = '#4285f4';
+        connBtn.style.borderColor = '#3367d6';
+      }
+    }
+  }
+  setInterval(renderDriveStatus, 60000);
+
+  function setStorageTab(tab) {
+    document.querySelectorAll('#fileStorageTabs .storage-tab-btn').forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-storage-tab') === tab);
+    });
+    var d = document.getElementById('tabContentDrive');
+    var l = document.getElementById('tabContentLocal');
+    var u = document.getElementById('tabContentUrl');
+    if (d) d.style.display = tab === 'drive' ? 'block' : 'none';
+    if (l) l.style.display = tab === 'local' ? 'block' : 'none';
+    if (u) u.style.display = tab === 'url' ? 'block' : 'none';
+  }
+
+  document.querySelectorAll('#fileStorageTabs .storage-tab-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      setStorageTab(btn.getAttribute('data-storage-tab'));
+    });
+  });
+
+  function loadGoogleDriveFiles(query) {
+    if (!currentGoogleToken) return;
+    var listEl = document.getElementById('driveFileList');
+    if (!listEl) return;
+    listEl.innerHTML = '<div class="drive-empty">Laster filer fra din Google Drive …</div>';
+    var s = window.AuthGuard && window.AuthGuard.getSession ? window.AuthGuard.getSession() : null;
+    var token = s && s.access_token ? s.access_token : '';
+    var q = query ? '&q=' + encodeURIComponent(query) : '';
+    fetch('/api/drive?action=list' + q, {
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'X-Google-Token': currentGoogleToken
+      }
+    }).then(function (r) { return r.json(); }).then(function (data) {
+      if (data.error) {
+        listEl.innerHTML = '<div class="drive-empty" style="color:#ef4444">' + esc(data.error) + '</div>';
+        return;
+      }
+      var files = data.files || [];
+      if (!files.length) {
+        listEl.innerHTML = '<div class="drive-empty">Ingen PDF-er eller dokumenter funnet ' + (query ? 'som matchet søket.' : 'på Google Drive.') + '</div>';
+        return;
+      }
+      var html = files.map(function (f) {
+        var isPdf = f.mimeType && f.mimeType.includes('pdf');
+        var icon = isPdf ? '📄' : (f.mimeType && f.mimeType.includes('spreadsheet') ? '📊' : '📑');
+        var sizeStr = f.size ? (f.size > 1048576 ? (f.size / 1048576).toFixed(1) + ' MB' : (f.size / 1024).toFixed(0) + ' KB') : 'Dokument';
+        var dateStr = f.modifiedTime ? new Date(f.modifiedTime).toLocaleDateString('no-NO') : '';
+        return '<div class="drive-file-card" data-drive-id="' + esc(f.id) + '">'
+          + '<div class="drive-file-info">'
+          + '<span class="drive-file-icon">' + icon + '</span>'
+          + '<div class="drive-file-names">'
+          + '<div class="drive-file-title" title="' + esc(f.name) + '">' + esc(f.name) + '</div>'
+          + '<div class="drive-file-meta">' + esc(sizeStr) + ' · Sist endret ' + esc(dateStr) + '</div>'
+          + '</div></div>'
+          + '<button type="button" class="drive-select-btn" data-pick-drive="' + esc(f.id) + '" data-name="' + esc(f.name) + '" data-size="' + esc(f.size || 0) + '" data-mime="' + esc(f.mimeType || 'application/pdf') + '">Velg</button>'
+          + '</div>';
+      }).join('');
+      listEl.innerHTML = html;
+
+      listEl.querySelectorAll('[data-pick-drive]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          selectDriveFile({
+            id: btn.getAttribute('data-pick-drive'),
+            name: btn.getAttribute('data-name'),
+            size: parseInt(btn.getAttribute('data-size'), 10) || null,
+            mimeType: btn.getAttribute('data-mime') || 'application/pdf'
+          });
+        });
+      });
+    }).catch(function (err) {
+      listEl.innerHTML = '<div class="drive-empty" style="color:#ef4444">Feil ved henting av Drive-filer: ' + esc(err.message || err) + '</div>';
+    });
+  }
+
+  function selectDriveFile(f) {
+    pendingDriveFile = f;
+    pendingFile = null;
+    var banner = document.getElementById('selectedDriveBanner');
+    if (banner) banner.style.display = 'flex';
+    var nameEl = document.getElementById('selectedDriveName');
+    if (nameEl) nameEl.textContent = f.name;
+    var sizeStr = f.size ? (f.size > 1048576 ? (f.size / 1048576).toFixed(1) + ' MB' : (f.size / 1024).toFixed(0) + ' KB') : '';
+    var metaEl = document.getElementById('selectedDriveMeta');
+    if (metaEl) metaEl.textContent = 'Google Drive (' + (sizeStr || 'skylagring') + ') · Sikret bak betalingsmuren';
+    var titleInp = document.getElementById('fileTitle');
+    if (titleInp && !titleInp.value.trim()) {
+      titleInp.value = f.name.replace(/\.[^/.]+$/, '');
+    }
+    toast('Valgte fil fra Google Drive: ' + f.name);
+  }
+
+  function clearSelectedDriveFile() {
+    pendingDriveFile = null;
+    var banner = document.getElementById('selectedDriveBanner');
+    if (banner) banner.style.display = 'none';
+  }
+
+  var btnRemoveDrive = document.getElementById('btnRemoveSelectedDrive');
+  if (btnRemoveDrive) btnRemoveDrive.addEventListener('click', clearSelectedDriveFile);
+
+  var btnConnDrive = document.getElementById('btnConnectGoogleDrive');
+  if (btnConnDrive) {
+    btnConnDrive.addEventListener('click', function () {
+      if (gisTokenClient) {
+        gisTokenClient.requestAccessToken({ prompt: 'consent' });
+      } else {
+        initGoogleAuth();
+        if (gisTokenClient) gisTokenClient.requestAccessToken({ prompt: 'consent' });
+        else toast('Laster Google Identity Services … prøv igjen om et sekund');
+      }
+    });
+  }
+
+  var driveSearch = document.getElementById('driveSearchInput');
+  if (driveSearch) {
+    var searchTimer = null;
+    driveSearch.addEventListener('input', function () {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(function () {
+        loadGoogleDriveFiles(driveSearch.value.trim());
+      }, 350);
+    });
+  }
+
+  var btnDriveRefresh = document.getElementById('btnDriveRefresh');
+  if (btnDriveRefresh) {
+    btnDriveRefresh.addEventListener('click', function () {
+      loadGoogleDriveFiles(driveSearch ? driveSearch.value.trim() : '');
+    });
+  }
+
+  var btnApplyManual = document.getElementById('btnApplyDriveManual');
+  if (btnApplyManual) {
+    btnApplyManual.addEventListener('click', function () {
+      var raw = (document.getElementById('driveManualInput').value || '').trim();
+      if (!raw) return;
+      var match = raw.match(/\/d\/([a-zA-Z0-9_-]+)/) || raw.match(/id=([a-zA-Z0-9_-]+)/) || [null, raw];
+      var driveId = match[1];
+      if (!driveId || driveId.length < 8) {
+        toast('Ugyldig Google Drive-lenke eller fil-ID', 'error');
+        return;
+      }
+      fetch('/api/drive?action=info&drive_id=' + encodeURIComponent(driveId) + (currentGoogleToken ? '&google_token=' + encodeURIComponent(currentGoogleToken) : ''))
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          var file = data.file || { id: driveId, name: 'Drive-dokument (' + driveId.slice(0, 8) + '…)', mimeType: 'application/pdf' };
+          selectDriveFile(file);
+        }).catch(function () {
+          selectDriveFile({ id: driveId, name: 'Google Drive-fil', mimeType: 'application/pdf' });
+        });
+    });
+  }
+
+  function openFileModal(kind, file) {
+    pendingFile = null;
+    pendingDriveFile = null;
+    document.getElementById('selectedDriveBanner').style.display = 'none';
+    document.getElementById('driveManualInput').value = '';
+
+    document.getElementById('fileId').value = file ? file.id : '';
+    document.getElementById('fileKind').value = kind;
+    document.getElementById('fileTitle').value = file ? file.title : '';
+    document.getElementById('fileDesc').value = file ? file.description : '';
+    document.getElementById('fileBody').value = file ? file.body : '';
+    document.getElementById('fileExtUrl').value = file ? file.external_url : '';
+    document.getElementById('fileTerm').value = file ? file.term : '';
+    document.getElementById('fileGrade').value = file ? file.grade : '';
+    document.getElementById('fileTopic').value = file && file.meta ? (file.meta.topic || '') : '';
+    document.getElementById('fileDifficulty').value = file && file.meta ? (file.meta.difficulty || 'Middels') : 'Middels';
+    document.getElementById('fileSource').value = file && file.meta ? (file.meta.source || '') : '';
+    document.getElementById('fileDate').value = file && file.meta ? (file.meta.date || '') : '';
+    document.getElementById('fileTaskSolution').value = file && kind === 'task' ? (file.body || '') : '';
+    document.getElementById('fileProgress').style.display = 'none';
+    document.getElementById('fileProgress').querySelector('i').style.width = '0%';
+
+    var termG = document.getElementById('fileTermGroup');
+    var gradeG = document.getElementById('fileGradeGroup');
+    var topicG = document.getElementById('fileTopicGroup');
+    var diffG = document.getElementById('fileDifficultyGroup');
+    var sourceG = document.getElementById('fileSourceGroup');
+    var dateG = document.getElementById('fileDateGroup');
+    var bodyG = document.getElementById('fileBodyGroup');
+    var taskG = document.getElementById('fileTaskGroup');
+
+    termG.style.display = kind === 'answer' ? '' : 'none';
+    gradeG.style.display = kind === 'answer' ? '' : 'none';
+    topicG.style.display = kind === 'task' ? '' : 'none';
+    diffG.style.display = kind === 'task' ? '' : 'none';
+    sourceG.style.display = kind === 'memo' ? '' : 'none';
+    dateG.style.display = kind === 'memo' ? '' : 'none';
+    bodyG.style.display = kind === 'memo' ? '' : 'none';
+    taskG.style.display = kind === 'task' ? '' : 'none';
+
+    document.getElementById('fileDescLabel').textContent = kind === 'task' ? 'Oppgavetekst / case *' : 'Kort beskrivelse';
+
+    var titles = { answer: 'A-besvarelse', memo: 'Forelesningsnotat', task: 'Oppgave', attachment: 'Vedlegg' };
+    document.getElementById('modalFileTitle').textContent = (file ? 'Rediger ' : 'Legg til ') + titles[kind];
+    document.getElementById('modalFileIntro').textContent = kind === 'task'
+      ? 'PDF er valgfritt for oppgaver. Selve oppgaveteksten og fasit ligger som tekst under.'
+      : 'PDF forblir trygt beskyttet bak betalingsmuren. Kun studenter med aktiv tilgang kan lese den.';
+
+    // Set initial tab based on file state
+    if (file && (file.storage_bucket === 'google_drive' || (file.meta && file.meta.source === 'google_drive'))) {
+      setStorageTab('drive');
+      var driveId = file.storage_path || (file.meta && file.meta.drive_id);
+      var driveName = (file.meta && file.meta.drive_name) || file.title;
+      selectDriveFile({ id: driveId, name: driveName, size: file.size_bytes, mimeType: file.mime_type });
+    } else if (file && file.storage_path) {
+      setStorageTab('local');
+      document.getElementById('fileDropLabel').textContent = file.title;
+      document.getElementById('fileDropSize').textContent = file.size_bytes ? ((file.size_bytes / 1024).toFixed(0) + ' KB · Lagret i Supabase') : 'Lagret i Supabase';
+    } else if (file && file.external_url) {
+      setStorageTab('url');
+    } else {
+      setStorageTab('drive'); // Default to Google Drive
+    }
+
+    // Try initializing Google auth
+    initGoogleAuth();
+
+    openModal('modalFile');
+  }
+
+  var dropzone = document.getElementById('fileDropzone');
+  var picker = document.getElementById('filePicker');
+  dropzone.addEventListener('click', function () { picker.click(); });
+  dropzone.addEventListener('dragover', function (e) { e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragleave', function () { dropzone.classList.remove('dragover'); });
+  dropzone.addEventListener('drop', function (e) {
+    e.preventDefault(); dropzone.classList.remove('dragover');
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) setPendingFile(e.dataTransfer.files[0]);
+  });
+  picker.addEventListener('change', function () {
+    if (picker.files && picker.files[0]) setPendingFile(picker.files[0]);
+  });
+  function setPendingFile(file) {
+    pendingFile = file;
+    pendingDriveFile = null;
+    document.getElementById('fileDropLabel').textContent = file.name;
+    document.getElementById('fileDropSize').textContent = (file.size / 1024).toFixed(0) + ' KB · ' + (file.type || 'binær');
+    var titleInp = document.getElementById('fileTitle');
+    if (titleInp && !titleInp.value.trim()) {
+      titleInp.value = file.name.replace(/\.[^/.]+$/, '');
+    }
+  }
+
+  document.querySelectorAll('.rt-toolbar .rt-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var target = btn.closest('.rt-toolbar').getAttribute('data-target');
+      var textarea = document.getElementById(target);
+      if (!textarea) return;
+      var md = btn.getAttribute('data-md').replace(/\\n/g, '\n');
+      var start = textarea.selectionStart, end = textarea.selectionEnd;
+      var sel = textarea.value.substring(start, end);
+      var parts = md.split('|');
+      var before = parts[0], after = parts[1] || '';
+      var inserted = before + sel + after;
+      textarea.value = textarea.value.substring(0, start) + inserted + textarea.value.substring(end);
+      textarea.focus();
+      textarea.selectionStart = start + before.length;
+      textarea.selectionEnd = start + before.length + sel.length;
+    });
+  });
+
+  document.getElementById('modalFileForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var kind = document.getElementById('fileKind').value;
+    var id = document.getElementById('fileId').value;
+    var meta = {};
+    if (kind === 'task') {
+      meta.topic = document.getElementById('fileTopic').value.trim();
+      meta.difficulty = document.getElementById('fileDifficulty').value;
+    } else if (kind === 'memo') {
+      meta.source = document.getElementById('fileSource').value.trim();
+      meta.date = document.getElementById('fileDate').value.trim();
+    }
+    var payload = {
+      subject_code: state.activeSubject.subject_code,
+      kind: kind,
+      title: document.getElementById('fileTitle').value.trim(),
+      description: document.getElementById('fileDesc').value.trim(),
+      body: kind === 'task' ? document.getElementById('fileTaskSolution').value.trim() : document.getElementById('fileBody').value.trim(),
+      term: document.getElementById('fileTerm').value.trim(),
+      grade: document.getElementById('fileGrade').value.trim(),
+      external_url: document.getElementById('fileExtUrl').value.trim(),
+      meta: meta
+    };
+
+    var stateEl = document.getElementById('modalFileState');
+    var saveBtn = document.getElementById('modalFileSaveBtn');
+    saveBtn.disabled = true;
+    stateEl.textContent = pendingFile ? 'Laster opp fil …' : 'Lagrer …';
+
+    if (id) {
+      var updates = {
+        title: payload.title, description: payload.description, body: payload.body,
+        term: payload.term, grade: payload.grade, external_url: payload.external_url, meta: payload.meta
+      };
+      if (pendingDriveFile) {
+        updates.storage_bucket = 'google_drive';
+        updates.storage_path = pendingDriveFile.id;
+        updates.size_bytes = pendingDriveFile.size;
+        updates.mime_type = pendingDriveFile.mimeType || 'application/pdf';
+        updates.meta = Object.assign({}, updates.meta, {
+          source: 'google_drive',
+          drive_id: pendingDriveFile.id,
+          drive_name: pendingDriveFile.name
+        });
+      }
+      studio().updateFile(id, updates).then(function () {
+        saveBtn.disabled = false; stateEl.textContent = '';
+        closeModal('modalFile'); toast('Oppdatert');
+        selectSubject(state.activeSubjectCode);
+      }).catch(function (err) { saveBtn.disabled = false; stateEl.textContent = 'Feil: ' + (err.message || err); });
+      return;
+    }
+
+    var progressEl = document.getElementById('fileProgress');
+    if (pendingFile) progressEl.style.display = 'block';
+    var progressBar = progressEl.querySelector('i');
+    var uploadOpts = Object.assign({}, payload, {
+      file: pendingFile,
+      progressCallback: function (info) {
+        if (info && info.ratio != null) progressBar.style.width = (info.ratio * 100) + '%';
+      }
+    });
+
+    if (pendingDriveFile) {
+      uploadOpts.storage_bucket = 'google_drive';
+      uploadOpts.drive_id = pendingDriveFile.id;
+      uploadOpts.size_bytes = pendingDriveFile.size;
+      uploadOpts.mime_type = pendingDriveFile.mimeType || 'application/pdf';
+      uploadOpts.file = null;
+    }
+
+    studio().uploadFile(uploadOpts).then(function () {
+      saveBtn.disabled = false; stateEl.textContent = '';
+      closeModal('modalFile'); toast('Lagret');
+      selectSubject(state.activeSubjectCode);
+    }).catch(function (err) {
+      saveBtn.disabled = false;
+      stateEl.textContent = 'Feil: ' + (err.message || err);
+    });
+  });
+
+  // ----------- New subject modal -----------
+  document.getElementById('btnNewSubject').addEventListener('click', function () { openNewSubjectModal(); });
+  document.getElementById('btnNewSubjectEmpty').addEventListener('click', function () { openNewSubjectModal(); });
+  document.getElementById('nsColorPresets').querySelectorAll('.color-swatch').forEach(function (sw) {
+    sw.addEventListener('click', function () {
+      document.getElementById('nsAccent').value = sw.getAttribute('data-color');
+      document.getElementById('nsColorPresets').querySelectorAll('.color-swatch').forEach(function (s) { s.classList.remove('selected'); });
+      sw.classList.add('selected');
+    });
+  });
+
+  function openNewSubjectModal() {
+    document.getElementById('nsCode').value = '';
+    document.getElementById('nsName').value = '';
+    document.getElementById('nsIcon').value = '📚';
+    document.getElementById('nsAccent').value = '#2563eb';
+    document.getElementById('nsKicker').value = '';
+    document.getElementById('nsLead').value = '';
+    document.getElementById('modalNewState').textContent = '';
+    openModal('modalNewSubject');
+    setTimeout(function () { document.getElementById('nsCode').focus(); }, 30);
+  }
+
+  document.getElementById('newSubjectForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var codeVal = document.getElementById('nsCode').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+    var name = document.getElementById('nsName').value.trim();
+    if (!codeVal || !name) return;
+    var patch = {
+      subject_code: codeVal,
+      name: name,
+      kicker: document.getElementById('nsKicker').value.trim(),
+      icon: document.getElementById('nsIcon').value.trim() || '📚',
+      accent: document.getElementById('nsAccent').value,
+      category_id: document.getElementById('nsCategory').value,
+      lead: document.getElementById('nsLead').value.trim(),
+      is_published: true,
+      origin: 'custom'
+    };
+    var stateEl = document.getElementById('modalNewState');
+    stateEl.textContent = 'Oppretter …';
+    studio().upsertSubject(patch).then(function () {
+      stateEl.textContent = '';
+      closeModal('modalNewSubject');
+      toast('Faget er opprettet');
+      return loadCatalog(true).then(function () { selectSubject(codeVal); });
+    }).catch(function (err) { stateEl.textContent = 'Feil: ' + (err.message || err); });
+  });
+
+  // ----------- Preview -----------
+  function renderPreview() {
+    if (!state.activeSubjectCode) return;
+    var iframe = document.getElementById('previewFrame');
+    var openLink = document.getElementById('previewOpen');
+    var label = document.getElementById('previewLabel');
+    var target = '../subject/?id=' + encodeURIComponent(state.activeSubjectCode.toLowerCase()) + '&preview=1&mode=' + state.previewMode;
+    if (iframe.src.indexOf('id=' + state.activeSubjectCode.toLowerCase()) === -1) {
+      iframe.src = target;
+    } else {
+      notifyPreview();
+    }
+    openLink.href = '../subject/?id=' + encodeURIComponent(state.activeSubjectCode.toLowerCase());
+    label.textContent = state.activeSubjectCode + ' · live';
+  }
+
+  function notifyPreview() {
+    var iframe = document.getElementById('previewFrame');
+    try {
+      iframe.contentWindow.postMessage({ type: 'HAUGNES_STUDIO_REFRESH', subject_code: state.activeSubjectCode }, '*');
+    } catch (e) {}
+  }
+
+  ['pmStudent', 'pmAdmin'].forEach(function (id) {
+    document.getElementById(id).addEventListener('click', function () {
+      state.previewMode = this.getAttribute('data-mode');
+      document.getElementById('pmStudent').classList.toggle('active', state.previewMode === 'student');
+      document.getElementById('pmAdmin').classList.toggle('active', state.previewMode === 'admin');
+      var iframe = document.getElementById('previewFrame');
+      try { iframe.contentWindow.postMessage({ type: 'HAUGNES_SET_VIEW_MODE', mode: state.previewMode }, '*'); }
+      catch (e) {}
+    });
+  });
+
+  // ----------- Boot -----------
+  waitForStudio().then(function (s) {
+    if (!s) {
+      toast('Kunne ikke laste Studio-API. Er du logget inn?', 'error');
+      return;
+    }
+    // First-time migration of legacy localStorage data (safe no-op after that).
+    if (typeof s.migrateLegacyIfNeeded === 'function') s.migrateLegacyIfNeeded();
+    loadCatalog(true).then(function () {
+      var sp = new URLSearchParams(window.location.search);
+      var preselect = (sp.get('subject') || sp.get('code') || '').toUpperCase();
+      if (preselect) selectSubject(preselect);
+    });
+    if (typeof s.subscribeChanges === 'function') {
+      s.subscribeChanges(function (detail) {
+        if (detail && detail.kind === 'subject' && detail.subject_code === state.activeSubjectCode) {
+          selectSubject(state.activeSubjectCode);
+        }
+        loadCatalog(true);
+      });
+    }
+  });
+})();
+</script>
+</body>
+</html>

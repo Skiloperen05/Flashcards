@@ -13,6 +13,9 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 ## App Shape
 
 - Static web app deployed from this repository.
+- Local and container development/serving: `server.js` using Express on port 3000, serving root static assets with clean HTML extension routing and mounting `/api/timeedit` and `/api/drive`.
+- Google Drive 5 TB Storage Backend: Secure server-side streaming proxy at `/api/drive` (`api/drive.js`). Allows using Google Drive storage for heavy subject PDFs (A-besvarelser, forelesningsnotater, oppgavepakker) while the lighter Supabase Storage bucket keeps structured uploads. Both storage paths sit behind the same paywall (`subject_entitlements` + subject-specific check). Streams bytes to entitled students via the admin's cached OAuth token; raw Google Drive URLs and file IDs are never exposed to the client (`shared/subjects-studio.js` redacts `storage_path`/`meta.drive_id` for non-admin callers). Admin authoring in `user/admin.html` connects via Google Identity Services (GIS) with `drive.readonly` scope, real-time Drive file search, and 1-click file attachment. **Security rules:** Drive files MUST be shared privately (only with the admin's connected Google account) — never «Anyone with the link». The proxy has no API-key fallback for public files on purpose. All Google credentials are env-only (`GOOGLE_API_KEY` reserved for future use); the previously committed `firebase-applet-config.json` is deleted and .gitignore'd — its API key must be rotated in Google Cloud Console.
+- Local development auth bypass: Append `?dev=1` on localhost/127.0.0.1 (e.g. `http://localhost:3000/user/?dev=1`) to simulate an authenticated student (`dev@student.local`) without Supabase credentials.
 - GitHub Pages is the active frontend host for `bhflashcards.no`: no build command, publish/output directory `.`.
 - The new Kompass app is the active successor being built in Sites. Its source lives in the connected Sites repository, while this repository remains the source for legacy subject pages and the shared Supabase schema/migrations.
 - Kompass has no paywall. Existing Stripe/commerce code remains legacy-only and is not used by the new Kompass clients.
@@ -31,15 +34,16 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 ## User Pages
 
 - Dashboard: `user/index.html`.
+- Admin-hub & Fagstudio: `user/admin.html`. Sentral kontrollside for administratorer (`profiles.is_admin = true`) bygd på `shared/subjects-studio.js`. Redigerer alle fag (både innebygde og egne) fra én katalog med akkordeon-editor: fag-header (kode, navn, kicker, ikon, farge, semester), publisering, memo & studietips (intro/eksamen/studieråd), seksjonssynlighet-brytere, viktige temaer, anbefalt øvingsløp, eksamensradar (m/prioritet), A-besvarelser og forelesningsnotater med støtte for både Google Drive 5 TB skylagring og lokal PDF-opplasting til Supabase Storage (`subject-files` bucket), oppgavebank med trinnvis fasit, samt flashcard-innstillinger. Inkluderer live Google Drive-utforsker (GIS token client), forhåndsvisning i iframe (student- eller admin-visning) og førstegangs-migrering av gammel localStorage-data. Alle endringer publiseres umiddelbart til studenter med entitlement via Supabase Realtime.
 - Subject management: `user/subjects.html`.
 - Shop/entitlement claiming, Stripe checkout entry, discount field, and admin commerce editor for subjects, bundles, Vennepass, prices, and rabattkoder: `user/butikk.html`.
 - Admin Hub: `user/admin-hub.html`. Admin-only course catalogue, subject pricing, standalone exam-package pricing, activity overview, user list, and ownership counts.
 - Exam analysis catalog with only published/direct analysis links: `user/eksamensanalyse.html`.
 - A-besvarelser / eksamensarkiv shell: `user/a-besvarelser.html`.
-- Oppgavebank shell: `user/oppgavebank.html`.
 - Study plan shell: `user/studieplan.html`.
+- Memoarer overview: `user/memoarer.html`.
 - Notes/settings: `user/notater.html`, `user/settings.html`. Settings live in `localStorage` key `hf_user_settings_v2` and sync to Supabase `user_custom_data.data.settings`; they are applied app-wide by `shared/user-settings.js` (theme/identity) and `shared/haugnes-flashcard-session.js` (session behavior).
-- Removed user pages: `user/progress.html`, `user/achievements.html`.
+- Removed user pages: `user/oppgavebank.html` (erstattet av fagspesifikk oppgavebank direkte på hver fagside), `user/progress.html`, `user/achievements.html`.
 - User-page loader/enhancer: `user/auth-guard.js`.
 
 ## Shared Core Scripts
@@ -48,24 +52,38 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Entitlements and subject access: `shared/entitlements.js`, `shared/subject-access.js`, `shared/subject-gate.js`.
 - Subject metadata: `shared/subject-meta.js`.
 - Subject page rendering/data/enhancements: `shared/subject-page-renderer.js`, `shared/subject-page-data.js`, `shared/subject-page-enhancements.js`, `shared/subject-resources.js`.
+- Subject Studio API (single source of truth for admin-editable subject pages): `shared/subjects-studio.js`. Reads/writes `subject_pages`, `subject_page_blocks` and `subject_files` (Storage bucket `subject-files`) in Supabase. Legacy localStorage keys (`hf_custom_subjects_v1`, `hf_custom_subject_pages_v1`, `hf_custom_packages_v1`, `hf_custom_memos_v1`, `hf_custom_tasks_v1`) are migrated once per admin and then untouched. Exposes `window.SubjectsStudio` (listSubjects/getSubject/upsertSubject/upsertBlock/reorderBlocks/deleteBlock/uploadFile/updateFile/deleteFile/signedUrl/subscribeChanges).
+- Subject-page ↔ Studio bridge: `shared/subject-page-studio-bridge.js`. Patches `HaugnesSubjectPages.get`/`.savePage` so the student subject shell (`subject/index.html`) reads fresh data from Studio and inline edits are persisted to Supabase. Publishes signed PDF URLs to the existing renderer and re-renders on `haugnes:subject-studio-changed`.
 - Dashboard dynamic progress/recommendations and some legacy SAM3 package pointers: `shared/haugnes-dashboard-progress.js`.
 - A-besvarelser / eksamensarkiv dynamic package UI: `shared/haugnes-answer-library.js`.
-- User sidebar normalization: `shared/user-sidebar.js`. It is the source of truth for the grouped left menu used across user/app pages: Hjem, Mine fag, Butikk, Studieplan, Eksamensanalyse, Oppgavebank, A-besvarelser, Memoarer, Notater, Alle flashcards, Innstillinger.
+- User sidebar normalization: `shared/user-sidebar.js`. It is the source of truth for the grouped left menu used across user/app pages: Hjem, Mine fag, Butikk, Studieplan, Eksamensanalyse, A-besvarelser, Memoarer, Notater, Alle flashcards, Innstillinger.
 - Logo normalization: `shared/logo-normalizer.js`. Re-applies the logo image if later branding scripts clear an already normalized logo mark.
 - Global user-settings applier: `shared/user-settings.js`. Loaded on every app page from `shared/auth-guard.js` (`loadGlobalPolish`). Reads `hf_user_settings_v2` (plus a one-shot pull from `user_custom_data.data.settings` when newer) and applies accent color, background theme, font-size scaling, reduced motion, high contrast, avatar/display name in sidebars, the friendly check-in banner, and hides recommendation panels when disabled. Exposes `window.HaugnesUserSettings`.
-- TimeEdit/NHH schedule integration: `shared/timeedit-fetch-proxy.js`, `shared/nhh-schedule-api.js`, `shared/nhh-schedule-normalizer.js`, `shared/nhh-strict-course-filter.js`, `shared/haugnes-studyplan.js`. Runtime proxy target is the Supabase `timeedit` Edge Function.
+- TimeEdit/NHH schedule integration: `shared/timeedit-fetch-proxy.js`, `shared/nhh-schedule-api.js`, `shared/nhh-schedule-normalizer.js`, `shared/nhh-strict-course-filter.js`, `shared/haugnes-studyplan.js`. Runtime proxy targets are the local `/api/timeedit` endpoint (via `server.js` and `api/timeedit.js`) and the Supabase `timeedit` Edge Function.
 - Flashcard session shared logic: `shared/haugnes-flashcard-session.js`, `shared/haugnes-flashcards-structure.js`. The session script also applies learning settings from `hf_user_settings_v2`: session length cap, default start filter (`startWith`), difficult-first ordering (`autoDiff`), exam-topic priority (`examMode`), and optional sound feedback.
 
 ## Subject Areas
 
-- `sam3/`: SAM3 Makroøkonomi hub, flashcards, formula quiz, mock exam, models, model PDFs, and exam radar.
-- `sam3/eksamenspakker/`: local SAM3 exam package PDFs. Current known package: `v26/` with exam, A-besvarelse, and sensorveiledning PDFs.
-- `sam2/`: SAM2 Mikroøkonomi hub, memoar, exam radar, oppgaver, and clickable task bank.
-- `sam2/memoar/`: SAM2 memoar page plus downloadable source DOCX (`SAM2-memoar.docx`). First SAM2 unlock redirects to `sam2/?memoar=ny`.
-- `ret14/`: RET14 Skatterett hub, exam radar, pensum, quiz, and progress.
-- `sol1/`: SOL1 subject pages and flashcard data.
-- `sam1a/`, `met1/`, `kom1/`, `ret1a/`, `bed1/`, `mat10/`, `met2/`: MVP or planned subject hubs.
-- `flashcards/`: generic flashcard app entry. The start surface is a faggruppert "Alle flashcards" catalog with search/semester filters; `shared/flashcards-library-fallback.js` keeps the catalog visible if the full flashcard app init has not rendered cards yet.
+- Deep/Dedicated Subject Hubs:
+  - `sam3/`: SAM3 Makroøkonomi hub, flashcards, formula quiz, mock exam, models, model PDFs, and exam radar (`eksamensradar-v3.html`).
+  - `sam3/eksamenspakker/`: local SAM3 exam package PDFs. Current known package: `v26/` with exam, A-besvarelse, and sensorveiledning PDFs.
+  - `sam2/`: SAM2 Mikroøkonomi hub, memoar, exam radar, oppgaver, and clickable task bank (`oppgaver-klikkbar/`).
+  - `sam2/memoar/`: SAM2 memoar page plus downloadable source DOCX (`SAM2-memoar.docx`). First SAM2 unlock redirects to `sam2/?memoar=ny`.
+  - `ret14/`: RET14 Skatterett hub, exam radar (`eksamen/`), pensum (`pensum/`), quiz (`quiz/`), and progress (`progresjon/`).
+  - `sol1/`: SOL1 subject pages, complete/advanced flashcards (`flashcards-2-avansert.html`, `flashcards-2-komplett.html`), and theory writing (`teorideler-teoriskriving.html`).
+- Lightweight / Template Hubs (driven by `shared/subject-page-renderer.js` and `shared/learning-content.js`):
+  - `sam1a/`, `met1/`, `kom1/`, `ret1a/`, `bed1/`, `mat10/`, `met2/`: Clean template subject hubs providing overview, learning tools, topics, recommended study paths, and flashcard links.
+  - `subject/`: Universal dynamic subject shell (`subject/index.html`). Accepts query parameter `?id=<kode>` or `?subject=<kode>`. Renders all 6 subject shell modules (Fagoversikt, Eksamensradar, A-besvarelser, Forelesningsnotater, Oppgavebank, Flashcards) for newly created and existing courses. Injects a top admin toolbar when viewed by an administrator, med direkte in-page CRUD-redigering for «Viktige temaer» og «Anbefalt øvingsløp», samt live preview-visningsbryter (Admin-modus vs. Studentvisning).
+- Generic Flashcard Application:
+  - `flashcards/`: generic flashcard app entry (`flashcards/index.html`). Supports parameters `?subject=<id>` (e.g. `ret14`, `subj_sol1`, `sam2`, `sam3`, `met2`, `mat10`, `bed1`, etc.) and `&mode=quiz`. Fallback library keeps catalog visible if card initialization is pending.
+
+## Learning Content & Data Pipeline
+
+- Source of truth for learning metadata and subject decks: `data/learning-content.json`.
+- Generator script: `scripts/generate-learning-content.mjs`.
+  - Compiles `data/learning-content.json` into `shared/learning-content.js`.
+  - Validation check: `npm run check:learning` (runs `--check`).
+- Client API: `window.HaugnesLearningContent` exposes quality metrics, subject tools, topics, and study path recommendations consumed by `shared/subject-page-renderer.js` and `shared/subject-meta.js`.
 
 ## A-besvarelser / Exam Packages
 
@@ -113,6 +131,9 @@ Typical package IDs:
   - `answer_resources`
   - `answer_package_entitlements`
   - `app_subjects` (admin-managed legacy subject catalogue; published entries extend `shared/subject-meta.js` and the shop at runtime)
+  - `subject_pages` (admin-editable subject metadata, memo copy, visibility, publish flag)
+  - `subject_page_blocks` (ordered topics/plan/radar/tips/formula/compendium/checklist)
+  - `subject_files` (per-subject PDFs / attachments; Storage bucket `subject-files`)
   - `kompass_subjects`
   - `kompass_resources`
   - `kompass_content_blocks`
@@ -138,6 +159,9 @@ Typical package IDs:
 
 ## Build And Checks
 
+- Dev server: `npm run dev` (starts `server.js` on port 3000).
+- Production start: `npm run start` (`node server.js`).
+- Build check: `npm run build` (`npm run check:js && npm run check:smoke`).
 - JS check: `npm run check:js`.
 - Smoke check: `npm run check:smoke`.
 - Full check: `npm run check`.

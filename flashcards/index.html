@@ -1680,9 +1680,9 @@ function _launchApp() {
 
 function _loadCloudData() {
   return Promise.all([
-    sb.from('admin_content').select('content').eq('key', ADMIN_FLASHCARDS_KEY).maybeSingle().catch(function(error) { return { error: error }; }),
-    sb.from('user_custom_data').select('data').eq('user_id', currentUser.id).maybeSingle().catch(function(error) { return { error: error }; }),
-    sb.from('user_stats').select('stats').eq('user_id', currentUser.id).maybeSingle().catch(function(error) { return { error: error }; })
+    Promise.resolve(sb.from('admin_content').select('content').eq('key', ADMIN_FLASHCARDS_KEY).maybeSingle()).catch(function(error) { return { error: error }; }),
+    Promise.resolve(sb.from('user_custom_data').select('data').eq('user_id', currentUser.id).maybeSingle()).catch(function(error) { return { error: error }; }),
+    Promise.resolve(sb.from('user_stats').select('stats').eq('user_id', currentUser.id).maybeSingle()).catch(function(error) { return { error: error }; })
   ]).then(function(results) {
     var adminResult = results[0], legacyCustomResult = results[1], statsResult = results[2];
     var loadedAdmin = adminResult && adminResult.data && adminResult.data.content && applyCustomData(adminResult.data.content);
@@ -1696,12 +1696,12 @@ function _loadCloudData() {
 function _saveCustomDataToCloud() {
   if (!sb || !currentUser) return;
   _setCloudStatus('💾');
-  sb.from('admin_content').upsert({
+  Promise.resolve(sb.from('admin_content').upsert({
       key: ADMIN_FLASHCARDS_KEY,
       content: normalizeCustomData(CUSTOM_DATA),
       updated_by: currentUser.id,
       updated_at: new Date().toISOString()
-    })
+    }))
     .then(function(r) { _setCloudStatus(r.error ? '⚠️' : '✓'); setTimeout(function() { _setCloudStatus(''); }, 2000); })
     .catch(function() { _setCloudStatus('⚠️'); });
 }
@@ -1709,7 +1709,7 @@ function _saveCustomDataToCloud() {
 function _saveStatsToCloud() {
   if (!sb || !currentUser) return;
   var stats = getStats();
-  sb.from('user_stats').upsert({ user_id: currentUser.id, stats: stats, updated_at: new Date().toISOString() }).catch(function() {});
+  Promise.resolve(sb.from('user_stats').upsert({ user_id: currentUser.id, stats: stats, updated_at: new Date().toISOString() })).catch(function() {});
 }
 
 function _debouncedCustomSave() {

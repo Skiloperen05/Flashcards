@@ -254,6 +254,8 @@
   }
 
   function loadGlobalPolish() {
+    addStylesheet('haugnes-mobile-css', rootRelative('shared/haugnes-mobile.css'));
+    addScript('haugnes-mobile-bottom-nav-js', rootRelative('shared/mobile-bottom-nav.js'));
     addScript('haugnes-user-settings-js', rootRelative('shared/user-settings.js'), function () {
       if (window.HaugnesUserSettings && typeof window.HaugnesUserSettings.apply === 'function') window.HaugnesUserSettings.apply();
     });
@@ -272,13 +274,24 @@
     addScript('haugnes-entitlements-js', rootRelative('shared/entitlements.js'), function () {
       if (window.HaugnesEntitlements && typeof window.HaugnesEntitlements.load === 'function') {
         window.HaugnesEntitlements.load().then(function () {
+          loadSubjectsStudio();
           if (callback) callback();
         }, function () {
+          loadSubjectsStudio();
           if (callback) callback();
         });
         return;
       }
+      loadSubjectsStudio();
       if (callback) callback();
+    });
+  }
+
+  function loadSubjectsStudio() {
+    addScript('haugnes-subjects-studio-js', rootRelative('shared/subjects-studio.js'), function () {
+      if (window.SubjectsStudio && typeof window.SubjectsStudio.migrateLegacyIfNeeded === 'function') {
+        window.SubjectsStudio.migrateLegacyIfNeeded();
+      }
     });
   }
 

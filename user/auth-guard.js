@@ -4,7 +4,6 @@
     'butikk.html': { label: 'Butikk', icon: '⚷', subtitle: 'Lås opp fag' },
     'eksamensanalyse.html': { label: 'Eksamensanalyse', icon: '◈', subtitle: 'Åpne faktiske analyser' },
     'a-besvarelser.html': { label: 'A-besvarelser', icon: '▤', subtitle: 'Se sterke tidligere svar' },
-    'oppgavebank.html': { label: 'Oppgavebank', icon: '▣', subtitle: 'Øv på eksamensnære oppgaver' },
     'notater.html': { label: 'Notater', icon: '▥', subtitle: 'Samle egne fagnotater' },
     'studieplan.html': { label: 'Studieplan', icon: '☷', subtitle: 'Planlegg ukens økter' },
     'settings.html': { label: 'Innstillinger', icon: '⚙', subtitle: 'Profil og preferanser' }
@@ -15,7 +14,6 @@
     { href: 'butikk.html', label: 'Butikk', icon: '⚷' },
     { href: 'eksamensanalyse.html', label: 'Eksamensanalyse', icon: '◈' },
     { href: 'a-besvarelser.html', label: 'A-besvarelser', icon: '▤' },
-    { href: 'oppgavebank.html', label: 'Oppgavebank', icon: '▣' },
     { href: 'notater.html', label: 'Notater', icon: '▥' },
     { href: 'studieplan.html', label: 'Studieplan', icon: '☷' },
     { href: 'settings.html', label: 'Innstillinger', icon: '⚙' }
@@ -202,7 +200,7 @@
   function installDashboardShortcuts() {
     var shortcuts = document.querySelector('.side-col .small-list');
     if (!shortcuts) return;
-    ['a-besvarelser.html', 'oppgavebank.html', 'notater.html', 'studieplan.html', 'settings.html'].forEach(function (href) {
+    ['a-besvarelser.html', 'notater.html', 'studieplan.html', 'settings.html'].forEach(function (href) {
       if (shortcuts.querySelector('a[href="' + href + '"]')) return;
       var config = MODEL_PAGES[href];
       var item = document.createElement('a');

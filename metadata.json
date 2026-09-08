@@ -1,0 +1,6 @@
+{
+  "name": "Haugnes Flashcards",
+  "description": "Flashcards, eksamensanalyse og læringsverktøy for NHH-fag",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
