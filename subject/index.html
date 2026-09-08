@@ -477,6 +477,16 @@
   display: none;
   animation: hfToastIn .2s ease forwards;
 }
+.notice-toast.success {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  border-color: rgba(255,255,255,.25);
+}
+.notice-toast.error {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: #fff;
+  border-color: rgba(255,255,255,.25);
+}
 @keyframes hfToastIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -1149,16 +1159,40 @@ AuthGuard.requireAuth();
     });
   }
 
-  function showToast(msg) {
+  function showToast(msg, kind) {
     var toast = document.getElementById('toast');
     if (!toast) return;
     toast.textContent = msg;
+    toast.className = 'notice-toast ' + (kind === 'error' ? 'error' : 'success');
     toast.style.display = 'block';
     clearTimeout(toast._timer);
     toast._timer = setTimeout(function () {
       toast.style.display = 'none';
-    }, 2800);
+    }, kind === 'error' ? 4200 : 2400);
   }
+
+  // Wrap savePage so every persistence path gets a success and error toast
+  // without editing every call site individually. Studio errors bubble up
+  // as rejected promises; without this, they would be swallowed silently
+  // in the many `.then(...)` chains below.
+  function wrapSavePage(api) {
+    if (!api || api.__toastWrapped) return;
+    var original = api.savePage.bind(api);
+    api.savePage = function (subjectId, updated) {
+      return original(subjectId, updated).then(function (result) {
+        return result;
+      }, function (err) {
+        var msg = (err && err.message) || err || 'ukjent feil';
+        showToast('❌ Kunne ikke lagre: ' + msg, 'error');
+        throw err;
+      });
+    };
+    api.__toastWrapped = true;
+  }
+  (function waitForApi() {
+    if (window.HaugnesSubjectPages) { wrapSavePage(window.HaugnesSubjectPages); return; }
+    setTimeout(waitForApi, 100);
+  })();
 
   var isStudentPreviewActive = false;
   var isAdmin = isPreview || (window.HaugnesEntitlements && typeof window.HaugnesEntitlements.effectiveAdmin === 'function' && window.HaugnesEntitlements.effectiveAdmin());
