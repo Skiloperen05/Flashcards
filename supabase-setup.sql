@@ -479,6 +479,46 @@ on conflict (id) do nothing;
 -- shared content or publish shared subject workspaces. Students may create their
 -- own private folders, notes and uploads, and clients cannot edit profiles.is_admin.
 
+-- ---------------------------------------------------------------------------
+-- Subject Studio (Admin-hub · Fagstudio)
+-- ---------------------------------------------------------------------------
+-- Single source of truth for admin-editable subject pages. Used by the
+-- Admin-hub (user/admin.html) and the student subject shell
+-- (subject/index.html). Replaces the ad-hoc admin_content / localStorage
+-- blobs used by the previous prototype.
+--
+-- Canonical schema and seed:
+--   supabase/migrations/20260908120000_create_subject_studio.sql
+--
+-- Tables:
+--   public.subject_pages         one row per subject_code (catalog metadata,
+--                                lead, memo, visibility, publish flag)
+--   public.subject_page_blocks   ordered content per section
+--                                (topics, plan, radar, tips, formula,
+--                                compendium, checklist)
+--   public.subject_files         PDFs / attachments stored in the
+--                                subject-files bucket (kind: answer, memo,
+--                                task, attachment)
+--
+-- Storage bucket:
+--   subject-files                private, 50 MB, PDF/Office/image/text
+--
+-- Access model:
+--   - subject_pages: read-any-authenticated when is_published; admins
+--     manage all columns.
+--   - subject_page_blocks and subject_files: readable only when the caller
+--     has a subject entitlement (public.has_subject_entitlement), matching
+--     the answer_packages pattern; admins bypass via profiles.is_admin.
+--   - Storage bucket subject-files: same entitlement check on the first
+--     path segment ({SUBJECT_CODE}/{file_id}-{slug}.pdf); admins read/write
+--     everything.
+--
+-- Seeded content:
+--   The migration seeds the 11 built-in subjects (RET14, SOL1, SAM2, SAM3,
+--   MET2, MAT10, SAM1A, MET1, KOM1, RET1A, BED1) with kicker, lead, memo
+--   copy, and topic/plan blocks. Re-running the migration is idempotent
+--   and never overwrites blocks an admin has already edited.
+
 delete from public.answer_packages
 where id in ('sam2-v25', 'met1-h25', 'met2-v25', 'mat10-v25', 'kom1-h25');
 
