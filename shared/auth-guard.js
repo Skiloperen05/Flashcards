@@ -254,6 +254,8 @@
   }
 
   function loadGlobalPolish() {
+    addStylesheet('haugnes-mobile-css', rootRelative('shared/haugnes-mobile.css'));
+    addScript('haugnes-mobile-bottom-nav-js', rootRelative('shared/mobile-bottom-nav.js'));
     addScript('haugnes-user-settings-js', rootRelative('shared/user-settings.js'), function () {
       if (window.HaugnesUserSettings && typeof window.HaugnesUserSettings.apply === 'function') window.HaugnesUserSettings.apply();
     });
