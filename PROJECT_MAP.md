@@ -1,6 +1,6 @@
 # Project Map
 
-Last updated: 2026-09-08 (Subject Studio rewrite)
+Last updated: 2026-09-08 (Google Drive proxy hardening — API-key file removed)
 
 Purpose: make future app changes faster by documenting the stable entry points, data sources, and search paths. Update this file whenever a change moves, renames, adds, or removes app-facing functionality.
 
@@ -14,7 +14,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 
 - Static web app deployed from this repository.
 - Local and container development/serving: `server.js` using Express on port 3000, serving root static assets with clean HTML extension routing and mounting `/api/timeedit` and `/api/drive`.
-- Google Drive 5 TB Storage Backend: Secure server-side streaming proxy at `/api/drive` (`api/drive.js`). Allows using Google Drive storage for subject PDFs (notes, exams, tasks) while strictly enforcing the paywall. Streams files directly to authenticated and entitled students via Supabase token validation; raw Google Drive URLs are never exposed to the client. Admin authoring in `user/admin.html` connects via Google Identity Services (GIS) with `drive.readonly` scope, real-time Drive file search, and 1-click file attachment.
+- Google Drive 5 TB Storage Backend: Secure server-side streaming proxy at `/api/drive` (`api/drive.js`). Allows using Google Drive storage for heavy subject PDFs (A-besvarelser, forelesningsnotater, oppgavepakker) while the lighter Supabase Storage bucket keeps structured uploads. Both storage paths sit behind the same paywall (`subject_entitlements` + subject-specific check). Streams bytes to entitled students via the admin's cached OAuth token; raw Google Drive URLs and file IDs are never exposed to the client (`shared/subjects-studio.js` redacts `storage_path`/`meta.drive_id` for non-admin callers). Admin authoring in `user/admin.html` connects via Google Identity Services (GIS) with `drive.readonly` scope, real-time Drive file search, and 1-click file attachment. **Security rules:** Drive files MUST be shared privately (only with the admin's connected Google account) — never «Anyone with the link». The proxy has no API-key fallback for public files on purpose. All Google credentials are env-only (`GOOGLE_API_KEY` reserved for future use); the previously committed `firebase-applet-config.json` is deleted and .gitignore'd — its API key must be rotated in Google Cloud Console.
 - Local development auth bypass: Append `?dev=1` on localhost/127.0.0.1 (e.g. `http://localhost:3000/user/?dev=1`) to simulate an authenticated student (`dev@student.local`) without Supabase credentials.
 - GitHub Pages is the active frontend host for `bhflashcards.no`: no build command, publish/output directory `.`.
 - The new Kompass app is the active successor being built in Sites. Its source lives in the connected Sites repository, while this repository remains the source for legacy subject pages and the shared Supabase schema/migrations.

@@ -165,6 +165,22 @@
 
   function normalizeFile(row) {
     if (!row) return null;
+    // Hide the raw Google Drive file id from non-admin callers. The paywall
+    // proxy (/api/drive?id=<subject_files.id>) is the only supported way for
+    // students to fetch the bytes, so they never need the drive_id on the
+    // client. Admins still see it in the picker so they can verify what's
+    // wired up.
+    var admin = isAdmin();
+    var bucket = row.storage_bucket || null;
+    var storagePath = row.storage_path || null;
+    var meta = row.meta || {};
+    if (!admin && bucket === 'google_drive') {
+      storagePath = null;
+      if (meta && (meta.drive_id || meta.drive_name)) {
+        meta = Object.assign({}, meta);
+        delete meta.drive_id;
+      }
+    }
     return {
       id: row.id,
       subject_code: code(row.subject_code),
@@ -174,13 +190,13 @@
       title: row.title || '',
       description: row.description || '',
       body: row.body || '',
-      storage_bucket: row.storage_bucket || null,
-      storage_path: row.storage_path || null,
+      storage_bucket: bucket,
+      storage_path: storagePath,
       external_url: row.external_url || '',
       size_bytes: row.size_bytes || null,
       mime_type: row.mime_type || null,
       sort_order: Number(row.sort_order) || 0,
-      meta: row.meta || {},
+      meta: meta,
       uploaded_at: row.uploaded_at || null
     };
   }
