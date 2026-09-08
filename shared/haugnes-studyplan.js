@@ -35,16 +35,15 @@
   function formatWeek(start) { var end = addDays(start, 6); return 'Uke ' + weekNumber(start) + ' · ' + start.getDate() + '.–' + end.getDate() + '. ' + end.toLocaleDateString('nb-NO', { month: 'long' }); }
   function formatDuration(minutes) { minutes = Number(minutes) || 0; var hours = Math.floor(minutes / 60), rest = minutes % 60; return hours ? hours + 't' + (rest ? ' ' + rest + 'm' : '') : rest + 'm'; }
 
-  function defaultState() { return { version: 3, selectedCourses: [], groups: {}, customEvents: [], hiddenEventIds: [], updatedAt: new Date(0).toISOString(), migratedLegacyCustomEvents: false }; }
+  function defaultState() { return { version: 3, selectedCourses: [], groups: {}, customEvents: [], hiddenEventIds: [], updatedAt: new Date(0).toISOString() }; }
   function normalizeState(raw) {
     var base = defaultState();
     var next = raw && typeof raw === 'object' ? raw : {};
     base.selectedCourses = Array.isArray(next.selectedCourses) ? next.selectedCourses.map(upper).filter(Boolean) : [];
     base.groups = next.groups && typeof next.groups === 'object' ? next.groups : {};
-    base.customEvents = Array.isArray(next.customEvents) ? next.customEvents.filter(function (event) { return event && event.date && event.title; }) : [];
+    base.customEvents = Array.isArray(next.customEvents) ? next.customEvents.filter(function (event) { return event && event.source === 'custom' && event.type === 'study' && event.date && event.title; }) : [];
     base.hiddenEventIds = Array.isArray(next.hiddenEventIds) ? next.hiddenEventIds : [];
     base.updatedAt = typeof next.updatedAt === 'string' ? next.updatedAt : base.updatedAt;
-    base.migratedLegacyCustomEvents = next.migratedLegacyCustomEvents === true;
     return base;
   }
   function loadState() { return normalizeState(readJson(STORAGE_KEY, null)); }
@@ -76,7 +75,7 @@
     return service.getCachedNhhEvents(selected);
   }
   function timeEditEvents() {
-    return rawTimeEditEvents().filter(function (event) { return state.hiddenEventIds.indexOf(event.id) === -1 && matchesGroup(event); });
+    return rawTimeEditEvents().filter(function (event) { return event.type === 'lecture' && state.hiddenEventIds.indexOf(event.id) === -1 && matchesGroup(event); });
   }
   function allEvents() {
     var selected = ensureSelectedCourses();
@@ -109,7 +108,7 @@
     return '<header class="topline"><div class="hello"><div class="breadcrumb"><a href="index.html">Dashboard</a><span>›</span><span>Studieplan</span></div><h1>Studieplan</h1><p>TimeEdit setter tid og rom. Du styrer fag, gruppe og egne studieøkter.</p></div></header>'
       + '<section class="hf-plan-header"><div><div class="hf-plan-eyebrow">Din personlige ukeplan</div><h2>Planlegg med <em>ro og oversikt.</em></h2></div><div class="hf-plan-sync"><i></i><span>' + esc(status.label) + '</span></div></section>'
       + '<section class="hf-plan-command"><div><h3>Fag i planen</h3><p class="hf-plan-muted">Bare fagene dine vises. Velg hvilke du vil se denne uken.</p><div class="hf-plan-course-list">' + courseButtons() + '</div></div><div class="hf-plan-actions"><button class="hf-plan-button primary" data-sync>Oppdater TimeEdit</button><button class="hf-plan-button" data-add>＋ Egen økt</button></div></section>'
-      + '<section class="hf-plan-filter-row"><div class="hf-plan-filter-list"><label>Vis</label><button class="hf-plan-button" data-filter="all">Alle</button><button class="hf-plan-button" data-filter="lecture">Undervisning</button><button class="hf-plan-button" data-filter="study">Egenstudie</button><button class="hf-plan-button" data-filter="exam">Eksamen</button>' + groupControls() + '</div><div class="hf-plan-week"><button class="hf-plan-button" data-prev aria-label="Forrige uke">←</button><strong>' + esc(formatWeek(currentWeekStart)) + '</strong><button class="hf-plan-button" data-next aria-label="Neste uke">→</button><button class="hf-plan-button" data-today>Denne uken</button></div></section>'
+      + '<section class="hf-plan-filter-row"><div class="hf-plan-filter-list"><label>Vis</label><button class="hf-plan-button" data-filter="all">TimeEdit + egne økter</button><button class="hf-plan-button" data-filter="lecture">Kun undervisning</button><button class="hf-plan-button" data-filter="study">Kun egne økter</button>' + groupControls() + '</div><div class="hf-plan-week"><button class="hf-plan-button" data-prev aria-label="Forrige uke">←</button><strong>' + esc(formatWeek(currentWeekStart)) + '</strong><button class="hf-plan-button" data-next aria-label="Neste uke">→</button><button class="hf-plan-button" data-today>Denne uken</button></div></section>'
       + '<div class="hf-plan-layout"><section class="hf-plan-calendar"><div class="hf-plan-timeline">' + calendar() + '</div></section><aside class="hf-plan-insight">' + insight() + '</aside></div>'
       + '<div class="hf-plan-modal-backdrop" id="hfPlanModal" aria-hidden="true"><section class="hf-plan-modal" role="dialog" aria-modal="true" aria-labelledby="hfPlanModalTitle"><div id="hfPlanModalContent"></div></section></div><div class="hf-plan-toast" id="hfPlanToast" role="status" aria-live="polite"></div>';
   }
@@ -128,7 +127,7 @@
     return '<div><h3>Ukas kontrollrom</h3><p class="hf-plan-status">' + weekEvents.length + ' økter · ' + formatDuration(minutes) + ' planlagt</p></div>'
       + '<div class="hf-plan-focus"><strong>' + (focus ? esc(subjectFor(focus.subjectCode).code + ' først') : 'Plass til fokus') + '</strong><p>' + (focus ? esc(focus.title + ' · ' + focus.date) : 'Legg til en studieøkt, eller oppdater TimeEdit for å starte uken.') + '</p></div>'
       + '<div class="hf-plan-insight-section"><h4>Obligatorisk</h4>' + list(mandatory, 'Ingen obligatoriske økter registrert.') + '</div>'
-      + '<div class="hf-plan-insight-section"><h4>Frister og eksamen</h4>' + list(weekEvents.filter(function (event) { return event.type === 'exam' || /frist|innlevering|eksamen/i.test(event.title); }), 'Ingen frister eller eksamener denne uken.') + '</div>'
+      + '<div class="hf-plan-insight-section"><h4>TimeEdit-data</h4><p class="hf-plan-muted">Kun undervisningstid fra TimeEdit vises automatisk. Fag som ikke undervises denne uken, står tomme.</p></div>'
       + '<div class="hf-plan-insight-section"><h4>Kollisjoner</h4>' + (overlaps.length ? '<ul class="hf-plan-list">' + overlaps.map(function (pair) { return '<li><b>' + esc(pair.date) + '</b><br>' + esc(pair.first.title) + ' ↔ ' + esc(pair.second.title) + '</li>'; }).join('') + '</ul>' : '<p class="hf-plan-muted">Ingen overlapp i det som vises.</p>') + '</div>';
   }
   function list(events, empty) { return events.length ? '<ul class="hf-plan-list">' + events.slice(0, 4).map(function (event) { return '<li><b>' + esc(event.time || '') + ' ' + esc(subjectFor(event.subjectCode).code) + '</b><br>' + esc(event.title) + '</li>'; }).join('') + '</ul>' : '<p class="hf-plan-muted">' + esc(empty) + '</p>'; }
@@ -160,9 +159,7 @@
   function scheduleRemoteSave() { remoteDirty = true; if (!remoteLoaded) return; window.clearTimeout(remoteTimer); remoteTimer = window.setTimeout(saveRemote, 450); }
   function saveRemote() { var context = remoteContext(); if (!context || !remoteDirty) return; if (remoteSaving) { scheduleRemoteSave(); return; } remoteSaving = true; remoteDirty = false; return context.sb.from('user_custom_data').select('data').eq('user_id', context.userId).maybeSingle().then(function (result) { var data = result && result.data && result.data.data && typeof result.data.data === 'object' ? result.data.data : {}; data.studyplan = state; return context.sb.from('user_custom_data').upsert({ user_id: context.userId, data: data, updated_at: new Date().toISOString() }); }).then(function (result) { if (result && result.error) throw result.error; }).catch(function () { remoteDirty = true; }).finally(function () { remoteSaving = false; if (remoteDirty) scheduleRemoteSave(); }); }
   function loadRemote(attempt) { var context = remoteContext(); if (!context) { if ((attempt || 0) < 20) return window.setTimeout(function () { loadRemote((attempt || 0) + 1); }, 250); remoteLoaded = true; return; } return context.sb.from('user_custom_data').select('data').eq('user_id', context.userId).maybeSingle().then(function (result) { var data = result && result.data && result.data.data && typeof result.data.data === 'object' ? result.data.data : {}, remote = normalizeState(data.studyplan); remoteLoaded = true; if (Date.parse(remote.updatedAt) > Date.parse(state.updatedAt)) { state = remote; saveLocal(); render(); } else { remoteDirty = true; saveRemote(); } }).catch(function () { remoteLoaded = true; }); }
-  function migrateLegacyCustomEvents() { var service = api(); if (state.migratedLegacyCustomEvents || !service || typeof service.getCustomEvents !== 'function') return; var legacy = service.getCustomEvents(); if (legacy && legacy.length && !state.customEvents.length) state.customEvents = legacy.map(function (event) { return Object.assign({}, event, { source: 'custom', type: event.type || 'study' }); }); state.migratedLegacyCustomEvents = true; saveLocal(); }
-
-  function install() { if (!/\/user\/studieplan\.html$/.test(window.location.pathname) || !api()) { window.setTimeout(install, 80); return; } migrateLegacyCustomEvents(); render(); loadRemote(0); window.HaugnesStudyplan = { render: render, sync: syncTimeEdit }; }
+  function install() { if (!/\/user\/studieplan\.html$/.test(window.location.pathname) || !api()) { window.setTimeout(install, 80); return; } render(); loadRemote(0); window.HaugnesStudyplan = { render: render, sync: syncTimeEdit }; }
   ready(install);
   window.addEventListener('haugnes:subject-access-changed', function () { window.setTimeout(render, 0); });
 })(window, document);
