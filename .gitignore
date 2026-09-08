@@ -7,3 +7,13 @@ data/*.generated.json
 .env
 .env.*
 .DS_Store
+
+# Secrets — never commit these. Google Cloud / Firebase credential files
+# contain API keys and service-account credentials.
+firebase-applet-config.json
+firebase-*-config.json
+service-account*.json
+gcp-*.json
+google-credentials*.json
+*.serviceaccount.json
+
