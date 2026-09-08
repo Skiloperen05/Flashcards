@@ -381,6 +381,25 @@
       uploaded_by: userId()
     };
 
+    if (input.storage_bucket === 'google_drive' || input.drive_id) {
+      var drivePayload = Object.assign({}, basePayload, {
+        storage_bucket: 'google_drive',
+        storage_path: input.drive_id || input.storage_path || '',
+        mime_type: input.mime_type || 'application/pdf',
+        size_bytes: input.size_bytes || null,
+        meta: Object.assign({}, meta, {
+          source: 'google_drive',
+          drive_id: input.drive_id || input.storage_path || '',
+          drive_name: input.title || (input.file ? input.file.name : '')
+        })
+      });
+      return sb.from('subject_files').insert(drivePayload).select().maybeSingle().then(function (result) {
+        if (result && result.error) throw result.error;
+        invalidateSubject(key);
+        return normalizeFile(result && result.data);
+      });
+    }
+
     if (!file && !basePayload.external_url) {
       return sb.from('subject_files').insert(basePayload).select().maybeSingle().then(function (result) {
         if (result && result.error) throw result.error;
@@ -465,8 +484,15 @@
   }
 
   function signedUrl(file, ttlSeconds) {
-    if (!file || !file.storage_path) {
-      return Promise.resolve(file && file.external_url ? file.external_url : null);
+    if (!file) return Promise.resolve(null);
+    if (file.storage_bucket === 'google_drive') {
+      var s = session();
+      var tokenParam = s && s.access_token ? '&token=' + encodeURIComponent(s.access_token) : '';
+      var proxyUrl = '/api/drive?id=' + encodeURIComponent(file.id) + '&subject=' + encodeURIComponent(file.subject_code || '') + tokenParam;
+      return Promise.resolve(proxyUrl);
+    }
+    if (!file.storage_path) {
+      return Promise.resolve(file.external_url ? file.external_url : null);
     }
     var sb = client();
     if (!sb || !sb.storage) return Promise.resolve(null);

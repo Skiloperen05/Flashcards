@@ -7,6 +7,7 @@
 <link rel="icon" href="../assets/haugnes-logo-mark.svg">
 <link rel="apple-touch-icon" href="../assets/haugnes-logo-mark.svg">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -213,6 +214,31 @@ button,input,select,textarea{font-family:inherit}
 .toast{position:fixed;bottom:24px;right:24px;padding:12px 18px;border-radius:12px;background:#10b981;color:#fff;font-weight:850;font-size:13px;box-shadow:0 16px 36px rgba(0,0,0,.4);z-index:9999;display:none;align-items:center;gap:10px}
 .toast.error{background:#ef4444}
 .toast.show{display:flex}
+
+/* Google Drive & Storage Tabs */
+.storage-tabs{display:flex;gap:6px;margin-bottom:12px;background:rgba(255,255,255,.05);padding:4px;border-radius:10px;border:1px solid var(--line)}
+.storage-tab-btn{flex:1;padding:8px 10px;border-radius:8px;font-size:12px;font-weight:800;color:#9eb5d8;background:transparent;border:0;cursor:pointer;transition:all .15s ease;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px}
+.storage-tab-btn.active{background:#2563eb;color:#fff;box-shadow:0 4px 12px rgba(37,99,235,.3)}
+.drive-panel{border:1px solid rgba(66,133,244,.35);border-radius:14px;background:linear-gradient(180deg,rgba(66,133,244,.08),rgba(15,30,60,.4));padding:16px}
+.drive-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.drive-badge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:800;color:#93c5fd;background:rgba(59,130,246,.15);padding:4px 10px;border-radius:999px;border:1px solid rgba(59,130,246,.3)}
+.drive-search-bar{display:flex;gap:8px;margin-bottom:12px}
+.drive-search-bar input{flex:1;padding:8px 12px;border-radius:9px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.14);color:#fff;font-size:12px}
+.drive-file-list{max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding-right:4px}
+.drive-file-card{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;transition:all .12s ease;gap:10px}
+.drive-file-card:hover{background:rgba(66,133,244,.12);border-color:rgba(66,133,244,.4)}
+.drive-file-card.selected{border-color:#3b82f6;background:rgba(37,99,235,.2)}
+.drive-file-info{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.drive-file-icon{font-size:18px;flex:0 0 24px;text-align:center}
+.drive-file-names{min-width:0;flex:1}
+.drive-file-title{font-size:12.5px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drive-file-meta{font-size:11px;color:#8fa5ca;margin-top:2px}
+.drive-select-btn{padding:5px 11px;border-radius:7px;font-size:11.5px;font-weight:800;background:#2563eb;color:#fff;border:0;cursor:pointer;white-space:nowrap;transition:background .12s ease}
+.drive-select-btn:hover{background:#1d4ed8}
+.drive-empty{padding:20px;text-align:center;font-size:12px;color:#8fa5ca;line-height:1.5}
+.selected-file-banner{display:flex;align-items:center;justify-content:space-between;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.35);padding:10px 14px;border-radius:10px;margin-top:10px}
+.selected-file-banner strong{font-size:12.5px;color:#6ee7b7;display:block}
+.selected-file-banner span{font-size:11px;color:#a7f3d0}
 </style>
 </head>
 <body>
@@ -383,19 +409,66 @@ button,input,select,textarea{font-family:inherit}
         <label for="fileTaskSolution">Løsningsforslag / Trinnvis fasit *</label>
         <textarea id="fileTaskSolution" class="tall" placeholder="Trinn 1: Still opp forutsetningene …&#10;Trinn 2: Utregning …&#10;Trinn 3: Konklusjon …"></textarea>
       </div>
-      <div class="form-group" style="margin-top:12px">
-        <label>Last opp PDF / vedlegg (valgfritt for oppgaver)</label>
-        <div class="dropzone" id="fileDropzone">
-          <div style="font-size:22px">📄</div>
-          <strong id="fileDropLabel">Klikk eller dra inn PDF-fil</strong>
-          <span id="fileDropSize">Maks 50 MB. Lagres privat, kun synlig for studenter med tilgang.</span>
-          <input type="file" id="filePicker" accept="application/pdf,.pdf,.doc,.docx,.png,.jpg,.jpeg" style="display:none">
+      <div class="form-group" style="margin-top:14px">
+        <label>Fillagring & kilde (PDF / dokument)</label>
+        <div class="storage-tabs" id="fileStorageTabs">
+          <button type="button" class="storage-tab-btn active" data-storage-tab="drive">☁️ Google Drive (5 TB)</button>
+          <button type="button" class="storage-tab-btn" data-storage-tab="local">💾 Lokal PDF</button>
+          <button type="button" class="storage-tab-btn" data-storage-tab="url">🔗 Ekstern URL</button>
         </div>
-        <div class="upload-progress" id="fileProgress"><i style="width:0%"></i></div>
-      </div>
-      <div class="form-group" style="margin-top:8px">
-        <label for="fileExtUrl">Eller ekstern URL (Google Drive, Canvas o.l.)</label>
-        <input type="text" id="fileExtUrl" placeholder="https://…">
+
+        <!-- Tab 1: Google Drive (5 TB Sky) -->
+        <div class="drive-panel" id="tabContentDrive">
+          <div class="drive-header">
+            <span class="drive-badge">☁️ Google Drive (5 TB Skylagring)</span>
+            <button type="button" class="action-btn small" id="btnConnectGoogleDrive" style="background:#4285f4;border-color:#3367d6">🔗 Koble til Google Drive</button>
+          </div>
+          <p style="font-size:11.5px;color:#9fb0cf;margin-bottom:10px;line-height:1.5">
+            Filer fra din Google Drive forblir <strong>100% beskyttet bak betalingsmuren</strong>. Studenter får aldri direkte Drive-lenker, men strømmer filen via vår sikre proxy etter godkjent betaling.
+          </p>
+
+          <div id="driveConnectedSection" style="display:none">
+            <div class="drive-search-bar">
+              <input type="text" id="driveSearchInput" placeholder="Søk etter filer i din Google Drive …">
+              <button type="button" class="action-btn small secondary" id="btnDriveRefresh">↻ Oppdater</button>
+            </div>
+            <div class="drive-file-list" id="driveFileList">
+              <div class="drive-empty">Laster filer fra din Google Drive …</div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;border-top:1px solid rgba(255,255,255,.08);padding-top:10px">
+            <label for="driveManualInput" style="font-size:11px;color:#8fa5ca">Eller lim inn Google Drive-lenke / fil-ID direkte:</label>
+            <div style="display:flex;gap:6px;margin-top:4px">
+              <input type="text" id="driveManualInput" placeholder="https://drive.google.com/file/d/1A2B3C…/view" style="flex:1">
+              <button type="button" class="action-btn small secondary" id="btnApplyDriveManual">Hent fil</button>
+            </div>
+          </div>
+
+          <div id="selectedDriveBanner" class="selected-file-banner" style="display:none">
+            <div>
+              <strong id="selectedDriveName">filnavn.pdf</strong>
+              <span id="selectedDriveMeta">Google Drive · Beskyttet bak betalingsmur</span>
+            </div>
+            <button type="button" class="action-btn small secondary" id="btnRemoveSelectedDrive" style="padding:4px 8px;font-size:11px">Fjern</button>
+          </div>
+        </div>
+
+        <!-- Tab 2: Local upload (Supabase Storage) -->
+        <div id="tabContentLocal" style="display:none">
+          <div class="dropzone" id="fileDropzone">
+            <div style="font-size:22px">📄</div>
+            <strong id="fileDropLabel">Klikk eller dra inn PDF-fil</strong>
+            <span id="fileDropSize">Maks 50 MB. Lagres privat i Supabase Storage.</span>
+            <input type="file" id="filePicker" accept="application/pdf,.pdf,.doc,.docx,.png,.jpg,.jpeg" style="display:none">
+          </div>
+          <div class="upload-progress" id="fileProgress"><i style="width:0%"></i></div>
+        </div>
+
+        <!-- Tab 3: External URL -->
+        <div id="tabContentUrl" style="display:none">
+          <input type="text" id="fileExtUrl" placeholder="https://…">
+        </div>
       </div>
       <div class="modal-actions">
         <span class="modal-state" id="modalFileState"></span>
@@ -757,7 +830,8 @@ button,input,select,textarea{font-family:inherit}
   }
 
   function fileCardHtml(kind, file) {
-    var badge = file.storage_path ? '📄 PDF' : (file.external_url ? '🔗 Lenke' : '📝 Tekst');
+    var isDrive = file.storage_bucket === 'google_drive' || (file.meta && file.meta.source === 'google_drive');
+    var badge = isDrive ? '☁️ Google Drive (5 TB)' : (file.storage_path ? '📄 PDF (Supabase)' : (file.external_url ? '🔗 Lenke' : '📝 Tekst'));
     var meta = [];
     if (file.term) meta.push(file.term);
     if (file.grade) meta.push(file.grade);
@@ -765,6 +839,7 @@ button,input,select,textarea{font-family:inherit}
     if ((file.meta || {}).topic) meta.push('Tema: ' + file.meta.topic);
     if ((file.meta || {}).source) meta.push('Kilde: ' + file.meta.source);
     if ((file.meta || {}).date) meta.push(file.meta.date);
+    var previewUrl = '/api/drive?id=' + encodeURIComponent(file.id) + '&code=' + encodeURIComponent(file.subject_code);
     return '<div class="file-card" data-file-id="' + esc(file.id) + '">'
       + '<div class="file-icon ' + esc(kind) + '">' + (kind === 'memo' ? '📚' : (kind === 'task' ? '🎯' : '📝')) + '</div>'
       + '<div class="file-body"><strong>' + esc(file.title || '(uten tittel)') + '</strong>'
@@ -772,6 +847,7 @@ button,input,select,textarea{font-family:inherit}
       + (meta.length ? '<div class="meta">' + esc(meta.join(' · ')) + '</div>' : '')
       + '<span style="font-size:10.5px;color:#8fa5ca;margin-top:2px">' + badge + '</span></div>'
       + '<div class="row-actions">'
+      + '<button type="button" class="row-mini" title="Forhåndsvis fil" onclick="window.open(\'' + previewUrl + '\', \'_blank\')">👁️</button>'
       + '<button type="button" class="row-mini" title="Rediger" data-edit-file="' + esc(kind) + '" data-id="' + esc(file.id) + '">✏️</button>'
       + '<button type="button" class="row-mini danger" title="Slett" data-delete-file="' + esc(file.id) + '">🗑️</button>'
       + '</div></div>';
@@ -991,10 +1067,209 @@ button,input,select,textarea{font-family:inherit}
     }).catch(function (err) { stateEl.textContent = 'Kunne ikke lagre: ' + (err.message || err); });
   });
 
-  // ----------- File modal -----------
+  // ----------- File modal & Google Drive 5 TB Skylagring -----------
   var pendingFile = null;
+  var pendingDriveFile = null;
+  var currentGoogleToken = null;
+  var gisTokenClient = null;
+
+  function initGoogleAuth() {
+    if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) {
+      setTimeout(initGoogleAuth, 500);
+      return;
+    }
+    gisTokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: '57830964125-fafaak3b2vdmhs5ot02k1v19k9maf66m.apps.googleusercontent.com',
+      scope: 'https://www.googleapis.com/auth/drive.readonly',
+      callback: function (resp) {
+        if (resp.error) {
+          toast('Google-innlogging feilet: ' + resp.error, 'error');
+          return;
+        }
+        currentGoogleToken = resp.access_token;
+        toast('Google Drive tilkoblet!');
+        var connBtn = document.getElementById('btnConnectGoogleDrive');
+        if (connBtn) {
+          connBtn.textContent = '✅ Tilkoblet Google Drive';
+          connBtn.style.background = '#10b981';
+          connBtn.style.borderColor = '#059669';
+        }
+        var connSec = document.getElementById('driveConnectedSection');
+        if (connSec) connSec.style.display = 'block';
+
+        // Cache token on backend for streaming
+        var s = window.AuthGuard && window.AuthGuard.getSession ? window.AuthGuard.getSession() : null;
+        if (s && s.access_token) {
+          fetch('/api/drive?action=cache_token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + s.access_token },
+            body: JSON.stringify({ google_token: resp.access_token })
+          }).catch(function () {});
+        }
+
+        loadGoogleDriveFiles();
+      }
+    });
+  }
+
+  function setStorageTab(tab) {
+    document.querySelectorAll('#fileStorageTabs .storage-tab-btn').forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-storage-tab') === tab);
+    });
+    var d = document.getElementById('tabContentDrive');
+    var l = document.getElementById('tabContentLocal');
+    var u = document.getElementById('tabContentUrl');
+    if (d) d.style.display = tab === 'drive' ? 'block' : 'none';
+    if (l) l.style.display = tab === 'local' ? 'block' : 'none';
+    if (u) u.style.display = tab === 'url' ? 'block' : 'none';
+  }
+
+  document.querySelectorAll('#fileStorageTabs .storage-tab-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      setStorageTab(btn.getAttribute('data-storage-tab'));
+    });
+  });
+
+  function loadGoogleDriveFiles(query) {
+    if (!currentGoogleToken) return;
+    var listEl = document.getElementById('driveFileList');
+    if (!listEl) return;
+    listEl.innerHTML = '<div class="drive-empty">Laster filer fra din Google Drive …</div>';
+    var s = window.AuthGuard && window.AuthGuard.getSession ? window.AuthGuard.getSession() : null;
+    var token = s && s.access_token ? s.access_token : '';
+    var q = query ? '&q=' + encodeURIComponent(query) : '';
+    fetch('/api/drive?action=list' + q, {
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'X-Google-Token': currentGoogleToken
+      }
+    }).then(function (r) { return r.json(); }).then(function (data) {
+      if (data.error) {
+        listEl.innerHTML = '<div class="drive-empty" style="color:#ef4444">' + esc(data.error) + '</div>';
+        return;
+      }
+      var files = data.files || [];
+      if (!files.length) {
+        listEl.innerHTML = '<div class="drive-empty">Ingen PDF-er eller dokumenter funnet ' + (query ? 'som matchet søket.' : 'på Google Drive.') + '</div>';
+        return;
+      }
+      var html = files.map(function (f) {
+        var isPdf = f.mimeType && f.mimeType.includes('pdf');
+        var icon = isPdf ? '📄' : (f.mimeType && f.mimeType.includes('spreadsheet') ? '📊' : '📑');
+        var sizeStr = f.size ? (f.size > 1048576 ? (f.size / 1048576).toFixed(1) + ' MB' : (f.size / 1024).toFixed(0) + ' KB') : 'Dokument';
+        var dateStr = f.modifiedTime ? new Date(f.modifiedTime).toLocaleDateString('no-NO') : '';
+        return '<div class="drive-file-card" data-drive-id="' + esc(f.id) + '">'
+          + '<div class="drive-file-info">'
+          + '<span class="drive-file-icon">' + icon + '</span>'
+          + '<div class="drive-file-names">'
+          + '<div class="drive-file-title" title="' + esc(f.name) + '">' + esc(f.name) + '</div>'
+          + '<div class="drive-file-meta">' + esc(sizeStr) + ' · Sist endret ' + esc(dateStr) + '</div>'
+          + '</div></div>'
+          + '<button type="button" class="drive-select-btn" data-pick-drive="' + esc(f.id) + '" data-name="' + esc(f.name) + '" data-size="' + esc(f.size || 0) + '" data-mime="' + esc(f.mimeType || 'application/pdf') + '">Velg</button>'
+          + '</div>';
+      }).join('');
+      listEl.innerHTML = html;
+
+      listEl.querySelectorAll('[data-pick-drive]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          selectDriveFile({
+            id: btn.getAttribute('data-pick-drive'),
+            name: btn.getAttribute('data-name'),
+            size: parseInt(btn.getAttribute('data-size'), 10) || null,
+            mimeType: btn.getAttribute('data-mime') || 'application/pdf'
+          });
+        });
+      });
+    }).catch(function (err) {
+      listEl.innerHTML = '<div class="drive-empty" style="color:#ef4444">Feil ved henting av Drive-filer: ' + esc(err.message || err) + '</div>';
+    });
+  }
+
+  function selectDriveFile(f) {
+    pendingDriveFile = f;
+    pendingFile = null;
+    var banner = document.getElementById('selectedDriveBanner');
+    if (banner) banner.style.display = 'flex';
+    var nameEl = document.getElementById('selectedDriveName');
+    if (nameEl) nameEl.textContent = f.name;
+    var sizeStr = f.size ? (f.size > 1048576 ? (f.size / 1048576).toFixed(1) + ' MB' : (f.size / 1024).toFixed(0) + ' KB') : '';
+    var metaEl = document.getElementById('selectedDriveMeta');
+    if (metaEl) metaEl.textContent = 'Google Drive (' + (sizeStr || 'skylagring') + ') · Sikret bak betalingsmuren';
+    var titleInp = document.getElementById('fileTitle');
+    if (titleInp && !titleInp.value.trim()) {
+      titleInp.value = f.name.replace(/\.[^/.]+$/, '');
+    }
+    toast('Valgte fil fra Google Drive: ' + f.name);
+  }
+
+  function clearSelectedDriveFile() {
+    pendingDriveFile = null;
+    var banner = document.getElementById('selectedDriveBanner');
+    if (banner) banner.style.display = 'none';
+  }
+
+  var btnRemoveDrive = document.getElementById('btnRemoveSelectedDrive');
+  if (btnRemoveDrive) btnRemoveDrive.addEventListener('click', clearSelectedDriveFile);
+
+  var btnConnDrive = document.getElementById('btnConnectGoogleDrive');
+  if (btnConnDrive) {
+    btnConnDrive.addEventListener('click', function () {
+      if (gisTokenClient) {
+        gisTokenClient.requestAccessToken({ prompt: 'consent' });
+      } else {
+        initGoogleAuth();
+        if (gisTokenClient) gisTokenClient.requestAccessToken({ prompt: 'consent' });
+        else toast('Laster Google Identity Services … prøv igjen om et sekund');
+      }
+    });
+  }
+
+  var driveSearch = document.getElementById('driveSearchInput');
+  if (driveSearch) {
+    var searchTimer = null;
+    driveSearch.addEventListener('input', function () {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(function () {
+        loadGoogleDriveFiles(driveSearch.value.trim());
+      }, 350);
+    });
+  }
+
+  var btnDriveRefresh = document.getElementById('btnDriveRefresh');
+  if (btnDriveRefresh) {
+    btnDriveRefresh.addEventListener('click', function () {
+      loadGoogleDriveFiles(driveSearch ? driveSearch.value.trim() : '');
+    });
+  }
+
+  var btnApplyManual = document.getElementById('btnApplyDriveManual');
+  if (btnApplyManual) {
+    btnApplyManual.addEventListener('click', function () {
+      var raw = (document.getElementById('driveManualInput').value || '').trim();
+      if (!raw) return;
+      var match = raw.match(/\/d\/([a-zA-Z0-9_-]+)/) || raw.match(/id=([a-zA-Z0-9_-]+)/) || [null, raw];
+      var driveId = match[1];
+      if (!driveId || driveId.length < 8) {
+        toast('Ugyldig Google Drive-lenke eller fil-ID', 'error');
+        return;
+      }
+      fetch('/api/drive?action=info&drive_id=' + encodeURIComponent(driveId) + (currentGoogleToken ? '&google_token=' + encodeURIComponent(currentGoogleToken) : ''))
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          var file = data.file || { id: driveId, name: 'Drive-dokument (' + driveId.slice(0, 8) + '…)', mimeType: 'application/pdf' };
+          selectDriveFile(file);
+        }).catch(function () {
+          selectDriveFile({ id: driveId, name: 'Google Drive-fil', mimeType: 'application/pdf' });
+        });
+    });
+  }
+
   function openFileModal(kind, file) {
     pendingFile = null;
+    pendingDriveFile = null;
+    document.getElementById('selectedDriveBanner').style.display = 'none';
+    document.getElementById('driveManualInput').value = '';
+
     document.getElementById('fileId').value = file ? file.id : '';
     document.getElementById('fileKind').value = kind;
     document.getElementById('fileTitle').value = file ? file.title : '';
@@ -1035,7 +1310,26 @@ button,input,select,textarea{font-family:inherit}
     document.getElementById('modalFileTitle').textContent = (file ? 'Rediger ' : 'Legg til ') + titles[kind];
     document.getElementById('modalFileIntro').textContent = kind === 'task'
       ? 'PDF er valgfritt for oppgaver. Selve oppgaveteksten og fasit ligger som tekst under.'
-      : 'PDF lagres privat i Supabase Storage. Kun studenter med tilgang til faget kan lese den.';
+      : 'PDF forblir trygt beskyttet bak betalingsmuren. Kun studenter med aktiv tilgang kan lese den.';
+
+    // Set initial tab based on file state
+    if (file && (file.storage_bucket === 'google_drive' || (file.meta && file.meta.source === 'google_drive'))) {
+      setStorageTab('drive');
+      var driveId = file.storage_path || (file.meta && file.meta.drive_id);
+      var driveName = (file.meta && file.meta.drive_name) || file.title;
+      selectDriveFile({ id: driveId, name: driveName, size: file.size_bytes, mimeType: file.mime_type });
+    } else if (file && file.storage_path) {
+      setStorageTab('local');
+      document.getElementById('fileDropLabel').textContent = file.title;
+      document.getElementById('fileDropSize').textContent = file.size_bytes ? ((file.size_bytes / 1024).toFixed(0) + ' KB · Lagret i Supabase') : 'Lagret i Supabase';
+    } else if (file && file.external_url) {
+      setStorageTab('url');
+    } else {
+      setStorageTab('drive'); // Default to Google Drive
+    }
+
+    // Try initializing Google auth
+    initGoogleAuth();
 
     openModal('modalFile');
   }
@@ -1054,8 +1348,13 @@ button,input,select,textarea{font-family:inherit}
   });
   function setPendingFile(file) {
     pendingFile = file;
+    pendingDriveFile = null;
     document.getElementById('fileDropLabel').textContent = file.name;
     document.getElementById('fileDropSize').textContent = (file.size / 1024).toFixed(0) + ' KB · ' + (file.type || 'binær');
+    var titleInp = document.getElementById('fileTitle');
+    if (titleInp && !titleInp.value.trim()) {
+      titleInp.value = file.name.replace(/\.[^/.]+$/, '');
+    }
   }
 
   document.querySelectorAll('.rt-toolbar .rt-btn').forEach(function (btn) {
@@ -1110,6 +1409,17 @@ button,input,select,textarea{font-family:inherit}
         title: payload.title, description: payload.description, body: payload.body,
         term: payload.term, grade: payload.grade, external_url: payload.external_url, meta: payload.meta
       };
+      if (pendingDriveFile) {
+        updates.storage_bucket = 'google_drive';
+        updates.storage_path = pendingDriveFile.id;
+        updates.size_bytes = pendingDriveFile.size;
+        updates.mime_type = pendingDriveFile.mimeType || 'application/pdf';
+        updates.meta = Object.assign({}, updates.meta, {
+          source: 'google_drive',
+          drive_id: pendingDriveFile.id,
+          drive_name: pendingDriveFile.name
+        });
+      }
       studio().updateFile(id, updates).then(function () {
         saveBtn.disabled = false; stateEl.textContent = '';
         closeModal('modalFile'); toast('Oppdatert');
@@ -1127,6 +1437,14 @@ button,input,select,textarea{font-family:inherit}
         if (info && info.ratio != null) progressBar.style.width = (info.ratio * 100) + '%';
       }
     });
+
+    if (pendingDriveFile) {
+      uploadOpts.storage_bucket = 'google_drive';
+      uploadOpts.drive_id = pendingDriveFile.id;
+      uploadOpts.size_bytes = pendingDriveFile.size;
+      uploadOpts.mime_type = pendingDriveFile.mimeType || 'application/pdf';
+      uploadOpts.file = null;
+    }
 
     studio().uploadFile(uploadOpts).then(function () {
       saveBtn.disabled = false; stateEl.textContent = '';
