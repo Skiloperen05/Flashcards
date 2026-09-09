@@ -1262,24 +1262,41 @@ AuthGuard.requireAuth();
     reader.readAsDataURL(file);
   };
 
+  // A "same-origin" URL is anything the browser can navigate to and
+  // apply `download` to: absolute https, root-relative (`/api/…`),
+  // in-memory blobs, or inline data. Everything else falls through to
+  // the anchor-download dance below.
+  function looksLikeUrl(u) {
+    return /^(https?:|\/|blob:|data:)/i.test(String(u || ''));
+  }
+
   window.downloadPdfFile = function (dataUrl, fileName) {
-    if (!dataUrl) return;
-    if (dataUrl.indexOf('http') === 0) {
-      window.open(dataUrl, '_blank');
-      return;
+    if (!dataUrl) { showToast('Filen har ingen kildelenke ennå — koble Google Drive til på nytt.', 'error'); return; }
+    try {
+      var a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = fileName || 'dokument';
+      // rel=noopener guards the case where the browser falls back to
+      // opening a tab (some blob configurations do this).
+      a.rel = 'noopener';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (err) {
+      if (looksLikeUrl(dataUrl)) {
+        // Fallback for browsers that refused the download attribute
+        // (rare, but happens with strict extensions).
+        window.open(dataUrl, '_blank', 'noopener');
+      } else {
+        showToast('Kunne ikke laste ned filen: ' + (err && err.message || err), 'error');
+      }
     }
-    var a = document.createElement('a');
-    a.href = dataUrl;
-    a.download = fileName || 'dokument.pdf';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
   };
 
   window.openPdfFile = function (dataUrl) {
-    if (!dataUrl) return;
-    if (dataUrl.indexOf('http') === 0) {
-      window.open(dataUrl, '_blank');
+    if (!dataUrl) { showToast('Filen har ingen kildelenke ennå — koble Google Drive til på nytt.', 'error'); return; }
+    if (looksLikeUrl(dataUrl)) {
+      window.open(dataUrl, '_blank', 'noopener');
       return;
     }
     var win = window.open();
