@@ -332,8 +332,25 @@
     }, 100);
   }
 
+  function subjectFromLocation() {
+    try {
+      var params = new URLSearchParams(window.location.search);
+      return params.get('id') || params.get('subject') || params.get('code') || '';
+    } catch (e) {
+      return '';
+    }
+  }
+
   waitAndInstall();
-  window.addEventListener('haugnes:entitlements-changed', waitAndInstall);
+  window.addEventListener('haugnes:entitlements-changed', function () {
+    waitAndInstall();
+    // The bridge may have made its first request while Supabase was still
+    // restoring the session. Fetch again after entitlements are ready; this
+    // is essential for newly created pages whose only content lives in
+    // subject_files (for example, uploaded lecture notes).
+    var currentSubject = subjectFromLocation();
+    if (currentSubject) refresh(currentSubject, { force: true });
+  });
   window.addEventListener('haugnes:subject-studio-changed', function (event) {
     var detail = (event && event.detail) || {};
     if (detail.kind === 'subject' && detail.subject_code) {

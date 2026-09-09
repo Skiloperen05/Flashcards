@@ -2088,16 +2088,28 @@ AuthGuard.requireAuth();
 
   // Refresh from Studio at boot so we see the latest server-side data even
   // on the very first paint, then subscribe to future updates.
-  function refreshFromStudio() {
+  function refreshFromStudio(attempt) {
+    // The first page render can happen before AuthGuard has restored the
+    // Supabase session. Waiting for entitlements prevents a cached anonymous
+    // read from hiding files that the signed-in user is allowed to see.
+    var entitlements = window.HaugnesEntitlements;
+    var authStillStarting = window.AuthGuard && (!entitlements || (typeof entitlements.isLoaded === 'function' && !entitlements.isLoaded()));
+    if (authStillStarting && (attempt || 0) < 80) {
+      window.setTimeout(function () { refreshFromStudio((attempt || 0) + 1); }, 100);
+      return;
+    }
     if (window.HaugnesSubjectPages && typeof window.HaugnesSubjectPages.refresh === 'function') {
       window.HaugnesSubjectPages.refresh(subjectId, { force: true }).then(function (fresh) {
         if (fresh) applyPageUpdate(fresh);
       });
     } else {
-      window.setTimeout(refreshFromStudio, 250);
+      window.setTimeout(function () { refreshFromStudio((attempt || 0) + 1); }, 250);
     }
   }
   refreshFromStudio();
+  window.addEventListener('haugnes:entitlements-changed', function () {
+    refreshFromStudio();
+  });
   window.addEventListener('haugnes:subject-studio-changed', function (event) {
     var detail = (event && event.detail) || {};
     if (!detail.kind || detail.kind === 'all' || (detail.subject_code || '').toUpperCase() === subjectId.toUpperCase()) {
