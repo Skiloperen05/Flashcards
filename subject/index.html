@@ -596,6 +596,10 @@ body.hf-student-preview-active #btnNewTaskTopBar {
   height: 20px;
   cursor: pointer;
 }
+/* Do not briefly show the built-in fallback subject while the live Studio
+   record is loading. The hero already contains the concise loading state. */
+.hf-subject-loading .hf-main,
+.hf-subject-loading .hf-footer { display: none; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../shared/auth-guard.js"></script>
@@ -603,7 +607,7 @@ body.hf-student-preview-active #btnNewTaskTopBar {
 AuthGuard.requireAuth();
 </script>
 </head>
-<body class="haugnes-app">
+<body class="haugnes-app hf-subject-loading">
 <!-- Admin Toppbar ved admin-tilgang -->
 <div id="adminSubjectTopBar" class="hf-admin-top-bar" style="display:none">
   <div style="display:flex;align-items:center;gap:10px">
@@ -1132,6 +1136,7 @@ AuthGuard.requireAuth();
 <script src="../shared/learning-content.js"></script>
 <script src="../shared/subject-meta.js"></script>
 <script src="../shared/subject-page-data.js"></script>
+<script src="../shared/subjects-studio.js"></script>
 <script src="../shared/subject-page-studio-bridge.js"></script>
 <script src="../shared/subject-resources.js"></script>
 <script src="../shared/subject-page-renderer.js"></script>
@@ -1270,13 +1275,32 @@ AuthGuard.requireAuth();
     return /^(https?:|\/|blob:|data:)/i.test(String(u || ''));
   }
 
+  function isDriveDownloadTicket(url) {
+    return /\/drive-proxy\?action=download&ticket=/i.test(String(url || ''));
+  }
+
+  // Drive tickets are deliberately opened through a real anchor. Safari
+  // treats that as a user-initiated download and honours the proxy's
+  // Content-Disposition header; synthetic Blob downloads do not.
+  function downloadControl(url, fileName, label, className) {
+    var source = String(url || '');
+    if (isDriveDownloadTicket(source)) {
+      try {
+        var target = new URL(source);
+        target.searchParams.set('download', '1');
+        return '<a class="' + (className || 'hf-pkg-btn') + '" href="' + esc(target.toString()) + '">' + label + '</a>';
+      } catch (e) {}
+    }
+    return '<button class="' + (className || 'hf-pkg-btn') + '" onclick="downloadPdfFile(\'' + source + '\', \'' + String(fileName || '').replace(/'/g, '&#39;') + '\')">' + label + '</button>';
+  }
+
   window.downloadPdfFile = function (dataUrl, fileName) {
     if (!dataUrl) { showToast('Filen har ingen kildelenke ennå — koble Google Drive til på nytt.', 'error'); return; }
     try {
       // Drive documents use a short-lived server-signed URL. Navigating to it
       // gives Safari the original Content-Disposition download response,
       // instead of relying on a fragile cross-origin Blob download.
-      if (/\/drive-proxy\?action=download&ticket=/i.test(String(dataUrl))) {
+      if (isDriveDownloadTicket(dataUrl)) {
         var downloadUrl = new URL(dataUrl);
         downloadUrl.searchParams.set('download', '1');
         window.location.assign(downloadUrl.toString());
@@ -1826,7 +1850,7 @@ AuthGuard.requireAuth();
         + '<div class="hf-task-prompt">' + task.question + '</div>'
         + '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">'
         + '<button class="hf-solution-toggle" onclick="toggleTaskSolution(this)"><span class="lbl">Vis trinnvis fasit</span> <span class="chevron">▼</span></button>'
-        + (task.pdfData ? '<button class="hf-pkg-btn secondary" style="font-size:11.5px;padding:6px 12px" onclick="downloadPdfFile(\'' + task.pdfData + '\', \'' + (task.pdfName || 'oppgave.pdf') + '\')">📥 Last ned oppgave-PDF (' + (task.pdfSize || 'PDF') + ')</button>' : '')
+        + (task.pdfData ? downloadControl(task.pdfData, task.pdfName || 'oppgave.pdf', '📥 Last ned oppgave-PDF (' + (task.pdfSize || 'PDF') + ')', 'hf-pkg-btn secondary') : '')
         + '</div>'
         + '<div class="hf-solution-body"><strong>Løsningsforslag / Trinnvis fasit:</strong>\n\n' + task.solution + '</div>'
         + '</div>';
@@ -1862,7 +1886,7 @@ AuthGuard.requireAuth();
         + '</div>'
         + '<div>'
         + '<div class="hf-pkg-actions">'
-        + (hasDownload ? '<button class="hf-pkg-btn" onclick="downloadPdfFile(\'' + (note.pdfData || note.pdfUrl) + '\', \'' + (note.pdfName || (isPdf ? 'notat.pdf' : 'notat')) + '\')">' + downloadLabel + '</button>' : '')
+        + (hasDownload ? downloadControl(note.pdfData || note.pdfUrl, note.pdfName || (isPdf ? 'notat.pdf' : 'notat'), downloadLabel) : '')
         + (hasDownload && isPdf ? '<button class="hf-pkg-btn secondary" onclick="openPdfFile(\'' + (note.pdfData || note.pdfUrl) + '\')">👁️ Åpne PDF</button>' : '')
         + (note.body ? '<button class="hf-pkg-btn secondary" onclick="toggleNoteSummary(this)">📖 Les utdypende sammendrag ▼</button>' : '')
         + '</div>'
@@ -1901,7 +1925,7 @@ AuthGuard.requireAuth();
         + '<div>'
         + (hasPdf ? '<div class="hf-pdf-badge" style="margin-bottom:8px">📄 PDF-vedlegg ' + (ans.pdfSize ? '(' + ans.pdfSize + ')' : '') + '</div>' : '')
         + '<div class="hf-pkg-actions">'
-        + (hasPdf ? '<button class="hf-pkg-btn" onclick="downloadPdfFile(\'' + (ans.pdfData || ans.pdfUrl) + '\', \'' + (ans.pdfName || 'eksamensbesvarelse.pdf') + '\')">📥 Last ned PDF</button>' : '')
+        + (hasPdf ? downloadControl(ans.pdfData || ans.pdfUrl, ans.pdfName || 'eksamensbesvarelse.pdf', '📥 Last ned PDF') : '')
         + (hasPdf ? '<button class="hf-pkg-btn secondary" onclick="openPdfFile(\'' + (ans.pdfData || ans.pdfUrl) + '\')">👁️ Åpne</button>' : '')
         + '</div>'
         + '</div>'
@@ -2105,9 +2129,25 @@ AuthGuard.requireAuth();
 
   // Initialize
   var page = window.HaugnesSubjectPages ? window.HaugnesSubjectPages.get(subjectId) : null;
-  if (page) {
+  // Studio is the source of truth for pages edited in the admin hub. Avoid
+  // painting the legacy in-memory fallback first; that was the 10–15 second
+  // flash of radar and other sections the admin had explicitly hidden.
+  var studioBridgeExpected = !!window.SubjectPageStudioBridge;
+  var fallbackTimer = null;
+  if (page && !studioBridgeExpected) {
     renderSubjectPage(page);
     completePageInit(page);
+    document.body.classList.remove('hf-subject-loading');
+  } else if (page) {
+    // Keep legacy subjects usable if the database is temporarily unavailable,
+    // but never show their fallback during the normal Studio load.
+    fallbackTimer = window.setTimeout(function () {
+      if (!pageInitDone) {
+        renderSubjectPage(page);
+        completePageInit(page);
+        document.body.classList.remove('hf-subject-loading');
+      }
+    }, 2500);
   }
 
   function applyPageUpdate(targetPage) {
@@ -2118,26 +2158,19 @@ AuthGuard.requireAuth();
     }
     renderSubjectPage(p);
     completePageInit(p);
+    if (fallbackTimer) { window.clearTimeout(fallbackTimer); fallbackTimer = null; }
+    document.body.classList.remove('hf-subject-loading');
   }
 
   // Refresh from Studio at boot so we see the latest server-side data even
   // on the very first paint, then subscribe to future updates.
   function refreshFromStudio(attempt) {
-    // The first page render can happen before AuthGuard has restored the
-    // Supabase session. Waiting for entitlements prevents a cached anonymous
-    // read from hiding files that the signed-in user is allowed to see.
-    var entitlements = window.HaugnesEntitlements;
-    var authStillStarting = window.AuthGuard && (!entitlements || (typeof entitlements.isLoaded === 'function' && !entitlements.isLoaded()));
-    if (authStillStarting && (attempt || 0) < 80) {
-      window.setTimeout(function () { refreshFromStudio((attempt || 0) + 1); }, 100);
-      return;
-    }
     if (window.HaugnesSubjectPages && typeof window.HaugnesSubjectPages.refresh === 'function') {
       window.HaugnesSubjectPages.refresh(subjectId, { force: true }).then(function (fresh) {
         if (fresh) applyPageUpdate(fresh);
       });
     } else {
-      window.setTimeout(function () { refreshFromStudio((attempt || 0) + 1); }, 250);
+      window.setTimeout(function () { refreshFromStudio((attempt || 0) + 1); }, 100);
     }
   }
   refreshFromStudio();
