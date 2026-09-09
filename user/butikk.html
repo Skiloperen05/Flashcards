@@ -910,6 +910,7 @@ window.onUserAuthorized = function(session){
   showLockNotice();
   bindDiscountControls();
   bindAdminControls();
+  syncSubjectsFromCatalog();
   render();
   function waitForGuard(){
     if (!window.AuthGuard || typeof window.AuthGuard.requireAuth !== 'function'){

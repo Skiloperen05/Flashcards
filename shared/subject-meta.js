@@ -410,27 +410,132 @@
     })).then(function () { return true; }).catch(function () { return true; });
   }
 
+  // Legacy status_text → status/statusText mapping used by list-card renderers.
+  function deriveStatus(statusText) {
+    var t = String(statusText || '').toLowerCase();
+    if (t.indexOf('eksamen') === 0) return 'exam';
+    if (t === 'ny') return 'active';
+    if (t === 'mvp') return 'active';
+    return 'active';
+  }
+
+  // subject_pages row → legacy HaugnesSubjects entry. Kept in sync with the
+  // fields that FALLBACK_CATALOG / decorateSubject / user pages actually
+  // read, so custom subjects rendered by Fagstudio look identical to
+  // built-ins in the sidebar, butikk, dashboard, and subject/ shell.
+  function subjectPageRowToLegacy(row) {
+    if (!row || !row.subject_code) return null;
+    var cleanCode = String(row.subject_code).trim().toUpperCase();
+    var cleanId = cleanCode.toLowerCase();
+    return {
+      id: cleanId,
+      code: cleanCode,
+      name: row.name || cleanCode,
+      kicker: row.kicker || '',
+      icon: row.icon || '📚',
+      emblem: '../assets/Flashcardslogo.png',
+      accent: row.accent || '#2563eb',
+      categoryId: row.category_id || 'electives',
+      status: deriveStatus(row.status_text),
+      statusText: row.status_text || 'Aktiv',
+      progress: Number(row.progress_percent) || 0,
+      decks: '0',
+      cards: '0',
+      tools: '5',
+      path: '../subject/?id=' + cleanId,
+      flashcards: row.flashcards_url || ('../flashcards/?subject=' + cleanId),
+      description: row.lead || '',
+      is_published: row.is_published !== false,
+      origin: row.origin === 'builtin' ? 'builtin' : 'custom',
+      updated_at: row.updated_at || null
+    };
+  }
+
   function syncCustomSubjects() {
     var sb = getSupabaseClient();
     if (!sb) return Promise.resolve(loadCustomSubjectsLocal());
-    return Promise.resolve(sb.from('admin_content').select('content').eq('key', DB_CONTENT_KEY).maybeSingle()).then(function (result) {
-      var cloud = result && result.data && result.data.content && Array.isArray(result.data.content.subjects) ? result.data.content.subjects : null;
-      if (cloud) {
-        var local = loadCustomSubjectsLocal();
-        var merged = cloud.slice();
-        var map = {};
-        cloud.forEach(function (s) { map[code(s.code)] = true; });
-        local.forEach(function (l) {
-          if (!map[code(l.code)]) merged.push(l);
-        });
-        saveCustomSubjectsLocal(merged);
-        if (typeof window.dispatchEvent === 'function') {
-          window.dispatchEvent(new CustomEvent('haugnes:subjects-updated'));
-        }
+
+    var jobs = [
+      Promise.resolve(sb.from('admin_content').select('content').eq('key', DB_CONTENT_KEY).maybeSingle())
+        .then(function (result) {
+          if (!result || !result.data || !result.data.content) return [];
+          var arr = result.data.content.subjects;
+          return Array.isArray(arr) ? arr : [];
+        }).catch(function () { return []; }),
+      // Fagstudio (subject_pages) is the current source of truth. RLS returns
+      // published subjects to any authenticated user; admins see unpublished
+      // too. Filtering origin='custom' avoids double-listing the 11 built-ins
+      // that already live in the hardcoded `subjects` array above.
+      Promise.resolve(sb.from('subject_pages')
+        .select('subject_code,name,kicker,icon,accent,category_id,status_text,progress_percent,lead,flashcards_url,is_published,origin,updated_at')
+        .eq('origin', 'custom'))
+        .then(function (result) {
+          if (!result || !Array.isArray(result.data)) return [];
+          return result.data.map(subjectPageRowToLegacy).filter(Boolean);
+        }).catch(function () { return []; })
+    ];
+
+    return Promise.all(jobs).then(function (results) {
+      var legacyCloud = results[0];
+      var studioCloud = results[1];
+      var local = loadCustomSubjectsLocal();
+      var byCode = {};
+      var merged = [];
+
+      // Studio wins on conflicts because it's the current authoring surface.
+      studioCloud.forEach(function (s) {
+        var k = code(s.code);
+        if (!k) return;
+        byCode[k] = true;
+        merged.push(s);
+      });
+      legacyCloud.forEach(function (s) {
+        var k = code(s.code);
+        if (!k || byCode[k]) return;
+        byCode[k] = true;
+        merged.push(s);
+      });
+      local.forEach(function (s) {
+        var k = code(s.code);
+        if (!k || byCode[k]) return;
+        byCode[k] = true;
+        merged.push(s);
+      });
+
+      // Only broadcast when the merged list actually changed. Avoids
+      // firing a sidebar re-render loop on every syncCustomSubjects tick.
+      var prev = local;
+      var changed = merged.length !== prev.length || merged.some(function (row, idx) {
+        var p = prev[idx];
+        if (!p) return true;
+        return code(row.code) !== code(p.code)
+          || row.name !== p.name
+          || row.icon !== p.icon
+          || row.accent !== p.accent
+          || row.categoryId !== p.categoryId
+          || row.statusText !== p.statusText
+          || row.is_published !== p.is_published;
+      });
+
+      saveCustomSubjectsLocal(merged);
+      if (changed && typeof window.dispatchEvent === 'function') {
+        window.dispatchEvent(new CustomEvent('haugnes:subjects-updated'));
+        // Sidebar / dashboard / butikk / Mine fag listen for these to redraw.
+        window.dispatchEvent(new CustomEvent('haugnes:subject-access-changed'));
+        window.dispatchEvent(new CustomEvent('haugnes:subject-catalog-changed'));
       }
-      return loadCustomSubjectsLocal();
+      return merged;
     }).catch(function () {
       return loadCustomSubjectsLocal();
+    });
+  }
+
+  // Fagstudio broadcasts studio-changed after every admin save. Refresh the
+  // catalog so the sidebar/butikk/dashboard pick up new fags without a
+  // hard reload.
+  if (typeof window.addEventListener === 'function') {
+    window.addEventListener('haugnes:subject-studio-changed', function () {
+      syncCustomSubjects();
     });
   }
 
