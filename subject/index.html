@@ -1273,6 +1273,15 @@ AuthGuard.requireAuth();
   window.downloadPdfFile = function (dataUrl, fileName) {
     if (!dataUrl) { showToast('Filen har ingen kildelenke ennå — koble Google Drive til på nytt.', 'error'); return; }
     try {
+      // Drive documents use a short-lived server-signed URL. Navigating to it
+      // gives Safari the original Content-Disposition download response,
+      // instead of relying on a fragile cross-origin Blob download.
+      if (/\/drive-proxy\?action=download&ticket=/i.test(String(dataUrl))) {
+        var downloadUrl = new URL(dataUrl);
+        downloadUrl.searchParams.set('download', '1');
+        window.location.assign(downloadUrl.toString());
+        return;
+      }
       var a = document.createElement('a');
       a.href = dataUrl;
       // A Drive file is fetched into a private Blob URL first, so its HTTP

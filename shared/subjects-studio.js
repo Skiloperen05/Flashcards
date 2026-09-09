@@ -508,10 +508,11 @@
     if (file.storage_bucket === 'google_drive') {
       var s = session();
       if (!s || !s.access_token) return Promise.resolve(null);
-      // Never put a Supabase JWT in a URL: URLs end up in history, logs and
-      // referrers. Fetch through the production Edge Function with a header
-      // and give the legacy renderer a short-lived in-memory Blob URL.
-      var proxyUrl = 'https://qnwjhheoekpqqqhevztw.supabase.co/functions/v1/drive-proxy?id=' + encodeURIComponent(file.id);
+      // Never put a Supabase JWT in a URL. Ask the proxy for a short-lived,
+      // server-signed download ticket, then let the browser navigate to that
+      // URL normally. This preserves Content-Disposition and is reliable in
+      // Safari, unlike a cross-origin Blob URL.
+      var proxyUrl = 'https://qnwjhheoekpqqqhevztw.supabase.co/functions/v1/drive-proxy?action=ticket&id=' + encodeURIComponent(file.id);
       return fetch(proxyUrl, {
         headers: { 'Authorization': 'Bearer ' + s.access_token },
         cache: 'no-store'
@@ -523,7 +524,10 @@
             return rememberAccessError('Kunne ikke åpne dokumentet fra Google Drive.');
           });
         }
-        return response.blob().then(function (blob) { return URL.createObjectURL(blob); });
+        return response.json().then(function (payload) {
+          if (payload && payload.url) return payload.url;
+          return rememberAccessError((payload && payload.error) || 'Kunne ikke opprette nedlastingslenke.');
+        });
       }).catch(function () { return rememberAccessError('Kunne ikke koble til Google Drive.'); });
     }
     if (!file.storage_path) {

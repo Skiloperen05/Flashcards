@@ -230,6 +230,47 @@ function downloadFilename(title: string, mime: string): string {
   return clean + (extensionFor(mime) || ".bin");
 }
 
+// A browser cannot attach the student's Supabase JWT to a normal navigation,
+// which is what Safari needs to reliably honour Content-Disposition downloads.
+// Issue a short-lived, HMAC-signed ticket instead. It contains no Drive ID and
+// cannot be forged without the server-only Supabase secret.
+type DownloadTicket = { fileId: string; userId: string; expiresAt: number };
+const textEncoder = new TextEncoder();
+const textDecoder = new TextDecoder();
+function base64Url(bytes: Uint8Array) {
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+function fromBase64Url(value: string) {
+  const padded = value.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((value.length + 3) % 4);
+  const binary = atob(padded);
+  return Uint8Array.from(binary, (char) => char.charCodeAt(0));
+}
+async function ticketKey() {
+  return crypto.subtle.importKey("raw", textEncoder.encode(adminKey()), { name: "HMAC", hash: "SHA-256" }, false, ["sign", "verify"]);
+}
+async function issueDownloadTicket(fileId: string, userId: string) {
+  const ticket: DownloadTicket = { fileId, userId, expiresAt: Date.now() + 30 * 60 * 1000 };
+  const payload = base64Url(textEncoder.encode(JSON.stringify(ticket)));
+  const signature = new Uint8Array(await crypto.subtle.sign("HMAC", await ticketKey(), textEncoder.encode(payload)));
+  return `${payload}.${base64Url(signature)}`;
+}
+async function verifyDownloadTicket(ticket: string): Promise<DownloadTicket | null> {
+  try {
+    const [payload, signature, extra] = ticket.split(".");
+    if (!payload || !signature || extra) return null;
+    const valid = await crypto.subtle.verify("HMAC", await ticketKey(), fromBase64Url(signature), textEncoder.encode(payload));
+    if (!valid) return null;
+    const parsed = JSON.parse(textDecoder.decode(fromBase64Url(payload))) as DownloadTicket;
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(parsed.fileId || "")) return null;
+    if (!parsed.userId || !Number.isFinite(parsed.expiresAt) || parsed.expiresAt <= Date.now()) return null;
+    return parsed;
+  } catch (_) {
+    return null;
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors(req) });
   const url = new URL(req.url);
@@ -304,12 +345,32 @@ Deno.serve(async (req) => {
       return json(req, response.status, response.ok ? { file: data } : { error: data?.error?.message || "Fant ikke fil på Drive" });
     }
 
-    const jwt = token(req); const user = await identity(jwt);
-    if (!user) return json(req, 401, { error: "Innlogging kreves for å åpne filen." });
-    const fileId = String(url.searchParams.get("id") || "");
-    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(fileId)) return json(req, 400, { error: "Ugyldig filreferanse." });
+    const requestedFileId = String(url.searchParams.get("id") || "");
+    const isFileId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+    // The ticket endpoint is called with the student's bearer token while
+    // rendering the page. RLS makes the entitlement decision here, before a
+    // short-lived browser-download URL is issued.
+    if (action === "ticket") {
+      const jwt = token(req); const user = await identity(jwt);
+      if (!user) return json(req, 401, { error: "Innlogging kreves for å åpne filen." });
+      if (!isFileId.test(requestedFileId)) return json(req, 400, { error: "Ugyldig filreferanse." });
+      const ticketParams = new URLSearchParams({ id: `eq.${requestedFileId}`, select: "id", limit: "1" });
+      const ticketResponse = await fetch(`${SUPABASE_URL}/rest/v1/subject_files?${ticketParams}`, { headers: userHeaders(jwt) });
+      const ticketRows = ticketResponse.ok ? await ticketResponse.json() : [];
+      if (!Array.isArray(ticketRows) || !ticketRows[0]?.id) return json(req, 404, { error: "Filen ble ikke funnet eller du har ikke tilgang." });
+      const ticket = await issueDownloadTicket(requestedFileId, user.id);
+      return json(req, 200, { url: `${url.origin}${url.pathname}?action=download&ticket=${encodeURIComponent(ticket)}` });
+    }
+
+    const downloadTicket = action === "download" ? await verifyDownloadTicket(String(url.searchParams.get("ticket") || "")) : null;
+    if (action === "download" && !downloadTicket) return json(req, 401, { error: "Nedlastingslenken er utløpt. Last siden på nytt og prøv igjen." });
+    const jwt = token(req); const user = downloadTicket ? null : await identity(jwt);
+    if (!downloadTicket && !user) return json(req, 401, { error: "Innlogging kreves for å åpne filen." });
+    const fileId = downloadTicket ? downloadTicket.fileId : requestedFileId;
+    if (!isFileId.test(fileId)) return json(req, 400, { error: "Ugyldig filreferanse." });
     const params = new URLSearchParams({ id: `eq.${fileId}`, select: "id,subject_code,title,storage_bucket,storage_path,external_url,mime_type,meta", limit: "1" });
-    const fileResponse = await fetch(`${SUPABASE_URL}/rest/v1/subject_files?${params}`, { headers: userHeaders(jwt) });
+    const fileResponse = await fetch(`${SUPABASE_URL}/rest/v1/subject_files?${params}`, { headers: downloadTicket ? adminHeaders() : userHeaders(jwt) });
     const rows = fileResponse.ok ? await fileResponse.json() : [];
     const row = Array.isArray(rows) ? rows[0] : null;
     if (!row) return json(req, 404, { error: "Filen ble ikke funnet eller du har ikke tilgang." });
@@ -336,7 +397,8 @@ Deno.serve(async (req) => {
     // Only PDFs and images render sensibly inline; everything else
     // (docx, xlsx, pptx…) should default to a download rather than
     // trying to render in the browser.
-    const disposition = /^(application\/pdf|image\/)/i.test(contentType) ? "inline" : "attachment";
+    const forceDownload = url.searchParams.get("download") === "1";
+    const disposition = forceDownload || !/^(application\/pdf|image\/)/i.test(contentType) ? "attachment" : "inline";
     return new Response(response.body, {
       status: 200,
       headers: {
@@ -344,6 +406,7 @@ Deno.serve(async (req) => {
         "Content-Type": contentType,
         "Content-Disposition": `${disposition}; filename="${filename}"`,
         "Cache-Control": "private, max-age=1800",
+        "Referrer-Policy": "no-referrer",
       },
     });
   } catch (error) {
