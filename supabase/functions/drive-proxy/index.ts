@@ -42,7 +42,7 @@ function cors(req: Request) {
   return {
     "Access-Control-Allow-Origin": ORIGINS.has(origin) ? origin : "https://bhflashcards.no",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Authorization, Content-Type, X-Google-Token",
+    "Access-Control-Allow-Headers": "Authorization, Content-Type, X-Google-Token, X-Requested-With",
     "Vary": "Origin",
   };
 }
@@ -122,9 +122,9 @@ async function saveRefreshToken(value: string) {
   await writeConfig(REFRESH_CONFIG_KEY, value);
 }
 
-// Exchange a Google authorization code (from GIS initCodeClient with
-// redirect_uri="postmessage") for an access token + refresh_token.
-async function exchangeAuthCode(code: string): Promise<{ ok: true; accessToken: string; refreshToken?: string; expiresIn: number } | { ok: false; error: string }> {
+// Popup-mode GIS uses the origin of the calling page as redirect_uri. It must
+// be the same value at both ends of the authorization-code exchange.
+async function exchangeAuthCode(code: string, redirectUri: string): Promise<{ ok: true; accessToken: string; refreshToken?: string; expiresIn: number } | { ok: false; error: string }> {
   if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
     return { ok: false, error: "GOOGLE_CLIENT_SECRET er ikke satt i Edge Function-secrets. Legg til hemmeligheten fra Google Cloud Console (OAuth-klienten må være type «Web application»)." };
   }
@@ -132,7 +132,7 @@ async function exchangeAuthCode(code: string): Promise<{ ok: true; accessToken: 
     code,
     client_id: GOOGLE_CLIENT_ID,
     client_secret: GOOGLE_CLIENT_SECRET,
-    redirect_uri: "postmessage",
+    redirect_uri: redirectUri,
     grant_type: "authorization_code",
   });
   const response = await fetch("https://oauth2.googleapis.com/token", {
@@ -236,16 +236,20 @@ Deno.serve(async (req) => {
   const action = url.searchParams.get("action") || "stream";
 
   try {
-    // Auth-code flow: admin authorises once via GIS initCodeClient with
-    // redirect_uri="postmessage", POSTs the resulting code here, and we
+    // Auth-code flow: admin authorises once via GIS initCodeClient, POSTs the
+    // resulting code from an allowed origin, and we
     // exchange it for a refresh_token that we keep around indefinitely.
     if (action === "exchange_code" && req.method === "POST") {
       const auth = await requireAdmin(req);
       if (!auth) return json(req, 403, { error: "Kun administratorer kan koble til Google Drive." });
+      const origin = req.headers.get("origin") || "";
+      if (!ORIGINS.has(origin) || req.headers.get("x-requested-with") !== "XMLHttpRequest") {
+        return json(req, 400, { error: "Ugyldig autorisasjonsforespørsel." });
+      }
       const body = await req.json().catch(() => ({}));
       const code = String(body.code || "");
       if (!code) return json(req, 400, { error: "Mangler autorisasjonskode." });
-      const result = await exchangeAuthCode(code);
+      const result = await exchangeAuthCode(code, origin);
       if (!result.ok) return json(req, 400, { error: result.error });
       const expiresIn = Math.max(60, result.expiresIn - 60);
       const expiresAt = Date.now() + expiresIn * 1000;

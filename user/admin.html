@@ -1176,7 +1176,7 @@ button,input,select,textarea{font-family:inherit}
         }
         driveFetch('?action=exchange_code', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + s.access_token },
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + s.access_token, 'X-Requested-With': 'XMLHttpRequest' },
           body: JSON.stringify({ code: resp.code })
         }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
           .then(function (result) {
