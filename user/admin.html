@@ -1325,11 +1325,14 @@ button,input,select,textarea{font-family:inherit}
     var s = window.AuthGuard && window.AuthGuard.getSession ? window.AuthGuard.getSession() : null;
     var token = s && s.access_token ? s.access_token : '';
     var q = query ? '&q=' + encodeURIComponent(query) : '';
+    // "refresh_backed" and "server_cached" are state markers, not Google
+    // access tokens. Let drive-proxy obtain the real short-lived access token
+    // from its private refresh-token store in those cases.
+    var useServerToken = driveOfflineReady || currentGoogleToken === 'refresh_backed' || currentGoogleToken === 'server_cached';
     driveFetch('?action=list' + q, {
-      headers: {
-        'Authorization': 'Bearer ' + token,
-        'X-Google-Token': currentGoogleToken
-      }
+      headers: useServerToken
+        ? { 'Authorization': 'Bearer ' + token }
+        : { 'Authorization': 'Bearer ' + token, 'X-Google-Token': currentGoogleToken }
     }).then(function (r) { return r.json(); }).then(function (data) {
       if (data.error) {
         listEl.innerHTML = '<div class="drive-empty" style="color:#ef4444">' + esc(data.error) + '</div>';
@@ -1447,8 +1450,9 @@ button,input,select,textarea{font-family:inherit}
         toast('Ugyldig Google Drive-lenke eller fil-ID', 'error');
         return;
       }
+      var useServerToken = driveOfflineReady || currentGoogleToken === 'refresh_backed' || currentGoogleToken === 'server_cached';
       driveFetch('?action=info&drive_id=' + encodeURIComponent(driveId), {
-        headers: currentGoogleToken ? { 'X-Google-Token': currentGoogleToken } : {}
+        headers: currentGoogleToken && !useServerToken ? { 'X-Google-Token': currentGoogleToken } : {}
       })
         .then(function (r) { return r.json(); })
         .then(function (data) {
