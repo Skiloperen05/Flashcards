@@ -34,7 +34,12 @@
       difficulty: (file.meta && file.meta.difficulty) || 'Middels',
       question: file.description || '',
       solution: file.body || '',
-      pdfName: file.storage_path ? file.storage_path.split('/').pop() : '',
+      // Drive IDs are deliberately redacted for students, so storage_path is
+      // empty for Drive-backed rows on the learner-facing page. Keep the
+      // harmless display filename from metadata instead: it gives the blob
+      // download its real extension (.docx, .xlsx, …), which Safari and Word
+      // need in order to recognise the document.
+      pdfName: (file.meta && file.meta.drive_name) || (file.storage_path ? file.storage_path.split('/').pop() : ''),
       pdfSize: file.size_bytes ? (Math.round(file.size_bytes / 1024) + ' KB') : '',
       mimeType: file.mime_type || '',
       pdfUrl: file.external_url || '',
