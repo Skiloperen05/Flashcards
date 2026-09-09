@@ -501,6 +501,10 @@
 
   function signedUrl(file, ttlSeconds) {
     if (!file) return Promise.resolve(null);
+    function rememberAccessError(message) {
+      file.access_error = message || 'Kunne ikke åpne filen.';
+      return null;
+    }
     if (file.storage_bucket === 'google_drive') {
       var s = session();
       if (!s || !s.access_token) return Promise.resolve(null);
@@ -512,9 +516,15 @@
         headers: { 'Authorization': 'Bearer ' + s.access_token },
         cache: 'no-store'
       }).then(function (response) {
-        if (!response.ok) return null;
+        if (!response.ok) {
+          return response.json().then(function (payload) {
+            return rememberAccessError(payload && payload.error);
+          }).catch(function () {
+            return rememberAccessError('Kunne ikke åpne dokumentet fra Google Drive.');
+          });
+        }
         return response.blob().then(function (blob) { return URL.createObjectURL(blob); });
-      }).catch(function () { return null; });
+      }).catch(function () { return rememberAccessError('Kunne ikke koble til Google Drive.'); });
     }
     if (!file.storage_path) {
       return Promise.resolve(file.external_url ? file.external_url : null);
@@ -522,9 +532,9 @@
     var sb = client();
     if (!sb || !sb.storage) return Promise.resolve(null);
     return sb.storage.from(file.storage_bucket || 'subject-files').createSignedUrl(file.storage_path, ttlSeconds || 3600).then(function (result) {
-      if (result && result.error) return null;
+      if (result && result.error) return rememberAccessError('Kunne ikke åpne den opplastede filen.');
       return result && result.data && result.data.signedUrl ? result.data.signedUrl : null;
-    }).catch(function () { return null; });
+    }).catch(function () { return rememberAccessError('Kunne ikke åpne den opplastede filen.'); });
   }
 
   // -------------------------------------------------------------

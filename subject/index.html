@@ -1817,12 +1817,15 @@ AuthGuard.requireAuth();
 
     var html = '<div class="hf-packages-grid">';
     notes.forEach(function (note) {
-      var hasPdf = !!(note.pdfData || note.pdfUrl);
+      var hasDownload = !!(note.pdfData || note.pdfUrl);
+      var isPdf = /pdf/i.test(note.mimeType || '') || /\.pdf$/i.test(note.pdfName || '');
+      var fileLabel = isPdf ? 'PDF' : (note.mimeType ? 'Dokument' : 'Fil');
+      var downloadLabel = isPdf ? '📥 Last ned PDF' : '📥 Last ned dokument';
       html += '<div class="hf-pkg-card">'
         + '<div>'
         + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
         + '<span class="hf-pkg-term accent">' + (note.date || 'Forelesning') + '</span>'
-        + (hasPdf ? '<span class="hf-pdf-badge">📄 PDF ' + (note.pdfSize ? '(' + note.pdfSize + ')' : '') + '</span>' : '')
+        + (hasDownload ? '<span class="hf-pdf-badge">📄 ' + fileLabel + ' ' + (note.pdfSize ? '(' + note.pdfSize + ')' : '') + '</span>' : '')
         + '</div>'
         + '<h4 class="hf-pkg-title">' + note.title + '</h4>'
         + (note.source ? '<div style="font-size:11.5px;color:#8fa5ca;margin-bottom:8px">Kilde: ' + note.source + '</div>' : '')
@@ -1830,10 +1833,12 @@ AuthGuard.requireAuth();
         + '</div>'
         + '<div>'
         + '<div class="hf-pkg-actions">'
-        + (hasPdf ? '<button class="hf-pkg-btn" onclick="downloadPdfFile(\'' + (note.pdfData || note.pdfUrl) + '\', \'' + (note.pdfName || 'notat.pdf') + '\')">📥 Last ned PDF</button>' : '')
-        + (hasPdf ? '<button class="hf-pkg-btn secondary" onclick="openPdfFile(\'' + (note.pdfData || note.pdfUrl) + '\')">👁️ Åpne</button>' : '')
+        + (hasDownload ? '<button class="hf-pkg-btn" onclick="downloadPdfFile(\'' + (note.pdfData || note.pdfUrl) + '\', \'' + (note.pdfName || (isPdf ? 'notat.pdf' : 'notat')) + '\')">' + downloadLabel + '</button>' : '')
+        + (hasDownload && isPdf ? '<button class="hf-pkg-btn secondary" onclick="openPdfFile(\'' + (note.pdfData || note.pdfUrl) + '\')">👁️ Åpne PDF</button>' : '')
         + (note.body ? '<button class="hf-pkg-btn secondary" onclick="toggleNoteSummary(this)">📖 Les utdypende sammendrag ▼</button>' : '')
         + '</div>'
+        + (note.fileError ? '<div style="margin-top:10px;font-size:12px;line-height:1.45;color:#fecaca">⚠️ ' + esc(note.fileError) + '</div>' : '')
+        + (hasDownload && !isPdf ? '<div style="margin-top:10px;font-size:12px;line-height:1.45;color:#aebddd">Dette er et dokument, og lastes ned slik at du kan åpne det i Word eller et tilsvarende program.</div>' : '')
         + (note.body ? '<div class="hf-note-summary-body" style="display:none;margin-top:12px;padding:12px;border-radius:10px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);font-size:12.5px;color:#d8e2f4;line-height:1.6;white-space:pre-wrap">' + note.body + '</div>' : '')
         + '</div>'
         + '</div>';

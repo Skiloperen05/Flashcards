@@ -36,6 +36,7 @@
       solution: file.body || '',
       pdfName: file.storage_path ? file.storage_path.split('/').pop() : '',
       pdfSize: file.size_bytes ? (Math.round(file.size_bytes / 1024) + ' KB') : '',
+      mimeType: file.mime_type || '',
       pdfUrl: file.external_url || '',
       _file: file,
       pdfData: null,
@@ -89,6 +90,7 @@
         if (row._file && row._file.storage_path) {
           jobs.push(s.signedUrl(row._file, 60 * 60).then(function (url) {
             if (url) { row.pdfData = url; row.pdfUrl = url; }
+            else if (row._file.access_error) { row.fileError = row._file.access_error; }
           }));
         }
       });
