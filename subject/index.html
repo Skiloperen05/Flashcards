@@ -2039,39 +2039,41 @@ AuthGuard.requireAuth();
     renderTasks(page);
   }
 
+  // Newly created custom subjects (e.g. RRR11 from Fagstudio) have no
+  // built-in metadata, so HaugnesSubjectPages.get returns null on first
+  // paint. The studio bridge will fetch subject_pages and call
+  // applyPageUpdate a moment later — this flag makes sure admin bar and
+  // task filters get set up once, whichever path delivers the page first.
+  var pageInitDone = false;
+  function completePageInit(page) {
+    if (pageInitDone || !page) return;
+    pageInitDone = true;
+    isAdmin = isPreview || (window.HaugnesEntitlements && typeof window.HaugnesEntitlements.effectiveAdmin === 'function' && window.HaugnesEntitlements.effectiveAdmin());
+    setupTaskFilters();
+    if (!isAdmin) return;
+    var topBar = document.getElementById('adminSubjectTopBar');
+    if (topBar) {
+      topBar.style.display = 'flex';
+      var barTitle = document.getElementById('adminBarTitle');
+      if (barTitle) barTitle.textContent = 'Admin-modus: ' + (page.code || subjectId).toUpperCase();
+    }
+    var deepLink = document.getElementById('adminHubDeepLink');
+    if (deepLink) deepLink.href = '../user/admin.html?subject=' + encodeURIComponent(page.code || subjectId);
+    ['radarAdminBtn', 'answerAdminBtn', 'memoAdminBtn', 'taskAdminBtn'].forEach(function (btnId) {
+      var el = document.getElementById(btnId);
+      if (el) el.style.display = 'inline-flex';
+    });
+    var urlMode = new URLSearchParams(window.location.search).get('mode');
+    var storedMode = '';
+    try { storedMode = sessionStorage.getItem('hf_preview_mode_' + subjectId); } catch (e) {}
+    window.setSubjectPreviewMode((urlMode === 'student' || storedMode === 'student') ? 'student' : 'admin');
+  }
+
   // Initialize
   var page = window.HaugnesSubjectPages ? window.HaugnesSubjectPages.get(subjectId) : null;
   if (page) {
-    // Check admin status
-    isAdmin = isPreview || (window.HaugnesEntitlements && typeof window.HaugnesEntitlements.effectiveAdmin === 'function' && window.HaugnesEntitlements.effectiveAdmin());
-
     renderSubjectPage(page);
-    setupTaskFilters();
-
-    if (isAdmin) {
-      var topBar = document.getElementById('adminSubjectTopBar');
-      if (topBar) {
-        topBar.style.display = 'flex';
-        var barTitle = document.getElementById('adminBarTitle');
-        if (barTitle) barTitle.textContent = 'Admin-modus: ' + (page.code || subjectId).toUpperCase();
-      }
-      var deepLink = document.getElementById('adminHubDeepLink');
-      if (deepLink) deepLink.href = '../user/admin.html?subject=' + encodeURIComponent(page.code || subjectId);
-
-      ['radarAdminBtn', 'answerAdminBtn', 'memoAdminBtn', 'taskAdminBtn'].forEach(function (btnId) {
-        var el = document.getElementById(btnId);
-        if (el) el.style.display = 'inline-flex';
-      });
-
-      var urlMode = new URLSearchParams(window.location.search).get('mode');
-      var storedMode = '';
-      try { storedMode = sessionStorage.getItem('hf_preview_mode_' + subjectId); } catch (e) {}
-      if (urlMode === 'student' || storedMode === 'student') {
-        window.setSubjectPreviewMode('student');
-      } else {
-        window.setSubjectPreviewMode('admin');
-      }
-    }
+    completePageInit(page);
   }
 
   function applyPageUpdate(targetPage) {
@@ -2081,6 +2083,7 @@ AuthGuard.requireAuth();
       window.HaugnesSubjectRenderer.render(p);
     }
     renderSubjectPage(p);
+    completePageInit(p);
   }
 
   // Refresh from Studio at boot so we see the latest server-side data even

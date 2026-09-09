@@ -496,10 +496,18 @@ window.onUserAuthorized = function(session){
   renderSubjects();
   loadRatingsRemote(session).then(function(){ renderSubjects(); });
 };
-window.addEventListener('haugnes:subject-catalog-changed', function(){
-  SUBJECTS = window.HaugnesSubjects ? window.HaugnesSubjects.getAll() : SUBJECTS;
+// Re-hydrate SUBJECTS whenever the catalog changes. Custom subjects flow in
+// from two async sources: Admin Hub (app_subjects, fires
+// subject-catalog-changed) and Fagstudio (subject_pages, fires
+// subjects-updated / subject-access-changed).
+function refreshSubjectsFromCatalog(){
+  if (!window.HaugnesSubjects) return;
+  SUBJECTS = window.HaugnesSubjects.getAll();
   renderSubjects();
-});
+}
+window.addEventListener('haugnes:subject-catalog-changed', refreshSubjectsFromCatalog);
+window.addEventListener('haugnes:subjects-updated', refreshSubjectsFromCatalog);
+window.addEventListener('haugnes:subject-access-changed', refreshSubjectsFromCatalog);
 renderSubjects();
 </script>
 </body>
