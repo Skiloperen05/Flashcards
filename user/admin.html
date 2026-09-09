@@ -1159,7 +1159,7 @@ button,input,select,textarea{font-family:inherit}
     // implicit token client below so this page keeps working if the
     // secret isn't set up yet.
     gisCodeClient = google.accounts.oauth2.initCodeClient({
-      client_id: '57830964125-fafaak3b2vdmhs5ot02k1v19k9maf66m.apps.googleusercontent.com',
+      client_id: '57830964125-8uimchrn1ncgk1rbfdnf1kbclkdcdmdi.apps.googleusercontent.com',
       scope: 'https://www.googleapis.com/auth/drive.readonly',
       ux_mode: 'popup',
       access_type: 'offline',
@@ -1205,7 +1205,7 @@ button,input,select,textarea{font-family:inherit}
     // Legacy implicit fallback (used if code exchange fails because
     // GOOGLE_CLIENT_SECRET isn't set on the Edge Function).
     gisTokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: '57830964125-fafaak3b2vdmhs5ot02k1v19k9maf66m.apps.googleusercontent.com',
+      client_id: '57830964125-8uimchrn1ncgk1rbfdnf1kbclkdcdmdi.apps.googleusercontent.com',
       scope: 'https://www.googleapis.com/auth/drive.readonly',
       callback: function (resp) {
         if (resp.error) { toast('Google-innlogging feilet: ' + resp.error, 'error'); return; }
