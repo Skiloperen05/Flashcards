@@ -3,38 +3,187 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Admin Hub — Haugnes Flashcards</title>
+  <meta name="theme-color" content="#07172f">
+  <title>Adminhub — Haugnes Flashcards</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root{--bg:#06142d;--panel:#0b2148;--line:rgba(255,255,255,.13);--muted:#a8b7d1;--blue:#4d79ff;--gold:#f0bd55;--good:#56d99a;--bad:#ff8585}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 85% 0,rgba(77,121,255,.18),transparent 30%),var(--bg);color:#fff;font:15px Georgia,serif}.wrap{max-width:1380px;margin:auto;padding:28px}.top{display:flex;gap:16px;justify-content:space-between;align-items:start;flex-wrap:wrap;margin-bottom:22px}.eyebrow{color:var(--gold);font:800 11px Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase}.top h1{margin:5px 0;font-size:34px;letter-spacing:-.04em}.top p{margin:0;color:var(--muted);max-width:730px;line-height:1.55}.nav{display:flex;gap:9px;flex-wrap:wrap}.button,button{border:0;border-radius:11px;padding:10px 13px;background:linear-gradient(135deg,#285ce9,#547fff);color:#fff;font:800 13px Georgia,serif;cursor:pointer;text-decoration:none}.button.secondary,button.secondary{background:rgba(255,255,255,.06);border:1px solid var(--line);color:#dbe6fb}.button.danger{background:rgba(255,91,91,.13);border:1px solid rgba(255,91,91,.36);color:#ffc4c4}.metrics{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:12px;margin:18px 0}.metric,.panel{background:linear-gradient(180deg,rgba(18,49,103,.96),rgba(8,26,59,.96));border:1px solid var(--line);border-radius:18px}.metric{padding:15px}.metric span{display:block;color:var(--muted);font:800 10px Arial,sans-serif;text-transform:uppercase;letter-spacing:.08em}.metric b{display:block;font-size:27px;margin-top:7px}.layout{display:grid;grid-template-columns:minmax(430px,1fr) minmax(360px,.9fr);gap:16px}.panel{padding:18px;min-width:0}.panel h2{margin:0;font-size:20px;letter-spacing:-.03em}.panel>p{color:var(--muted);line-height:1.5;margin:6px 0 15px;font-size:13px}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:grid;gap:5px}.field.wide{grid-column:1/-1}.field label{font:800 10px Arial,sans-serif;letter-spacing:.07em;text-transform:uppercase;color:#c8d5ec}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.06);color:#fff;padding:10px;font:14px Georgia,serif}.field textarea{min-height:74px;resize:vertical}.table{width:100%;border-collapse:collapse;font-size:12px}.table th{text-align:left;color:#aebfdb;font:800 10px Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase}.table td,.table th{padding:10px 7px;border-bottom:1px solid rgba(255,255,255,.08);vertical-align:top}.table td small{display:block;color:var(--muted);margin-top:3px}.tag{display:inline-block;border-radius:999px;padding:4px 7px;background:rgba(86,217,154,.12);color:#baf1d7;font:800 10px Arial,sans-serif}.tag.off{background:rgba(255,190,85,.12);color:#ffe0a6}.rows{max-height:500px;overflow:auto}.state{min-height:20px;color:#c8d5ec;font-size:12px;margin-top:10px}.state.error{color:#ffc4c4}.stack{display:grid;gap:16px}@media(max-width:980px){.layout{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(3,1fr)}}@media(max-width:590px){.wrap{padding:18px}.metrics{grid-template-columns:repeat(2,1fr)}.form{grid-template-columns:1fr}.field.wide{grid-column:auto}.top h1{font-size:28px}}
+    :root{--ink:#eff5ff;--muted:#a9bbd8;--faint:#7390ba;--bg:#07172f;--surface:#0c2349;--surface-2:#102c5a;--line:rgba(178,205,255,.16);--blue:#4e7eff;--blue-2:#7b9cff;--gold:#f1c46b;--green:#74dfac;--amber:#ffd27b;--danger:#ff9b9b;--radius:18px}*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;min-width:320px;background:radial-gradient(900px 500px at 5% -10%,rgba(83,126,255,.23),transparent 70%),radial-gradient(700px 400px at 98% 12%,rgba(37,184,139,.12),transparent 70%),var(--bg);color:var(--ink);font:15px/1.45 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.hub{width:min(1440px,calc(100% - 40px));margin:0 auto;padding:36px 0 72px}.eyebrow,.label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.eyebrow{color:var(--gold)}.topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;padding:4px 0 26px}.topbar h1{margin:7px 0 8px;font-size:clamp(30px,4vw,46px);line-height:1.04;letter-spacing:-.045em}.topbar p{max-width:730px;margin:0;color:var(--muted);font-size:16px}.nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.button,button{appearance:none;border:1px solid transparent;border-radius:11px;padding:10px 14px;background:linear-gradient(135deg,#3869f0,#6389ff);color:white;cursor:pointer;font:700 13px/1.1 inherit;white-space:nowrap;box-shadow:0 8px 20px rgba(22,67,174,.22);transition:transform .15s ease,filter .15s ease}.button:hover,button:hover{filter:brightness(1.08);transform:translateY(-1px)}.button.secondary,button.secondary{background:rgba(255,255,255,.055);border-color:var(--line);color:#dce8ff;box-shadow:none}.button.secondary:hover,button.secondary:hover{background:rgba(255,255,255,.1)}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid rgba(118,158,255,.55);outline-offset:2px}.notice{display:none;align-items:center;gap:9px;margin:0 0 18px;padding:11px 14px;border:1px solid rgba(116,223,172,.26);border-radius:12px;background:rgba(69,188,130,.1);color:#c8f5dc;font-size:13px}.notice.visible{display:flex}.notice.error{border-color:rgba(255,155,155,.35);background:rgba(205,62,70,.13);color:#ffd0d0}.metrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-bottom:18px}.metric{min-height:111px;padding:18px;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(145deg,rgba(20,52,104,.94),rgba(9,29,63,.98));box-shadow:0 16px 35px rgba(0,0,0,.15)}.metric:nth-child(6){background:linear-gradient(145deg,rgba(108,77,30,.52),rgba(30,39,64,.97))}.metric .label{color:var(--faint)}.metric b{display:block;margin-top:12px;font-size:28px;line-height:1;letter-spacing:-.04em}.workspace{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(360px,.85fr);gap:18px;align-items:start}.panel{min-width:0;padding:22px;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(160deg,rgba(16,45,91,.96),rgba(8,27,59,.98));box-shadow:0 22px 50px rgba(0,0,0,.16)}.panel+.panel{margin-top:18px}.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}.panel h2{margin:0;font-size:22px;line-height:1.2;letter-spacing:-.03em}.panel p{margin:5px 0 0;color:var(--muted);font-size:13px}.panel-head .label{margin-top:4px;color:var(--gold)}.subject-form{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:12px;padding:16px;margin-bottom:16px;border:1px solid rgba(173,203,255,.14);border-radius:14px;background:rgba(5,18,42,.26)}.field{display:grid;gap:6px;min-width:0}.field.wide{grid-column:span 2}.field.actions{display:flex;grid-column:1/-1;align-items:center;gap:9px;padding-top:2px}.field label{color:#b9cbe7;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}.field input,.field select,.field textarea,.price-control input,.sale-control select{width:100%;min-width:0;border:1px solid rgba(180,209,255,.2);border-radius:10px;background:#081c3c;color:var(--ink);padding:10px 11px;font:14px/1.25 inherit}.field textarea{min-height:68px;resize:vertical}.field input::placeholder,.field textarea::placeholder{color:#7992b8}.field input[readonly]{opacity:.65;cursor:not-allowed}.inline-state{margin-left:auto;color:var(--muted);font-size:12px}.inline-state.error{color:var(--danger)}.list-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 2px 8px}.list-heading span{color:var(--faint);font-size:12px}.subject-list,.package-list,.activity-list{display:grid;gap:9px}.subject-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:12px;align-items:center;padding:13px 14px;border:1px solid rgba(176,207,255,.13);border-radius:13px;background:rgba(4,18,42,.25)}.subject-row:hover,.package-row:hover,.activity-row:hover{border-color:rgba(126,164,255,.33);background:rgba(27,65,124,.22)}.subject-main,.package-main,.activity-main{min-width:0}.subject-title,.package-title{display:flex;align-items:center;gap:8px;min-width:0;font-weight:750}.subject-icon{display:grid;place-items:center;width:30px;height:30px;flex:0 0 30px;border-radius:9px;background:rgba(98,137,255,.15);font-size:16px}.subject-title span,.package-title span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.subject-meta,.package-meta,.activity-meta{display:block;margin-top:4px;color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.price-pill{display:inline-flex;align-items:center;justify-content:center;min-width:62px;padding:7px 9px;border-radius:9px;background:rgba(241,196,107,.13);color:#ffe2a4;font-size:13px;font-weight:800}.tag{display:inline-flex;align-items:center;justify-content:center;gap:4px;border-radius:999px;padding:5px 8px;background:rgba(80,219,162,.13);color:#b6f0d3;font-size:11px;font-weight:800;white-space:nowrap}.tag.off{background:rgba(255,196,104,.13);color:#ffe0a2}.tag.admin{background:rgba(110,145,255,.16);color:#ccdaff}.tag.friend{background:rgba(205,140,255,.15);color:#e5c4ff}.package-row{display:grid;grid-template-columns:minmax(0,1fr) 106px 120px auto;gap:10px;align-items:center;padding:13px;border:1px solid rgba(176,207,255,.13);border-radius:13px;background:rgba(4,18,42,.25)}.package-row label{display:block;margin-bottom:5px;color:var(--faint);font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.price-control input,.sale-control select{padding:9px}.package-row .tag{margin-top:5px}.empty{padding:24px 14px;text-align:center;border:1px dashed rgba(180,209,255,.22);border-radius:12px;color:var(--muted);font-size:13px}.insights{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr);gap:18px;margin-top:18px}.activity-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 2px;border-bottom:1px solid rgba(176,207,255,.11)}.activity-row:last-child{border-bottom:0}.activity-email{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:750}.activity-side{display:flex;align-items:flex-end;gap:4px;flex-direction:column}.access-tags{display:flex;justify-content:flex-end;gap:5px;flex-wrap:wrap}.activity-time{color:var(--faint);font-size:11px;white-space:nowrap}.ownership{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:9px}.ownership-card{padding:13px;border:1px solid rgba(176,207,255,.13);border-radius:12px;background:rgba(4,18,42,.22)}.ownership-card b{display:block;font-size:20px;line-height:1}.ownership-card span{display:block;margin-top:5px;color:var(--muted);font-size:12px}.ownership-card small{display:block;margin-top:4px;color:var(--faint);font-size:10px;text-transform:uppercase;letter-spacing:.08em}@media(max-width:1180px){.metrics{grid-template-columns:repeat(3,1fr)}.workspace{grid-template-columns:1fr}.insights{grid-template-columns:1fr}.panel+.panel{margin-top:0}.secondary-column{display:grid;grid-template-columns:1fr 1fr;gap:18px}.secondary-column .panel{margin:0}}@media(max-width:760px){.hub{width:min(100% - 28px,1440px);padding-top:24px}.topbar{display:grid;gap:16px}.nav{justify-content:flex-start}.metrics{grid-template-columns:repeat(2,1fr)}.metric{min-height:92px;padding:14px}.metric b{font-size:24px}.subject-form{grid-template-columns:1fr}.field.wide{grid-column:auto}.field.actions{align-items:stretch;flex-wrap:wrap}.inline-state{width:100%;margin-left:0}.subject-row{grid-template-columns:minmax(0,1fr) auto}.subject-row button{grid-column:1/-1;width:100%}.package-row{grid-template-columns:1fr 1fr}.package-main{grid-column:1/-1}.package-row button{grid-column:1/-1;width:100%}.secondary-column{grid-template-columns:1fr}.panel{padding:17px}.activity-row{grid-template-columns:1fr}.activity-side{align-items:flex-start}.access-tags{justify-content:flex-start}}@media(max-width:420px){.metrics{grid-template-columns:1fr 1fr}.topbar h1{font-size:31px}.nav .button{flex:1;text-align:center}.subject-title span,.package-title span,.subject-meta,.package-meta{white-space:normal}.subject-row{align-items:start}.price-pill{margin-top:2px}}
+    /* Account for the persistent desktop sidebar: avoid narrow side-by-side panels. */
+    @media (max-width: 1500px) {
+      .metrics { grid-template-columns: repeat(3, 1fr); }
+      .workspace, .insights { grid-template-columns: 1fr; }
+      .secondary-column { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+      .secondary-column .panel { margin: 0; }
+    }
+    @media (max-width: 760px) {
+      .metrics { grid-template-columns: 1fr 1fr; }
+      .secondary-column { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
-  <main class="wrap">
-    <header class="top"><div><div class="eyebrow">Haugnes Flashcards · internt</div><h1>Admin Hub</h1><p>Opprett og vedlikehold fag, sett priser, publiser eksamenspakker og følg med på bruk. Fageiere har alltid gratis tilgang til egne eksamenspakker.</p></div><nav class="nav"><a class="button secondary" href="admin.html">Fagstudio</a><a class="button secondary" href="subjects.html">Mine fag</a><a class="button secondary" href="butikk.html">Butikk</a><a class="button" href="a-besvarelser.html">Last opp PDF-er</a></nav></header>
-    <div id="status" class="state">Sjekker administratortilgang…</div>
-    <section id="metrics" class="metrics"></section>
-    <section class="layout">
-      <div class="stack">
-        <article class="panel"><h2>Fagkatalog</h2><p>Et nytt publisert fag vises i fagmenyen og butikken. Ingen filer slettes her; skjul et fag ved å velge «Kladd».</p><form id="subjectForm" class="form"><input type="hidden" id="originalCode"><div class="field"><label>Fagkode</label><input id="code" required maxlength="32" placeholder="F.eks. FIN1"></div><div class="field"><label>Fagnavn</label><input id="name" required placeholder="F.eks. Finansiering"></div><div class="field wide"><label>Beskrivelse</label><textarea id="description" placeholder="Kort beskrivelse i fagmeny og butikk."></textarea></div><div class="field"><label>Kategori</label><select id="category"><option value="semester1">Første semester</option><option value="semester2">Andre semester</option><option value="semester3">Tredje semester</option><option value="semester4">Fjerde semester</option><option value="semester5">Femte semester</option><option value="semester6">Sjette semester</option><option value="electives">Valgfag</option><option value="master">Masterfag</option></select></div><div class="field"><label>Pris (kr)</label><input id="price" type="number" min="0" step="1" value="49"></div><div class="field"><label>Ikon</label><input id="icon" value="📚"></div><div class="field"><label>Farge</label><input id="accent" value="#2f62ff"></div><div class="field wide"><label>Startside (valgfritt)</label><input id="path" placeholder="../flashcards/?subject=fin1"></div><div class="field"><label>Flashcard-lenke</label><input id="flashcardsPath" placeholder="../flashcards/?subject=fin1"></div><div class="field"><label>Rekkefølge</label><input id="sortOrder" type="number" value="100"></div><div class="field"><label>Synlighet</label><select id="published"><option value="true">Publisert</option><option value="false">Kladd / skjult</option></select></div><div class="field"><label>Status</label><select id="subjectStatus"><option value="active">Aktiv</option><option value="exam">Eksamen</option><option value="coming">Kommer snart</option><option value="archived">Arkivert</option></select></div><div class="field wide"><button type="submit">Lagre fag og pris</button> <button id="resetSubject" type="button" class="secondary">Nytt fag</button></div></form><div id="subjectState" class="state"></div><div class="rows"><table class="table"><thead><tr><th>Fag</th><th>Pris</th><th>Status</th><th></th></tr></thead><tbody id="subjectRows"></tbody></table></div></article>
-        <article class="panel"><h2>Eksamenspakker</h2><p>Prisen gjelder bare separat salg. Fageiere kan fortsatt åpne alle pakker kostnadsfritt. Last opp eller rediger PDF-er fra eksamensarkivet.</p><div class="rows"><table class="table"><thead><tr><th>Pakke</th><th>Separat pris</th><th>Status</th><th></th></tr></thead><tbody id="packageRows"></tbody></table></div><div id="packageState" class="state"></div></article>
+  <main class="hub">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Haugnes Flashcards · administrasjon</div>
+        <h1>Adminhub</h1>
+        <p>Styr fag, salg og eksamenspakker fra ett sted. Fageiere beholder alltid gratis tilgang til egne pakker.</p>
       </div>
-      <div class="stack"><article class="panel"><h2>Brukere og aktivitet</h2><p>De 100 senest aktive kontoene. E-post vises kun i denne administratorflaten.</p><div class="rows"><table class="table"><thead><tr><th>Bruker</th><th>Tilgang</th><th>Sist aktiv</th></tr></thead><tbody id="userRows"></tbody></table></div></article><article class="panel"><h2>Fageierskap</h2><p>Antall brukere med tilgang per fag.</p><div id="ownership" class="rows"></div></article></div>
+      <nav class="nav" aria-label="Administrasjonsverktøy">
+        <a class="button secondary" href="admin.html">Fagstudio</a>
+        <a class="button secondary" href="subjects.html">Mine fag</a>
+        <a class="button secondary" href="butikk.html">Butikk</a>
+        <a class="button" href="a-besvarelser.html">Last opp PDF-er</a>
+      </nav>
+    </header>
+
+    <div id="status" class="notice" role="status">Sjekker administratortilgang …</div>
+    <section id="metrics" class="metrics" aria-label="Nøkkeltall"></section>
+
+    <section class="workspace">
+      <article class="panel">
+        <div class="panel-head"><div><h2>Fagkatalog</h2><p>Opprett fag med pris og synlighet. Publiserte fag vises i fagmenyen og i butikken.</p></div><span class="label">Katalog</span></div>
+        <form id="subjectForm" class="subject-form">
+          <input type="hidden" id="originalCode">
+          <div class="field"><label for="code">Fagkode</label><input id="code" required maxlength="32" placeholder="FIN1"></div>
+          <div class="field wide"><label for="name">Fagnavn</label><input id="name" required placeholder="Finansiering"></div>
+          <div class="field wide"><label for="description">Kort beskrivelse</label><textarea id="description" placeholder="Vises i fagmeny og butikk."></textarea></div>
+          <div class="field"><label for="category">Kategori</label><select id="category"><option value="semester1">Første semester</option><option value="semester2">Andre semester</option><option value="semester3">Tredje semester</option><option value="semester4">Fjerde semester</option><option value="semester5">Femte semester</option><option value="semester6">Sjette semester</option><option value="electives">Valgfag</option><option value="master">Masterfag</option></select></div>
+          <div class="field"><label for="price">Pris (kr)</label><input id="price" type="number" min="0" step="1" value="49"></div>
+          <div class="field"><label for="icon">Ikon</label><input id="icon" value="📚" maxlength="8"></div>
+          <div class="field"><label for="accent">Aksentfarge</label><input id="accent" value="#2f62ff" pattern="^#[0-9A-Fa-f]{6}$"></div>
+          <div class="field wide"><label for="path">Startside (valgfritt)</label><input id="path" placeholder="../subject/?id=fin1"></div>
+          <div class="field"><label for="flashcardsPath">Flashcard-lenke</label><input id="flashcardsPath" placeholder="../flashcards/?subject=fin1"></div>
+          <div class="field"><label for="sortOrder">Rekkefølge</label><input id="sortOrder" type="number" value="100"></div>
+          <div class="field"><label for="published">Synlighet</label><select id="published"><option value="true">Publisert</option><option value="false">Kladd / skjult</option></select></div>
+          <div class="field"><label for="subjectStatus">Status</label><select id="subjectStatus"><option value="active">Aktiv</option><option value="exam">Eksamen</option><option value="coming">Kommer snart</option><option value="archived">Arkivert</option></select></div>
+          <div class="field actions"><button type="submit">Lagre fag og pris</button><button id="resetSubject" type="button" class="secondary">Nytt fag</button><span id="subjectState" class="inline-state"></span></div>
+        </form>
+        <div class="list-heading"><strong>Alle fag</strong><span id="subjectCount"></span></div>
+        <div id="subjectRows" class="subject-list"></div>
+      </article>
+
+      <div class="secondary-column">
+        <article class="panel">
+          <div class="panel-head"><div><h2>Eksamenspakker</h2><p>Pris gjelder kun separat salg. Fageiere åpner fortsatt egne pakker gratis.</p></div><span class="label">Salg</span></div>
+          <div id="packageRows" class="package-list"></div>
+          <div id="packageState" class="inline-state"></div>
+        </article>
+        <article class="panel">
+          <div class="panel-head"><div><h2>Fageierskap</h2><p>Antall brukere med aktiv tilgang per fag.</p></div><span class="label">Tilgang</span></div>
+          <div id="ownership" class="ownership"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="insights">
+      <article class="panel">
+        <div class="panel-head"><div><h2>Brukere og aktivitet</h2><p>De 100 senest aktive kontoene. E-post er kun synlig for administratorer.</p></div><span class="label">Siste aktivitet</span></div>
+        <div id="userRows" class="activity-list"></div>
+      </article>
+      <article class="panel">
+        <div class="panel-head"><div><h2>Hva skjer her?</h2><p>En kort forklaring på hvordan tilgang og salg henger sammen.</p></div></div>
+        <div class="ownership">
+          <div class="ownership-card"><b>1</b><span>Fagpris</span><small>Gir fageierskap</small></div>
+          <div class="ownership-card"><b>2</b><span>Pakkesalg</span><small>Gir kun pakken</small></div>
+          <div class="ownership-card"><b>3</b><span>Fagstudio</span><small>Rediger innhold</small></div>
+        </div>
+      </article>
     </section>
   </main>
+
   <script src="../shared/auth-guard.js"></script>
   <script>
-  (function(){
-    var data={subjects:[],packages:[],prices:{}};
-    function el(id){return document.getElementById(id)} function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})} function ore(v){var n=Number(String(v||'').replace(',','.'));return Number.isFinite(n)&&n>=0?Math.round(n*100):0} function kroner(v){return (Number(v||0)/100).toLocaleString('nb-NO')+' kr'} function stamp(v){return v?new Date(v).toLocaleString('nb-NO'):'—'} function state(id,msg,bad){var node=el(id);node.textContent=msg||'';node.className='state'+(bad?' error':'')}
-    function admin(){return window.HaugnesEntitlements&&window.HaugnesEntitlements.effectiveAdmin&&window.HaugnesEntitlements.effectiveAdmin()}
-    function resetForm(){['originalCode','code','name','description','path','flashcardsPath'].forEach(function(id){el(id).value='' });el('category').value='electives';el('price').value='49';el('icon').value='📚';el('accent').value='#2f62ff';el('sortOrder').value='100';el('published').value='true';el('subjectStatus').value='active'}
-    function render(snapshot){var metrics=snapshot.metrics||{};var metricList=[['Brukere',metrics.users],['Aktive 7 dager',metrics.active_last_7_days],['Fagtilganger',metrics.subject_entitlements],['Pakketilganger',metrics.package_entitlements],['Publiserte fag',metrics.published_subjects],['Betalt omsetning',kroner(metrics.paid_revenue_nok_ore)]];el('metrics').innerHTML=metricList.map(function(item){return '<div class="metric"><span>'+esc(item[0])+'</span><b>'+esc(item[1]==null?0:item[1])+'</b></div>'}).join('');el('userRows').innerHTML=(snapshot.users||[]).map(function(user){return '<tr><td>'+esc(user.email||'—')+'<small>Opprettet '+stamp(user.created_at)+'</small></td><td><span class="tag">'+esc(user.subject_count||0)+' fag</span> <span class="tag">'+esc(user.package_count||0)+' pakker</span>'+(user.is_admin?' <span class="tag">admin</span>':'')+(user.is_friend?' <span class="tag">vennepass</span>':'')+'</td><td>'+stamp(user.last_activity)+'</td></tr>'}).join('')||'<tr><td colspan="3">Ingen brukere ennå.</td></tr>';el('ownership').innerHTML=(snapshot.subjects||[]).map(function(item){return '<p><span class="tag">'+esc(item.owners)+'</span> '+esc(item.code)+'</p>'}).join('')||'<p>Ingen fagtilganger ennå.</p>'}
-    function renderCatalog(){el('subjectRows').innerHTML=data.subjects.map(function(subject){return '<tr><td><b>'+esc(subject.code)+' · '+esc(subject.name)+'</b><small>'+esc(subject.category_id)+' · '+esc(subject.description)+'</small></td><td>'+kroner(data.prices[subject.code]||0)+'</td><td><span class="tag '+(subject.published?'':'off')+'">'+(subject.published?'Publisert':'Kladd')+'</span></td><td><button class="secondary" data-edit-subject="'+esc(subject.code)+'">Rediger</button></td></tr>'}).join('');el('packageRows').innerHTML=data.packages.map(function(pack){return '<tr><td><b>'+esc(pack.subject_code)+' · '+esc(pack.title)+'</b><small>'+esc(pack.term||'')+'</small></td><td><input data-package-price="'+esc(pack.id)+'" type="number" min="0" step="1" value="'+esc((Number(pack.price_nok_ore||0)/100))+'"></td><td><select data-package-sale="'+esc(pack.id)+'"><option value="true" '+(pack.sale_active!==false?'selected':'')+'>Salg på</option><option value="false" '+(pack.sale_active===false?'selected':'')+'>Ikke salg</option></select><small>'+ (pack.published===false?'Kladd':'Publisert')+'</small></td><td><button class="secondary" data-save-package="'+esc(pack.id)+'">Lagre</button></td></tr>'}).join('')||'<tr><td colspan="4">Ingen eksamenspakker ennå.</td></tr>'}
-    function load(){var sb=window.AuthGuard.getClient();return Promise.all([sb.rpc('admin_dashboard_snapshot'),sb.from('app_subjects').select('*').order('sort_order'),sb.from('subject_prices').select('subject_code,price_nok_ore'),sb.from('answer_packages').select('id,subject_code,term,title,price_nok_ore,sale_active,published').order('subject_code').order('sort_order')]).then(function(result){if(result[0].error)throw result[0].error;data.subjects=result[1].data||[];data.prices={};(result[2].data||[]).forEach(function(row){data.prices[row.subject_code]=Number(row.price_nok_ore)});data.packages=result[3].data||[];render(result[0].data||{});renderCatalog()})}
-    function boot(){window.AuthGuard.requireAuth().then(function(session){if(!session)return;var tries=0;(function wait(){if(admin())return load().then(function(){state('status','Admin Hub er klar. Endringer publiseres direkte.',false)}).catch(function(error){state('status',error.message||'Kunne ikke laste admin-data.',true)});if(++tries<30)return setTimeout(wait,100);state('status','Administratortilgang mangler.',true)})()})}
-    el('subjectForm').addEventListener('submit',function(event){event.preventDefault();var sb=window.AuthGuard.getClient(),session=window.AuthGuard.getSession(),newCode=String(el('code').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!newCode){state('subjectState','Fagkoden må inneholde bokstaver eller tall.',true);return}var row={code:newCode,name:el('name').value.trim(),description:el('description').value.trim(),category_id:el('category').value,accent:el('accent').value.trim()||'#2f62ff',icon:el('icon').value.trim()||'📚',path:el('path').value.trim()||null,flashcards_path:el('flashcardsPath').value.trim()||null,status:el('subjectStatus').value,published:el('published').value==='true',sort_order:Number(el('sortOrder').value||0),updated_at:new Date().toISOString(),updated_by:session.user.id};state('subjectState','Lagrer…');sb.from('app_subjects').upsert(row,{onConflict:'code'}).then(function(result){if(result.error)throw result.error;return sb.from('subject_prices').upsert({subject_code:newCode,price_nok_ore:ore(el('price').value),updated_at:new Date().toISOString()},{onConflict:'subject_code'})}).then(function(result){if(result.error)throw result.error;resetForm();state('subjectState','Fag og pris er lagret.');return load()}).catch(function(error){state('subjectState',error.message||'Kunne ikke lagre faget.',true)})});
-    document.addEventListener('click',function(event){var edit=event.target.getAttribute('data-edit-subject');if(edit){var subject=data.subjects.find(function(item){return item.code===edit});if(!subject)return;el('originalCode').value=subject.code;el('code').value=subject.code;el('code').readOnly=true;el('name').value=subject.name;el('description').value=subject.description||'';el('category').value=subject.category_id;el('price').value=Number(data.prices[subject.code]||0)/100;el('icon').value=subject.icon||'📚';el('accent').value=subject.accent||'#2f62ff';el('path').value=subject.path||'';el('flashcardsPath').value=subject.flashcards_path||'';el('sortOrder').value=subject.sort_order||0;el('published').value=String(subject.published!==false);el('subjectStatus').value=subject.status||'active';state('subjectState','Redigerer '+subject.code+'. Fagkode kan ikke endres.');return}var id=event.target.getAttribute('data-save-package');if(id){var pack=data.packages.find(function(item){return item.id===id});if(!pack)return;var price=el('packageRows').querySelector('[data-package-price="'+CSS.escape(id)+'"]'),sale=el('packageRows').querySelector('[data-package-sale="'+CSS.escape(id)+'"]');state('packageState','Lagrer pakke…');window.AuthGuard.getClient().from('answer_packages').update({price_nok_ore:ore(price.value),sale_active:sale.value==='true',updated_at:new Date().toISOString()}).eq('id',id).then(function(result){if(result.error)throw result.error;state('packageState','Pakkeprisen er lagret.');return load()}).catch(function(error){state('packageState',error.message||'Kunne ikke lagre pakken.',true)})}});el('resetSubject').onclick=function(){el('code').readOnly=false;resetForm();state('subjectState','')};boot();
+  (function () {
+    'use strict';
+    var data = { subjects: [], packages: [], prices: {} };
+    function el(id) { return document.getElementById(id); }
+    function esc(value) { return String(value == null ? '' : value).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+    function ore(value) { var n = Number(String(value || '').replace(',', '.')); return Number.isFinite(n) && n >= 0 ? Math.round(n * 100) : 0; }
+    function kroner(value) { return (Number(value || 0) / 100).toLocaleString('nb-NO') + ' kr'; }
+    function stamp(value) { return value ? new Date(value).toLocaleString('nb-NO', { dateStyle: 'medium', timeStyle: 'short' }) : '—'; }
+    function state(id, message, bad) { var node = el(id); node.textContent = message || ''; node.className = id === 'status' ? 'notice visible' + (bad ? ' error' : '') : 'inline-state' + (bad ? ' error' : ''); }
+    function admin() { return window.HaugnesEntitlements && window.HaugnesEntitlements.effectiveAdmin && window.HaugnesEntitlements.effectiveAdmin(); }
+    function tag(text, kind) { return '<span class="tag ' + (kind || '') + '">' + esc(text) + '</span>'; }
+    function resetForm() { ['originalCode', 'code', 'name', 'description', 'path', 'flashcardsPath'].forEach(function (id) { el(id).value = ''; }); el('code').readOnly = false; el('category').value = 'electives'; el('price').value = '49'; el('icon').value = '📚'; el('accent').value = '#2f62ff'; el('sortOrder').value = '100'; el('published').value = 'true'; el('subjectStatus').value = 'active'; }
+
+    function renderMetrics(snapshot) {
+      var metrics = snapshot.metrics || {};
+      var items = [['Brukere', metrics.users], ['Aktive siste 7 dager', metrics.active_last_7_days], ['Fagtilganger', metrics.subject_entitlements], ['Pakketilganger', metrics.package_entitlements], ['Publiserte fag', metrics.published_subjects], ['Betalt omsetning', kroner(metrics.paid_revenue_nok_ore)]];
+      el('metrics').innerHTML = items.map(function (item) { return '<div class="metric"><span class="label">' + esc(item[0]) + '</span><b>' + esc(item[1] == null ? 0 : item[1]) + '</b></div>'; }).join('');
+    }
+    function renderUsers(snapshot) {
+      var users = snapshot.users || [];
+      el('userRows').innerHTML = users.map(function (user) {
+        var tags = tag((user.subject_count || 0) + ' fag') + tag((user.package_count || 0) + ' pakker') + (user.is_admin ? tag('Administrator', 'admin') : '') + (user.is_friend ? tag('Vennepass', 'friend') : '');
+        return '<div class="activity-row"><div class="activity-main"><div class="activity-email">' + esc(user.email || 'Ukjent bruker') + '</div><span class="activity-meta">Opprettet ' + stamp(user.created_at) + '</span></div><div class="activity-side"><div class="access-tags">' + tags + '</div><span class="activity-time">Aktiv ' + stamp(user.last_activity) + '</span></div></div>';
+      }).join('') || '<div class="empty">Ingen brukere ennå.</div>';
+    }
+    function renderOwnership(snapshot) {
+      var subjects = snapshot.subjects || [];
+      el('ownership').innerHTML = subjects.map(function (item) { return '<div class="ownership-card"><b>' + esc(item.owners || 0) + '</b><span>' + esc(item.code) + '</span><small>Fageiere</small></div>'; }).join('') || '<div class="empty">Ingen fagtilganger ennå.</div>';
+    }
+    function render(snapshot) { renderMetrics(snapshot); renderUsers(snapshot); renderOwnership(snapshot); }
+    function renderCatalog() {
+      el('subjectCount').textContent = data.subjects.length + ' fag';
+      el('subjectRows').innerHTML = data.subjects.map(function (subject) {
+        var description = [subject.category_id, subject.description].filter(Boolean).join(' · ');
+        return '<div class="subject-row"><div class="subject-main"><div class="subject-title"><span class="subject-icon">' + esc(subject.icon || '📚') + '</span><span>' + esc(subject.code) + ' · ' + esc(subject.name) + '</span></div><span class="subject-meta">' + esc(description || 'Ingen beskrivelse') + '</span></div><span class="price-pill">' + esc(kroner(data.prices[subject.code] || 0)) + '</span>' + tag(subject.published ? 'Publisert' : 'Kladd', subject.published ? '' : 'off') + '<button class="secondary" type="button" data-edit-subject="' + esc(subject.code) + '">Rediger</button></div>';
+      }).join('') || '<div class="empty">Ingen fag i katalogen ennå.</div>';
+    }
+    function renderPackages() {
+      el('packageRows').innerHTML = data.packages.map(function (pack) {
+        return '<div class="package-row" data-package-id="' + esc(pack.id) + '"><div class="package-main"><div class="package-title"><span>' + esc(pack.subject_code) + ' · ' + esc(pack.title) + '</span></div><span class="package-meta">' + esc(pack.term || 'Ingen termin angitt') + '</span></div><div class="price-control"><label>Pris (kr)</label><input data-package-price type="number" min="0" step="1" value="' + esc(Number(pack.price_nok_ore || 0) / 100) + '"></div><div class="sale-control"><label>Tilgjengelighet</label><select data-package-sale><option value="true" ' + (pack.sale_active !== false ? 'selected' : '') + '>Salg på</option><option value="false" ' + (pack.sale_active === false ? 'selected' : '') + '>Ikke salg</option></select>' + tag(pack.published === false ? 'Kladd' : 'Publisert', pack.published === false ? 'off' : '') + '</div><button class="secondary" type="button" data-save-package="' + esc(pack.id) + '">Lagre</button></div>';
+      }).join('') || '<div class="empty">Ingen eksamenspakker ennå.</div>';
+    }
+    function load() {
+      var sb = window.AuthGuard.getClient();
+      return Promise.all([
+        sb.rpc('admin_dashboard_snapshot'),
+        sb.from('app_subjects').select('*').order('sort_order'),
+        sb.from('subject_prices').select('subject_code,price_nok_ore'),
+        sb.from('answer_packages').select('id,subject_code,term,title,price_nok_ore,sale_active,published').order('subject_code').order('sort_order')
+      ]).then(function (result) {
+        if (result[0].error) throw result[0].error;
+        data.subjects = result[1].data || []; data.prices = {};
+        (result[2].data || []).forEach(function (row) { data.prices[row.subject_code] = Number(row.price_nok_ore); });
+        data.packages = result[3].data || [];
+        render(result[0].data || {}); renderCatalog(); renderPackages();
+      });
+    }
+    function editSubject(code) {
+      var subject = data.subjects.find(function (item) { return item.code === code; }); if (!subject) return;
+      el('originalCode').value = subject.code; el('code').value = subject.code; el('code').readOnly = true; el('name').value = subject.name; el('description').value = subject.description || ''; el('category').value = subject.category_id; el('price').value = Number(data.prices[subject.code] || 0) / 100; el('icon').value = subject.icon || '📚'; el('accent').value = subject.accent || '#2f62ff'; el('path').value = subject.path || ''; el('flashcardsPath').value = subject.flashcards_path || ''; el('sortOrder').value = subject.sort_order || 0; el('published').value = String(subject.published !== false); el('subjectStatus').value = subject.status || 'active'; state('subjectState', 'Redigerer ' + subject.code + '. Fagkoden kan ikke endres.'); el('name').focus();
+    }
+    function boot() {
+      window.AuthGuard.requireAuth().then(function (session) {
+        if (!session) return;
+        var tries = 0;
+        (function wait() {
+          if (admin()) return load().then(function () { state('status', 'Adminhuben er klar. Endringer publiseres direkte.'); }).catch(function (error) { state('status', error.message || 'Kunne ikke laste admin-data.', true); });
+          if (++tries < 30) return setTimeout(wait, 100);
+          state('status', 'Administratortilgang mangler.', true);
+        })();
+      });
+    }
+    el('subjectForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      var sb = window.AuthGuard.getClient(), session = window.AuthGuard.getSession(), newCode = String(el('code').value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (!newCode) { state('subjectState', 'Fagkoden må inneholde bokstaver eller tall.', true); return; }
+      var row = { code: newCode, name: el('name').value.trim(), description: el('description').value.trim(), category_id: el('category').value, accent: el('accent').value.trim() || '#2f62ff', icon: el('icon').value.trim() || '📚', path: el('path').value.trim() || null, flashcards_path: el('flashcardsPath').value.trim() || null, status: el('subjectStatus').value, published: el('published').value === 'true', sort_order: Number(el('sortOrder').value || 0), updated_at: new Date().toISOString(), updated_by: session.user.id };
+      state('subjectState', 'Lagrer …');
+      sb.from('app_subjects').upsert(row, { onConflict: 'code' }).then(function (result) { if (result.error) throw result.error; return sb.from('subject_prices').upsert({ subject_code: newCode, price_nok_ore: ore(el('price').value), updated_at: new Date().toISOString() }, { onConflict: 'subject_code' }); }).then(function (result) { if (result.error) throw result.error; resetForm(); state('subjectState', 'Fag og pris er lagret.'); return load(); }).catch(function (error) { state('subjectState', error.message || 'Kunne ikke lagre faget.', true); });
+    });
+    document.addEventListener('click', function (event) {
+      var edit = event.target.getAttribute('data-edit-subject'); if (edit) { editSubject(edit); return; }
+      var id = event.target.getAttribute('data-save-package'); if (!id) return;
+      var pack = data.packages.find(function (item) { return item.id === id; }); if (!pack) return;
+      var card = event.target.closest('[data-package-id]'), price = card && card.querySelector('[data-package-price]'), sale = card && card.querySelector('[data-package-sale]'); if (!price || !sale) return;
+      state('packageState', 'Lagrer pakke …');
+      window.AuthGuard.getClient().from('answer_packages').update({ price_nok_ore: ore(price.value), sale_active: sale.value === 'true', updated_at: new Date().toISOString() }).eq('id', id).then(function (result) { if (result.error) throw result.error; state('packageState', 'Pakkeprisen er lagret.'); return load(); }).catch(function (error) { state('packageState', error.message || 'Kunne ikke lagre pakken.', true); });
+    });
+    el('resetSubject').addEventListener('click', function () { resetForm(); state('subjectState', 'Klar for et nytt fag.'); });
+    boot();
   })();
   </script>
 </body>
