@@ -425,7 +425,7 @@ button,input,select,textarea{font-family:inherit}
             <button type="button" class="action-btn small" id="btnConnectGoogleDrive" style="background:#4285f4;border-color:#3367d6">🔗 Koble til Google Drive</button>
           </div>
           <p style="font-size:11.5px;color:#9fb0cf;margin-bottom:8px;line-height:1.5">
-            Filer fra din Google Drive strømmes til studenter <strong>kun etter godkjent betaling</strong>. Rå Drive-ID-er og -lenker slippes aldri til klienten — alt går via <code>/api/drive</code>-proxyen med Supabase-JWT og entitlement-sjekk.
+            Filer fra din Google Drive strømmes til studenter <strong>kun etter godkjent betaling</strong>. Rå Drive-ID-er og -lenker slippes aldri til klienten — alt går via en beskyttet Supabase-proxy med Supabase-JWT og entitlement-sjekk.
           </p>
           <div style="font-size:11px;color:#fca5a5;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.22);border-radius:9px;padding:8px 10px;margin-bottom:12px;line-height:1.5">
             ⚠️ <strong>Del filene KUN privat</strong> med Google-kontoen du kobler til her. Sett <em>ikke</em> «Alle med lenken» — da vil noen som får tak i Drive-ID-en kunne omgå betalingsmuren direkte på drive.google.com.
@@ -519,6 +519,11 @@ button,input,select,textarea{font-family:inherit}
         </div>
       </div>
       <div class="form-group" style="margin-top:12px">
+        <label for="nsPrice">Fagpris (kr) *</label>
+        <input type="number" id="nsPrice" min="0" step="1" value="49" required>
+        <small class="form-hint">Prisen lagres samtidig i butikken. Velg 0 for gratis fag.</small>
+      </div>
+      <div class="form-group" style="margin-top:12px">
         <label>Aksentfarge</label>
         <div class="color-row">
           <input type="color" id="nsAccent" class="color-input" value="#2563eb">
@@ -569,6 +574,7 @@ button,input,select,textarea{font-family:inherit}
     openSections: { header: true, memo: true },
     previewMode: 'student'
   };
+  var DRIVE_PROXY = 'https://qnwjhheoekpqqqhevztw.supabase.co/functions/v1/drive-proxy';
 
   function esc(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, function (c) {
@@ -586,6 +592,65 @@ button,input,select,textarea{font-family:inherit}
   }
 
   function studio() { return window.SubjectsStudio; }
+
+  function priceInOre(value) {
+    var amount = Number(String(value || '').replace(',', '.'));
+    return Number.isFinite(amount) && amount >= 0 ? Math.round(amount * 100) : 0;
+  }
+
+  function addSubjectToStorefront(patch, priceOre) {
+    var sb = window.AuthGuard && window.AuthGuard.getClient ? window.AuthGuard.getClient() : null;
+    var session = window.AuthGuard && window.AuthGuard.getSession ? window.AuthGuard.getSession() : null;
+    if (!sb || !session || !session.user) return Promise.reject(new Error('Mangler administratorøkt for butikkatalogen.'));
+    var catalogRow = {
+      code: patch.subject_code,
+      name: patch.name,
+      description: patch.lead || patch.kicker || '',
+      category_id: patch.category_id,
+      accent: patch.accent || '#2563eb',
+      icon: patch.icon || '📚',
+      path: '../subject/?id=' + encodeURIComponent(String(patch.subject_code).toLowerCase()),
+      flashcards_path: '../flashcards/?subject=' + encodeURIComponent(String(patch.subject_code).toLowerCase()),
+      status: 'active',
+      published: patch.is_published !== false,
+      sort_order: 100,
+      updated_at: new Date().toISOString(),
+      updated_by: session.user.id
+    };
+    return sb.from('app_subjects').upsert(catalogRow, { onConflict: 'code' }).then(function (result) {
+      if (result.error) throw result.error;
+      return sb.from('subject_prices').upsert({ subject_code: patch.subject_code, price_nok_ore: priceOre, updated_at: new Date().toISOString() }, { onConflict: 'subject_code' });
+    }).then(function (result) {
+      if (result.error) throw result.error;
+      return true;
+    });
+  }
+
+  function driveFetch(path, options) {
+    var s = window.AuthGuard && window.AuthGuard.getSession ? window.AuthGuard.getSession() : null;
+    var token = s && s.access_token;
+    if (!token) return Promise.reject(new Error('Du må være logget inn.'));
+    var init = Object.assign({}, options || {});
+    init.headers = Object.assign({}, init.headers || {}, { 'Authorization': 'Bearer ' + token });
+    return fetch(DRIVE_PROXY + path, init);
+  }
+
+  // A preview needs an Authorization header, never a JWT embedded in a URL.
+  window.previewDriveFile = function (fileId) {
+    var target = window.open('', '_blank');
+    if (target) target.document.title = 'Laster dokument…';
+    driveFetch('?id=' + encodeURIComponent(fileId), { cache: 'no-store' }).then(function (response) {
+      if (!response.ok) throw new Error('Kunne ikke åpne dokumentet.');
+      return response.blob();
+    }).then(function (blob) {
+      var blobUrl = URL.createObjectURL(blob);
+      if (target) target.location.replace(blobUrl);
+      else window.open(blobUrl, '_blank');
+    }).catch(function (error) {
+      if (target) target.close();
+      toast(error && error.message ? error.message : 'Kunne ikke åpne dokumentet.', 'error');
+    });
+  };
 
   function waitForStudio() {
     return new Promise(function (resolve) {
@@ -843,7 +908,6 @@ button,input,select,textarea{font-family:inherit}
     if ((file.meta || {}).topic) meta.push('Tema: ' + file.meta.topic);
     if ((file.meta || {}).source) meta.push('Kilde: ' + file.meta.source);
     if ((file.meta || {}).date) meta.push(file.meta.date);
-    var previewUrl = '/api/drive?id=' + encodeURIComponent(file.id) + '&code=' + encodeURIComponent(file.subject_code);
     return '<div class="file-card" data-file-id="' + esc(file.id) + '">'
       + '<div class="file-icon ' + esc(kind) + '">' + (kind === 'memo' ? '📚' : (kind === 'task' ? '🎯' : '📝')) + '</div>'
       + '<div class="file-body"><strong>' + esc(file.title || '(uten tittel)') + '</strong>'
@@ -851,7 +915,7 @@ button,input,select,textarea{font-family:inherit}
       + (meta.length ? '<div class="meta">' + esc(meta.join(' · ')) + '</div>' : '')
       + '<span style="font-size:10.5px;color:#8fa5ca;margin-top:2px">' + badge + '</span></div>'
       + '<div class="row-actions">'
-      + '<button type="button" class="row-mini" title="Forhåndsvis fil" onclick="window.open(\'' + previewUrl + '\', \'_blank\')">👁️</button>'
+      + '<button type="button" class="row-mini" title="Forhåndsvis fil" onclick="window.previewDriveFile(\'' + esc(file.id) + '\')">👁️</button>'
       + '<button type="button" class="row-mini" title="Rediger" data-edit-file="' + esc(kind) + '" data-id="' + esc(file.id) + '">✏️</button>'
       + '<button type="button" class="row-mini danger" title="Slett" data-delete-file="' + esc(file.id) + '">🗑️</button>'
       + '</div></div>';
@@ -1104,7 +1168,7 @@ button,input,select,textarea{font-family:inherit}
         // remaining freshness.
         var s = window.AuthGuard && window.AuthGuard.getSession ? window.AuthGuard.getSession() : null;
         if (s && s.access_token) {
-          fetch('/api/drive?action=cache_token', {
+          driveFetch('?action=cache_token', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + s.access_token },
             body: JSON.stringify({ google_token: resp.access_token, expires_in: expiresIn })
@@ -1179,7 +1243,7 @@ button,input,select,textarea{font-family:inherit}
     var s = window.AuthGuard && window.AuthGuard.getSession ? window.AuthGuard.getSession() : null;
     var token = s && s.access_token ? s.access_token : '';
     var q = query ? '&q=' + encodeURIComponent(query) : '';
-    fetch('/api/drive?action=list' + q, {
+    driveFetch('?action=list' + q, {
       headers: {
         'Authorization': 'Bearer ' + token,
         'X-Google-Token': currentGoogleToken
@@ -1294,7 +1358,9 @@ button,input,select,textarea{font-family:inherit}
         toast('Ugyldig Google Drive-lenke eller fil-ID', 'error');
         return;
       }
-      fetch('/api/drive?action=info&drive_id=' + encodeURIComponent(driveId) + (currentGoogleToken ? '&google_token=' + encodeURIComponent(currentGoogleToken) : ''))
+      driveFetch('?action=info&drive_id=' + encodeURIComponent(driveId), {
+        headers: currentGoogleToken ? { 'X-Google-Token': currentGoogleToken } : {}
+      })
         .then(function (r) { return r.json(); })
         .then(function (data) {
           var file = data.file || { id: driveId, name: 'Drive-dokument (' + driveId.slice(0, 8) + '…)', mimeType: 'application/pdf' };
@@ -1513,6 +1579,7 @@ button,input,select,textarea{font-family:inherit}
     document.getElementById('nsName').value = '';
     document.getElementById('nsIcon').value = '📚';
     document.getElementById('nsAccent').value = '#2563eb';
+    document.getElementById('nsPrice').value = '49';
     document.getElementById('nsKicker').value = '';
     document.getElementById('nsLead').value = '';
     document.getElementById('modalNewState').textContent = '';
@@ -1538,10 +1605,13 @@ button,input,select,textarea{font-family:inherit}
     };
     var stateEl = document.getElementById('modalNewState');
     stateEl.textContent = 'Oppretter …';
+    var priceOre = priceInOre(document.getElementById('nsPrice').value);
     studio().upsertSubject(patch).then(function () {
+      return addSubjectToStorefront(patch, priceOre);
+    }).then(function () {
       stateEl.textContent = '';
       closeModal('modalNewSubject');
-      toast('Faget er opprettet');
+      toast('Faget er opprettet og lagt i butikken.');
       return loadCatalog(true).then(function () { selectSubject(codeVal); });
     }).catch(function (err) { stateEl.textContent = 'Feil: ' + (err.message || err); });
   });

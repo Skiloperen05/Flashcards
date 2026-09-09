@@ -166,8 +166,8 @@
   function normalizeFile(row) {
     if (!row) return null;
     // Hide the raw Google Drive file id from non-admin callers. The paywall
-    // proxy (/api/drive?id=<subject_files.id>) is the only supported way for
-    // students to fetch the bytes, so they never need the drive_id on the
+    // proxy (the drive-proxy Edge Function with an opaque subject_files id)
+    // is the only supported way for students to fetch the bytes, so they never need the drive_id on the
     // client. Admins still see it in the picker so they can verify what's
     // wired up.
     var admin = isAdmin();
@@ -503,9 +503,18 @@
     if (!file) return Promise.resolve(null);
     if (file.storage_bucket === 'google_drive') {
       var s = session();
-      var tokenParam = s && s.access_token ? '&token=' + encodeURIComponent(s.access_token) : '';
-      var proxyUrl = '/api/drive?id=' + encodeURIComponent(file.id) + '&subject=' + encodeURIComponent(file.subject_code || '') + tokenParam;
-      return Promise.resolve(proxyUrl);
+      if (!s || !s.access_token) return Promise.resolve(null);
+      // Never put a Supabase JWT in a URL: URLs end up in history, logs and
+      // referrers. Fetch through the production Edge Function with a header
+      // and give the legacy renderer a short-lived in-memory Blob URL.
+      var proxyUrl = 'https://qnwjhheoekpqqqhevztw.supabase.co/functions/v1/drive-proxy?id=' + encodeURIComponent(file.id);
+      return fetch(proxyUrl, {
+        headers: { 'Authorization': 'Bearer ' + s.access_token },
+        cache: 'no-store'
+      }).then(function (response) {
+        if (!response.ok) return null;
+        return response.blob().then(function (blob) { return URL.createObjectURL(blob); });
+      }).catch(function () { return null; });
     }
     if (!file.storage_path) {
       return Promise.resolve(file.external_url ? file.external_url : null);

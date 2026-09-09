@@ -64,16 +64,9 @@ function adminTokenIsFresh() {
 
 function setCors(req, res) {
   const origin = req.headers && req.headers.origin ? req.headers.origin : '';
-  if (ALLOWED_ORIGINS.has(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  } else if (!origin) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-  } else {
-    res.setHeader('Access-Control-Allow-Origin', 'https://bhflashcards.no');
-  }
+  res.setHeader('Access-Control-Allow-Origin', ALLOWED_ORIGINS.has(origin) ? origin : 'https://bhflashcards.no');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Google-Token');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Vary', 'Origin');
 }
 
@@ -150,7 +143,7 @@ async function getSubjectFileRow(fileId, userToken) {
  * Fetch a file from Google Drive using an OAuth access token.
  *
  * Order of attempts:
- *   1. OAuth token from the request (X-Google-Token / ?google_token=). Used
+ *   1. OAuth token from the X-Google-Token request header. Used
  *      when an admin is browsing their own Drive from the picker.
  *   2. Cached admin OAuth token (from action=cache_token). This is what
  *      student streams normally use.
@@ -239,11 +232,11 @@ export default async function driveHandler(req, res) {
   const action = url.searchParams.get('action') || (url.pathname.includes('/files') ? 'list' : 'stream');
 
   // Extract auth tokens
-  let supabaseToken = url.searchParams.get('token');
+  let supabaseToken = '';
   const authHeader = req.headers.authorization || '';
   if (authHeader.startsWith('Bearer ')) supabaseToken = authHeader.slice(7).trim();
 
-  const googleToken = req.headers['x-google-token'] || url.searchParams.get('google_token');
+  const googleToken = req.headers['x-google-token'] || '';
 
   // -------------------------------------------------------------
   // 0. ACTION: Connection status (safe to poll from the admin picker)

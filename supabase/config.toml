@@ -8,3 +8,8 @@ verify_jwt = false
 
 [functions.stripe-webhook]
 verify_jwt = false
+
+[functions.drive-proxy]
+# The function validates the bearer token itself so it can return CORS-aware
+# errors and use the caller's JWT for RLS-enforced file lookup.
+verify_jwt = false

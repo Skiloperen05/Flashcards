@@ -76,7 +76,7 @@
       { id: 'settings', label: 'Innstillinger', href: 'user/settings.html', icon: 'settings' }
     ];
     if (admin) {
-      konto.unshift({ id: 'admin', label: 'Admin-hub', href: 'user/admin.html', icon: 'admin' });
+      konto.unshift({ id: 'admin', label: 'Admin-hub', href: 'user/admin-hub.html', icon: 'admin' });
     }
     return [
       { label: 'Oversikt', items: MENU.slice(0, 3) },
@@ -101,7 +101,7 @@
     if (page === 'memoarer.html' || /\/memoar\//.test(path)) return 'memos';
     if (page === 'notater.html') return 'notes';
     if (/\/flashcards\//.test(path) || /flashcards/.test(page)) return 'flashcards';
-    if (page === 'admin.html') return 'admin';
+    if (page === 'admin.html' || page === 'admin-hub.html') return 'admin';
     if (page === 'settings.html') return 'settings';
     return '';
   }
