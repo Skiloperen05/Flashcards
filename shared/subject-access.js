@@ -63,8 +63,14 @@
     }
     var available = catalog().map(function (s) { return code(s.code || s.id); });
     var value = selected.map(code).filter(function (item, index, arr) { return item && arr.indexOf(item) === index && (!available.length || available.indexOf(item) !== -1); });
-    // Hard cap: cannot select subjects the user hasn't paid/claimed
-    if (owned === null) return value; // admin or entitlements not yet loaded
+    // Administrators and Vennepass users have a real all-access bypass.
+    // Returning an old local selection here made newly created courses
+    // invisible to the very administrator who created them.
+    if (owned === null) {
+      if (window.HaugnesEntitlements && window.HaugnesEntitlements.isLoaded && window.HaugnesEntitlements.isLoaded() && window.HaugnesEntitlements.hasBypass && window.HaugnesEntitlements.hasBypass()) return available;
+      return value;
+    }
+    // Hard cap: cannot select subjects the user hasn't paid/claimed.
     return value.filter(function (c) { return owned.indexOf(c) !== -1; });
   }
 

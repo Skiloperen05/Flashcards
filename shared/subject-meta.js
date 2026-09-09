@@ -260,6 +260,10 @@
   var DB_CONTENT_KEY = 'custom_subjects';
 
   function getSupabaseClient() {
+    if (window.AuthGuard && typeof window.AuthGuard.getClient === 'function') {
+      var authClient = window.AuthGuard.getClient();
+      if (authClient) return authClient;
+    }
     if (window.HaugnesAuth && typeof window.HaugnesAuth.getClient === 'function') {
       var client = window.HaugnesAuth.getClient();
       if (client) return client;
@@ -628,7 +632,14 @@
       if ((attempt || 0) < 30) window.setTimeout(function () { loadRemoteCatalog((attempt || 0) + 1); }, 150);
       return;
     }
-    client.from('app_subjects').select('code,name,description,category_id,accent,icon,emblem,path,flashcards_path,status,published,sort_order').eq('published', true).order('sort_order').then(function (result) {
+    // subject-meta is loaded before AuthGuard on several pages. Once the
+    // authenticated client finally exists, refresh both catalog sources so
+    // Fagstudio-created courses do not depend on a manual page reload.
+    Promise.all([
+      syncCustomSubjects(),
+      client.from('app_subjects').select('code,name,description,category_id,accent,icon,emblem,path,flashcards_path,status,published,sort_order').eq('published', true).order('sort_order')
+    ]).then(function (results) {
+      var result = results[1];
       if (!result || result.error || !result.data) return;
       applyRemoteCatalog(result.data);
     });

@@ -50,7 +50,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 
 - Auth/session/client bootstrap: `shared/auth-guard.js`.
 - Entitlements and subject access: `shared/entitlements.js`, `shared/subject-access.js`, `shared/subject-gate.js`.
-- Subject metadata: `shared/subject-meta.js`.
+- Subject metadata: `shared/subject-meta.js`. Merges the published `app_subjects` catalogue with published custom Fagstudio rows from `subject_pages`, so newly created subjects appear in navigation and the shop.
 - Subject page rendering/data/enhancements: `shared/subject-page-renderer.js`, `shared/subject-page-data.js`, `shared/subject-page-enhancements.js`, `shared/subject-resources.js`.
 - Subject Studio API (single source of truth for admin-editable subject pages): `shared/subjects-studio.js`. Reads/writes `subject_pages`, `subject_page_blocks` and `subject_files` (Storage bucket `subject-files`) in Supabase. Legacy localStorage keys (`hf_custom_subjects_v1`, `hf_custom_subject_pages_v1`, `hf_custom_packages_v1`, `hf_custom_memos_v1`, `hf_custom_tasks_v1`) are migrated once per admin and then untouched. Exposes `window.SubjectsStudio` (listSubjects/getSubject/upsertSubject/upsertBlock/reorderBlocks/deleteBlock/uploadFile/updateFile/deleteFile/signedUrl/subscribeChanges).
 - Subject-page ↔ Studio bridge: `shared/subject-page-studio-bridge.js`. Patches `HaugnesSubjectPages.get`/`.savePage` so the student subject shell (`subject/index.html`) reads fresh data from Studio and inline edits are persisted to Supabase. Publishes signed PDF URLs to the existing renderer and re-renders on `haugnes:subject-studio-changed`.
