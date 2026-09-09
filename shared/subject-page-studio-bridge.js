@@ -87,12 +87,22 @@
     var jobs = [];
     ['answers', 'notes', 'tasks'].forEach(function (kind) {
       (page[kind] || []).forEach(function (row) {
-        if (row._file && row._file.storage_path) {
-          jobs.push(s.signedUrl(row._file, 60 * 60).then(function (url) {
-            if (url) { row.pdfData = url; row.pdfUrl = url; }
-            else if (row._file.access_error) { row.fileError = row._file.access_error; }
-          }));
-        }
+        var file = row._file;
+        if (!file) return;
+        // Two backing stores can produce a downloadable file:
+        //   - Supabase Storage → file.storage_path is set
+        //   - Google Drive → file.storage_bucket === 'google_drive'.
+        //     storage_path is redacted for non-admin callers as
+        //     defense-in-depth (normalizeFile), but signedUrl only needs
+        //     subject_files.id to construct the drive-proxy Edge Function
+        //     URL — so guard on the bucket, not on the (possibly
+        //     redacted) path.
+        var isDrive = file.storage_bucket === 'google_drive';
+        if (!file.storage_path && !isDrive) return;
+        jobs.push(s.signedUrl(file, 60 * 60).then(function (url) {
+          if (url) { row.pdfData = url; row.pdfUrl = url; }
+          else if (file.access_error) { row.fileError = file.access_error; }
+        }));
       });
     });
     return Promise.all(jobs);
