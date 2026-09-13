@@ -412,9 +412,8 @@ button,input,select,textarea{font-family:inherit}
       <div class="form-group" style="margin-top:14px">
         <label>Fillagring & kilde (PDF / dokument)</label>
         <div class="storage-tabs" id="fileStorageTabs">
-          <button type="button" class="storage-tab-btn active" data-storage-tab="drive">☁️ Google Drive (5 TB)</button>
+          <button type="button" class="storage-tab-btn active" data-storage-tab="drive">Google Drive (5 TB)</button>
           <button type="button" class="storage-tab-btn" data-storage-tab="local">💾 Lokal PDF</button>
-          <button type="button" class="storage-tab-btn" data-storage-tab="url">🔗 Ekstern URL</button>
         </div>
 
         <!-- Tab 1: Google Drive (5 TB Sky) -->
@@ -425,13 +424,13 @@ button,input,select,textarea{font-family:inherit}
             <button type="button" class="action-btn small" id="btnConnectGoogleDrive" style="background:#4285f4;border-color:#3367d6">🔗 Koble til Google Drive</button>
           </div>
           <p style="font-size:11.5px;color:#9fb0cf;margin-bottom:8px;line-height:1.5">
-            Filer fra din Google Drive strømmes til studenter <strong>kun etter godkjent betaling</strong>. Rå Drive-ID-er og -lenker slippes aldri til klienten — alt går via en beskyttet Supabase-proxy med Supabase-JWT og entitlement-sjekk.
+            Filene blir i Google Drive. Bare elever med tilgang til faget kan åpne og laste dem ned gjennom appen.
           </p>
           <div style="font-size:11px;color:#fca5a5;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.22);border-radius:9px;padding:8px 10px;margin-bottom:8px;line-height:1.5">
-            ⚠️ <strong>Del filene KUN privat</strong> med Google-kontoen du kobler til her. Sett <em>ikke</em> «Alle med lenken» — da vil noen som får tak i Drive-ID-en kunne omgå betalingsmuren direkte på drive.google.com.
+            Deling i Drive må være <strong>Begrenset</strong>. Offentlig delte filer kan ikke publiseres her.
           </div>
           <div style="font-size:11px;color:#93c5fd;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.22);border-radius:9px;padding:8px 10px;margin-bottom:12px;line-height:1.5">
-            🔒 <strong>Permanent tilkobling:</strong> Sett <code>GOOGLE_CLIENT_SECRET</code> som Edge Function-secret i Supabase (fra samme OAuth-klient i Google Cloud Console — klienten må være «Web application»). Da autoriserer du én gang, og serveren fornyer selv access-tokenet med refresh-tokenet uten at du må logge på igjen hver time.
+            Tilkoblingen fornyes automatisk. Hvis Google trekker tilbake tilgangen, kan du koble til på nytt her.
           </div>
 
           <div id="driveConnectedSection" style="display:none">
@@ -1602,7 +1601,7 @@ button,input,select,textarea{font-family:inherit}
     var stateEl = document.getElementById('modalFileState');
     var saveBtn = document.getElementById('modalFileSaveBtn');
     saveBtn.disabled = true;
-    stateEl.textContent = pendingFile ? 'Laster opp fil …' : 'Lagrer …';
+    stateEl.textContent = pendingDriveFile ? 'Kontrollerer fil og deling i Drive …' : pendingFile ? 'Laster opp fil …' : 'Lagrer …';
 
     if (id) {
       var updates = {

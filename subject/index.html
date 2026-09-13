@@ -1284,11 +1284,11 @@ AuthGuard.requireAuth();
   // Content-Disposition header; synthetic Blob downloads do not.
   function downloadControl(url, fileName, label, className) {
     var source = String(url || '');
-    if (isDriveDownloadTicket(source)) {
+    if (isDriveDownloadTicket(source) || /\/document\.html\?file=/.test(source)) {
       try {
-        var target = new URL(source);
+        var target = new URL(source, window.location.href);
         target.searchParams.set('download', '1');
-        return '<a class="' + (className || 'hf-pkg-btn') + '" href="' + esc(target.toString()) + '">' + label + '</a>';
+        return '<a class="' + (className || 'hf-pkg-btn') + '" target="_blank" rel="noopener" href="' + esc(target.toString()) + '">' + label + '</a>';
       } catch (e) {}
     }
     return '<button class="' + (className || 'hf-pkg-btn') + '" onclick="downloadPdfFile(\'' + source + '\', \'' + String(fileName || '').replace(/'/g, '&#39;') + '\')">' + label + '</button>';
@@ -1887,11 +1887,10 @@ AuthGuard.requireAuth();
         + '<div>'
         + '<div class="hf-pkg-actions">'
         + (hasDownload ? downloadControl(note.pdfData || note.pdfUrl, note.pdfName || (isPdf ? 'notat.pdf' : 'notat'), downloadLabel) : '')
-        + (hasDownload && isPdf ? '<button class="hf-pkg-btn secondary" onclick="openPdfFile(\'' + (note.pdfData || note.pdfUrl) + '\')">👁️ Åpne PDF</button>' : '')
+        + (hasDownload ? '<button class="hf-pkg-btn secondary" onclick="openPdfFile(\'' + (note.pdfData || note.pdfUrl) + '\')">Åpne dokument</button>' : '')
         + (note.body ? '<button class="hf-pkg-btn secondary" onclick="toggleNoteSummary(this)">📖 Les utdypende sammendrag ▼</button>' : '')
         + '</div>'
         + (note.fileError ? '<div style="margin-top:10px;font-size:12px;line-height:1.45;color:#fecaca">⚠️ ' + esc(note.fileError) + '</div>' : '')
-        + (hasDownload && !isPdf ? '<div style="margin-top:10px;font-size:12px;line-height:1.45;color:#aebddd">Dette er et dokument, og lastes ned slik at du kan åpne det i Word eller et tilsvarende program.</div>' : '')
         + (note.body ? '<div class="hf-note-summary-body" style="display:none;margin-top:12px;padding:12px;border-radius:10px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);font-size:12.5px;color:#d8e2f4;line-height:1.6;white-space:pre-wrap">' + note.body + '</div>' : '')
         + '</div>'
         + '</div>';
@@ -1923,9 +1922,9 @@ AuthGuard.requireAuth();
         + '<p class="hf-pkg-desc">' + (ans.desc || 'Tidligere eksamensbesvarelse og sensorveiledning.') + '</p>'
         + '</div>'
         + '<div>'
-        + (hasPdf ? '<div class="hf-pdf-badge" style="margin-bottom:8px">📄 PDF-vedlegg ' + (ans.pdfSize ? '(' + ans.pdfSize + ')' : '') + '</div>' : '')
+        + (hasPdf ? '<div class="hf-pdf-badge" style="margin-bottom:8px">Dokument ' + (ans.pdfSize ? '(' + ans.pdfSize + ')' : '') + '</div>' : '')
         + '<div class="hf-pkg-actions">'
-        + (hasPdf ? downloadControl(ans.pdfData || ans.pdfUrl, ans.pdfName || 'eksamensbesvarelse.pdf', '📥 Last ned PDF') : '')
+        + (hasPdf ? downloadControl(ans.pdfData || ans.pdfUrl, ans.pdfName || 'eksamensbesvarelse.pdf', 'Last ned dokument') : '')
         + (hasPdf ? '<button class="hf-pkg-btn secondary" onclick="openPdfFile(\'' + (ans.pdfData || ans.pdfUrl) + '\')">👁️ Åpne</button>' : '')
         + '</div>'
         + '</div>'

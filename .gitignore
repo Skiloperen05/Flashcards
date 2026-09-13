@@ -3,6 +3,7 @@ node_modules/
 dist/
 build/
 coverage/
+supabase/.temp/
 data/*.generated.json
 .env
 .env.*
@@ -16,4 +17,3 @@ service-account*.json
 gcp-*.json
 google-credentials*.json
 *.serviceaccount.json
-

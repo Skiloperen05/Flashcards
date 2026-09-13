@@ -397,23 +397,14 @@
       uploaded_by: userId()
     };
 
+    if (basePayload.external_url) {
+      var driveLink = basePayload.external_url.match(/^https:\/\/(?:drive|docs)\.google\.com\/(?:.*\/d\/|.*[?&]id=)([A-Za-z0-9_-]+)/);
+      if (!driveLink) return Promise.reject(new Error('Velg en fil fra Google Drive eller last opp filen. Eksterne dokumentlenker er ikke beskyttet.'));
+      return importDrive(Object.assign({}, basePayload, { drive_id: driveLink[1], external_url: '' }));
+    }
+
     if (input.storage_bucket === 'google_drive' || input.drive_id) {
-      var drivePayload = Object.assign({}, basePayload, {
-        storage_bucket: 'google_drive',
-        storage_path: input.drive_id || input.storage_path || '',
-        mime_type: input.mime_type || 'application/pdf',
-        size_bytes: input.size_bytes || null,
-        meta: Object.assign({}, meta, {
-          source: 'google_drive',
-          drive_id: input.drive_id || input.storage_path || '',
-          drive_name: input.title || (input.file ? input.file.name : '')
-        })
-      });
-      return sb.from('subject_files').insert(drivePayload).select().maybeSingle().then(function (result) {
-        if (result && result.error) throw result.error;
-        invalidateSubject(key);
-        return normalizeFile(result && result.data);
-      });
+      return importDrive(Object.assign({}, basePayload, { drive_id: input.drive_id || input.storage_path }));
     }
 
     if (!file && !basePayload.external_url) {
@@ -475,6 +466,8 @@
     if (!sb || !fileId) return Promise.reject(new Error('Fil-id mangler'));
     var payload = Object.assign({}, patch);
     delete payload.id;
+    if (payload.external_url) return Promise.reject(new Error('Velg en fil fra Google Drive. Eksterne dokumentlenker er ikke beskyttet.'));
+    if (payload.storage_bucket === 'google_drive') return importDrive(Object.assign({}, payload, { id: fileId, drive_id: payload.storage_path }));
     return sb.from('subject_files').update(payload).eq('id', fileId).select().maybeSingle().then(function (result) {
       if (result && result.error) throw result.error;
       var row = result && result.data;
@@ -483,11 +476,29 @@
     });
   }
 
+  function importDrive(payload) {
+    var sb = client();
+    return sb.auth.getSession().then(function (result) {
+      var current = result.data && result.data.session;
+      if (!current) throw new Error('Logg inn på nytt for å importere dokumentet.');
+      return fetch('https://qnwjhheoekpqqqhevztw.supabase.co/functions/v1/drive-proxy?action=import', {
+        method: 'POST', headers: { Authorization: 'Bearer ' + current.access_token, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    }).then(function (response) {
+      return response.json().then(function (result) {
+        if (!response.ok || !result.file) throw new Error(result.error || 'Dokumentet ble ikke importert.');
+        invalidateSubject(result.file.subject_code);
+        return normalizeFile(result.file);
+      });
+    });
+  }
+
   function deleteFile(file) {
     if (!file || !file.id) return Promise.reject(new Error('Fil mangler'));
     var sb = client();
     if (!sb) return Promise.reject(new Error('Ikke tilkoblet'));
-    var storagePromise = file.storage_path
+    var storagePromise = file.storage_path && file.storage_bucket !== 'google_drive'
       ? sb.storage.from(file.storage_bucket || 'subject-files').remove([file.storage_path]).then(function () {}, function () {})
       : Promise.resolve();
     return storagePromise.then(function () {
@@ -499,46 +510,13 @@
     });
   }
 
-  function signedUrl(file, ttlSeconds) {
+  function signedUrl(file) {
     if (!file) return Promise.resolve(null);
-    function rememberAccessError(message) {
-      file.access_error = message || 'Kunne ikke åpne filen.';
-      return null;
+    if (file.id && (file.storage_bucket === 'google_drive' || file.storage_bucket === 'subject-files')) {
+      var root = window.AuthGuard && window.AuthGuard.getRootPath ? window.AuthGuard.getRootPath() : '../';
+      return Promise.resolve(root.replace(/\/?$/, '/') + 'user/document.html?file=' + encodeURIComponent(file.id));
     }
-    if (file.storage_bucket === 'google_drive') {
-      var s = session();
-      if (!s || !s.access_token) return Promise.resolve(null);
-      // Never put a Supabase JWT in a URL. Ask the proxy for a short-lived,
-      // server-signed download ticket, then let the browser navigate to that
-      // URL normally. This preserves Content-Disposition and is reliable in
-      // Safari, unlike a cross-origin Blob URL.
-      var proxyUrl = 'https://qnwjhheoekpqqqhevztw.supabase.co/functions/v1/drive-proxy?action=ticket&id=' + encodeURIComponent(file.id);
-      return fetch(proxyUrl, {
-        headers: { 'Authorization': 'Bearer ' + s.access_token },
-        cache: 'no-store'
-      }).then(function (response) {
-        if (!response.ok) {
-          return response.json().then(function (payload) {
-            return rememberAccessError(payload && payload.error);
-          }).catch(function () {
-            return rememberAccessError('Kunne ikke åpne dokumentet fra Google Drive.');
-          });
-        }
-        return response.json().then(function (payload) {
-          if (payload && payload.url) return payload.url;
-          return rememberAccessError((payload && payload.error) || 'Kunne ikke opprette nedlastingslenke.');
-        });
-      }).catch(function () { return rememberAccessError('Kunne ikke koble til Google Drive.'); });
-    }
-    if (!file.storage_path) {
-      return Promise.resolve(file.external_url ? file.external_url : null);
-    }
-    var sb = client();
-    if (!sb || !sb.storage) return Promise.resolve(null);
-    return sb.storage.from(file.storage_bucket || 'subject-files').createSignedUrl(file.storage_path, ttlSeconds || 3600).then(function (result) {
-      if (result && result.error) return rememberAccessError('Kunne ikke åpne den opplastede filen.');
-      return result && result.data && result.data.signedUrl ? result.data.signedUrl : null;
-    }).catch(function () { return rememberAccessError('Kunne ikke åpne den opplastede filen.'); });
+    return Promise.resolve(null);
   }
 
   // -------------------------------------------------------------

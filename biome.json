@@ -4,6 +4,7 @@
     "includes": [
       "**",
       "!assets/**",
+      "!shared/vendor/**",
       "!sam3/modellark/**"
     ]
   },

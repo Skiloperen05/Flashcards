@@ -39,7 +39,7 @@
       // harmless display filename from metadata instead: it gives the blob
       // download its real extension (.docx, .xlsx, …), which Safari and Word
       // need in order to recognise the document.
-      pdfName: (file.meta && file.meta.drive_name) || (file.storage_path ? file.storage_path.split('/').pop() : ''),
+      pdfName: (file.meta && (file.meta.original_name || file.meta.drive_name)) || (file.storage_path ? file.storage_path.split('/').pop() : ''),
       pdfSize: file.size_bytes ? (Math.round(file.size_bytes / 1024) + ' KB') : '',
       mimeType: file.mime_type || '',
       pdfUrl: file.external_url || '',
@@ -208,7 +208,7 @@
 
     newRows.forEach(function (row, index) {
       var existing = row._file || (row.id && seenIds[row.id]) || null;
-      var meta = {};
+      var meta = Object.assign({}, existing && existing.meta || {});
       if (kind === 'memo') { meta.source = row.source || ''; meta.date = row.date || ''; }
       if (kind === 'task') { meta.topic = row.topic || ''; meta.difficulty = row.difficulty || 'Middels'; }
       var payload = {
@@ -217,7 +217,7 @@
         body: kind === 'task' ? (row.solution || '') : (row.body || ''),
         term: row.term || '',
         grade: row.grade || '',
-        external_url: row.pdfUrl || row.url || row.external_url || '',
+        external_url: existing ? existing.external_url || '' : row.pdfUrl || row.url || row.external_url || '',
         meta: meta,
         sort_order: index
       };

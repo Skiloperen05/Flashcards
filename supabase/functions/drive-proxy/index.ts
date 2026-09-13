@@ -1,4 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { disposition, readDriveFile } from './files.ts';
 
 // Production Drive gateway. GitHub Pages serves the static site, so the
 // entitlement-protected server work lives here rather than under /api/.
@@ -44,6 +45,10 @@ function cors(req: Request) {
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Authorization, Content-Type, X-Google-Token, X-Requested-With",
     "Vary": "Origin",
+    "Cache-Control": "private, no-store",
+    "Access-Control-Expose-Headers": "Content-Disposition, Content-Type",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",
   };
 }
 function json(req: Request, status: number, value: unknown) {
@@ -196,6 +201,61 @@ async function getFreshDriveToken(): Promise<CachedToken | null> {
 async function google(tokenValue: string, path: string) {
   return fetch(`https://www.googleapis.com/drive/v3/${path}`, { headers: { Authorization: `Bearer ${tokenValue}` } });
 }
+async function driveFile(id: string) {
+  let saved = await getFreshDriveToken();
+  if (!saved) throw new Error('Google Drive må kobles til på nytt av administrator før filen kan importeres.');
+  return readDriveFile(id, async (path) => {
+    let response = await google(saved!.token, path);
+    if (response.status === 401) {
+      saved = await refreshAccessToken();
+      if (saved) response = await google(saved.token, path);
+    }
+    return response;
+  });
+}
+
+// Validate the actual download before publishing a reference. Bytes stay in Drive.
+async function importFile(payload: Record<string, unknown>, id: string, jwt: string) {
+  const file = await driveFile(id);
+  await file.response.body?.cancel();
+  const subject = String(payload.subject_code || '').toUpperCase();
+  if (!/^[A-Z0-9_]{1,32}$/.test(subject)) throw new Error('Ugyldig fagkode.');
+  const fileId = String(payload.id || crypto.randomUUID());
+  const headers = userHeaders(jwt);
+  const meta = payload.meta && typeof payload.meta === 'object' ? { ...payload.meta } as Record<string, unknown> : {};
+  delete meta.drive_id;
+  delete meta.drive_name;
+  Object.assign(meta, { original_name: file.name, source: 'google_drive', verified_at: new Date().toISOString() });
+  const row = { ...payload, id: fileId, subject_code: subject, storage_bucket: 'google_drive', storage_path: id,
+    mime_type: file.mime, size_bytes: file.size, external_url: '', meta };
+  const result = await fetch(`${SUPABASE_URL}/rest/v1/subject_files${payload.id ? '?id=eq.' + encodeURIComponent(fileId) : ''}`, {
+    method: payload.id ? 'PATCH' : 'POST',
+    headers: { ...headers, 'Content-Type': 'application/json', Prefer: 'return=representation' },
+    body: JSON.stringify(row),
+  });
+  const rows = result.ok ? await result.json() : [];
+  if (!rows[0]) {
+    throw new Error('Filen ble ikke publisert. Prøv å lagre på nytt.');
+  }
+  return rows[0];
+}
+
+async function ticketStillAllowed(userId: string, row: Record<string, unknown>) {
+  // A ticket is only a short-lived transport credential; recheck current access.
+  const [user, profile, entitlement, page] = await Promise.all([
+    fetch(`${SUPABASE_URL}/auth/v1/admin/users/${encodeURIComponent(userId)}`, { headers: adminHeaders() }),
+    fetch(`${SUPABASE_URL}/rest/v1/profiles?${new URLSearchParams({ id: `eq.${userId}`, select: 'is_admin,is_friend' })}`, { headers: adminHeaders() }),
+    fetch(`${SUPABASE_URL}/rest/v1/subject_entitlements?${new URLSearchParams({ user_id: `eq.${userId}`, subject_code: `eq.${row.subject_code}`, select: 'id', limit: '1' })}`, { headers: adminHeaders() }),
+    fetch(`${SUPABASE_URL}/rest/v1/subject_pages?${new URLSearchParams({ subject_code: `eq.${row.subject_code}`, select: 'is_published' })}`, { headers: adminHeaders() }),
+  ]);
+  if (![user, profile, entitlement, page].every(r => r.ok)) return false;
+  const account = await user.json();
+  if (account.banned_until && Date.parse(account.banned_until) > Date.now()) return false;
+  const profiles = await profile.json();
+  if (profiles[0]?.is_admin) return true;
+  const pages = await page.json();
+  return pages[0]?.is_published === true && (!!profiles[0]?.is_friend || (await entitlement.json()).length > 0);
+}
 function driveId(row: Record<string, unknown>) {
   if (row.storage_bucket === "google_drive" && row.storage_path) return String(row.storage_path);
   const meta = row.meta && typeof row.meta === "object" ? row.meta as Record<string, unknown> : {};
@@ -251,7 +311,7 @@ async function ticketKey() {
   return crypto.subtle.importKey("raw", textEncoder.encode(adminKey()), { name: "HMAC", hash: "SHA-256" }, false, ["sign", "verify"]);
 }
 async function issueDownloadTicket(fileId: string, userId: string) {
-  const ticket: DownloadTicket = { fileId, userId, expiresAt: Date.now() + 30 * 60 * 1000 };
+  const ticket: DownloadTicket = { fileId, userId, expiresAt: Date.now() + 60 * 1000 };
   const payload = base64Url(textEncoder.encode(JSON.stringify(ticket)));
   const signature = new Uint8Array(await crypto.subtle.sign("HMAC", await ticketKey(), textEncoder.encode(payload)));
   return `${payload}.${base64Url(signature)}`;
@@ -314,6 +374,7 @@ Deno.serve(async (req) => {
     }
 
     if (action === "status") {
+      if (!await requireAdmin(req)) return json(req, 403, { error: 'Kun administratorer har tilgang.' });
       const fresh = await getFreshDriveToken();
       return json(req, 200, {
         admin_connected: !!fresh,
@@ -321,6 +382,24 @@ Deno.serve(async (req) => {
         offline_ready: !!cachedRefresh || !!(await readRefreshToken()),
         client_secret_configured: !!GOOGLE_CLIENT_SECRET,
       });
+    }
+
+    if (action === 'import' && req.method === 'POST') {
+      const auth = await requireAdmin(req);
+      if (!auth) return json(req, 403, { error: 'Kun administratorer kan publisere dokumenter.' });
+      const input = await req.json();
+      const payload: Record<string, unknown> = {};
+      for (const key of ['id', 'subject_code', 'kind', 'title', 'description', 'body', 'term', 'grade', 'meta', 'sort_order']) {
+        if (input[key] !== undefined) payload[key] = input[key];
+      }
+      if (payload.id) {
+        const lookup = await fetch(`${SUPABASE_URL}/rest/v1/subject_files?${new URLSearchParams({ id: `eq.${payload.id}`, select: '*', limit: '1' })}`, { headers: userHeaders(auth.jwt) });
+        const rows = lookup.ok ? await lookup.json() : [];
+        if (!rows[0]) return json(req, 404, { error: 'Filen finnes ikke.' });
+        Object.assign(payload, { ...rows[0], ...payload });
+      } else payload.uploaded_by = auth.user.id;
+      try { return json(req, 200, { file: await importFile(payload, String(input.drive_id || input.storage_path || ''), auth.jwt) }); }
+      catch (error) { return json(req, 422, { error: (error as Error).message }); }
     }
 
     if (action === "list" || action === "info") {
@@ -360,7 +439,8 @@ Deno.serve(async (req) => {
       const ticketRows = ticketResponse.ok ? await ticketResponse.json() : [];
       if (!Array.isArray(ticketRows) || !ticketRows[0]?.id) return json(req, 404, { error: "Filen ble ikke funnet eller du har ikke tilgang." });
       const ticket = await issueDownloadTicket(requestedFileId, user.id);
-      return json(req, 200, { url: `${url.origin}${url.pathname}?action=download&ticket=${encodeURIComponent(ticket)}` });
+      // Supabase strips /functions/v1 from req.url inside the runtime.
+      return json(req, 200, { url: `${SUPABASE_URL}/functions/v1/drive-proxy?action=download&ticket=${encodeURIComponent(ticket)}` });
     }
 
     const downloadTicket = action === "download" ? await verifyDownloadTicket(String(url.searchParams.get("ticket") || "")) : null;
@@ -369,43 +449,46 @@ Deno.serve(async (req) => {
     if (!downloadTicket && !user) return json(req, 401, { error: "Innlogging kreves for å åpne filen." });
     const fileId = downloadTicket ? downloadTicket.fileId : requestedFileId;
     if (!isFileId.test(fileId)) return json(req, 400, { error: "Ugyldig filreferanse." });
-    const params = new URLSearchParams({ id: `eq.${fileId}`, select: "id,subject_code,title,storage_bucket,storage_path,external_url,mime_type,meta", limit: "1" });
+    const params = new URLSearchParams({ id: `eq.${fileId}`, select: "*", limit: "1" });
     const fileResponse = await fetch(`${SUPABASE_URL}/rest/v1/subject_files?${params}`, { headers: downloadTicket ? adminHeaders() : userHeaders(jwt) });
     const rows = fileResponse.ok ? await fileResponse.json() : [];
     const row = Array.isArray(rows) ? rows[0] : null;
     if (!row) return json(req, 404, { error: "Filen ble ikke funnet eller du har ikke tilgang." });
-    const id = driveId(row);
-    if (!id) return json(req, 400, { error: "Filen er ikke koblet til Google Drive." });
-    const saved = await getFreshDriveToken();
-    if (!saved) return json(req, 503, { error: "Google Drive-tilkoblingen er utløpt. Be en administrator koble til på nytt." });
-    let response = await google(saved.token, `files/${encodeURIComponent(id)}?alt=media`);
-    // A 401 here means Google rejected the cached token even though it
-    // was still marked fresh — usually because the grant was revoked and
-    // then re-granted. Try one refresh round before giving up.
-    if (response.status === 401) {
-      const refreshed = await refreshAccessToken();
-      if (refreshed) response = await google(refreshed.token, `files/${encodeURIComponent(id)}?alt=media`);
-    }
+    if (downloadTicket && !await ticketStillAllowed(downloadTicket.userId, row)) return json(req, 403, { error: 'Du har ikke lenger tilgang til dokumentet.' });
+    let response: Response;
+    let actualName = row.meta?.original_name || row.title || '';
+    let actualMime = row.mime_type || 'application/octet-stream';
+    if (row.storage_bucket === 'google_drive') {
+      try {
+        const file = await driveFile(driveId(row));
+        response = file.response;
+        actualName = file.name;
+        actualMime = file.mime;
+      } catch (error) { return json(req, 503, { error: (error as Error).message }); }
+    } else if (row.storage_bucket === 'subject-files' && row.storage_path) {
+      const path = String(row.storage_path).split('/').map(encodeURIComponent).join('/');
+      response = await fetch(`${SUPABASE_URL}/storage/v1/object/authenticated/subject-files/${path}`, { headers: downloadTicket ? adminHeaders() : userHeaders(jwt) });
+    } else return json(req, 404, { error: 'Dokumentet har ingen beskyttet filkilde.' });
     if (!response.ok || !response.body) {
       let detail = "";
       try { detail = (await response.clone().text()).slice(0, 200); } catch (_) {}
       console.warn("[drive-proxy] Drive fetch failed:", response.status, detail);
-      return json(req, 502, { error: "Kunne ikke hente filen fra Google Drive." });
+      return json(req, 502, { error: "Kunne ikke hente den lagrede filen." });
     }
-    const filename = downloadFilename(String(row.title || ""), String(row.mime_type || response.headers.get("content-type") || ""));
-    const contentType = String(row.mime_type || response.headers.get("content-type") || "application/octet-stream");
+    const filename = downloadFilename(String(actualName), String(actualMime));
+    const contentType = String(actualMime);
     // Only PDFs and images render sensibly inline; everything else
     // (docx, xlsx, pptx…) should default to a download rather than
     // trying to render in the browser.
     const forceDownload = url.searchParams.get("download") === "1";
-    const disposition = forceDownload || !/^(application\/pdf|image\/)/i.test(contentType) ? "attachment" : "inline";
+    const attachment = forceDownload || !/^(application\/pdf|image\/(png|jpeg|webp))$/i.test(contentType);
     return new Response(response.body, {
       status: 200,
       headers: {
         ...cors(req),
         "Content-Type": contentType,
-        "Content-Disposition": `${disposition}; filename="${filename}"`,
-        "Cache-Control": "private, max-age=1800",
+        "Content-Disposition": disposition(filename, attachment),
+        "Cache-Control": "private, no-store",
         "Referrer-Policy": "no-referrer",
       },
     });

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Dokument | Haugnes Flashcards</title>
+  <link rel="icon" href="../assets/favicon.svg">
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f3f4f6;color:#19212a;font-family:system-ui,sans-serif;letter-spacing:0}
+    header{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:14px 24px;background:white;border-bottom:1px solid #d3d8df}
+    header a{color:#176153;text-decoration:none}h1{font-size:18px;line-height:1.4;flex:1;min-width:140px;margin:0;overflow-wrap:anywhere}
+    button{background:#176153;color:white;border:0;border-radius:6px;padding:10px 15px;font:inherit;cursor:pointer}button:disabled{opacity:.5;cursor:wait}
+    #status{padding:16px 24px;margin:0;line-height:1.5}#status:empty{display:none}#status.error{color:#a52323}
+    #preview{width:100%;min-height:calc(100dvh - 90px)}iframe{display:block;width:100%;height:calc(100dvh - 90px);border:0}
+    article{max-width:900px;margin:auto;background:white;padding:32px;line-height:1.7;overflow-wrap:anywhere;white-space:pre-wrap}
+    #preview img{display:block;max-width:100%;max-height:85dvh;margin:24px auto;object-fit:contain}
+    @media(max-width:560px){header{padding:12px;gap:10px}h1{font-size:16px}article{padding:20px}#status{padding:12px}}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../shared/auth-guard.js"></script>
+</head>
+<body>
+  <header><a href="subjects.html" id="back">Til fagene</a><h1 id="title">Dokument</h1><button id="download" disabled>Last ned</button></header>
+  <p id="status" role="status" aria-live="polite">Kontrollerer tilgang ...</p>
+  <main id="preview"></main>
+  <script src="../shared/document-viewer.js"></script>
+</body>
+</html>

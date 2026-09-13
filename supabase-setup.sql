@@ -768,6 +768,9 @@ create policy "Admins delete app subjects"
 --
 -- Storage bucket:
 --   subject-files                private, 50 MB, PDF/Office/image/text
+--   Drive documents stay in Drive; subject_files stores only references.
+--   Additional document publication/access protections:
+--   supabase/migrations/20260913191233_protect_document_access.sql
 --
 -- Access model:
 --   - subject_pages: read-any-authenticated when is_published; admins

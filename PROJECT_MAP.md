@@ -1,6 +1,6 @@
 # Project Map
 
-Last updated: 2026-09-09
+Last updated: 2026-09-13
 
 Purpose: make future app changes faster by documenting the stable entry points, data sources, and search paths. Update this file whenever a change moves, renames, adds, or removes app-facing functionality.
 
@@ -33,6 +33,10 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 
 ## User Pages
 
+- Protected document viewer: `user/document.html?file=<subject_files UUID>`, implemented in `shared/document-viewer.js`. Loads bytes with bearer auth; PDF/image preview and local-only Word text preview using vendored Mammoth 1.11.0. Downloads request a fresh 60-second ticket on click. Drive files remain in Drive (no Supabase Storage copy); native Google Docs/Sheets/Slides are exported to PDF on demand. Import validates downloadable content and rejects public/domain-wide Drive sharing before saving metadata. Tickets recheck current subject access and publication at redemption, and responses are `private, no-store`.
+- Document gateway regression tests: `node scripts/document-access-test.mjs` (Node 24+), or `npm run check:documents`. Migration `20260913191233_protect_document_access.sql` aligns metadata/Storage publication checks and blocks newly saved external document URLs.
+- Known legacy exposure: old exam packages under `*/eksamenspakker/`, the SAM2 DOCX and SAM3 model PDFs are public static assets in this public GitHub repository. Existing hardcoded Drive links in the legacy answer library/dashboard are not protected by the new subject-file gateway. Moving or removing current copies cannot retract already public Git history/downloads. See `docs/document-access.md`.
+
 - Dashboard: `user/index.html`.
 - Admin-hub & Fagstudio: `user/admin.html`. Sentral kontrollside for administratorer (`profiles.is_admin = true`) bygd på `shared/subjects-studio.js`. Redigerer alle fag (både innebygde og egne) fra én katalog med akkordeon-editor: fag-header (kode, navn, kicker, ikon, farge, semester), publisering, memo & studietips (intro/eksamen/studieråd), seksjonssynlighet-brytere, viktige temaer, anbefalt øvingsløp, eksamensradar (m/prioritet), A-besvarelser og forelesningsnotater med støtte for både Google Drive 5 TB skylagring og lokal PDF-opplasting til Supabase Storage (`subject-files` bucket), oppgavebank med trinnvis fasit, samt flashcard-innstillinger. Inkluderer live Google Drive-utforsker (GIS token client), forhåndsvisning i iframe (student- eller admin-visning) og førstegangs-migrering av gammel localStorage-data. Alle endringer publiseres umiddelbart til studenter med entitlement via Supabase Realtime.
 - Subject management: `user/subjects.html`.
@@ -53,7 +57,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Subject metadata: `shared/subject-meta.js`. Merges the published `app_subjects` catalogue with published custom Fagstudio rows from `subject_pages`, so newly created subjects appear in navigation and the shop.
 - Subject page rendering/data/enhancements: `shared/subject-page-renderer.js`, `shared/subject-page-data.js`, `shared/subject-page-enhancements.js`, `shared/subject-resources.js`.
 - Subject Studio API (single source of truth for admin-editable subject pages): `shared/subjects-studio.js`. Reads/writes `subject_pages`, `subject_page_blocks` and `subject_files` (Storage bucket `subject-files`) in Supabase. Legacy localStorage keys (`hf_custom_subjects_v1`, `hf_custom_subject_pages_v1`, `hf_custom_packages_v1`, `hf_custom_memos_v1`, `hf_custom_tasks_v1`) are migrated once per admin and then untouched. Exposes `window.SubjectsStudio` (listSubjects/getSubject/upsertSubject/upsertBlock/reorderBlocks/deleteBlock/uploadFile/updateFile/deleteFile/signedUrl/subscribeChanges).
-- Subject-page ↔ Studio bridge: `shared/subject-page-studio-bridge.js`. Patches `HaugnesSubjectPages.get`/`.savePage` so the student subject shell (`subject/index.html`) reads fresh data from Studio and inline edits are persisted to Supabase. Publishes signed PDF URLs to the existing renderer and re-renders on `haugnes:subject-studio-changed`.
+- Subject-page ↔ Studio bridge: `shared/subject-page-studio-bridge.js`. Patches `HaugnesSubjectPages.get`/`.savePage` so the student subject shell (`subject/index.html`) reads fresh data from Studio and inline edits are persisted to Supabase. Supplies stable protected document-viewer links (not expiring tickets at page-load time) and re-renders on `haugnes:subject-studio-changed`.
 - Dashboard dynamic progress/recommendations and some legacy SAM3 package pointers: `shared/haugnes-dashboard-progress.js`.
 - A-besvarelser / eksamensarkiv dynamic package UI: `shared/haugnes-answer-library.js`.
 - User sidebar normalization: `shared/user-sidebar.js`. It is the source of truth for the grouped left menu used across user/app pages: Hjem, Mine fag, Butikk, Studieplan, Eksamensanalyse, A-besvarelser, Memoarer, Notater, Alle flashcards, Innstillinger.
