@@ -10,6 +10,7 @@
     sam2: 'SAM2',
     sam3: 'SAM3',
     met2: 'MET2',
+    met3: 'MET3',
     mat10: 'MAT10',
     sam1a: 'SAM1A',
     met1: 'MET1',
@@ -24,7 +25,7 @@
     organisasjonsatferd: 'SOL1', organisasjonsrett: 'SOL1',
     sam2: 'SAM2', mikro: 'SAM2', 'mikroøkonomi': 'SAM2',
     sam3: 'SAM3', makro: 'SAM3', 'makroøkonomi': 'SAM3',
-    met2: 'MET2', mat10: 'MAT10', sam1a: 'SAM1A', met1: 'MET1', kom1: 'KOM1', ret1a: 'RET1A', bed1: 'BED1'
+    met2: 'MET2', met3: 'MET3', mat10: 'MAT10', sam1a: 'SAM1A', met1: 'MET1', kom1: 'KOM1', ret1a: 'RET1A', bed1: 'BED1'
   };
 
   function rootRelative(path) {
@@ -35,7 +36,7 @@
   }
 
   function detectSubjectFromPath() {
-    var match = window.location.pathname.match(/\/(ret14|sol1|sam2|sam3|met2|mat10|sam1a|met1|kom1|ret1a|bed1)(?:\/|$)/i);
+    var match = window.location.pathname.match(/\/(ret14|sol1|sam2|sam3|met2|met3|mat10|sam1a|met1|kom1|ret1a|bed1)(?:\/|$)/i);
     if (!match) return null;
     return SUBJECT_DIRS[match[1].toLowerCase()] || null;
   }

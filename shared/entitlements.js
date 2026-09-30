@@ -3,7 +3,7 @@
 
   if (window.HaugnesEntitlements) return;
 
-  var ALL_DEV_CODES = ['RET14', 'SOL1', 'SAM2', 'SAM3', 'MET2', 'MAT10', 'SAM1A', 'MET1', 'KOM1', 'RET1A', 'BED1'];
+  var ALL_DEV_CODES = ['RET14', 'SOL1', 'SAM2', 'SAM3', 'MET2', 'MET3', 'MAT10', 'SAM1A', 'MET1', 'KOM1', 'RET1A', 'BED1'];
   var PREVIEW_KEY = 'hf_admin_preview_as_student';
 
   var state = { loaded: false, codes: [], paidCodes: [], isAdmin: false, isFriend: false };

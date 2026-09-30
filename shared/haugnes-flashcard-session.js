@@ -53,6 +53,7 @@
 
   function getSubjectHomeUrl() {
     var key = subjectKey(window.currentSubjectId);
+    if (key === 'met3') return rootRelative('met3/');
     if (key === 'ret14') return rootRelative('ret14/');
     if (key === 'subj_sol1') return rootRelative('sol1/');
     if (key === 'sam2') return rootRelative('sam2/');
@@ -116,6 +117,8 @@
   }
 
   function applySessionPreferences() {
+    // Explicit study options have already ordered and capped this collection.
+    if (window.currentSessionOptions) return;
     var cards = window.currentCards;
     if (!Array.isArray(cards) || !cards.length || !window.currentDeck) return;
     var prefs = getUserSettings();
@@ -149,8 +152,8 @@
     }
     if (typeof window.startDeck === 'function' && !window.startDeck.__hfSettings) {
       var originalStart = window.startDeck;
-      window.startDeck = function (id, filter) {
-        return originalStart.call(this, id, filter || defaultSessionFilter());
+      window.startDeck = function (id, filter, options) {
+        return originalStart.call(this, id, filter || (window.HaugnesStudyOptions ? window.HaugnesStudyOptions.read().filter : defaultSessionFilter()), options);
       };
       window.startDeck.__hfSettings = true;
     }
@@ -185,7 +188,7 @@
   }
 
   function getRatedCount() {
-    return window.sessionResults ? Object.keys(window.sessionResults).length : 0;
+    return (window.currentCards || []).filter(function (card) { return window.sessionResults && window.sessionResults[card.idx]; }).length;
   }
 
   function ensureSessionStatus() {
@@ -252,7 +255,7 @@
     var stats = window.getStats();
     var deckStats = stats[deck.id] || {};
     var sessions = deckStats.sessions || [];
-    var latest = sessions[sessions.length - 1];
+    var latest = window.currentSessionSummary || sessions[sessions.length - 1];
     if (!latest || !latest.date) return;
 
     var key = subjectKey(window.currentSubjectId);
@@ -366,8 +369,9 @@
     if (document.body.dataset.hfKeyboardShortcuts) return;
     document.body.dataset.hfKeyboardShortcuts = '1';
     document.addEventListener('keydown', function (event) {
+      if (event.defaultPrevented) return;
       var tag = (event.target && event.target.tagName || '').toLowerCase();
-      if (tag === 'input' || tag === 'textarea' || event.metaKey || event.ctrlKey || event.altKey) return;
+      if (tag === 'input' || tag === 'textarea' || tag === 'select' || tag === 'button' || tag === 'a' || event.target.isContentEditable || event.metaKey || event.ctrlKey || event.altKey) return;
       var cardsActive = document.getElementById('view-cards') && document.getElementById('view-cards').classList.contains('active');
       if (!cardsActive) return;
       if (event.key === ' ' || event.code === 'Space') {

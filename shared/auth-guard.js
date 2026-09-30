@@ -20,7 +20,7 @@
     }
 
     var path = window.location.pathname;
-    var match = path.match(/^(.*?)(?:ret14|sol1|sam2|sam3|mat10|met2|sam1a|met1|kom1|ret1a|bed1|flashcards|user)\//);
+    var match = path.match(/^(.*?)(?:ret14|sol1|sam2|sam3|mat10|met2|met3|sam1a|met1|kom1|ret1a|bed1|flashcards|user)\//);
     return match ? match[1] : path.replace(/[^/]*$/, '');
   }
 

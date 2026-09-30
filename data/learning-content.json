@@ -1,6 +1,6 @@
 {
   "version": "2026.07-v1-platform-ready",
-  "updatedAt": "2026-07-03",
+  "updatedAt": "2026-09-30",
   "v1": {
     "status": "content_pending_joint_build",
     "targetQualityStatus": "exam_ready",
@@ -317,6 +317,63 @@
         {"icon": "▣", "title": "Eksamensbank", "description": "Gamle oppgaver sortert etter tema og drøftingstype.", "status": "Oppgaver", "href": "../user/oppgavebank.html?subject=RET1A", "accent": "#e8bc68"},
         {"icon": "◈", "title": "Disposisjon", "description": "Problemstilling, rettsregel, subsumsjon og konklusjon som fast svarmal.", "status": "Metode", "href": "#sjekkliste", "accent": "#2f62ff"}
       ]
+    },
+    {
+      "id": "met3",
+      "code": "MET3",
+      "name": "Databehandling for økonomer",
+      "accent": "#15803d",
+      "lead": "Lær Excel-formler gjennom 146 kildebaserte flashcards i 13 temadekk. Øv på syntaks, formelvalg, fallgruver og praktiske modeller.",
+      "sourceSummary": "MET3 Excel-formeloversikt: 37 dokumenterte Excel-funksjoner, beregningsmønstre, Power Query og tre merkede supplerende funksjoner.",
+      "defaultHref": "../met3/",
+      "flashcardsHref": "../flashcards/?subject=met3",
+      "toolProfile": "spreadsheet_methods",
+      "qualityStatus": "usable",
+      "qualityTarget": "exam_ready",
+      "preferredStudyMethod": "Skriv formelen selv før du snur kortet. Forklar argumentene og kontroller resultatet i Excel. Kombiner temaer når grunnlaget sitter.",
+      "personalNotes": {
+        "summary": "Kortene er bearbeidet fra den vedlagte formeloversikten; sidetall står på hvert kort.",
+        "sourceIds": [
+          "met3-excel-overview-20260930"
+        ],
+        "useInApp": [
+          "Funksjoner og syntaks",
+          "Formelvalg og feilretting",
+          "Praktiske beregningsmodeller"
+        ]
+      },
+      "personalWarnings": [
+        "Kortene dekker oversikten, ikke en garanti for hele MET3-pensumet.",
+        "Eksemplene bruker engelske funksjonsnavn, komma og desimalpunktum. Tilpass regioninnstillingene.",
+        "Beskrivende navn må defineres i arbeidsboken eller erstattes med cellereferanser.",
+        "NPV, IRR og SUBTOTAL er tydelig merket som supplerende."
+      ],
+      "primaryTools": [
+        {
+          "icon": "ƒ",
+          "title": "Excel-flashcards",
+          "description": "Velg ett eller flere temadekk, nivå og øktlengde.",
+          "status": "Klar",
+          "href": "../flashcards/?subject=met3",
+          "accent": "#15803d"
+        },
+        {
+          "icon": "Σ",
+          "title": "Formelvalg og metode",
+          "description": "Repeter argumentrekkefølge, referanser og sentrale fallgruver.",
+          "status": "Oversikt",
+          "href": "#formelark",
+          "accent": "#2563eb"
+        },
+        {
+          "icon": "✓",
+          "title": "Anbefalt øvingsløp",
+          "description": "Fra cellereferanser til kombinerte modeller og Power Query.",
+          "status": "Start her",
+          "href": "#planList",
+          "accent": "#d97706"
+        }
+      ]
     }
   ],
   "sources": [
@@ -501,6 +558,17 @@
       "rights": "local_private_source",
       "status": "ready_for_import",
       "suggestedUse": "Disposisjonskort, vilkårskort og juridisk metodebank"
+    },
+    {
+      "id": "met3-excel-overview-20260930",
+      "subject": "MET3",
+      "title": "MET3 – Excel-formeloversikt",
+      "type": "pdf",
+      "sourceRole": "canvas_and_spreadsheet",
+      "sourcePath": "MET3 - Excel-formeloversikt.pdf",
+      "rights": "user_provided_source",
+      "status": "reviewed",
+      "suggestedUse": "Bearbeidede flashcards med PDF-sidetall. Kilde-PDF-en publiseres ikke som statisk ressurs."
     }
   ],
   "decks": {
@@ -764,6 +832,1414 @@
             "topic": "subsumsjon",
             "tag": "Vilkår",
             "source": "RET1A eksamensøving"
+          }
+        ]
+      }
+    ],
+    "met3": [
+      {
+        "id": "met3-grunnlag",
+        "title": "Grunnlag og cellereferanser",
+        "status": "source_based",
+        "difficulty": "grunnleggende",
+        "description": "Operatorer, fortegn, låste referanser og Excel-syntaks.",
+        "sourceIds": [
+          "met3-excel-overview-20260930"
+        ],
+        "cards": [
+          {
+            "q": "Hvorfor bruker kortene engelske funksjonsnavn, komma og desimalpunktum?",
+            "a": "Det følger MET3-heftene og oversikten. Dine språk- og regioninnstillinger kan kreve norske navn, semikolon mellom argumentene og desimalkomma.",
+            "topic": "met3-grunnlag",
+            "tag": "Grunnlag og cellereferanser",
+            "source": "MET3 Excel-formeloversikt · s. 1, 11",
+            "difficulty": "grunnleggende"
+          },
+          {
+            "q": "Hva betyr [argument] i en funksjons syntaks?",
+            "a": "Argumentet er valgfritt. Ikke skriv de firkantede klammene i Excel-formelen.",
+            "topic": "met3-grunnlag",
+            "tag": "Grunnlag og cellereferanser",
+            "source": "MET3 Excel-formeloversikt · s. 1, 11",
+            "difficulty": "grunnleggende"
+          },
+          {
+            "q": "Hvordan skriver du addisjon, subtraksjon, multiplikasjon, divisjon og potens i Excel?",
+            "a": "=B2+C2, =B2-C2, =B2*C2, =B2/C2 og =B2^C2. Parenteser bestemmer beregningsrekkefølgen.",
+            "topic": "met3-grunnlag",
+            "tag": "Grunnlag og cellereferanser",
+            "source": "MET3 Excel-formeloversikt · s. 1, 11",
+            "difficulty": "grunnleggende"
+          },
+          {
+            "q": "B2 er 100 og C2 er 0.05. Hva gir =B2*(1+C2)?",
+            "a": "105. Parentesen gir vekstfaktoren 1.05, som multipliseres med startverdien 100.",
+            "topic": "met3-grunnlag",
+            "tag": "Grunnlag og cellereferanser",
+            "source": "MET3 Excel-formeloversikt · s. 1, 11",
+            "difficulty": "grunnleggende"
+          },
+          {
+            "q": "Hva er forskjellen på A1 og $A$1 når du kopierer en formel?",
+            "a": "A1 er relativ og flyttes med formelen. $A$1 låser både kolonne A og rad 1.",
+            "topic": "met3-grunnlag",
+            "tag": "Grunnlag og cellereferanser",
+            "source": "MET3 Excel-formeloversikt · s. 1, 11",
+            "difficulty": "grunnleggende"
+          },
+          {
+            "q": "Hva låser $A1, og hva låser A$1?",
+            "a": "$A1 låser kolonnen, men lar raden flyttes. A$1 låser raden, men lar kolonnen flyttes.",
+            "topic": "met3-grunnlag",
+            "tag": "Grunnlag og cellereferanser",
+            "source": "MET3 Excel-formeloversikt · s. 1, 11",
+            "difficulty": "grunnleggende"
+          },
+          {
+            "q": "Formelen =D4*(1+$H$3) kopieres én rad ned. Hva blir den?",
+            "a": "=D5*(1+$H$3). D4 flyttes til D5; den låste vekstsatsen i H3 beholdes.",
+            "topic": "met3-grunnlag",
+            "tag": "Grunnlag og cellereferanser",
+            "source": "MET3 Excel-formeloversikt · s. 1, 11",
+            "difficulty": "grunnleggende"
+          },
+          {
+            "q": "Formelen =SUMIFS(Beløp,Måned,G$1,Selger,$F2) kopieres én kolonne til høyre og én rad ned. Hva endres?",
+            "a": "G$1 blir H$1, og $F2 blir $F3. Navngitte områder beholdes. Ny formel: =SUMIFS(Beløp,Måned,H$1,Selger,$F3).",
+            "topic": "met3-grunnlag",
+            "tag": "Grunnlag og cellereferanser",
+            "source": "MET3 Excel-formeloversikt · s. 1, 11",
+            "difficulty": "grunnleggende"
+          },
+          {
+            "q": "Hva gjør =Modell!C12?",
+            "a": "Henter verdien i C12 på arket Modell. Utropstegnet skiller arknavnet fra cellereferansen.",
+            "topic": "met3-grunnlag",
+            "tag": "Grunnlag og cellereferanser",
+            "source": "MET3 Excel-formeloversikt · s. 1, 11",
+            "difficulty": "grunnleggende"
+          },
+          {
+            "q": "Kan du skrive =Antall*Pris uten videre?",
+            "a": "Bare hvis Antall og Pris er opprettet som navn i arbeidsboken. Ellers erstatter du dem med faktiske referanser, for eksempel =B2*C2.",
+            "topic": "met3-grunnlag",
+            "tag": "Grunnlag og cellereferanser",
+            "source": "MET3 Excel-formeloversikt · s. 1, 11",
+            "difficulty": "grunnleggende"
+          },
+          {
+            "q": "Hva betyr <> i en Excel-test, og hva gjør &?",
+            "a": "<> betyr ulik. & kobler tekst: =\"År \"&B2 lager for eksempel teksten År 3 når B2 er 3.",
+            "topic": "met3-grunnlag",
+            "tag": "Grunnlag og cellereferanser",
+            "source": "MET3 Excel-formeloversikt · s. 1, 11",
+            "difficulty": "grunnleggende"
+          },
+          {
+            "q": "Hvordan skriver du et kriterium som teller positive tall?",
+            "a": "Skriv kriteriet som tekst i anførselstegn: =COUNTIF(B2:B10,\">0\"). Vanlige sammenligninger bruker =, <>, <, >, <= og >=.",
+            "topic": "met3-grunnlag",
+            "tag": "Grunnlag og cellereferanser",
+            "source": "MET3 Excel-formeloversikt · s. 1, 11",
+            "difficulty": "grunnleggende"
+          }
+        ]
+      },
+      {
+        "id": "met3-summering",
+        "title": "Summering og gjennomsnitt",
+        "status": "source_based",
+        "difficulty": "grunnleggende",
+        "description": "SUM, AVERAGE, MAX, MIN og vektede summer med SUMPRODUCT.",
+        "sourceIds": [
+          "met3-excel-overview-20260930"
+        ],
+        "cards": [
+          {
+            "q": "Hva brukes SUM til, og hvilke argumenter trenger den?",
+            "a": "Summerer tall i celler eller områder.\n\nSyntaks: SUM(tall1, [tall2], ...)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-summering",
+            "tag": "Summering og gjennomsnitt",
+            "source": "MET3 Excel-formeloversikt · s. 2",
+            "difficulty": "grunnleggende",
+            "function": "SUM"
+          },
+          {
+            "q": "Forklar formelen =SUM(D4:D8)",
+            "a": "Summerer verdiene i D4 til og med D8.\n\nFormel: =SUM(D4:D8)",
+            "topic": "met3-summering",
+            "tag": "Summering og gjennomsnitt",
+            "source": "MET3 Excel-formeloversikt · s. 2",
+            "difficulty": "grunnleggende",
+            "function": "SUM"
+          },
+          {
+            "q": "Hva brukes AVERAGE til, og hvilke argumenter trenger den?",
+            "a": "Beregner aritmetisk gjennomsnitt.\n\nSyntaks: AVERAGE(tall1, [tall2], ...)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-summering",
+            "tag": "Summering og gjennomsnitt",
+            "source": "MET3 Excel-formeloversikt · s. 2",
+            "difficulty": "grunnleggende",
+            "function": "AVERAGE"
+          },
+          {
+            "q": "Forklar formelen =AVERAGE(D4:D8)",
+            "a": "Beregner gjennomsnittet av tallene i området. Tomme celler og tekst utelates; null teller med.\n\nFormel: =AVERAGE(D4:D8)",
+            "topic": "met3-summering",
+            "tag": "Summering og gjennomsnitt",
+            "source": "MET3 Excel-formeloversikt · s. 2",
+            "difficulty": "grunnleggende",
+            "function": "AVERAGE"
+          },
+          {
+            "q": "Hva brukes MAX til, og hvilke argumenter trenger den?",
+            "a": "Finner høyeste verdi.\n\nSyntaks: MAX(tall1, [tall2], ...)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-summering",
+            "tag": "Summering og gjennomsnitt",
+            "source": "MET3 Excel-formeloversikt · s. 2",
+            "difficulty": "grunnleggende",
+            "function": "MAX"
+          },
+          {
+            "q": "Forklar formelen =MAX(0,B2)",
+            "a": "Velger det største av 0 og B2. Resultatet kan aldri bli negativt.\n\nFormel: =MAX(0,B2)",
+            "topic": "met3-summering",
+            "tag": "Summering og gjennomsnitt",
+            "source": "MET3 Excel-formeloversikt · s. 2",
+            "difficulty": "grunnleggende",
+            "function": "MAX"
+          },
+          {
+            "q": "Hva brukes MIN til, og hvilke argumenter trenger den?",
+            "a": "Finner laveste verdi.\n\nSyntaks: MIN(tall1, [tall2], ...)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-summering",
+            "tag": "Summering og gjennomsnitt",
+            "source": "MET3 Excel-formeloversikt · s. 2",
+            "difficulty": "grunnleggende",
+            "function": "MIN"
+          },
+          {
+            "q": "Forklar formelen =MIN(O2,D2)",
+            "a": "Velger det minste av produksjonen i O2 og forbruket i D2, slik at egenbrukt solstrøm ikke overstiger noen av dem.\n\nFormel: =MIN(O2,D2)",
+            "topic": "met3-summering",
+            "tag": "Summering og gjennomsnitt",
+            "source": "MET3 Excel-formeloversikt · s. 2",
+            "difficulty": "grunnleggende",
+            "function": "MIN"
+          },
+          {
+            "q": "Hva brukes SUMPRODUCT til, og hvilke argumenter trenger den?",
+            "a": "Multipliserer sammenhørende verdier parvis og summerer produktene. Områdene må ha samme størrelse.\n\nSyntaks: SUMPRODUCT(matrise1, [matrise2], ...)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-summering",
+            "tag": "Summering og gjennomsnitt",
+            "source": "MET3 Excel-formeloversikt · s. 2",
+            "difficulty": "grunnleggende",
+            "function": "SUMPRODUCT"
+          },
+          {
+            "q": "Forklar formelen =SUMPRODUCT(B4:B8,C4:C8)",
+            "a": "Summerer B4*C4 + B5*C5 + … + B8*C8.\n\nFormel: =SUMPRODUCT(B4:B8,C4:C8)",
+            "topic": "met3-summering",
+            "tag": "Summering og gjennomsnitt",
+            "source": "MET3 Excel-formeloversikt · s. 2",
+            "difficulty": "grunnleggende",
+            "function": "SUMPRODUCT"
+          },
+          {
+            "q": "D4:D6 inneholder 10, 0 og en tom celle. Hva gir AVERAGE(D4:D6)?",
+            "a": "5. Null teller med, mens den tomme cellen ikke teller: (10+0)/2.",
+            "topic": "met3-summering",
+            "tag": "Summering og gjennomsnitt",
+            "source": "MET3 Excel-formeloversikt · s. 2",
+            "difficulty": "grunnleggende"
+          },
+          {
+            "q": "Hvordan beregner du forbruksvektet strømpris fra kWh i B2:B25 og kr/kWh i C2:C25?",
+            "a": "=SUMPRODUCT(B2:B25,C2:C25)/SUM(B2:B25). Total kostnad deles på totalforbruket; totalforbruket må være større enn null.",
+            "topic": "met3-summering",
+            "tag": "Summering og gjennomsnitt",
+            "source": "MET3 Excel-formeloversikt · s. 2",
+            "difficulty": "middels"
+          }
+        ]
+      },
+      {
+        "id": "met3-vilkar",
+        "title": "Summering og telling med vilkår",
+        "status": "source_based",
+        "difficulty": "middels",
+        "description": "SUMIF, SUMIFS, COUNTIF, COUNTIFS og MAXIFS.",
+        "sourceIds": [
+          "met3-excel-overview-20260930"
+        ],
+        "cards": [
+          {
+            "q": "Hva brukes SUMIF til, og hvilke argumenter trenger den?",
+            "a": "Summerer etter ett vilkår. Uten sumområde summeres vilkårsområdet.\n\nSyntaks: SUMIF(vilkårsområde, vilkår, [sumområde])\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-vilkar",
+            "tag": "Summering og telling med vilkår",
+            "source": "MET3 Excel-formeloversikt · s. 3",
+            "difficulty": "middels",
+            "function": "SUMIF"
+          },
+          {
+            "q": "Forklar formelen =SUMIF(A2:A100,E2,D2:D100)",
+            "a": "Summerer beløpene i D for radene der A er lik verdien i E2.\n\nFormel: =SUMIF(A2:A100,E2,D2:D100)",
+            "topic": "met3-vilkar",
+            "tag": "Summering og telling med vilkår",
+            "source": "MET3 Excel-formeloversikt · s. 3",
+            "difficulty": "middels",
+            "function": "SUMIF"
+          },
+          {
+            "q": "Hva brukes SUMIFS til, og hvilke argumenter trenger den?",
+            "a": "Summerer rader som oppfyller alle vilkårene. Alle områdene må være like store.\n\nSyntaks: SUMIFS(sumområde, vilkårsområde1, vilkår1, ...)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-vilkar",
+            "tag": "Summering og telling med vilkår",
+            "source": "MET3 Excel-formeloversikt · s. 3",
+            "difficulty": "middels",
+            "function": "SUMIFS"
+          },
+          {
+            "q": "Forklar formelen =SUMIFS(D2:D100,A2:A100,$F2,B2:B100,G$1)",
+            "a": "Summerer D der A er lik F2 og B er lik G1. Sumområdet står først; blandede referanser gjør formelen kopierbar i to retninger.\n\nFormel: =SUMIFS(D2:D100,A2:A100,$F2,B2:B100,G$1)",
+            "topic": "met3-vilkar",
+            "tag": "Summering og telling med vilkår",
+            "source": "MET3 Excel-formeloversikt · s. 3",
+            "difficulty": "middels",
+            "function": "SUMIFS"
+          },
+          {
+            "q": "Hva brukes COUNTIF til, og hvilke argumenter trenger den?",
+            "a": "Teller celler som oppfyller ett kriterium.\n\nSyntaks: COUNTIF(område, vilkår)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-vilkar",
+            "tag": "Summering og telling med vilkår",
+            "source": "MET3 Excel-formeloversikt · s. 3",
+            "difficulty": "middels",
+            "function": "COUNTIF"
+          },
+          {
+            "q": "Forklar formelen =COUNTIF(G2:G8,\">0\")",
+            "a": "Teller cellene i G2:G8 med en verdi større enn null.\n\nFormel: =COUNTIF(G2:G8,\">0\")",
+            "topic": "met3-vilkar",
+            "tag": "Summering og telling med vilkår",
+            "source": "MET3 Excel-formeloversikt · s. 3",
+            "difficulty": "middels",
+            "function": "COUNTIF"
+          },
+          {
+            "q": "Hva brukes COUNTIFS til, og hvilke argumenter trenger den?",
+            "a": "Teller rader som oppfyller alle kriteriene. Områdene må være like store.\n\nSyntaks: COUNTIFS(område1, vilkår1, ...)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-vilkar",
+            "tag": "Summering og telling med vilkår",
+            "source": "MET3 Excel-formeloversikt · s. 3",
+            "difficulty": "middels",
+            "function": "COUNTIFS"
+          },
+          {
+            "q": "Forklar formelen =COUNTIFS(F7:F58,\"<>\",C7:C58,\"\")",
+            "a": "Teller rader der F ikke er tom, mens C er tom. \"<>\" betyr ikke tom; \"\" betyr tom i disse kriteriene.\n\nFormel: =COUNTIFS(F7:F58,\"<>\",C7:C58,\"\")",
+            "topic": "met3-vilkar",
+            "tag": "Summering og telling med vilkår",
+            "source": "MET3 Excel-formeloversikt · s. 3",
+            "difficulty": "middels",
+            "function": "COUNTIFS"
+          },
+          {
+            "q": "Hva brukes MAXIFS til, og hvilke argumenter trenger den?",
+            "a": "Finner største verdi blant radene som oppfyller vilkårene.\n\nSyntaks: MAXIFS(maksområde, vilkårsområde1, vilkår1, ...)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-vilkar",
+            "tag": "Summering og telling med vilkår",
+            "source": "MET3 Excel-formeloversikt · s. 3",
+            "difficulty": "middels",
+            "function": "MAXIFS"
+          },
+          {
+            "q": "Forklar formelen =MAXIFS(Timer!$D$2:$D$8761,Timer!$C$2:$C$8761,$C6)",
+            "a": "Finner høyeste timeforbruk i D for måneden angitt i C6, med månedsnumre i Timer!C.\n\nFormel: =MAXIFS(Timer!$D$2:$D$8761,Timer!$C$2:$C$8761,$C6)",
+            "topic": "met3-vilkar",
+            "tag": "Summering og telling med vilkår",
+            "source": "MET3 Excel-formeloversikt · s. 3",
+            "difficulty": "middels",
+            "function": "MAXIFS"
+          },
+          {
+            "q": "Hva er den viktigste forskjellen i argumentrekkefølgen til SUMIF og SUMIFS?",
+            "a": "SUMIF har vilkårsområdet først og sumområdet til slutt. SUMIFS har sumområdet først, deretter område/vilkår-par.",
+            "topic": "met3-vilkar",
+            "tag": "Summering og telling med vilkår",
+            "source": "MET3 Excel-formeloversikt · s. 3",
+            "difficulty": "middels"
+          },
+          {
+            "q": "Du vil telle kontrollmeldinger med teksten SJEKK i F6:F14. Skriv en formel.",
+            "a": "=COUNTIF(F6:F14,\"SJEKK\"). COUNTIF teller treff; SUMIF ville summert tall.",
+            "topic": "met3-vilkar",
+            "tag": "Summering og telling med vilkår",
+            "source": "MET3 Excel-formeloversikt · s. 3",
+            "difficulty": "middels"
+          },
+          {
+            "q": "Hvorfor skal du skrive MAXIFS og ikke _xlfn.MAXIFS i Excel?",
+            "a": "_xlfn. er et kompatibilitetsprefiks i kildefilen. Det vanlige funksjonsnavnet i Excel er MAXIFS.",
+            "topic": "met3-vilkar",
+            "tag": "Summering og telling med vilkår",
+            "source": "MET3 Excel-formeloversikt · s. 3",
+            "difficulty": "middels"
+          }
+        ]
+      },
+      {
+        "id": "met3-logikk",
+        "title": "Logiske valg og feilhåndtering",
+        "status": "source_based",
+        "difficulty": "middels",
+        "description": "IF, AND, OR og IFERROR med praktiske tester.",
+        "sourceIds": [
+          "met3-excel-overview-20260930"
+        ],
+        "cards": [
+          {
+            "q": "Hva brukes IF til, og hvilke argumenter trenger den?",
+            "a": "Velger mellom resultater ut fra en sann/usann-test.\n\nSyntaks: IF(logisk_test, verdi_hvis_sann, [verdi_hvis_usann])\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-logikk",
+            "tag": "Logiske valg og feilhåndtering",
+            "source": "MET3 Excel-formeloversikt · s. 4",
+            "difficulty": "middels",
+            "function": "IF"
+          },
+          {
+            "q": "Forklar formelen =IF(C3>=F3,C4*G9,C4*G8)",
+            "a": "Hvis C3 er minst F3, brukes C4*G9. Ellers brukes C4*G8, for eksempel ved valg av feriepengesats.\n\nFormel: =IF(C3>=F3,C4*G9,C4*G8)",
+            "topic": "met3-logikk",
+            "tag": "Logiske valg og feilhåndtering",
+            "source": "MET3 Excel-formeloversikt · s. 4",
+            "difficulty": "middels",
+            "function": "IF"
+          },
+          {
+            "q": "Hva brukes AND til, og hvilke argumenter trenger den?",
+            "a": "Gir TRUE bare når alle testene er sanne.\n\nSyntaks: AND(test1, [test2], ...)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-logikk",
+            "tag": "Logiske valg og feilhåndtering",
+            "source": "MET3 Excel-formeloversikt · s. 4",
+            "difficulty": "middels",
+            "function": "AND"
+          },
+          {
+            "q": "Forklar formelen =IF(AND(Alder>=Grense,Uker>=5),Grunnlag*Sats,0)",
+            "a": "Gir Grunnlag*Sats bare hvis både alderskravet og minst fem uker er oppfylt. Navnene må være definert i arbeidsboken.\n\nFormel: =IF(AND(Alder>=Grense,Uker>=5),Grunnlag*Sats,0)",
+            "topic": "met3-logikk",
+            "tag": "Logiske valg og feilhåndtering",
+            "source": "MET3 Excel-formeloversikt · s. 4",
+            "difficulty": "middels",
+            "function": "AND"
+          },
+          {
+            "q": "Hva brukes OR til, og hvilke argumenter trenger den?",
+            "a": "Gir TRUE når minst én test er sann.\n\nSyntaks: OR(test1, [test2], ...)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-logikk",
+            "tag": "Logiske valg og feilhåndtering",
+            "source": "MET3 Excel-formeloversikt · s. 4",
+            "difficulty": "middels",
+            "function": "OR"
+          },
+          {
+            "q": "Forklar formelen =IF(OR(B2>=GrenseEks,C2>=GrenseNy),Bonus,0)",
+            "a": "Gir bonus hvis minst ett av kravene er oppfylt. Bonus gis én gang selv når begge tester er sanne.\n\nFormel: =IF(OR(B2>=GrenseEks,C2>=GrenseNy),Bonus,0)",
+            "topic": "met3-logikk",
+            "tag": "Logiske valg og feilhåndtering",
+            "source": "MET3 Excel-formeloversikt · s. 4",
+            "difficulty": "middels",
+            "function": "OR"
+          },
+          {
+            "q": "Hva brukes IFERROR til, og hvilke argumenter trenger den?",
+            "a": "Returnerer alternativet når beregningen gir en Excel-feil.\n\nSyntaks: IFERROR(verdi_eller_formel, verdi_ved_feil)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-logikk",
+            "tag": "Logiske valg og feilhåndtering",
+            "source": "MET3 Excel-formeloversikt · s. 4",
+            "difficulty": "middels",
+            "function": "IFERROR"
+          },
+          {
+            "q": "Forklar formelen =IFERROR(B2/C2,\"Sjekk inndata\")",
+            "a": "Viser kvotienten ved gyldig divisjon og meldingen Sjekk inndata ved feil, for eksempel divisjon med null.\n\nFormel: =IFERROR(B2/C2,\"Sjekk inndata\")",
+            "topic": "met3-logikk",
+            "tag": "Logiske valg og feilhåndtering",
+            "source": "MET3 Excel-formeloversikt · s. 4",
+            "difficulty": "middels",
+            "function": "IFERROR"
+          },
+          {
+            "q": "Hvorfor kan IFERROR(formel,0) gi en misvisende modell?",
+            "a": "En feil kan bli skjult som et tilsynelatende gyldig nullresultat. Undersøk feilkilden før du erstatter den; IFERROR fanger også uventede feil.",
+            "topic": "met3-logikk",
+            "tag": "Logiske valg og feilhåndtering",
+            "source": "MET3 Excel-formeloversikt · s. 4",
+            "difficulty": "middels"
+          },
+          {
+            "q": "Skriv en formel som bare deler A2 på B2 når B2 ikke er null.",
+            "a": "=IF(B2<>0,A2/B2,\"Sjekk nevner\").",
+            "topic": "met3-logikk",
+            "tag": "Logiske valg og feilhåndtering",
+            "source": "MET3 Excel-formeloversikt · s. 4",
+            "difficulty": "middels"
+          },
+          {
+            "q": "Hvordan plasserer du salgsoppgjøret i bare salgsåret?",
+            "a": "=IF(År=Salgsår,Salgsoppgjør,0). Bruk definerte navn eller faktiske cellereferanser.",
+            "topic": "met3-logikk",
+            "tag": "Logiske valg og feilhåndtering",
+            "source": "MET3 Excel-formeloversikt · s. 4",
+            "difficulty": "middels"
+          }
+        ]
+      },
+      {
+        "id": "met3-oppslag",
+        "title": "Oppslag og valg fra lister",
+        "status": "source_based",
+        "difficulty": "middels",
+        "description": "XLOOKUP, INDEX, MATCH, XMATCH og CHOOSE.",
+        "sourceIds": [
+          "met3-excel-overview-20260930"
+        ],
+        "cards": [
+          {
+            "q": "Hva brukes XLOOKUP til, og hvilke argumenter trenger den?",
+            "a": "Henter en verdi fra et samordnet returområde. Eksakt treff er standard.\n\nSyntaks: XLOOKUP(søkeverdi, søkeområde, returområde, [ikke_funnet], [matchmodus], [søkemodus])\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-oppslag",
+            "tag": "Oppslag og valg fra lister",
+            "source": "MET3 Excel-formeloversikt · s. 5",
+            "difficulty": "middels",
+            "function": "XLOOKUP"
+          },
+          {
+            "q": "Forklar formelen =XLOOKUP(E2,A3:A22,B3:B22,\"Ikke funnet\",0)",
+            "a": "Søker etter E2 i A og returnerer tilhørende verdi fra B. 0 ber om eksakt treff; uten treff vises Ikke funnet.\n\nFormel: =XLOOKUP(E2,A3:A22,B3:B22,\"Ikke funnet\",0)",
+            "topic": "met3-oppslag",
+            "tag": "Oppslag og valg fra lister",
+            "source": "MET3 Excel-formeloversikt · s. 5",
+            "difficulty": "middels",
+            "function": "XLOOKUP"
+          },
+          {
+            "q": "Hva brukes INDEX til, og hvilke argumenter trenger den?",
+            "a": "Henter verdien på en angitt posisjon i et område (matrisevarianten).\n\nSyntaks: INDEX(matrise, radnummer, [kolonnenummer])\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-oppslag",
+            "tag": "Oppslag og valg fra lister",
+            "source": "MET3 Excel-formeloversikt · s. 5",
+            "difficulty": "middels",
+            "function": "INDEX"
+          },
+          {
+            "q": "Forklar formelen =INDEX(B3:B22,MATCH(E2,A3:A22,0))",
+            "a": "MATCH finner relativ radposisjon for E2 i A. INDEX bruker posisjonen til å hente verdien fra B.\n\nFormel: =INDEX(B3:B22,MATCH(E2,A3:A22,0))",
+            "topic": "met3-oppslag",
+            "tag": "Oppslag og valg fra lister",
+            "source": "MET3 Excel-formeloversikt · s. 5",
+            "difficulty": "middels",
+            "function": "INDEX"
+          },
+          {
+            "q": "Hva brukes MATCH til, og hvilke argumenter trenger den?",
+            "a": "Returnerer relativ posisjon. Bruk 0 for eksakt treff.\n\nSyntaks: MATCH(søkeverdi, søkeområde, [sammenligningstype])\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-oppslag",
+            "tag": "Oppslag og valg fra lister",
+            "source": "MET3 Excel-formeloversikt · s. 5",
+            "difficulty": "middels",
+            "function": "MATCH"
+          },
+          {
+            "q": "Forklar formelen =MATCH(E2,A3:A22,0)",
+            "a": "Finner posisjonen til E2 i A3:A22. Hvis treffet er i A5, er posisjonen 3, ikke radnummer 5.\n\nFormel: =MATCH(E2,A3:A22,0)",
+            "topic": "met3-oppslag",
+            "tag": "Oppslag og valg fra lister",
+            "source": "MET3 Excel-formeloversikt · s. 5",
+            "difficulty": "middels",
+            "function": "MATCH"
+          },
+          {
+            "q": "Hva brukes XMATCH til, og hvilke argumenter trenger den?",
+            "a": "Returnerer relativ posisjon; eksakt treff er standard.\n\nSyntaks: XMATCH(søkeverdi, søkeområde, [matchmodus], [søkemodus])\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-oppslag",
+            "tag": "Oppslag og valg fra lister",
+            "source": "MET3 Excel-formeloversikt · s. 5",
+            "difficulty": "middels",
+            "function": "XMATCH"
+          },
+          {
+            "q": "Forklar formelen =INDEX(Salgsmatrise,XMATCH(Måned,Månedsliste),XMATCH(Produkt,Produktliste))",
+            "a": "Første XMATCH finner rad for måneden; andre finner kolonne for produktet. INDEX henter verdien. Listenes rekkefølge må samsvare med matrisen.\n\nFormel: =INDEX(Salgsmatrise,XMATCH(Måned,Månedsliste),XMATCH(Produkt,Produktliste))",
+            "topic": "met3-oppslag",
+            "tag": "Oppslag og valg fra lister",
+            "source": "MET3 Excel-formeloversikt · s. 5",
+            "difficulty": "middels",
+            "function": "XMATCH"
+          },
+          {
+            "q": "Hva brukes CHOOSE til, og hvilke argumenter trenger den?",
+            "a": "Velger verdi nummer 1, 2, 3 osv. i argumentlisten.\n\nSyntaks: CHOOSE(indeksnummer, verdi1, [verdi2], ...)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-oppslag",
+            "tag": "Oppslag og valg fra lister",
+            "source": "MET3 Excel-formeloversikt · s. 5",
+            "difficulty": "middels",
+            "function": "CHOOSE"
+          },
+          {
+            "q": "Forklar formelen =CHOOSE(COP_profil,H2,I2,J2)",
+            "a": "COP_profil 1 velger H2, 2 velger I2 og 3 velger J2. Profilen må være en gyldig indeks.\n\nFormel: =CHOOSE(COP_profil,H2,I2,J2)",
+            "topic": "met3-oppslag",
+            "tag": "Oppslag og valg fra lister",
+            "source": "MET3 Excel-formeloversikt · s. 5",
+            "difficulty": "middels",
+            "function": "CHOOSE"
+          },
+          {
+            "q": "Hvilke av MATCH, XMATCH, INDEX og XLOOKUP returnerer posisjoner?",
+            "a": "MATCH og XMATCH returnerer posisjoner. INDEX og XLOOKUP returnerer verdier.",
+            "topic": "met3-oppslag",
+            "tag": "Oppslag og valg fra lister",
+            "source": "MET3 Excel-formeloversikt · s. 5",
+            "difficulty": "middels"
+          },
+          {
+            "q": "Hva er fallgruven ved å utelate siste argument i MATCH?",
+            "a": "Standard er tilnærmet treff og krever riktig sortering. Bruk 0 når oppgaven krever eksakt treff.",
+            "topic": "met3-oppslag",
+            "tag": "Oppslag og valg fra lister",
+            "source": "MET3 Excel-formeloversikt · s. 5",
+            "difficulty": "middels"
+          },
+          {
+            "q": "Hvilken funksjon velger du for totalsalg når samme selger står på mange rader?",
+            "a": "SUMIF eller SUMIFS. Et vanlig oppslag summerer ikke alle radene med samme nøkkel.",
+            "topic": "met3-oppslag",
+            "tag": "Oppslag og valg fra lister",
+            "source": "MET3 Excel-formeloversikt · s. 5",
+            "difficulty": "middels"
+          },
+          {
+            "q": "CHOOSE har alternativene 10, 20 og 30. Hva returnerer =CHOOSE(2,10,20,30)?",
+            "a": "20, fordi indeks 2 velger det andre alternativet.",
+            "topic": "met3-oppslag",
+            "tag": "Oppslag og valg fra lister",
+            "source": "MET3 Excel-formeloversikt · s. 5",
+            "difficulty": "middels"
+          }
+        ]
+      },
+      {
+        "id": "met3-annuitet",
+        "title": "Annuitetslån og terminberegninger",
+        "status": "source_based",
+        "difficulty": "middels",
+        "description": "PMT, IPMT og PPMT; perioder, fortegn og forutsetninger.",
+        "sourceIds": [
+          "met3-excel-overview-20260930"
+        ],
+        "cards": [
+          {
+            "q": "Hva brukes PMT til, og hvilke argumenter trenger den?",
+            "a": "Beregner fast terminbeløp for et annuitetslån med konstant rente.\n\nSyntaks: PMT(rente_per_termin, antall_terminer, lånebeløp, [sluttverdi], [type])\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-annuitet",
+            "tag": "Annuitetslån og terminberegninger",
+            "source": "MET3 Excel-formeloversikt · s. 6",
+            "difficulty": "middels",
+            "function": "PMT"
+          },
+          {
+            "q": "Forklar formelen =-PMT(C3/C4,C4*C5,C2)",
+            "a": "C2 er lånet, C3 årlig rente, C4 terminer per år og C5 antall år. Rente og antall perioder tilpasses terminen. Minus gjør betalingen positiv i låneplanen.\n\nFormel: =-PMT(C3/C4,C4*C5,C2)",
+            "topic": "met3-annuitet",
+            "tag": "Annuitetslån og terminberegninger",
+            "source": "MET3 Excel-formeloversikt · s. 6",
+            "difficulty": "middels",
+            "function": "PMT"
+          },
+          {
+            "q": "Hva brukes IPMT til, og hvilke argumenter trenger den?",
+            "a": "Beregner rentedelen i én termin av annuitetslånet.\n\nSyntaks: IPMT(rente_per_termin, termin_nr, antall_terminer, lånebeløp, [sluttverdi], [type])\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-annuitet",
+            "tag": "Annuitetslån og terminberegninger",
+            "source": "MET3 Excel-formeloversikt · s. 6",
+            "difficulty": "middels",
+            "function": "IPMT"
+          },
+          {
+            "q": "Forklar formelen =-IPMT($C$3/$C$4,B12,$C$4*$C$5,$C$2)",
+            "a": "B12 er terminens nummer fra 1 til n. Låneforutsetningene låses, mens terminreferansen flyttes ved kopiering.\n\nFormel: =-IPMT($C$3/$C$4,B12,$C$4*$C$5,$C$2)",
+            "topic": "met3-annuitet",
+            "tag": "Annuitetslån og terminberegninger",
+            "source": "MET3 Excel-formeloversikt · s. 6",
+            "difficulty": "middels",
+            "function": "IPMT"
+          },
+          {
+            "q": "Hva brukes PPMT til, og hvilke argumenter trenger den?",
+            "a": "Beregner avdragsdelen i én termin av annuitetslånet.\n\nSyntaks: PPMT(rente_per_termin, termin_nr, antall_terminer, lånebeløp, [sluttverdi], [type])\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-annuitet",
+            "tag": "Annuitetslån og terminberegninger",
+            "source": "MET3 Excel-formeloversikt · s. 6",
+            "difficulty": "middels",
+            "function": "PPMT"
+          },
+          {
+            "q": "Forklar formelen =-PPMT($C$3/$C$4,B12,$C$4*$C$5,$C$2)",
+            "a": "Returnerer avdraget for terminen i B12. Rentedelen fra IPMT pluss avdraget fra PPMT skal gi terminbeløpet fra PMT.\n\nFormel: =-PPMT($C$3/$C$4,B12,$C$4*$C$5,$C$2)",
+            "topic": "met3-annuitet",
+            "tag": "Annuitetslån og terminberegninger",
+            "source": "MET3 Excel-formeloversikt · s. 6",
+            "difficulty": "middels",
+            "function": "PPMT"
+          },
+          {
+            "q": "Årsrenten er 6 %, løpetiden er 20 år og betaling skjer månedlig. Hvilke periodedata brukes i PMT?",
+            "a": "Rente per termin: 0.06/12. Antall terminer: 20*12 = 240. Dette følger modellens forutsetning om å dele årsrenten på antall terminer.",
+            "topic": "met3-annuitet",
+            "tag": "Annuitetslån og terminberegninger",
+            "source": "MET3 Excel-formeloversikt · s. 6",
+            "difficulty": "middels"
+          },
+          {
+            "q": "Hva betyr type=0 og type=1 i PMT/IPMT/PPMT?",
+            "a": "0: betaling ved periodeslutt. 1: betaling ved periodestart. Når type og sluttverdi utelates, er standard type=0 og sluttverdi=0.",
+            "topic": "met3-annuitet",
+            "tag": "Annuitetslån og terminberegninger",
+            "source": "MET3 Excel-formeloversikt · s. 6",
+            "difficulty": "middels"
+          },
+          {
+            "q": "Hvorfor setter låneplanen ofte minus foran PMT, IPMT og PPMT?",
+            "a": "Med et positivt lånebeløp returnerer funksjonene betalinger med motsatt fortegn. Minus viser utbetalingene som positive beløp i planen.",
+            "topic": "met3-annuitet",
+            "tag": "Annuitetslån og terminberegninger",
+            "source": "MET3 Excel-formeloversikt · s. 6",
+            "difficulty": "middels"
+          },
+          {
+            "q": "Hvorfor er PMT feil verktøy for Peders serielån med varierende årlig rente?",
+            "a": "PMT forutsetter konstant rente og annuitetsbetaling. Serielånet må modelleres med egne formler for avdrag, renter på startgjeld og restgjeld.",
+            "topic": "met3-annuitet",
+            "tag": "Annuitetslån og terminberegninger",
+            "source": "MET3 Excel-formeloversikt · s. 6",
+            "difficulty": "middels"
+          }
+        ]
+      },
+      {
+        "id": "met3-lister",
+        "title": "Dynamiske lister og filtrering",
+        "status": "source_based",
+        "difficulty": "middels",
+        "description": "UNIQUE, SORT og FILTER, med flere kriterier og ledig resultatområde.",
+        "sourceIds": [
+          "met3-excel-overview-20260930"
+        ],
+        "cards": [
+          {
+            "q": "Hva brukes UNIQUE til, og hvilke argumenter trenger den?",
+            "a": "Lager en liste med ulike verdier fra et område.\n\nSyntaks: UNIQUE(matrise, [etter_kolonne], [kun_én_gang])\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-lister",
+            "tag": "Dynamiske lister og filtrering",
+            "source": "MET3 Excel-formeloversikt · s. 7",
+            "difficulty": "middels",
+            "function": "UNIQUE"
+          },
+          {
+            "q": "Forklar formelen =UNIQUE(kassesalg[hovedgruppe])",
+            "a": "Returnerer hver ulik hovedgruppe én gang, også grupper som forekommer på mange rader.\n\nFormel: =UNIQUE(kassesalg[hovedgruppe])",
+            "topic": "met3-lister",
+            "tag": "Dynamiske lister og filtrering",
+            "source": "MET3 Excel-formeloversikt · s. 7",
+            "difficulty": "middels",
+            "function": "UNIQUE"
+          },
+          {
+            "q": "Hva brukes SORT til, og hvilke argumenter trenger den?",
+            "a": "Sorterer en dynamisk liste. 1 er stigende og -1 synkende.\n\nSyntaks: SORT(matrise, [sorteringsindeks], [rekkefølge], [etter_kolonne])\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-lister",
+            "tag": "Dynamiske lister og filtrering",
+            "source": "MET3 Excel-formeloversikt · s. 7",
+            "difficulty": "middels",
+            "function": "SORT"
+          },
+          {
+            "q": "Forklar formelen =SORT(UNIQUE(kassesalg[hovedgruppe]))",
+            "a": "Fjerner duplikater og sorterer hovedgruppene alfabetisk. Standard er første kolonne i stigende rekkefølge.\n\nFormel: =SORT(UNIQUE(kassesalg[hovedgruppe]))",
+            "topic": "met3-lister",
+            "tag": "Dynamiske lister og filtrering",
+            "source": "MET3 Excel-formeloversikt · s. 7",
+            "difficulty": "middels",
+            "function": "SORT"
+          },
+          {
+            "q": "Hva brukes FILTER til, og hvilke argumenter trenger den?",
+            "a": "Henter rader som oppfyller en test per rad.\n\nSyntaks: FILTER(matrise, inkluder, [hvis_tom])\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-lister",
+            "tag": "Dynamiske lister og filtrering",
+            "source": "MET3 Excel-formeloversikt · s. 7",
+            "difficulty": "middels",
+            "function": "FILTER"
+          },
+          {
+            "q": "Forklar formelen =FILTER(kassesalg,kassesalg[ukedag]=\"søndag\",\"Ingen treff\")",
+            "a": "Henter rader med ukedag søndag. Ingen treff vises når ingen rader passer. Teksten må matche språket i ukedagskolonnen.\n\nFormel: =FILTER(kassesalg,kassesalg[ukedag]=\"søndag\",\"Ingen treff\")",
+            "topic": "met3-lister",
+            "tag": "Dynamiske lister og filtrering",
+            "source": "MET3 Excel-formeloversikt · s. 7",
+            "difficulty": "middels",
+            "function": "FILTER"
+          },
+          {
+            "q": "Hvordan kombinerer du to krav i FILTER?",
+            "a": "Bruk * mellom testene: =FILTER(A2:C100,(B2:B100=\"søndag\")*(C2:C100>0),\"Ingen treff\"). Bare rader der begge tester er sanne tas med.",
+            "topic": "met3-lister",
+            "tag": "Dynamiske lister og filtrering",
+            "source": "MET3 Excel-formeloversikt · s. 7",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Hvorfor trenger UNIQUE, SORT og FILTER et tomt område rundt formelen?",
+            "a": "Én formel kan fylle flere celler dynamisk. Hindringer i resultatområdet kan stoppe utfyllingen. Plasser formlene utenfor Excel-tabellens beregnede kolonner.",
+            "topic": "met3-lister",
+            "tag": "Dynamiske lister og filtrering",
+            "source": "MET3 Excel-formeloversikt · s. 7",
+            "difficulty": "middels"
+          },
+          {
+            "q": "Hva må du tilpasse i kassesalg[hovedgruppe] før du bruker eksemplet?",
+            "a": "Tabellnavnet kassesalg og kolonnenavnet hovedgruppe må finnes i din arbeidsbok. Heftet oppgir de norske funksjonsnavnene UNIK, SORTER og FILTRER.",
+            "topic": "met3-lister",
+            "tag": "Dynamiske lister og filtrering",
+            "source": "MET3 Excel-formeloversikt · s. 7",
+            "difficulty": "middels"
+          }
+        ]
+      },
+      {
+        "id": "met3-datoer",
+        "title": "Datoer og månedsrekkefølge",
+        "status": "source_based",
+        "difficulty": "grunnleggende",
+        "description": "MONTH, YEAR og MOD, og skillet mellom måned og år.",
+        "sourceIds": [
+          "met3-excel-overview-20260930"
+        ],
+        "cards": [
+          {
+            "q": "Hva brukes MONTH til, og hvilke argumenter trenger den?",
+            "a": "Henter månedsnummeret 1–12 fra en ekte Excel-dato.\n\nSyntaks: MONTH(dato)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-datoer",
+            "tag": "Datoer og månedsrekkefølge",
+            "source": "MET3 Excel-formeloversikt · s. 8",
+            "difficulty": "grunnleggende",
+            "function": "MONTH"
+          },
+          {
+            "q": "Forklar formelen =MONTH(B2)",
+            "a": "Hvis B2 er 30. september 2026, returneres 9.\n\nFormel: =MONTH(B2)",
+            "topic": "met3-datoer",
+            "tag": "Datoer og månedsrekkefølge",
+            "source": "MET3 Excel-formeloversikt · s. 8",
+            "difficulty": "grunnleggende",
+            "function": "MONTH"
+          },
+          {
+            "q": "Hva brukes YEAR til, og hvilke argumenter trenger den?",
+            "a": "Henter årstallet fra en ekte Excel-dato.\n\nSyntaks: YEAR(dato)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-datoer",
+            "tag": "Datoer og månedsrekkefølge",
+            "source": "MET3 Excel-formeloversikt · s. 8",
+            "difficulty": "grunnleggende",
+            "function": "YEAR"
+          },
+          {
+            "q": "Forklar formelen =YEAR(B2)",
+            "a": "Hvis B2 er 30. september 2026, returneres 2026, for eksempel for å velge riktig års sats.\n\nFormel: =YEAR(B2)",
+            "topic": "met3-datoer",
+            "tag": "Datoer og månedsrekkefølge",
+            "source": "MET3 Excel-formeloversikt · s. 8",
+            "difficulty": "grunnleggende",
+            "function": "YEAR"
+          },
+          {
+            "q": "Hva brukes MOD til, og hvilke argumenter trenger den?",
+            "a": "Returnerer resten etter divisjon.\n\nSyntaks: MOD(tall, divisor)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-datoer",
+            "tag": "Datoer og månedsrekkefølge",
+            "source": "MET3 Excel-formeloversikt · s. 8",
+            "difficulty": "grunnleggende",
+            "function": "MOD"
+          },
+          {
+            "q": "Forklar formelen =MOD(C6,12)+1",
+            "a": "Gir neste månedsnummer når C6 er 1–12. Desember (12) blir januar (1).\n\nFormel: =MOD(C6,12)+1",
+            "topic": "met3-datoer",
+            "tag": "Datoer og månedsrekkefølge",
+            "source": "MET3 Excel-formeloversikt · s. 8",
+            "difficulty": "grunnleggende",
+            "function": "MOD"
+          },
+          {
+            "q": "Hvorfor er MONTH(dato) alene en dårlig nøkkel når data dekker flere år?",
+            "a": "Januar i ulike år får samme månedsnummer. Bruk også år eller en år-måned-nøkkel for å skille periodene.",
+            "topic": "met3-datoer",
+            "tag": "Datoer og månedsrekkefølge",
+            "source": "MET3 Excel-formeloversikt · s. 8",
+            "difficulty": "grunnleggende"
+          },
+          {
+            "q": "C6 er 11. Hva gir =MOD(C6,12)+1? Og når C6 er 12?",
+            "a": "11 gir 12 (desember). 12 gir 1 (januar).",
+            "topic": "met3-datoer",
+            "tag": "Datoer og månedsrekkefølge",
+            "source": "MET3 Excel-formeloversikt · s. 8",
+            "difficulty": "grunnleggende"
+          }
+        ]
+      },
+      {
+        "id": "met3-kontroll",
+        "title": "Kontroll, avrunding og tekst",
+        "status": "source_based",
+        "difficulty": "middels",
+        "description": "COUNT, COUNTA, ABS, ROUND, ISTEXT, ISERROR, LEN, SEARCH og NOT.",
+        "sourceIds": [
+          "met3-excel-overview-20260930"
+        ],
+        "cards": [
+          {
+            "q": "Hva brukes COUNT til, og hvilke argumenter trenger den?",
+            "a": "Teller numeriske celler, inkludert ekte Excel-datoer.\n\nSyntaks: COUNT(verdi1, [verdi2], ...)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels",
+            "function": "COUNT"
+          },
+          {
+            "q": "Forklar formelen =COUNT(Timer!D2:D8761)",
+            "a": "Teller cellene med tallforbruk. Tekst og tomme celler i området teller ikke.\n\nFormel: =COUNT(Timer!D2:D8761)",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels",
+            "function": "COUNT"
+          },
+          {
+            "q": "Hva brukes COUNTA til, og hvilke argumenter trenger den?",
+            "a": "Teller celler med innhold: også tekst, feil og formler som gir tom tekst.\n\nSyntaks: COUNTA(verdi1, [verdi2], ...)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels",
+            "function": "COUNTA"
+          },
+          {
+            "q": "Forklar formelen =COUNTA(D4:D8)",
+            "a": "Teller utfylte celler, men beviser ikke at innholdet er tall. En formel som gir \"\" teller også.\n\nFormel: =COUNTA(D4:D8)",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels",
+            "function": "COUNTA"
+          },
+          {
+            "q": "Hva brukes ABS til, og hvilke argumenter trenger den?",
+            "a": "Returnerer absoluttverdien, uten fortegn.\n\nSyntaks: ABS(tall)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels",
+            "function": "ABS"
+          },
+          {
+            "q": "Forklar formelen =IF(ABS(C6-D6)<=E6,\"OK\",\"SJEKK\")",
+            "a": "Sammenligner størrelsen på avviket med toleransen i E6. Både positive og negative avvik vurderes likt.\n\nFormel: =IF(ABS(C6-D6)<=E6,\"OK\",\"SJEKK\")",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels",
+            "function": "ABS"
+          },
+          {
+            "q": "Hva brukes ROUND til, og hvilke argumenter trenger den?",
+            "a": "Avrunder selve tallverdien til angitt antall desimaler.\n\nSyntaks: ROUND(tall, antall_desimaler)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels",
+            "function": "ROUND"
+          },
+          {
+            "q": "Forklar formelen =ROUND(B2,2)",
+            "a": "Avrunder B2 til to desimaler. Dette endrer verdien som videre beregning bruker, ikke bare visningen.\n\nFormel: =ROUND(B2,2)",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels",
+            "function": "ROUND"
+          },
+          {
+            "q": "Hva brukes ISTEXT til, og hvilke argumenter trenger den?",
+            "a": "Gir TRUE når verdien er tekst.\n\nSyntaks: ISTEXT(verdi)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels",
+            "function": "ISTEXT"
+          },
+          {
+            "q": "Forklar formelen =ISTEXT(C6)",
+            "a": "Kan oppdage et kontrolltall som er lagt inn som tekst i stedet for et numerisk tall.\n\nFormel: =ISTEXT(C6)",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels",
+            "function": "ISTEXT"
+          },
+          {
+            "q": "Hva brukes ISERROR til, og hvilke argumenter trenger den?",
+            "a": "Gir TRUE når uttrykket returnerer en Excel-feil.\n\nSyntaks: ISERROR(verdi_eller_formel)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels",
+            "function": "ISERROR"
+          },
+          {
+            "q": "Forklar formelen =ISERROR(SEARCH(\"SJEKK\",E2))",
+            "a": "Gir TRUE hvis SEARCH ikke finner teksten og derfor returnerer #VALUE!.\n\nFormel: =ISERROR(SEARCH(\"SJEKK\",E2))",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels",
+            "function": "ISERROR"
+          },
+          {
+            "q": "Hva brukes LEN til, og hvilke argumenter trenger den?",
+            "a": "Teller tegn, inkludert mellomrom.\n\nSyntaks: LEN(tekst)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels",
+            "function": "LEN"
+          },
+          {
+            "q": "Forklar formelen =LEN($C$8)=0",
+            "a": "Tester om innholdet har null tegn, for eksempel en tom inndatacelle eller tom tekst fra en formel.\n\nFormel: =LEN($C$8)=0",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels",
+            "function": "LEN"
+          },
+          {
+            "q": "Hva brukes SEARCH til, og hvilke argumenter trenger den?",
+            "a": "Gir tegnposisjonen til første treff, uten å skille store og små bokstaver.\n\nSyntaks: SEARCH(søketekst, tekst, [startposisjon])\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels",
+            "function": "SEARCH"
+          },
+          {
+            "q": "Forklar formelen =SEARCH(\"SJEKK\",E2)",
+            "a": "Returnerer startposisjonen til SJEKK i teksten. Uten treff returneres #VALUE!.\n\nFormel: =SEARCH(\"SJEKK\",E2)",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels",
+            "function": "SEARCH"
+          },
+          {
+            "q": "Hva brukes NOT til, og hvilke argumenter trenger den?",
+            "a": "Snur TRUE til FALSE og FALSE til TRUE.\n\nSyntaks: NOT(logisk_uttrykk)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels",
+            "function": "NOT"
+          },
+          {
+            "q": "Forklar formelen =NOT(ISERROR(SEARCH(\"SJEKK\",E2)))",
+            "a": "Gir TRUE når SJEKK finnes i E2. Dette kan brukes til å utløse en varselsfarge i betinget formatering.\n\nFormel: =NOT(ISERROR(SEARCH(\"SJEKK\",E2)))",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels",
+            "function": "NOT"
+          },
+          {
+            "q": "C6=100, D6=103 og toleransen E6=2. Hva gir =IF(ABS(C6-D6)<=E6,\"OK\",\"SJEKK\")?",
+            "a": "SJEKK. ABS(100-103)=3, og 3 er større enn toleransen 2.",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels"
+          },
+          {
+            "q": "Hva er forskjellen på å formatere et tall med to desimaler og å bruke ROUND(tall,2)?",
+            "a": "Tallformat endrer bare hva du ser. ROUND endrer den beregnede verdien. Flere skjulte desimaler kan ellers gi avvik i kontroller.",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels"
+          },
+          {
+            "q": "En celle inneholder ett mellomrom. Vil LEN(celle)=0 være sann?",
+            "a": "Nei. Mellomrom er også tegn, så lengden er 1.",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels"
+          },
+          {
+            "q": "Hvordan avslører du at COUNTA ikke er en kontroll av numeriske data?",
+            "a": "COUNTA teller både tekst og tall. COUNT teller bare numeriske celler i området. Sammen med ISTEXT kan de bidra til å finne tekst i tallkolonner.",
+            "topic": "met3-kontroll",
+            "tag": "Kontroll, avrunding og tekst",
+            "source": "MET3 Excel-formeloversikt · s. 9",
+            "difficulty": "middels"
+          }
+        ]
+      },
+      {
+        "id": "met3-okonomiske-modeller",
+        "title": "Praktiske modeller: lån, vekst og kontantstrøm",
+        "status": "source_based",
+        "difficulty": "avansert",
+        "description": "Skriv egne formler for serielån, mva, vekst, salg og diskontering.",
+        "sourceIds": [
+          "met3-excel-overview-20260930"
+        ],
+        "cards": [
+          {
+            "q": "Et serielån skal nedbetales over totalt 20 år, med to avdragsfrie år. Hvordan beregner du årlig avdrag?",
+            "a": "=Lån/(20-2), altså Lån/18. Avdrag settes til 0 i de to avdragsfrie årene og til dette faste beløpet i de resterende årene.",
+            "topic": "met3-okonomiske-modeller",
+            "tag": "Praktiske modeller: lån, vekst og kontantstrøm",
+            "source": "MET3 Excel-formeloversikt · s. 11–12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Hvordan beregner du renter og sluttgjeld i ett år av et serielån?",
+            "a": "Renter = Startgjeld*Årsrente. Sluttgjeld = Startgjeld-Avdrag. Neste års startgjeld er dette årets sluttgjeld.",
+            "topic": "met3-okonomiske-modeller",
+            "tag": "Praktiske modeller: lån, vekst og kontantstrøm",
+            "source": "MET3 Excel-formeloversikt · s. 11–12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Lånet er 900 000 kr, fordelt på 18 avdragsår. Startgjelden er 900 000 og renten 5 %. Hva blir avdrag, renter og sluttgjeld?",
+            "a": "Avdrag: 50 000 kr. Renter: 45 000 kr. Sluttgjeld: 850 000 kr. Samlet betaling dette året: 95 000 kr.",
+            "topic": "met3-okonomiske-modeller",
+            "tag": "Praktiske modeller: lån, vekst og kontantstrøm",
+            "source": "MET3 Excel-formeloversikt · s. 11–12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Et beløp er 1 250 kr inklusive 25 % mva. Hvordan finner du beløpet uten mva?",
+            "a": "=1250/(1+0.25) = 1 000 kr. Du skal dele på vekstfaktoren, ikke trekke 25 % direkte fra bruttobeløpet.",
+            "topic": "met3-okonomiske-modeller",
+            "tag": "Praktiske modeller: lån, vekst og kontantstrøm",
+            "source": "MET3 Excel-formeloversikt · s. 11–12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Hvordan beregner du omsetning og en delsums andel av totalen?",
+            "a": "Omsetning = Antall*Pris. Andel = Delsum/Totalsum, forutsatt at totalsummen ikke er null.",
+            "topic": "met3-okonomiske-modeller",
+            "tag": "Praktiske modeller: lån, vekst og kontantstrøm",
+            "source": "MET3 Excel-formeloversikt · s. 11–12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Hvordan beregner du samlet indeksvekst og årlig vekst (CAGR)?",
+            "a": "Samlet vekst = Sluttindeks/Startindeks-1. Årlig vekst = (Sluttindeks/Startindeks)^(1/AntallÅr)-1.",
+            "topic": "met3-okonomiske-modeller",
+            "tag": "Praktiske modeller: lån, vekst og kontantstrøm",
+            "source": "MET3 Excel-formeloversikt · s. 11–12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Hvorfor fremskrives en kostnad i år 1 med eksponenten År-1?",
+            "a": "Utgangsverdien gjelder allerede år 1. I år 1 skal eksponenten være 0. I år 2 er det én vekstperiode: =KostnadÅr1*(1+Vekst)^(År-1).",
+            "topic": "met3-okonomiske-modeller",
+            "tag": "Praktiske modeller: lån, vekst og kontantstrøm",
+            "source": "MET3 Excel-formeloversikt · s. 11–12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Hvordan beregner du netto salgspris og salgsoppgjør etter innfrielse av restgjeld?",
+            "a": "Nettosalgspris = Bruttopris*(1-Meglerandel). Salgsoppgjør = Nettosalgspris-Restgjeld. Legg oppgjøret inn én gang i salgsåret.",
+            "topic": "met3-okonomiske-modeller",
+            "tag": "Praktiske modeller: lån, vekst og kontantstrøm",
+            "source": "MET3 Excel-formeloversikt · s. 11–12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Hva er netto kontantstrøm, og hvordan sammenligner du kjøp med leie?",
+            "a": "Netto kontantstrøm = Innbetalinger-Utbetalinger. Differanse = KontantstrømKjøp-KontantstrømLeie. Bruk samme fortegnskonvensjon i begge alternativer.",
+            "topic": "met3-okonomiske-modeller",
+            "tag": "Praktiske modeller: lån, vekst og kontantstrøm",
+            "source": "MET3 Excel-formeloversikt · s. 11–12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Hvordan diskonterer du kontantstrømmen for år t til år 0?",
+            "a": "=Kontantstrøm/(1+Rente)^t. Rente og tidsperioder må være samordnet. For år 0 er eksponenten 0, så strømmen diskonteres ikke.",
+            "topic": "met3-okonomiske-modeller",
+            "tag": "Praktiske modeller: lån, vekst og kontantstrøm",
+            "source": "MET3 Excel-formeloversikt · s. 11–12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Hva er nåverdien av 110 kr ved slutten av år 1 når diskonteringsrenten er 10 %?",
+            "a": "100 kr: =110/(1+0.10)^1. År 0-strømmen legges til uten diskontering.",
+            "topic": "met3-okonomiske-modeller",
+            "tag": "Praktiske modeller: lån, vekst og kontantstrøm",
+            "source": "MET3 Excel-formeloversikt · s. 11–12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Hvordan følger du eksplisitt diskontering i AK1 del 2?",
+            "a": "Diskonter hvert års kontantstrøm til år 0 og summer med SUM fra år 0 til salgsåret. Sett strømmer etter salgsåret til 0.",
+            "topic": "met3-okonomiske-modeller",
+            "tag": "Praktiske modeller: lån, vekst og kontantstrøm",
+            "source": "MET3 Excel-formeloversikt · s. 11–12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Hva er forskjellen på uvektet og vektet enhetspris?",
+            "a": "Uvektet: =AVERAGE(Enhetspriser), der hver rad får lik vekt. Vektet: =SUM(Beløp)/SUM(Antall). Bruk samme rader, kontroller null antall og håndter avbestillinger likt.",
+            "topic": "met3-okonomiske-modeller",
+            "tag": "Praktiske modeller: lån, vekst og kontantstrøm",
+            "source": "MET3 Excel-formeloversikt · s. 11–12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "To salg har 1 enhet à 100 kr og 9 enheter à 10 kr. Hva blir uvektet og vektet enhetspris?",
+            "a": "Uvektet gjennomsnitt: (100+10)/2 = 55 kr. Vektet: (100+90)/(1+9) = 19 kr per enhet.",
+            "topic": "met3-okonomiske-modeller",
+            "tag": "Praktiske modeller: lån, vekst og kontantstrøm",
+            "source": "MET3 Excel-formeloversikt · s. 11–12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Når kan enkel tilbakebetalingstid beregnes som Investering/ÅrligNettoBesparelse?",
+            "a": "Når besparelsen er positiv og konstant. Ved ujevne beløp akkumulerer du kontantstrømmene og finner første år de dekker investeringen. Dette er enkel, ikke diskontert, tilbakebetaling.",
+            "topic": "met3-okonomiske-modeller",
+            "tag": "Praktiske modeller: lån, vekst og kontantstrøm",
+            "source": "MET3 Excel-formeloversikt · s. 11–12",
+            "difficulty": "avansert"
+          }
+        ]
+      },
+      {
+        "id": "met3-energi-budsjett",
+        "title": "Praktiske modeller: energi og budsjett",
+        "status": "source_based",
+        "difficulty": "avansert",
+        "description": "Brattlia-eksempler, enheter, akkumulerte summer og validering.",
+        "sourceIds": [
+          "met3-excel-overview-20260930"
+        ],
+        "cards": [
+          {
+            "q": "Skriv energikostnad i kroner fra kWh og pris i øre/kWh.",
+            "a": "=kWh*PrisØre/100. Divisjonen på 100 konverterer øre til kroner.",
+            "topic": "met3-energi-budsjett",
+            "tag": "Praktiske modeller: energi og budsjett",
+            "source": "MET3 Excel-formeloversikt · s. 12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Forbruket er 10 kWh og prisen er 80 øre/kWh. Hva er kostnaden i kroner?",
+            "a": "8 kr: 10*80/100. Uten divisjon på 100 ville svaret blitt 100 ganger for stort.",
+            "topic": "met3-energi-budsjett",
+            "tag": "Praktiske modeller: energi og budsjett",
+            "source": "MET3 Excel-formeloversikt · s. 12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Skriv egenbrukt og solgt solstrøm fra produksjon og forbruk.",
+            "a": "Egenbrukt = MIN(Produksjon,Forbruk). Solgt = MAX(0,Produksjon-Forbruk). Begge uttrykk hindrer umulige mengder.",
+            "topic": "met3-energi-budsjett",
+            "tag": "Praktiske modeller: energi og budsjett",
+            "source": "MET3 Excel-formeloversikt · s. 12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Produksjon er 12 kWh og forbruk er 8 kWh. Hvor mye brukes selv og selges?",
+            "a": "8 kWh brukes selv: MIN(12,8). 4 kWh selges: MAX(0,12-8).",
+            "topic": "met3-energi-budsjett",
+            "tag": "Praktiske modeller: energi og budsjett",
+            "source": "MET3 Excel-formeloversikt · s. 12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Varmebehov er 30 kWh og COP er 3. Hvor mye strøm trengs til varmen?",
+            "a": "10 kWh: =Varme/COP. COP må være større enn null.",
+            "topic": "met3-energi-budsjett",
+            "tag": "Praktiske modeller: energi og budsjett",
+            "source": "MET3 Excel-formeloversikt · s. 12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Hvordan beregnes effektleddet fra månedsmaksimum og sats?",
+            "a": "=Månedsmaks*Sats. Kontroller at enheten på månedsmaksimum passer med satsens enhet.",
+            "topic": "met3-energi-budsjett",
+            "tag": "Praktiske modeller: energi og budsjett",
+            "source": "MET3 Excel-formeloversikt · s. 12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Hva betyr budsjettavviket =Virkelig-Budsjett for en kostnad?",
+            "a": "Et positivt avvik betyr at faktisk kostnad overstiger budsjettet; et negativt avvik betyr lavere kostnad enn budsjettert.",
+            "topic": "met3-energi-budsjett",
+            "tag": "Praktiske modeller: energi og budsjett",
+            "source": "MET3 Excel-formeloversikt · s. 12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Hva gjør =SUM($C$3:C3) når den fylles nedover?",
+            "a": "Gir akkumulert sum med låst start i C3 og et voksende sluttpunkt. I neste rad blir den =SUM($C$3:C4).",
+            "topic": "met3-energi-budsjett",
+            "tag": "Praktiske modeller: energi og budsjett",
+            "source": "MET3 Excel-formeloversikt · s. 12",
+            "difficulty": "avansert"
+          },
+          {
+            "q": "Hvordan kan en datavalideringsregel begrense summen av C3:C6 til budsjettet i F3?",
+            "a": "Bruk egendefinert regel =SUM($C$3:$C$6)<=$F$3 på C3:C6. Absolutte referanser holder samme total og grense for alle cellene.",
+            "topic": "met3-energi-budsjett",
+            "tag": "Praktiske modeller: energi og budsjett",
+            "source": "MET3 Excel-formeloversikt · s. 12",
+            "difficulty": "avansert"
+          }
+        ]
+      },
+      {
+        "id": "met3-power-query",
+        "title": "Power Query: datoer og betingelser",
+        "status": "source_based",
+        "difficulty": "middels",
+        "description": "M-uttrykk i Custom Column, adskilt fra Excel-celleformler.",
+        "sourceIds": [
+          "met3-excel-overview-20260930"
+        ],
+        "cards": [
+          {
+            "q": "Hvor skrives Date.ToText([dato], \"yyyy-MM\"), og skal du skrive = foran?",
+            "a": "I Power Querys Custom Column som M-uttrykk, uten = foran. En datokolonne gir en år-måned-nøkkel, for eksempel 2024-10.",
+            "topic": "met3-power-query",
+            "tag": "Power Query: datoer og betingelser",
+            "source": "MET3 Excel-formeloversikt · s. 10",
+            "difficulty": "middels",
+            "function": "Date.ToText"
+          },
+          {
+            "q": "Hvorfor er år-måned-nøkkelen yyyy-MM nyttig ved avstemming?",
+            "a": "Den skiller samme måned i ulike år og kan brukes som kriterium i SUMIFS etter at data er lastet til Excel. Datokolonnen må ha riktig datotype.",
+            "topic": "met3-power-query",
+            "tag": "Power Query: datoer og betingelser",
+            "source": "MET3 Excel-formeloversikt · s. 10",
+            "difficulty": "middels"
+          },
+          {
+            "q": "Skriv Power Query-uttrykket som fjerner mva bare når sted_kode er \"002\".",
+            "a": "if [sted_kode] = \"002\" then [belop] / (1 + MvaSats) else [belop]\n\nMvaSats må være definert som en M-parameter. Tilpass satsen og la den korrigerte verdien erstatte belop slik oppgaven beskriver.",
+            "topic": "met3-power-query",
+            "tag": "Power Query: datoer og betingelser",
+            "source": "MET3 Excel-formeloversikt · s. 10",
+            "difficulty": "middels",
+            "function": "if ... then ... else"
+          },
+          {
+            "q": "Hva er forskjellen på IF i en Excel-celle og et betinget M-uttrykk i Power Query?",
+            "a": "Excel bruker =IF(test,verdi_hvis_sann,verdi_hvis_usann). Power Query bruker if test then verdi_hvis_sann else verdi_hvis_usann, uten = foran.",
+            "topic": "met3-power-query",
+            "tag": "Power Query: datoer og betingelser",
+            "source": "MET3 Excel-formeloversikt · s. 10",
+            "difficulty": "middels"
+          }
+        ]
+      },
+      {
+        "id": "met3-supplerende",
+        "title": "Supplerende: NPV, IRR og SUBTOTAL",
+        "status": "source_based",
+        "difficulty": "avansert",
+        "description": "Valgfri fordypning: disse funksjonsnavnene er ikke dokumentert i Canvas-kildene.",
+        "sourceIds": [
+          "met3-excel-overview-20260930"
+        ],
+        "cards": [
+          {
+            "q": "Hva brukes NPV til, og hvilke argumenter trenger den?",
+            "a": "Beregner nåverdi av periodiske kontantstrømmer fra år 1. År 0 legges til separat. Supplerende funksjon, ikke eksplisitt funnet i kildene.\n\nSyntaks: NPV(rente_per_periode, kontantstrøm_år1, ...)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-supplerende",
+            "tag": "Supplerende: NPV, IRR og SUBTOTAL",
+            "source": "MET3 Excel-formeloversikt · s. 10",
+            "difficulty": "avansert",
+            "function": "NPV"
+          },
+          {
+            "q": "Forklar formelen =NPV(Rente,C3:C12)+C2",
+            "a": "C2 er år 0; C3:C12 er år 1–10. NPV diskonterer første strøm som år 1, så år 0 må legges til utenfor. Sett strømmer etter salgsåret til 0.\n\nFormel: =NPV(Rente,C3:C12)+C2",
+            "topic": "met3-supplerende",
+            "tag": "Supplerende: NPV, IRR og SUBTOTAL",
+            "source": "MET3 Excel-formeloversikt · s. 10",
+            "difficulty": "avansert",
+            "function": "NPV"
+          },
+          {
+            "q": "Hva brukes IRR til, og hvilke argumenter trenger den?",
+            "a": "Beregner internrente for like lange perioder med minst ett positivt og ett negativt beløp. Supplerende funksjon, ikke eksplisitt funnet i kildene.\n\nSyntaks: IRR(kontantstrømområde, [startanslag])\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-supplerende",
+            "tag": "Supplerende: NPV, IRR og SUBTOTAL",
+            "source": "MET3 Excel-formeloversikt · s. 10",
+            "difficulty": "avansert",
+            "function": "IRR"
+          },
+          {
+            "q": "Forklar formelen =IRR(H6:H26)",
+            "a": "Området inkluderer år 0 og senere perioder. Flere fortegnsskifter kan gi flere løsninger; vurder resultatet kritisk.\n\nFormel: =IRR(H6:H26)",
+            "topic": "met3-supplerende",
+            "tag": "Supplerende: NPV, IRR og SUBTOTAL",
+            "source": "MET3 Excel-formeloversikt · s. 10",
+            "difficulty": "avansert",
+            "function": "IRR"
+          },
+          {
+            "q": "Hva brukes SUBTOTAL til, og hvilke argumenter trenger den?",
+            "a": "Oppsummerer synlige rader etter filtrering. 103 teller ikke-tomme celler; 109 summerer. Supplerende forklaring av verktøyet i Excel 0.\n\nSyntaks: SUBTOTAL(funksjonsnummer, område, ...)\nArgumenter i [klammer] er valgfrie; klammene skal ikke skrives.",
+            "topic": "met3-supplerende",
+            "tag": "Supplerende: NPV, IRR og SUBTOTAL",
+            "source": "MET3 Excel-formeloversikt · s. 10",
+            "difficulty": "avansert",
+            "function": "SUBTOTAL"
+          },
+          {
+            "q": "Forklar formelen =SUBTOTAL(103,A2:A412)",
+            "a": "Teller ikke-tomme synlige celler i A2:A412 etter filtrering. Funksjonsnavnet/formelen er ikke vist i Canvas-kilden.\n\nFormel: =SUBTOTAL(103,A2:A412)",
+            "topic": "met3-supplerende",
+            "tag": "Supplerende: NPV, IRR og SUBTOTAL",
+            "source": "MET3 Excel-formeloversikt · s. 10",
+            "difficulty": "avansert",
+            "function": "SUBTOTAL"
+          },
+          {
+            "q": "Hvorfor ligger NPV, IRR og SUBTOTAL i et eget supplerende dekk?",
+            "a": "Oversikten sier at disse navnene ikke er eksplisitt funnet i kildene. De er nyttig fordypning, men inngår ikke i de 37 dokumenterte funksjonene.",
+            "topic": "met3-supplerende",
+            "tag": "Supplerende: NPV, IRR og SUBTOTAL",
+            "source": "MET3 Excel-formeloversikt · s. 10",
+            "difficulty": "avansert"
           }
         ]
       }
@@ -1070,6 +2546,38 @@
       ["Rettsregel", "Finn hjemmel, vilkår og unntak før faktum.", "RET1A"],
       ["Subsumsjon", "Bruk konkrete fakta mot hvert vilkår.", "RET1A"],
       ["Delkonklusjon", "Svar kort etter hvert hovedpunkt.", "RET1A"]
+    ],
+    "met3": [
+      [
+        "Argumentrekkefølge",
+        "SUMIF(vilkårsområde, vilkår, [sumområde]); SUMIFS(sumområde, vilkårsområde1, vilkår1, …).",
+        "s. 3"
+      ],
+      [
+        "Eksakt oppslag",
+        "MATCH trenger 0 for eksakt treff; XLOOKUP og XMATCH bruker eksakt treff som standard.",
+        "s. 5"
+      ],
+      [
+        "Rente og terminer",
+        "Rente per termin = årsrente/terminer per år; antall terminer = år*terminer per år.",
+        "s. 6"
+      ],
+      [
+        "Låste referanser",
+        "A1 er relativ; $A$1 låser begge; $A1 låser kolonne; A$1 låser rad.",
+        "s. 11"
+      ],
+      [
+        "Nåverdi",
+        "Kontantstrøm/(1+Rente)^År. År 0 diskonteres ikke.",
+        "s. 11"
+      ],
+      [
+        "Power Query",
+        "M-uttrykk som Date.ToText og if … then … else skrives uten = foran.",
+        "s. 10"
+      ]
     ]
   },
   "learningPaths": {
@@ -1122,6 +2630,26 @@
       {"title": "1. Rettsregel", "detail": "Finn hjemmel, vilkår og unntak før faktum.", "duration": "20 min", "kind": "oversikt"},
       {"title": "2. Subsumsjon", "detail": "Bruk konkrete fakta mot hvert vilkår.", "duration": "30 min", "kind": "oppgave"},
       {"title": "3. Konklusjon", "detail": "Skriv korte delkonklusjoner og samlet svar.", "duration": "10 min", "kind": "eksamen"}
+    ],
+    "met3": [
+      {
+        "title": "1. Grunnlaget",
+        "detail": "Cellereferanser, operatorer og enkel summering. Skriv eksemplene i Excel.",
+        "duration": "10 min",
+        "kind": "grunnlag"
+      },
+      {
+        "title": "2. Velg riktig funksjon",
+        "detail": "Kombiner vilkår, logikk, oppslag og kontroll. Forklar forskjellene mellom funksjonene.",
+        "duration": "15 min",
+        "kind": "formel"
+      },
+      {
+        "title": "3. Bruk formlene",
+        "detail": "Øv på lån, vekst, energi, dynamiske lister og Power Query.",
+        "duration": "20 min",
+        "kind": "modell"
+      }
     ]
   },
   "memos": {
@@ -1179,6 +2707,11 @@
       "intro": "RET1A handler om juridisk metode i praksis: finne rettsregel, drøfte vilkår og bruke faktum presist.",
       "exam": "Eksamen belønner ryddig struktur, tydelige delkonklusjoner og konkret subsumsjon fremfor lange generelle utlegninger.",
       "studyAdvice": "Tren først på metodekortene, deretter på gamle oppgaver med samme faste drøftingsmal."
+    },
+    "met3": {
+      "intro": "Denne pakken handler om Excel-delen av MET3 og er laget fra den vedlagte oversikten.",
+      "exam": "Dekningen gjelder den gjennomgåtte Canvas-eksporten. Pensumboken PC-bruk 1 og flere forelesninger er ikke med; pakken er ikke en full pensumgaranti.",
+      "studyAdvice": "Velg temadekk og nivå. Skriv et eget svar før du snur kortet, merk kortene Igjen, Vanskelig eller Bra og repeter de vanskelige etter økten."
     }
   },
   "recommendations": {
@@ -1192,6 +2725,13 @@
     "SAM1A": {"title": "SAM1A: Figur og begrep", "sub": "Markedskryss og elastisitet", "cards": 8, "minutes": 20, "href": "../flashcards/?subject=sam1a"},
     "MET1": {"title": "MET1: Tidslinje først", "sub": "NNV, rente og annuitet", "cards": 8, "minutes": 20, "href": "../flashcards/?subject=met1"},
     "KOM1": {"title": "KOM1: Ett analyseavsnitt", "sub": "Problemstilling og belegg", "cards": 8, "minutes": 25, "href": "../flashcards/?subject=kom1"},
-    "RET1A": {"title": "RET1A: Rettsregel og vilkår", "sub": "Juridisk metode", "cards": 8, "minutes": 25, "href": "../flashcards/?subject=ret1a"}
+    "RET1A": {"title": "RET1A: Rettsregel og vilkår", "sub": "Juridisk metode", "cards": 8, "minutes": 25, "href": "../flashcards/?subject=ret1a"},
+    "met3": {
+      "title": "MET3: start med grunnlag og summering",
+      "sub": "Skriv formlene selv før fasit.",
+      "href": "../flashcards/?subject=met3",
+      "cards": 20,
+      "minutes": 10
+    }
   }
 }

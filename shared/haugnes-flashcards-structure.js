@@ -206,7 +206,7 @@
       'view-decks',
       'decks',
       'Velg økt i ' + meta.short,
-      'Start med et deck, bytt til quiz, eller se fremgangen din for dette faget.',
+      'Velg ett dekk, eller kombiner flere dekk med egne valg for øvingen.',
       actions
     );
 
@@ -216,7 +216,7 @@
     }
 
     document.querySelectorAll('.deck-item').forEach(function (deck) {
-      if (!deck.querySelector('.hf-deck-action')) {
+      if (!deck.querySelector('.hf-deck-action') && !deck.querySelector('.deck-start')) {
         var action = document.createElement('span');
         action.className = 'hf-deck-action';
         action.textContent = 'Start økt →';

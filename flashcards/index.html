@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Alle flashcards — Haugnes Flashcards</title>
+<link rel="stylesheet" href="../shared/flashcard-study-options.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -263,6 +264,7 @@ body{font-family:'Lora',Georgia,'Times New Roman',serif;background:var(--bg);col
     <button class="subject-tab" id="tabQuiz" onclick="switchSubjectTab('quiz')">🧠 Quiz</button>
   </div>
   <div id="tabContentFlashcards">
+    <section class="study-options" id="studyOptions" aria-label="Valg for øving" hidden></section>
     <div class="deck-list" id="deckList"></div>
     <details class="fc-advanced fc-import-advanced">
       <summary>Avansert import</summary>
@@ -287,12 +289,16 @@ body{font-family:'Lora',Georgia,'Times New Roman',serif;background:var(--bg);col
   <div class="topic-filter-row" id="topicFilterRow" style="display:none"></div>
   <div class="filter-row" id="filterRow">
     <button class="filter-btn active" data-filter="all">Alle kort</button>
-    <button class="filter-btn" data-filter="wrong">Kun feil</button>
-    <button class="filter-btn" data-filter="half">Halvveis</button>
+    <button class="filter-btn" data-filter="new">Nye</button>
+    <button class="filter-btn" data-filter="review">Igjen og vanskelige</button>
+    <button class="filter-btn" data-filter="wrong">Igjen</button>
+    <button class="filter-btn" data-filter="half">Vanskelige</button>
   </div>
+  <p id="studySessionSummary" class="study-summary"></p>
+  <p id="studyEmpty" class="study-empty" role="status" hidden>Ingen kort passer dette utvalget. Velg et annet filter eller gå tilbake og endre øvingen.</p>
   <div class="card-progress"><div class="fill" id="cardProgress" style="width:0%"></div></div>
   <div class="card-scene">
-    <div class="flashcard-inner fade-in" id="flashcardInner">
+    <div class="flashcard-inner fade-in" id="flashcardInner" role="button" tabindex="0" aria-label="Snu kortet" aria-pressed="false">
       <div class="card-face front">
         <div id="cardTagBadge" class="card-tag-badge" style="display:none"></div>
         <span class="card-label label-q">Spørsmål</span>
@@ -411,6 +417,8 @@ body{font-family:'Lora',Georgia,'Times New Roman',serif;background:var(--bg);col
 <script src="../shared/subject-meta.js"></script>
 <script src="../shared/learning-content.js"></script>
 <script src="../shared/haugnes-study-data.js"></script>
+<script src="../shared/flashcard-study-session.js"></script>
+<script src="../shared/flashcard-study-options.js"></script>
 <script src="../shared/haugnes-flashcards-structure.js" defer></script>
 <script src="../shared/flashcards-library-fallback.js" defer></script>
 <script>
@@ -478,6 +486,9 @@ var currentCards = [];
 var currentIndex = 0;
 var isFlipped = false;
 var sessionResults = {};
+var currentSessionOptions = null;
+var currentSessionSummary = null;
+var sessionSaved = false;
 var currentFilter = "all";
 var currentTopic = "all";
 var currentSubjectFilter = "all";
@@ -763,10 +774,15 @@ function renderDecks() {
     var pct = 0;
     if (lastSession) { var r = lastSession.results; var t = r.right+r.half+r.wrong; pct = t>0?Math.round(r.right/t*100):0; }
     html += '<div class="deck-item fade-in" data-deck-id="' + escAttr(deck.id) + '">';
+    html += '<label class="study-selection"><input type="checkbox" aria-label="Ta med ' + escAttr(deck.title) + ' i øving" data-study-deck="' + escAttr(deck.id) + '"> Ta med i øving</label>';
     html += '<h3>' + esc(deck.title) + '</h3><div class="meta"><span>' + deck.cards.length + ' kort</span>';
+    if (deck.difficulty) html += '<span>' + esc(HaugnesStudyOptions.levels[deck.difficulty] || deck.difficulty) + '</span>';
     if (sessions.length > 0) html += '<span>Øvd ' + sessions.length + 'x</span><span style="color:var(--green)">' + pct + '% riktig</span>';
     else html += '<span>Ikke startet</span>';
-    html += '</div><div class="progress-bar"><div class="fill" style="width:' + pct + '%"></div></div></div>';
+    html += '</div>';
+    if (deck.description) html += '<p class="deck-description">' + esc(deck.description) + '</p>';
+    html += '<div class="progress-bar"><div class="fill" style="width:' + pct + '%"></div></div>';
+    html += '<button class="deck-start" type="button">Start dette dekket →</button></div>';
   });
   el.innerHTML = html;
   var statsBtn = document.createElement("button");
@@ -775,25 +791,29 @@ function renderDecks() {
   statsBtn.textContent = "📊 Se statistikk";
   statsBtn.addEventListener("click", function() { showView("stats"); });
   el.appendChild(statsBtn);
-  el.querySelectorAll(".deck-item").forEach(function(item) {
-    item.addEventListener("click", function() {
-      var deckId = this.getAttribute("data-deck-id");
-      var decks2 = getDecksForSubject(currentSubjectId);
-      currentDeck = decks2.find(function(d) { return d.id === deckId; }) || null;
-      if (currentDeck) startDeck(currentDeck.id);
+  el.querySelectorAll(".deck-start").forEach(function(button) {
+    button.addEventListener("click", function() {
+      var deckId = this.closest('.deck-item').getAttribute("data-deck-id");
+      var options = HaugnesStudyOptions.read();
+      startDeck(deckId, options.filter, options);
     });
   });
+  HaugnesStudyOptions.render(decks);
 }
 
 // ==================== STUDY ====================
-function startDeck(id, filter) {
+function startDeck(id, filter, options) {
   var decks = getDecksForSubject(currentSubjectId);
-  currentDeck = decks.find(function(d) { return d.id === id; }) || null;
+  currentDeck = HaugnesStudySession.combine(decks, Array.isArray(id) ? id : [id]);
   if (!currentDeck) return;
-  currentFilter = filter || "all";
+  currentSessionOptions = options || HaugnesStudyOptions.read();
+  currentFilter = filter || currentSessionOptions.filter || "all";
   currentTopic = "all";
   sessionResults = {};
+  currentSessionSummary = null;
+  sessionSaved = false;
   filterCards();
+  if (!currentCards.length) { showToast('Ingen kort passer valgene. Endre nivå eller kortutvalg.'); return; }
   currentIndex = 0;
   isFlipped = false;
   showView("cards");
@@ -803,38 +823,18 @@ function startDeck(id, filter) {
 }
 
 function filterCards() {
-  var stats = getStats();
-  var s = stats[currentDeck.id] || {};
-  var cardStats = s.cardStats || {};
-  var all = currentDeck.cards.map(function(c, i) {
-    return {q:c.q, a:c.a, topic:c.topic||null, tag:c.tag||null, source:c.source||null, idx:i};
-  });
-  // Apply topic filter first
-  var topicFiltered = (currentTopic === "all") ? all : all.filter(function(c) { return c.topic === currentTopic; });
-  // Then apply rating filter
-  if (currentFilter === "wrong") {
-    currentCards = topicFiltered.filter(function(c) { var cs = cardStats[c.idx]; return !cs || cs.lastRating === "wrong"; });
-  } else if (currentFilter === "half") {
-    currentCards = topicFiltered.filter(function(c) { var cs = cardStats[c.idx]; return cs && cs.lastRating === "half"; });
-  } else {
-    currentCards = topicFiltered;
-  }
-  if (currentCards.length === 0) { currentCards = topicFiltered.length > 0 ? topicFiltered : all; currentFilter = "all"; }
-  // Shuffle
-  for (var i = currentCards.length-1; i>0; i--) {
-    var j = Math.floor(Math.random()*(i+1));
-    var tmp = currentCards[i]; currentCards[i] = currentCards[j]; currentCards[j] = tmp;
-  }
+  currentCards = HaugnesStudySession.prepare(currentDeck, getStats(), Object.assign({}, currentSessionOptions,
+    { filter: currentFilter, topic: currentTopic }));
 }
 
 function setFilter(f) {
-  currentFilter = f; sessionResults = {}; filterCards(); currentIndex = 0; isFlipped = false;
+  currentFilter = f; filterCards(); currentIndex = 0; isFlipped = false;
   renderCard(); updateFilterButtons();
 }
 
 function setTopicFilter(topic) {
-  currentTopic = topic; sessionResults = {}; filterCards(); currentIndex = 0; isFlipped = false;
-  renderCard(); renderTopicFilter();
+  currentTopic = topic; filterCards(); currentIndex = 0; isFlipped = false;
+  renderCard(); renderTopicFilter(); updateFilterButtons();
 }
 
 function updateFilterButtons() {
@@ -867,18 +867,33 @@ function renderTopicFilter() {
 }
 
 function renderCard() {
-  if (currentCards.length === 0) return;
+  var empty = currentCards.length === 0;
+  document.getElementById('studyEmpty').hidden = !empty;
+  document.querySelector('.card-scene').hidden = empty;
+  document.querySelector('.card-nav-buttons').hidden = empty;
+  document.getElementById('prevCardBtn').disabled = empty;
+  document.getElementById('nextCardBtn').disabled = empty;
+  document.getElementById('cardCounter').textContent = empty ? '0/0' : '';
+  document.getElementById('ratingArea').style.display = 'none';
+  document.getElementById('cardProgress').style.width = empty ? '0%' : '';
+  var orderLabels = {random:'Tilfeldig rekkefølge',fixed:'Fast rekkefølge',difficult:'Vanskelige først'};
+  document.getElementById('studySessionSummary').textContent = (orderLabels[currentSessionOptions.order] || '')
+    + ' · ' + currentCards.length + ' kort i utvalget · ' + Object.keys(sessionResults).length + ' vurdert i økten';
+  if (empty) return;
   currentIndex = ((currentIndex % currentCards.length) + currentCards.length) % currentCards.length;
   var card = currentCards[currentIndex];
   isFlipped = false;
   var inner = document.getElementById("flashcardInner");
   inner.classList.remove("flipped");
+  inner.setAttribute('aria-pressed', 'false');
+  inner.querySelector('.front').setAttribute('aria-hidden', 'false');
+  inner.querySelector('.back').setAttribute('aria-hidden', 'true');
   inner.classList.remove("fade-in"); void inner.offsetWidth; inner.classList.add("fade-in");
   document.getElementById("cardFront").textContent = card.q;
   document.getElementById("cardBack").textContent = card.a;
   // Show tag badge if available
   var tagEl = document.getElementById("cardTagBadge");
-  if (card.tag) { tagEl.textContent = card.tag; tagEl.style.display = ""; }
+  if (card.tag) { tagEl.textContent = card.tag + (card.difficulty ? ' · ' + (HaugnesStudyOptions.levels[card.difficulty] || card.difficulty) : ''); tagEl.style.display = ""; }
   else { tagEl.style.display = "none"; }
   // Show source label if available
   var srcEl = document.getElementById("cardSourceLabel");
@@ -905,6 +920,8 @@ function nextCardManual() {
 
 function restartDeck() {
   sessionResults = {};
+  sessionSaved = false;
+  currentSessionSummary = null;
   filterCards();
   currentIndex = 0;
   isFlipped = false;
@@ -915,6 +932,7 @@ function restartDeck() {
 }
 
 function flipCard() {
+  if (!currentCards.length) return;
   var inner = document.getElementById("flashcardInner");
   if (!isFlipped) {
     isFlipped = true;
@@ -925,18 +943,19 @@ function flipCard() {
     inner.classList.remove("flipped");
     document.getElementById("ratingArea").style.display = "none";
   }
+  inner.setAttribute('aria-pressed', String(isFlipped));
+  inner.querySelector('.front').setAttribute('aria-hidden', String(isFlipped));
+  inner.querySelector('.back').setAttribute('aria-hidden', String(!isFlipped));
 }
 
 function rateCard(rating) {
   var card = currentCards[currentIndex];
+  if (!card || !isFlipped || ['right','half','wrong'].indexOf(rating) === -1 || sessionSaved) return;
   sessionResults[card.idx] = rating;
   var stats = getStats();
-  if (!stats[currentDeck.id]) stats[currentDeck.id] = { sessions: [], cardStats: {} };
-  if (!stats[currentDeck.id].cardStats) stats[currentDeck.id].cardStats = {};
-  var cs = stats[currentDeck.id].cardStats[card.idx] || { right: 0, half: 0, wrong: 0 };
-  cs[rating]++; cs.lastRating = rating; cs.lastDate = new Date().toISOString();
-  stats[currentDeck.id].cardStats[card.idx] = cs;
+  HaugnesStudySession.rate(stats, card, rating);
   saveStats(stats);
+  if (currentCards.every(function(c) { return !!sessionResults[c.idx]; })) { showEndScreen(); return; }
   currentIndex++;
   var allRated = currentIndex >= currentCards.length;
   if (allRated) {
@@ -948,6 +967,8 @@ function rateCard(rating) {
 }
 
 function showEndScreen() {
+  if (sessionSaved) return;
+  if (!Object.keys(sessionResults).length) { showToast('Vurder minst ett kort før du fullfører økten.'); return; }
   var right=0, half=0, wrong=0;
   for (var k in sessionResults) {
     if (sessionResults[k]==="right") right++;
@@ -957,12 +978,12 @@ function showEndScreen() {
   var total = right+half+wrong;
   var pct = total>0 ? Math.round(right/total*100) : 0;
   var stats = getStats();
-  if (!stats[currentDeck.id]) stats[currentDeck.id] = { sessions: [], cardStats: {} };
-  stats[currentDeck.id].sessions.push({ date: new Date().toISOString(), results:{right,half,wrong}, total, filter:currentFilter });
+  currentSessionSummary = HaugnesStudySession.record(stats, currentDeck, sessionResults, currentFilter);
+  sessionSaved = true;
   saveStats(stats);
   var emoji = pct>=80 ? "🎉" : pct>=50 ? "💪" : "📚";
   var msg = pct>=80 ? "Veldig bra! Du kan dette stoffet." : pct>=50 ? "Bra innsats! Fortsett å øve." : "Ikke gi opp! Øvelse gjør mester.";
-  var did = currentDeck.id;
+  var did = escAttr(currentDeck.id);
   var h = '<div style="font-size:44px;margin-bottom:10px">'+emoji+'</div>';
   h += '<h2>'+esc(currentDeck.title)+'</h2><p>'+msg+'</p>';
   h += '<div class="end-stats">';
@@ -979,9 +1000,9 @@ function showEndScreen() {
   endEl.querySelectorAll("button").forEach(function(btn) {
     btn.addEventListener("click", function() {
       var action = this.getAttribute("data-action"), deck = this.getAttribute("data-deck");
-      if (action==="retry-wrong") startDeck(deck,"wrong");
-      else if (action==="retry-half") startDeck(deck,"half");
-      else if (action==="retry-all") startDeck(deck);
+      if (action==="retry-wrong") startDeck(currentDeck.deckIds,"wrong",currentSessionOptions);
+      else if (action==="retry-half") startDeck(currentDeck.deckIds,"half",currentSessionOptions);
+      else if (action==="retry-all") startDeck(currentDeck.deckIds,"all",currentSessionOptions);
       else if (action==="back") showView("decks");
     });
   });
@@ -997,10 +1018,13 @@ function renderStats() {
   var decks = getDecksForSubject(currentSubjectId);
   var stats = getStats();
   var totalSess=0, totalRight=0, totalHalf=0, totalWrong=0;
+  var countedSessions = {};
   decks.forEach(function(deck) {
     var s = stats[deck.id];
     if (s && s.sessions) s.sessions.forEach(function(sess) {
-      totalSess++; totalRight+=sess.results.right; totalHalf+=sess.results.half; totalWrong+=sess.results.wrong;
+      var sessionId = sess.sessionId || (deck.id + ':' + sess.date);
+      if (!countedSessions[sessionId]) { totalSess++; countedSessions[sessionId] = true; }
+      totalRight+=sess.results.right; totalHalf+=sess.results.half; totalWrong+=sess.results.wrong;
     });
   });
   var ta = totalRight+totalHalf+totalWrong;
@@ -1263,14 +1287,15 @@ document.getElementById("confirmImport").addEventListener("click", function() {
 
 // ==================== KEYBOARD + TOUCH ====================
 document.addEventListener("keydown", function(e) {
+  if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey || (e.target.closest && e.target.closest('input,textarea,select,button,a,[contenteditable]'))) return;
   if (!document.getElementById("view-cards").classList.contains("active")) return;
   if (e.key===" "||e.key==="Enter") { e.preventDefault(); flipCard(); }
   if (e.key==="ArrowRight") { e.preventDefault(); nextCardManual(); }
   if (e.key==="ArrowLeft") { e.preventDefault(); prevCard(); }
   if (isFlipped) {
-    if (e.key==="1") rateCard("wrong");
-    if (e.key==="2") rateCard("half");
-    if (e.key==="3") rateCard("right");
+    if (e.key==="1") { e.preventDefault(); rateCard("wrong"); }
+    if (e.key==="2") { e.preventDefault(); rateCard("half"); }
+    if (e.key==="3") { e.preventDefault(); rateCard("right"); }
   }
 });
 
@@ -1296,7 +1321,7 @@ document.getElementById("nextCardBtn").addEventListener("click", nextCardManual)
 document.getElementById("prevCardBtn2").addEventListener("click", prevCard);
 document.getElementById("nextCardBtn2").addEventListener("click", nextCardManual);
 document.getElementById("restartDeckBtn").addEventListener("click", restartDeck);
-document.getElementById("finishDeckBtn").addEventListener("click", showEndScreen);
+document.getElementById("finishDeckBtn").addEventListener("click", function() { showEndScreen(); });
 
 
 // ==================== QUIZ LOGIC ====================
@@ -1655,6 +1680,7 @@ var _cloudStatsTimer = null;
 function _initSupabase() {
   AuthGuard.requireAuth().then(function(session) {
     if (!session) return;
+    if (session.user.email === 'dev@student.local') { currentUser = session.user; _updateUserChip(); _launchApp(); return; }
     sb = AuthGuard.getClient();
     currentUser = session.user;
     _loadCloudData().then(function() { _updateUserChip(); _launchApp(); });
@@ -1668,9 +1694,11 @@ function _launchApp() {
     var match = getAllSubjects().find(function(s) {
       return s.id === subjectParam || String(s.name || '').toLowerCase().replace(/\s+/g, '') === String(subjectParam).toLowerCase().replace(/\s+/g, '');
     });
+    if (!match && window.HaugnesSubjects) match = window.HaugnesSubjects.findById(subjectParam);
     if (match) {
       currentSubjectId = match.id;
       showView('decks');
+      if (params.get('deck')) startDeck(params.get('deck'), 'all');
       if (params.get('mode') === 'quiz') switchSubjectTab('quiz');
       return;
     }

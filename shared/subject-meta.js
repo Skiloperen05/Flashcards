@@ -27,6 +27,23 @@
 
   var subjects = [
     withCategory({
+      id: 'met3',
+      code: 'MET3',
+      name: 'Databehandling for økonomer',
+      icon: 'ƒ',
+      emblem: '../assets/haugnes-logo-mark.svg',
+      accent: '#15803d',
+      status: 'active',
+      statusText: 'Klar',
+      progress: 0,
+      decks: '13',
+      cards: '146',
+      tools: '3',
+      path: '../met3/',
+      flashcards: '../flashcards/?subject=met3',
+      description: 'Excel-formler, formelvalg, praktiske modeller og Power Query fra MET3-oversikten.'
+    }, 'semester3', 30),
+    withCategory({
       id: 'ret14',
       code: 'RET14',
       name: 'Skatterett',
@@ -234,7 +251,7 @@
       var parsed = raw ? JSON.parse(raw) : null;
       if (Array.isArray(parsed) && parsed.length) return parsed.map(code);
     } catch (e) {}
-    return ['RET14', 'SOL1', 'SAM2', 'SAM3', 'MET2', 'MAT10', 'SAM1A', 'MET1', 'KOM1', 'RET1A', 'BED1'];
+    return ['RET14', 'SOL1', 'SAM2', 'SAM3', 'MET2', 'MET3', 'MAT10', 'SAM1A', 'MET1', 'KOM1', 'RET1A', 'BED1'];
   }
 
   function decorateSubject(subject) {

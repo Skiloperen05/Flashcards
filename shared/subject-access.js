@@ -9,8 +9,9 @@
   var CORE_ONLY_KEY = 'hf_enabled_subjects_core_only';
   var EXPLICIT_EMPTY_KEY = 'hf_enabled_subjects_explicit_empty';
   var CORE_CODES = ['RET14', 'SOL1', 'SAM2', 'SAM3'];
-  var DEFAULT_CODES = ['RET14', 'SOL1', 'SAM2', 'SAM3', 'MET2', 'MAT10', 'SAM1A', 'MET1', 'KOM1', 'RET1A', 'BED1'];
+  var DEFAULT_CODES = ['RET14', 'SOL1', 'SAM2', 'SAM3', 'MET2', 'MET3', 'MAT10', 'SAM1A', 'MET1', 'KOM1', 'RET1A', 'BED1'];
   var FALLBACK_CATALOG = [
+    { code: 'MET3', name: 'Databehandling for økonomer', accent: '#15803d', icon: 'ƒ' },
     { code: 'RET14', name: 'Skatterett', accent: '#2f62ff', icon: '⚖️' },
     { code: 'SOL1', name: 'Organisasjonsatferd', accent: '#20b97a', icon: '🧠' },
     { code: 'SAM2', name: 'Mikroøkonomi', accent: '#f09828', icon: '📈' },

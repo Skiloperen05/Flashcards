@@ -1,6 +1,6 @@
 # Project Map
 
-Last updated: 2026-09-13
+Last updated: 2026-09-30
 
 Purpose: make future app changes faster by documenting the stable entry points, data sources, and search paths. Update this file whenever a change moves, renames, adds, or removes app-facing functionality.
 
@@ -65,10 +65,13 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Global user-settings applier: `shared/user-settings.js`. Loaded on every app page from `shared/auth-guard.js` (`loadGlobalPolish`). Reads `hf_user_settings_v2` (plus a one-shot pull from `user_custom_data.data.settings` when newer) and applies accent color, background theme, font-size scaling, reduced motion, high contrast, avatar/display name in sidebars, the friendly check-in banner, and hides recommendation panels when disabled. Exposes `window.HaugnesUserSettings`.
 - TimeEdit/NHH schedule integration: `shared/timeedit-fetch-proxy.js`, `shared/nhh-schedule-api.js`, `shared/nhh-schedule-normalizer.js`, `shared/nhh-strict-course-filter.js`, `shared/haugnes-studyplan.js`. Runtime proxy targets are the local `/api/timeedit` endpoint (via `server.js` and `api/timeedit.js`) and the Supabase `timeedit` Edge Function.
 - Flashcard session shared logic: `shared/haugnes-flashcard-session.js`, `shared/haugnes-flashcards-structure.js`. The session script also applies learning settings from `hf_user_settings_v2`: session length cap, default start filter (`startWith`), difficult-first ordering (`autoDiff`), exam-topic priority (`examMode`), and optional sound feedback.
+  - Generic study setup: `shared/flashcard-study-options.js` and `shared/flashcard-study-options.css`; users select one or more decks, card/rating subset, difficulty, order (random/fixed/difficult-first), and length. Choices persist in `hf_study_options_v1` and explicitly control ordering/filtering instead of the older settings hooks. Initial length uses `hf_user_settings_v2.sessionLen` when present. Sound settings still apply.
+  - Collection/filter/progress engine: `shared/flashcard-study-session.js`. Combined sessions preserve source deck IDs and source card indices, save ratings and history per original deck, and mirror one combined summary to `hf_subject_stats`. Empty filters stay empty; the last unique rating completes the session. Topic/rating switches retain the session's answers. `?deck=<deck-id>` starts a specific deck from its subject page.
 
 ## Subject Areas
 
 - Deep/Dedicated Subject Hubs:
+  - `met3/`: Excel overview and deck entry points, rendered by `met3/met3.js` from the learning catalogue. 146 cards in 13 decks, with difficulty and PDF page references; 37 documented Excel functions, practical models, Power Query, and a separately marked supplementary NPV/IRR/SUBTOTAL deck. The original user-provided PDF is not committed or published. MET3 belongs to semester 3 and follows existing entitlement rules.
   - `sam3/`: SAM3 Makroøkonomi hub, flashcards, formula quiz, mock exam, models, model PDFs, and exam radar (`eksamensradar-v3.html`).
   - `sam3/eksamenspakker/`: local SAM3 exam package PDFs. Current known package: `v26/` with exam, A-besvarelse, and sensorveiledning PDFs.
   - `sam2/`: SAM2 Mikroøkonomi hub, memoar, exam radar, oppgaver, and clickable task bank (`oppgaver-klikkbar/`).
@@ -84,6 +87,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 ## Learning Content & Data Pipeline
 
 - Source of truth for learning metadata and subject decks: `data/learning-content.json`.
+- MET3 database registration: `data/met3-catalog.sql` inserts `app_subjects`, `subject_pages` and initial topic/plan blocks idempotently, preserving existing administrator edits; uses existing access/default price rules. Catalogue seed is mirrored in `supabase-setup.sql`. No schema or RLS changes.
 - Generator script: `scripts/generate-learning-content.mjs`.
   - Compiles `data/learning-content.json` into `shared/learning-content.js`.
   - Validation check: `npm run check:learning` (runs `--check`).
@@ -166,9 +170,10 @@ Typical package IDs:
 
 - Dev server: `npm run dev` (starts `server.js` on port 3000).
 - Production start: `npm run start` (`node server.js`).
-- Build check: `npm run build` (`npm run check:js && npm run check:smoke`).
+- Build check: `npm run build` (`npm run check:js && npm run check:smoke && npm run check:study`).
 - JS check: `npm run check:js`.
 - Smoke check: `npm run check:smoke`.
+- Study regression check: `npm run check:study` (`node scripts/flashcard-study-test.mjs`), using the existing jsdom dependency. Covers MET3 source coverage, combined source identities, filters/order/limits, keyboard, completion/retry, persistence, and legacy decks.
 - Full check: `npm run check`.
 - Known repo policy: `biome check` has preexisting failures and should not block unless the task specifically concerns Biome cleanup.
 

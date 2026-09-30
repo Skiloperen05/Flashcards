@@ -1,0 +1,182 @@
+.study-options {
+  --card: #fff;
+  --hf-panel: #fff;
+  --hf-text: #172033;
+  --text: #172033;
+  --hf-muted: #475569;
+  --muted: #475569;
+  --border: #d5dce7;
+  --hf-border: #d5dce7;
+  background: var(--card);
+  color: var(--hf-text, var(--text));
+  border: 1px solid var(--hf-border, var(--border));
+  border-radius: 16px;
+  padding: 18px;
+  margin: 12px 0;
+}
+.study-options h2 {
+  font-size: 17px;
+  margin-bottom: 5px;
+}
+.study-options p,
+.deck-description {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--hf-muted, var(--muted));
+  margin: 6px 0 10px;
+}
+.study-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 14px 0;
+}
+.study-options-grid label {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.study-options-grid select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--hf-border, var(--border));
+  border-radius: 8px;
+  padding: 8px;
+  background: var(--hf-panel, var(--card));
+  color: var(--hf-text, var(--text));
+  font: inherit;
+}
+.study-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.study-actions button {
+  min-height: 42px;
+  padding: 9px 14px;
+  font: inherit;
+  font-size: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+}
+.study-actions .primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+  font-weight: 700;
+}
+.study-actions button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.study-selection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 5px 0 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.study-selection input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+.deck-item:has(input:checked) {
+  border-color: var(--accent);
+}
+.deck-start {
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-top: 10px;
+  color: var(--accent);
+  background: #eef2ff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+}
+.study-summary {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--hf-muted, var(--muted));
+  margin: 4px 0 12px;
+}
+.study-empty {
+  padding: 22px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  line-height: 1.6;
+  text-align: center;
+}
+.study-empty[hidden] {
+  display: none;
+}
+.card-scene[hidden],
+.card-nav-buttons[hidden] {
+  display: none;
+}
+body[data-fc-subject="MET3"] .card-content {
+  font-size: 15px !important;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: none;
+  flex-shrink: 0;
+}
+body[data-fc-subject="MET3"] .flashcard-inner {
+  display: grid;
+  min-height: 360px !important;
+}
+body[data-fc-subject="MET3"] .card-source-label {
+  position: static;
+  max-width: 100%;
+  margin-bottom: 12px;
+}
+body[data-fc-subject="MET3"] .card-face {
+  position: relative;
+  inset: auto;
+  grid-area: 1 / 1;
+  min-width: 0;
+  padding: 32px 18px !important;
+}
+body[data-fc-subject="MET3"] .card-tag-badge {
+  position: static;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  margin-bottom: 12px;
+}
+#view-cards .rating-area[style*="display: none"],
+#view-cards .rating-area[style*="display:none"] {
+  display: none !important;
+}
+.study-options :focus-visible,
+.deck-item :focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+@media (max-width: 640px) {
+  .app-header {
+    flex-wrap: wrap;
+  }
+  .app-header > div:first-child {
+    flex: 1;
+    min-width: 0;
+  }
+  #userChip,
+  #userAreaBtn {
+    display: none !important;
+  }
+  .deck-item .meta {
+    flex-wrap: wrap;
+  }
+  .study-options-grid {
+    grid-template-columns: 1fr;
+  }
+}

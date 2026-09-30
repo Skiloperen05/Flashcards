@@ -6,7 +6,7 @@
 
   var rendering = false;
   var observer = null;
-  var APP_PATH_RE = /\/(?:ret14|sol1|sam2|sam3|met2|mat10|sam1a|met1|kom1|ret1a|bed1|flashcards)\//i;
+  var APP_PATH_RE = /\/(?:ret14|sol1|sam2|sam3|met2|met3|mat10|sam1a|met1|kom1|ret1a|bed1|flashcards)\//i;
 
   function rootRelative(path) {
     if (window.AuthGuard && typeof window.AuthGuard.getRootPath === 'function') {

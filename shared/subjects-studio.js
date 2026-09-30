@@ -3,7 +3,7 @@
 
   if (window.SubjectsStudio) return;
 
-  var BUILT_IN_ORDER = ['RET14', 'SOL1', 'SAM2', 'SAM3', 'MET2', 'MAT10', 'SAM1A', 'MET1', 'KOM1', 'RET1A', 'BED1'];
+  var BUILT_IN_ORDER = ['RET14', 'SOL1', 'SAM2', 'SAM3', 'MET2', 'MET3', 'MAT10', 'SAM1A', 'MET1', 'KOM1', 'RET1A', 'BED1'];
   var LEGACY_KEYS = {
     subjects: 'hf_custom_subjects_v1',
     pages: 'hf_custom_subject_pages_v1',
