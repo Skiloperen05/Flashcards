@@ -1,6 +1,65 @@
 <!DOCTYPE html>
-<html lang="no"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>RET1A — Haugnes Flashcards</title><link rel="icon" href="../assets/haugnes-logo-mark.svg"><link rel="apple-touch-icon" href="../assets/haugnes-logo-mark.svg"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"><link rel="stylesheet" href="../shared/haugnes-theme.css"><link rel="stylesheet" href="../shared/haugnes-subject.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../shared/auth-guard.js"></script><script>AuthGuard.requireAuth();window.HAUGNES_SUBJECT_ID='ret1a';</script></head>
-<body class="haugnes-app"><header class="hf-shell hf-topbar"><a class="hf-brand" href="../user/index.html"><span class="hf-logo"></span><span><span class="hf-brand-title">Haugnes</span><span class="hf-brand-sub">Flashcards</span></span></a><nav class="hf-nav" aria-label="Navigasjon"><a href="../user/index.html">Dashboard</a><a href="../user/subjects.html">Mine fag</a><a class="primary" href="../flashcards/">Alle flashcards</a></nav></header><section class="hf-shell hf-hero"><div class="hf-kicker" id="subjectKicker"></div><div class="hf-hero-grid"><div><h1 class="hf-title" id="subjectTitle"></h1><p class="hf-lead" id="subjectLead"></p><div class="hf-tabbar"><a class="active" href="./">Oversikt</a><a href="../user/subjects.html">Mine fag</a><a href="../flashcards/">Flashcards</a></div><div class="hf-hero-actions"><a class="hf-btn" href="../user/subjects.html">Velg fag →</a><a class="hf-secondary-btn" href="../user/index.html">Dashboard</a></div></div><aside class="hf-panel"><div class="hf-panel-inner"><div class="hf-stats" id="subjectStats"></div></div></aside></div></section><main class="hf-main"><div class="hf-shell hf-subject-layout"><div><div class="hf-section-head"><div><h2 class="hf-section-title">Læringsverktøy</h2></div><p class="hf-section-copy">Fagsiden er bygget fra første-semestermappene dine og gir en klar struktur for videre kortproduksjon.</p></div><div class="hf-card-grid" id="toolGrid"></div><div class="hf-wide-grid"><section class="hf-info-card"><h3>Viktige temaer</h3><div id="topicList"></div></section><section class="hf-info-card"><h3>Anbefalt øvingsløp</h3><div id="planList"></div></section></div><div class="hf-cta"><div><strong>Neste naturlige steg</strong><p id="nextStep" style="margin:5px 0 0;color:#becbdf;font-size:14px"></p></div><a class="hf-btn" href="../user/subjects.html">Til fagoversikt →</a></div></div><aside class="hf-subject-aside"><section class="hf-info-card"><h3>MVP-status</h3><div style="display:flex;align-items:center;gap:18px"><div class="hf-score"><strong id="progressValue"></strong></div><div><strong style="display:block;color:#fff;font-size:18px">Første semester</strong><span style="color:#8fa5ca;font-size:13px">ny fagside</span></div></div></section><section class="hf-info-card"><h3>Snarveier</h3><div class="hf-priority"><a href="../user/index.html">Dashboard</a><span>→</span></div><div class="hf-priority"><a href="../user/subjects.html">Mine fag</a><span>→</span></div><div class="hf-priority"><a href="../flashcards/">Alle flashcards</a><span>→</span></div></section></aside></div></main><footer class="hf-footer"><div class="hf-shell"><a href="../user/subjects.html">← Tilbake til Mine fag</a></div></footer><script src="../shared/learning-content.js"></script>
-<script src="../shared/subject-page-data.js"></script>
-<script src="../shared/subject-resources.js"></script>
-<script src="../shared/subject-page-renderer.js"></script></body></html>
+<html lang="nb">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Et omfattende første møte med forretningsjuss. I memoaret trekker jeg særlig frem avtalerett, dispositive utsagn og grunnleggende skatterett.">
+  <title>RET1A Rettslære for økonomer — Haugnes Flashcards</title>
+  <link rel="icon" href="../assets/haugnes-logo-mark.svg">
+  <link rel="stylesheet" href="../shared/haugnes-theme.css">
+  <link rel="stylesheet" href="../shared/first-semester.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../shared/auth-guard.js"></script>
+  <script>window.HAUGNES_SUBJECT_ID = 'ret1a'; AuthGuard.requireAuth();</script>
+</head>
+<body class="haugnes-app semester-page" style="--semester-accent:#91b0db">
+  <a class="semester-skip" href="#main">Hopp til innhold</a>
+  <header class="semester-topbar">
+    <a class="semester-brand" href="../user/">Haugnes <span>Flashcards</span></a>
+    <a href="../user/subjects.html">Mine fag <span aria-hidden="true">↗</span></a>
+  </header>
+  <main id="main" class="semester-main">
+    <nav class="semester-breadcrumb" aria-label="Brødsmule"><a href="../user/subjects.html">Mine fag</a><span aria-hidden="true">/</span><span>Første semester</span></nav>
+    <header class="semester-heading">
+      <p class="semester-eyebrow">Første semester <span>·</span> RET1A</p>
+      <h1>Rettslære for økonomer</h1>
+      <p class="semester-lead">Et omfattende første møte med forretningsjuss. I memoaret trekker jeg særlig frem avtalerett, dispositive utsagn og grunnleggende skatterett.</p>
+      <nav class="semester-tabs" aria-label="På denne siden">
+        <a href="#memo">Memoar</a>
+        <a href="#besvarelser">A-besvarelse og eksamen</a>
+        <a href="#forklaring">Arbeidsmåte</a>
+        <a href="../flashcards/?subject=ret1a">Flashcards <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+    <div class="semester-layout">
+      <article id="memo" class="semester-memo" aria-labelledby="memo-title">
+        <div class="semester-section-heading"><p class="semester-eyebrow">Av BH</p><h2 id="memo-title">Memoar RET1A</h2></div>
+        <p class="semester-attribution">Personlige erfaringer og råd fra BH.</p>
+        <div class="semester-prose"><p>Dette er et fag som til å begynne med virker svært omfattende, krevende og som en umulig stor oppgave for en ny student. Reduksjonen til et 5 poengs fag virker også tilsynelatende urettferdig. Pensum er stort, og nærmest hver eneste uke er det en ny lov som gjennomgås.</p>
+        <p>Samtidig er dette et nyttig øye inn i forretningsjussen, og et fag generelt som dekker det mest grunnleggende innenfor forretningsjussen på en god måte. Særlig Sarai må jeg innrømme at jeg syntes var god på dette, selv om hennes håndtering av eksamen er svært dårlig. Hun lar det være et alt for stort spørsmål hva som kan komme på eksamen.</p>
+        <p>I dette faget er det ikke et stort spørsmål hva som kommer på eksamen. Det er de to temaene det er dobbel forelesning i, altså avtalerett og skatterett. Tande kommer som regel inn som en reddende engel på denne fronten, men dersom du er usikker, eller tidligere i semesteret enn dette er det altså avtaleloven §33, dispositive utsagn, og skatterett som bør prioriteres.</p>
+        <p>Ingen av delene er særlig krevende for en NHH student av ditt kaliber, skatteretten går kun inn på de mest grunnleggende prinsippene i skatteloven, og man blir ikke utfordret i særlig grad utover de mest grunnleggende prinsippene innenfor personskatten.</p>
+        <p>Avtaleloven §33 er bygd opp av fire kumulative vilkår, disse bør drøftes individuelt, før man lander på en konklusjon avslutningsvis. I hvert avsnitt er det også fordelaktig å ha en konklusjon på om akkurat det vilkåret er oppfylt. Se eksamensbesvarelse H2025, for mer innsikt.</p>
+        <p>Dispositive utsagn er et tema som i likhet med avtaleloven §33 kan være gjenstand for drøfting. Dispositive utsagn hentes ikke fra lovteksten, men snarere lovpraksis opp gjennom historien. Gjennom Tandes forelesninger har han et kompendium om akkurat dette temaet som det kan være lurt å sette seg inn i, men det sentrale er om et utsagn, gitt omstendighetene er nok til å inngå en forpliktende avtale. Det må der drøftes klarhet, bestemthet og omstendigheter rundt utsagnet.</p>
+        <p>Merk at ingen av disse mest sentrale eksamenstemaene er spesielt dype, som følge av at det er et 5 poengsfag, og to uker med intensiv øving holder i massevis.</p></div>
+        <p class="semester-signature">BH</p>
+      </article>
+      <aside id="besvarelser" class="semester-resources" aria-labelledby="answers-title">
+        <p class="semester-eyebrow">Eksamensarkiv</p>
+        <h2 id="answers-title">A-besvarelse</h2>
+        <p class="semester-resource-intro">Besvarelsen og sensorveiledningen fra samme eksamen.</p>
+        <a class="semester-document semester-document-primary" href="../ret1a/eksamenspakker/h25/ret1a-a-besvarelse-h25.pdf"><span class="semester-file-type">PDF</span><span><small>A-besvarelse · Høsten 2025</small><strong>A-besvarelse RET1A H25</strong></span><span aria-hidden="true">↗</span></a>
+        <a class="semester-document" href="../ret1a/eksamenspakker/h25/ret1a-sensorveiledning-h25.doc"><span class="semester-file-type">Word</span><span><small>Sensorveiledning · Høsten 2025</small><strong>Sensorveiledning RET1A H25</strong></span><span aria-hidden="true">↗</span></a>
+        <a class="semester-archive-link" href="../user/a-besvarelser.html#/ret1a/h25">Åpne i eksamensarkivet <span aria-hidden="true">↗</span></a>
+      </aside>
+    </div>
+    <section id="forklaring" class="semester-explanation" aria-labelledby="explanation-title">
+      <p class="semester-eyebrow">Arbeidsmåte</p><h2 id="explanation-title">Fra vilkår til konklusjon</h2>
+      <p>Drøftingsstrukturen jeg beskriver i memoaret:</p>
+      <figure><ol class="semester-flow"><li><span class="semester-step">01</span><h3>Vilkår</h3><p>Ta ett vilkår om gangen.</p></li><li><span class="semester-step">02</span><h3>Drøfting</h3><p>Knytt vilkåret til omstendighetene i oppgaven.</p></li><li><span class="semester-step">03</span><h3>Delkonklusjon</h3><p>Er dette vilkåret oppfylt?</p></li><li><span class="semester-step">04</span><h3>Konklusjon</h3><p>Samle vurderingen til slutt.</p></li></ol><figcaption>Illustrasjon av arbeidsmåten i memoaret.</figcaption></figure>
+    </section>
+    <section class="semester-closing" aria-label="Videre arbeid"><div><p class="semester-eyebrow">Mitt råd</p><p>Øv på å drøfte hvert vilkår og konkludere tydelig.</p></div><a class="semester-study-link" href="../flashcards/?subject=ret1a">Øv med flashcards <span aria-hidden="true">→</span></a></section>
+  </main>
+  <footer class="semester-footer"><a href="../user/subjects.html">← Mine fag</a><span>RET1A · Haugnes Flashcards</span></footer>
+</body>
+</html>

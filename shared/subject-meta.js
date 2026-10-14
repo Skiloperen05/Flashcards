@@ -149,7 +149,7 @@
     withCategory({
       id: 'sam1a',
       code: 'SAM1A',
-      name: 'Mikroøkonomi intro',
+      name: 'Etikk, økonomi og bærekraft',
       icon: '↗',
       emblem: '../assets/emblems/SAM1A.png',
       accent: '#f09828',
@@ -183,7 +183,7 @@
     withCategory({
       id: 'kom1',
       code: 'KOM1',
-      name: 'Kommunikasjon',
+      name: 'Kommunikasjon og kunstig intelligens',
       icon: '✎',
       emblem: '../assets/emblems/KOM1.png',
       accent: '#e8bc68',
@@ -200,7 +200,7 @@
     withCategory({
       id: 'ret1a',
       code: 'RET1A',
-      name: 'Juridiske emner',
+      name: 'Rettslære for økonomer',
       icon: '§',
       emblem: '../assets/emblems/RET1A.png',
       accent: '#3b82f6',
@@ -217,7 +217,7 @@
     withCategory({
       id: 'bed1',
       code: 'BED1',
-      name: 'Bedriftsøkonomi',
+      name: 'Grunnleggende bedriftsøkonomi',
       icon: '◆',
       emblem: '../assets/emblems/BED1.png',
       accent: '#20b97a',
@@ -255,6 +255,15 @@
   }
 
   function decorateSubject(subject) {
+    var authored = window.HaugnesFirstSemester?.subjects.find((item) => code(item.code) === code(subject.code));
+    if (authored) {
+      subject.name = authored.name;
+      subject.description = authored.summary;
+      subject.path = '../' + authored.id + '/';
+      subject.status = 'active';
+      subject.statusText = 'Første semester';
+      return subject;
+    }
     var learning = learningContent();
     if (!learning || typeof learning.qualityFor !== 'function' || typeof learning.toolsFor !== 'function') return subject;
     var quality = learning.qualityFor(subject.id || subject.code);

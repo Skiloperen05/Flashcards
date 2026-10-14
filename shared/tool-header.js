@@ -11,11 +11,11 @@
     sam3: { code: 'SAM3', name: 'Makroøkonomi', href: 'sam3/' },
     met2: { code: 'MET2', name: 'Metode', href: 'met2/' },
     mat10: { code: 'MAT10', name: 'Matematikk', href: 'mat10/' },
-    sam1a: { code: 'SAM1A', name: 'Mikroøkonomi intro', href: 'sam1a/' },
+    sam1a: { code: 'SAM1A', name: 'Etikk, økonomi og bærekraft', href: 'sam1a/' },
     met1: { code: 'MET1', name: 'Matematikk for økonomer', href: 'met1/' },
-    kom1: { code: 'KOM1', name: 'Kommunikasjon', href: 'kom1/' },
-    ret1a: { code: 'RET1A', name: 'Juridiske emner', href: 'ret1a/' },
-    bed1: { code: 'BED1', name: 'Bedriftsøkonomi', href: 'bed1/' }
+    kom1: { code: 'KOM1', name: 'Kommunikasjon og kunstig intelligens', href: 'kom1/' },
+    ret1a: { code: 'RET1A', name: 'Rettslære for økonomer', href: 'ret1a/' },
+    bed1: { code: 'BED1', name: 'Grunnleggende bedriftsøkonomi', href: 'bed1/' }
   };
 
   function rootRelative(path) {

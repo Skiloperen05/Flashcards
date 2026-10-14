@@ -56,7 +56,8 @@
     var existing = document.getElementById(id);
     if (existing) {
       if (onload) {
-        if (id === 'haugnes-subject-meta-js' && window.HaugnesSubjects) onload();
+        if (id === 'haugnes-first-semester-js' && window.HaugnesFirstSemester) onload();
+        else if (id === 'haugnes-subject-meta-js' && window.HaugnesSubjects) onload();
         else if (id === 'haugnes-learning-content-js' && window.HaugnesLearningContent) onload();
         else if (id === 'haugnes-subject-access-js' && window.HaugnesSubjectAccess) onload();
         else if (id === 'haugnes-functional-enhancements-js' && window.HaugnesFunctionalEnhancements) onload();
@@ -162,11 +163,13 @@
   }
 
   function loadSubjectAccess(callback) {
-    addScript('haugnes-learning-content-js', rootRelative('shared/learning-content.js'), function () {
-      addScript('haugnes-subject-meta-js', rootRelative('shared/subject-meta.js'), function () {
-        addScript('haugnes-subject-access-js', rootRelative('shared/subject-access.js'), function () {
-          if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.enhanceCurrentPage === 'function') window.HaugnesSubjectAccess.enhanceCurrentPage();
-          if (callback) callback();
+    addScript('haugnes-first-semester-js', rootRelative('shared/first-semester-content.js'), () => {
+      addScript('haugnes-learning-content-js', rootRelative('shared/learning-content.js'), function () {
+        addScript('haugnes-subject-meta-js', rootRelative('shared/subject-meta.js'), function () {
+          addScript('haugnes-subject-access-js', rootRelative('shared/subject-access.js'), function () {
+            if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.enhanceCurrentPage === 'function') window.HaugnesSubjectAccess.enhanceCurrentPage();
+            if (callback) callback();
+          });
         });
       });
     });

@@ -75,6 +75,7 @@
     </div>
   </main>
 </div>
+<script src="../shared/first-semester-content.js"></script>
 <script src="../shared/learning-content.js"></script>
 <script src="../shared/subject-meta.js"></script>
 <script src="auth-guard.js"></script>
@@ -89,6 +90,8 @@ function esc(value) {
 }
 
 function memoFor(subject) {
+  var authored = window.HaugnesFirstSemester && window.HaugnesFirstSemester.subjects.find(function (item) { return item.id === subject.id; });
+  if (authored) return { intro: authored.summary, studyAdvice: authored.focus, authored: true };
   if (!window.HaugnesLearningContent || typeof window.HaugnesLearningContent.memoFor !== 'function') return null;
   return window.HaugnesLearningContent.memoFor(subject.id) || window.HaugnesLearningContent.memoFor(subject.code);
 }
@@ -155,10 +158,11 @@ function cardHtml(row) {
   return '<article class="memo-card" style="--accent:' + esc(subject.accent || '#2f62ff') + '">'
     + '<div class="memo-top"><div class="subject-badge"><span class="subject-icon">' + emblem + '</span><span><strong>' + esc(subject.code) + '</strong><span>' + esc(subject.name) + '</span></span></div><span class="memo-status">' + (row.ready ? 'Publisert' : 'Utkast') + '</span></div>'
     + '<h3>' + esc(subject.code) + ': fagmemo</h3>'
-    + '<div class="memo-section"><b>Arbeidsmåte</b><p>' + esc(memo.intro) + '</p></div>'
-    + '<div class="memo-section"><b>Eksamen</b><p>' + esc(memo.exam) + '</p></div>'
+    + '<div class="memo-section"><b>' + (memo.authored ? 'Fra memoaret mitt' : 'Arbeidsmåte') + '</b><p>' + esc(memo.intro) + '</p></div>'
+    + (memo.exam ? '<div class="memo-section"><b>Eksamen</b><p>' + esc(memo.exam) + '</p></div>' : '')
     + '<div class="memo-section"><b>Prioritering</b><p>' + esc(memo.studyAdvice) + '</p></div>'
-    + '<div class="memo-actions"><a class="memo-btn primary" href="' + esc(memoHref) + '">Åpne memo</a><a class="memo-btn secondary" href="' + esc(subject.flashcards || '../flashcards/?subject=' + subject.id) + '">Start flashcards</a></div>'
+    + '<div class="memo-actions"><a class="memo-btn primary" href="' + esc(memoHref) + '">Åpne memo</a>'
+    + (memo.authored && subject.id === 'kom1' ? '' : '<a class="memo-btn secondary" href="' + esc(subject.flashcards || '../flashcards/?subject=' + subject.id) + '">Start flashcards</a>') + '</div>'
     + '</article>';
 }
 

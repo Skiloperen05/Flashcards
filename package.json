@@ -6,7 +6,7 @@
     "dev": "node server.js",
     "start": "node server.js",
     "build": "npm run check:js && npm run check:smoke && npm run check:study",
-    "check": "npm run check:js && npm run check:smoke && npm run check:learning && npm run check:study && npm run check:biome",
+    "check": "npm run check:js && npm run check:smoke && npm run check:learning && npm run check:semester && npm run check:study && npm run check:biome",
     "check:js": "node scripts/check-js.mjs",
     "check:smoke": "node scripts/smoke-test.mjs",
     "check:study": "node scripts/flashcard-study-test.mjs",
@@ -14,7 +14,9 @@
     "learning:generate": "node scripts/generate-learning-content.mjs",
     "check:learning": "node scripts/generate-learning-content.mjs --check",
     "check:biome": "biome check .",
-    "format": "biome format --write ."
+    "format": "biome format --write .",
+    "semester:generate": "node scripts/generate-first-semester.mjs",
+    "check:semester": "node scripts/generate-first-semester.mjs --check"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.16",

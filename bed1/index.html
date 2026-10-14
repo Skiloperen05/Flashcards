@@ -1,6 +1,58 @@
 <!DOCTYPE html>
-<html lang="no"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BED1 — Haugnes Flashcards</title><link rel="icon" href="../assets/haugnes-logo-mark.svg"><link rel="apple-touch-icon" href="../assets/haugnes-logo-mark.svg"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"><link rel="stylesheet" href="../shared/haugnes-theme.css"><link rel="stylesheet" href="../shared/haugnes-subject.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../shared/auth-guard.js"></script><script>AuthGuard.requireAuth();window.HAUGNES_SUBJECT_ID='bed1';</script></head>
-<body class="haugnes-app"><header class="hf-shell hf-topbar"><a class="hf-brand" href="../user/index.html"><span class="hf-logo"></span><span><span class="hf-brand-title">Haugnes</span><span class="hf-brand-sub">Flashcards</span></span></a><nav class="hf-nav" aria-label="Navigasjon"><a href="../user/index.html">Dashboard</a><a href="../user/subjects.html">Mine fag</a><a class="primary" href="../flashcards/">Alle flashcards</a></nav></header><section class="hf-shell hf-hero"><div class="hf-kicker" id="subjectKicker"></div><div class="hf-hero-grid"><div><h1 class="hf-title" id="subjectTitle"></h1><p class="hf-lead" id="subjectLead"></p><div class="hf-tabbar"><a class="active" href="./">Oversikt</a><a href="../user/subjects.html">Mine fag</a><a href="../flashcards/">Flashcards</a></div><div class="hf-hero-actions"><a class="hf-btn" href="../user/subjects.html">Velg fag →</a><a class="hf-secondary-btn" href="../user/index.html">Dashboard</a></div></div><aside class="hf-panel"><div class="hf-panel-inner"><div class="hf-stats" id="subjectStats"></div></div></aside></div></section><main class="hf-main"><div class="hf-shell hf-subject-layout"><div><div class="hf-section-head"><div><h2 class="hf-section-title">Læringsverktøy</h2></div><p class="hf-section-copy">Fagsiden er bygget fra første-semestermappene dine og gir en klar struktur for videre kortproduksjon.</p></div><div class="hf-card-grid" id="toolGrid"></div><div class="hf-wide-grid"><section class="hf-info-card"><h3>Viktige temaer</h3><div id="topicList"></div></section><section class="hf-info-card"><h3>Anbefalt øvingsløp</h3><div id="planList"></div></section></div><div class="hf-cta"><div><strong>Neste naturlige steg</strong><p id="nextStep" style="margin:5px 0 0;color:#becbdf;font-size:14px"></p></div><a class="hf-btn" href="../user/subjects.html">Til fagoversikt →</a></div></div><aside class="hf-subject-aside"><section class="hf-info-card"><h3>MVP-status</h3><div style="display:flex;align-items:center;gap:18px"><div class="hf-score"><strong id="progressValue"></strong></div><div><strong style="display:block;color:#fff;font-size:18px">Første semester</strong><span style="color:#8fa5ca;font-size:13px">ny fagside</span></div></div></section><section class="hf-info-card"><h3>Snarveier</h3><div class="hf-priority"><a href="../user/index.html">Dashboard</a><span>→</span></div><div class="hf-priority"><a href="../user/subjects.html">Mine fag</a><span>→</span></div><div class="hf-priority"><a href="../flashcards/">Alle flashcards</a><span>→</span></div></section></aside></div></main><footer class="hf-footer"><div class="hf-shell"><a href="../user/subjects.html">← Tilbake til Mine fag</a></div></footer><script src="../shared/learning-content.js"></script>
-<script src="../shared/subject-page-data.js"></script>
-<script src="../shared/subject-resources.js"></script>
-<script src="../shared/subject-page-renderer.js"></script></body></html>
+<html lang="nb">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Faget jeg ville brukt mest tid på i første semester. Kunnskapen om budsjett, regnskap og bedriftsøkonomiske beslutninger følger deg videre i studiet.">
+  <title>BED1 Grunnleggende bedriftsøkonomi — Haugnes Flashcards</title>
+  <link rel="icon" href="../assets/haugnes-logo-mark.svg">
+  <link rel="stylesheet" href="../shared/haugnes-theme.css">
+  <link rel="stylesheet" href="../shared/first-semester.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../shared/auth-guard.js"></script>
+  <script>window.HAUGNES_SUBJECT_ID = 'bed1'; AuthGuard.requireAuth();</script>
+</head>
+<body class="haugnes-app semester-page" style="--semester-accent:#73bd9a">
+  <a class="semester-skip" href="#main">Hopp til innhold</a>
+  <header class="semester-topbar">
+    <a class="semester-brand" href="../user/">Haugnes <span>Flashcards</span></a>
+    <a href="../user/subjects.html">Mine fag <span aria-hidden="true">↗</span></a>
+  </header>
+  <main id="main" class="semester-main">
+    <nav class="semester-breadcrumb" aria-label="Brødsmule"><a href="../user/subjects.html">Mine fag</a><span aria-hidden="true">/</span><span>Første semester</span></nav>
+    <header class="semester-heading">
+      <p class="semester-eyebrow">Første semester <span>·</span> BED1</p>
+      <h1>Grunnleggende bedriftsøkonomi</h1>
+      <p class="semester-lead">Faget jeg ville brukt mest tid på i første semester. Kunnskapen om budsjett, regnskap og bedriftsøkonomiske beslutninger følger deg videre i studiet.</p>
+      <nav class="semester-tabs" aria-label="På denne siden">
+        <a href="#memo">Memoar</a>
+        <a href="#besvarelser">A-besvarelse og eksamen</a>
+
+        <a href="../flashcards/?subject=bed1">Flashcards <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+    <div class="semester-layout">
+      <article id="memo" class="semester-memo" aria-labelledby="memo-title">
+        <div class="semester-section-heading"><p class="semester-eyebrow">Av BH</p><h2 id="memo-title">Memoar BED1</h2></div>
+        <p class="semester-attribution">Personlige erfaringer og råd fra BH.</p>
+        <div class="semester-prose"><p>Dette er det faget jeg ville brukt mest tid på i mitt første semester på NHH. Jeg syntes dette var det mest interessante og nyttige faget i mitt første semester. Man får her en grunnleggende innsikt i bedriftsøkonomi, og bedriftsøkonomiske beslutninger.</p>
+        <p>Eksamen og faget i seg selv er ikke noe særlig mer krevende enn de andre fagene, men for min del opplevdes det som mer nært det en fremtidig jobb vil handle om. Man får innsikt i budsjett og regnskap, noe som også kan sees på som en inngang til alle de senere BED fagene.</p>
+        <p>Dersom du har litt ekstra tid dette første semesteret er det her jeg ville lagt ned kreftene. Kunnskap man tilegner seg her vil hjelpe deg gjennom hele resten av studiet.</p></div>
+        <p class="semester-signature">BH</p>
+      </article>
+      <aside id="besvarelser" class="semester-resources" aria-labelledby="answers-title">
+        <p class="semester-eyebrow">Eksamensarkiv</p>
+        <h2 id="answers-title">A-besvarelse</h2>
+        <p class="semester-resource-intro">Besvarelsen, oppgaven og løsningsforslaget fra samme eksamen.</p>
+        <a class="semester-document semester-document-primary" href="../bed1/eksamenspakker/h25/bed1-a-besvarelse-h25.pdf"><span class="semester-file-type">PDF</span><span><small>A-besvarelse · Høsten 2025</small><strong>A-besvarelse BED1 H25</strong></span><span aria-hidden="true">↗</span></a>
+        <a class="semester-document" href="../bed1/eksamenspakker/h25/bed1-eksamen-h25.pdf"><span class="semester-file-type">PDF</span><span><small>Eksamen · Høsten 2025</small><strong>Eksamensoppgave BED1 H25</strong></span><span aria-hidden="true">↗</span></a>
+        <a class="semester-document" href="../bed1/eksamenspakker/h25/bed1-losning-h25.pdf"><span class="semester-file-type">PDF</span><span><small>Løsningsforslag · Høsten 2025</small><strong>Løsningsforslag BED1 H25</strong></span><span aria-hidden="true">↗</span></a>
+        <a class="semester-archive-link" href="../user/a-besvarelser.html#/bed1/h25">Åpne i eksamensarkivet <span aria-hidden="true">↗</span></a>
+      </aside>
+    </div>
+
+    <section class="semester-closing" aria-label="Videre arbeid"><div><p class="semester-eyebrow">Mitt råd</p><p>Prioriter BED1 når du har ekstra tid.</p></div><a class="semester-study-link" href="../flashcards/?subject=bed1">Øv med flashcards <span aria-hidden="true">→</span></a></section>
+  </main>
+  <footer class="semester-footer"><a href="../user/subjects.html">← Mine fag</a><span>BED1 · Haugnes Flashcards</span></footer>
+</body>
+</html>

@@ -4,6 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Fagside — Haugnes Flashcards</title>
+<script>
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  var id = (params.get('id') || params.get('subject') || '').toLowerCase();
+  if (id === 'ret1') id = 'ret1a';
+  if (['bed1', 'ret1a', 'met1', 'sam1a', 'kom1'].indexOf(id) === -1) return;
+  params.delete('id');
+  params.delete('subject');
+  var query = params.toString();
+  window.location.replace('../' + id + '/' + (query ? '?' + query : '') + window.location.hash);
+})();
+</script>
 <link rel="icon" href="../assets/haugnes-logo-mark.svg">
 <link rel="apple-touch-icon" href="../assets/haugnes-logo-mark.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">

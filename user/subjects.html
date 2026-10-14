@@ -76,6 +76,7 @@
     </main>
   </div>
 </div>
+<script src="../shared/first-semester-content.js"></script>
 <script src="../shared/learning-content.js"></script>
 <script src="../shared/subject-meta.js"></script>
 <script src="auth-guard.js"></script>
@@ -334,6 +335,15 @@ function noOwnedSubjectsHtml(){
 }
 
 function cardHtml(s){
+  var authored = window.HaugnesFirstSemester && window.HaugnesFirstSemester.subjects.find(function (item) { return item.id === s.id; });
+  if (authored) {
+    return '<article class="subject-card" data-status="active" data-search="' + escapeHtml(s.code + ' ' + authored.name + ' ' + authored.summary).toLowerCase() + '" style="--accent:' + s.accent + '">'
+      + '<div class="subject-top"><span class="subject-code">' + s.code + '</span><span class="status active">Første semester</span></div>'
+      + '<div class="subject-name">' + escapeHtml(authored.name) + '</div><p class="subject-desc">' + escapeHtml(authored.summary) + '</p>'
+      + '<div class="card-actions"><a class="card-btn primary" href="../' + authored.id + '/#memo">Les memoaret</a>'
+      + (authored.documents.length ? '<a class="card-btn secondary" href="../' + authored.id + '/#besvarelser">A-besvarelse</a>' : '')
+      + '</div></article>';
+  }
   var isDisabled = s.path === '#';
   var hasFlashcards = s.flashcards && s.flashcards !== '#';
   var description = s.description || s.desc || '';

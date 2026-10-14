@@ -1,6 +1,55 @@
 <!DOCTYPE html>
-<html lang="no"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SAM1A — Haugnes Flashcards</title><link rel="icon" href="../assets/haugnes-logo-mark.svg"><link rel="apple-touch-icon" href="../assets/haugnes-logo-mark.svg"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"><link rel="stylesheet" href="../shared/haugnes-theme.css"><link rel="stylesheet" href="../shared/haugnes-subject.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../shared/auth-guard.js"></script><script>AuthGuard.requireAuth();window.HAUGNES_SUBJECT_ID='sam1a';</script></head>
-<body class="haugnes-app"><header class="hf-shell hf-topbar"><a class="hf-brand" href="../user/index.html"><span class="hf-logo"></span><span><span class="hf-brand-title">Haugnes</span><span class="hf-brand-sub">Flashcards</span></span></a><nav class="hf-nav" aria-label="Navigasjon"><a href="../user/index.html">Dashboard</a><a href="../user/subjects.html">Mine fag</a><a class="primary" href="../flashcards/">Alle flashcards</a></nav></header><section class="hf-shell hf-hero"><div class="hf-kicker" id="subjectKicker"></div><div class="hf-hero-grid"><div><h1 class="hf-title" id="subjectTitle"></h1><p class="hf-lead" id="subjectLead"></p><div class="hf-tabbar"><a class="active" href="./">Oversikt</a><a href="../user/subjects.html">Mine fag</a><a href="../flashcards/">Flashcards</a></div><div class="hf-hero-actions"><a class="hf-btn" href="../user/subjects.html">Velg fag →</a><a class="hf-secondary-btn" href="../user/index.html">Dashboard</a></div></div><aside class="hf-panel"><div class="hf-panel-inner"><div class="hf-stats" id="subjectStats"></div></div></aside></div></section><main class="hf-main"><div class="hf-shell hf-subject-layout"><div><div class="hf-section-head"><div><h2 class="hf-section-title">Læringsverktøy</h2></div><p class="hf-section-copy">Fagsiden er bygget fra første-semestermappene dine og gir en klar struktur for videre kortproduksjon.</p></div><div class="hf-card-grid" id="toolGrid"></div><div class="hf-wide-grid"><section class="hf-info-card"><h3>Viktige temaer</h3><div id="topicList"></div></section><section class="hf-info-card"><h3>Anbefalt øvingsløp</h3><div id="planList"></div></section></div><div class="hf-cta"><div><strong>Neste naturlige steg</strong><p id="nextStep" style="margin:5px 0 0;color:#becbdf;font-size:14px"></p></div><a class="hf-btn" href="../user/subjects.html">Til fagoversikt →</a></div></div><aside class="hf-subject-aside"><section class="hf-info-card"><h3>MVP-status</h3><div style="display:flex;align-items:center;gap:18px"><div class="hf-score"><strong id="progressValue"></strong></div><div><strong style="display:block;color:#fff;font-size:18px">Første semester</strong><span style="color:#8fa5ca;font-size:13px">ny fagside</span></div></div></section><section class="hf-info-card"><h3>Snarveier</h3><div class="hf-priority"><a href="../user/index.html">Dashboard</a><span>→</span></div><div class="hf-priority"><a href="../user/subjects.html">Mine fag</a><span>→</span></div><div class="hf-priority"><a href="../flashcards/">Alle flashcards</a><span>→</span></div></section></aside></div></main><footer class="hf-footer"><div class="hf-shell"><a href="../user/subjects.html">← Tilbake til Mine fag</a></div></footer><script src="../shared/learning-content.js"></script>
-<script src="../shared/subject-page-data.js"></script>
-<script src="../shared/subject-resources.js"></script>
-<script src="../shared/subject-page-renderer.js"></script></body></html>
+<html lang="nb">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Begreper, eksperimenter og atferdsøkonomi. Flashcards hjalp meg å huske stoffet, men på eksamen måtte jeg også kunne utdype temaene.">
+  <title>SAM1A Etikk, økonomi og bærekraft — Haugnes Flashcards</title>
+  <link rel="icon" href="../assets/haugnes-logo-mark.svg">
+  <link rel="stylesheet" href="../shared/haugnes-theme.css">
+  <link rel="stylesheet" href="../shared/first-semester.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../shared/auth-guard.js"></script>
+  <script>window.HAUGNES_SUBJECT_ID = 'sam1a'; AuthGuard.requireAuth();</script>
+</head>
+<body class="haugnes-app semester-page" style="--semester-accent:#d3ab78">
+  <a class="semester-skip" href="#main">Hopp til innhold</a>
+  <header class="semester-topbar">
+    <a class="semester-brand" href="../user/">Haugnes <span>Flashcards</span></a>
+    <a href="../user/subjects.html">Mine fag <span aria-hidden="true">↗</span></a>
+  </header>
+  <main id="main" class="semester-main">
+    <nav class="semester-breadcrumb" aria-label="Brødsmule"><a href="../user/subjects.html">Mine fag</a><span aria-hidden="true">/</span><span>Første semester</span></nav>
+    <header class="semester-heading">
+      <p class="semester-eyebrow">Første semester <span>·</span> SAM1A</p>
+      <h1>Etikk, økonomi og bærekraft</h1>
+      <p class="semester-lead">Begreper, eksperimenter og atferdsøkonomi. Flashcards hjalp meg å huske stoffet, men på eksamen måtte jeg også kunne utdype temaene.</p>
+      <nav class="semester-tabs" aria-label="På denne siden">
+        <a href="#memo">Memoar</a>
+
+        <a href="#forklaring">Arbeidsmåte</a>
+        <a href="../flashcards/?subject=sam1a">Flashcards <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+    <div class="semester-layout semester-layout-reading">
+      <article id="memo" class="semester-memo" aria-labelledby="memo-title">
+        <div class="semester-section-heading"><p class="semester-eyebrow">Av BH</p><h2 id="memo-title">Memoar SAM1A</h2></div>
+        <p class="semester-attribution">Personlige erfaringer og råd fra BH.</p>
+        <div class="semester-prose"><p>Hei førstekullist. SAM1a er introduksjonen din både til den psykologiske delen av NHH-utdanningen din, den filosofiske delen og den samfunnsfaglige delen. Jeg opplevde faget som informativt og nyttig.</p>
+        <p>Faget er begrepstungt og viser til svært mye empiriske data. For å lære dette har nettsiden sin egen flashcardsfunksjon, hvor man kan pugge begreper og eksperimenter. Dette opplevde jeg personlig som svært nyttig under min første eksamensperiode, og hjalp meg å huske de sentrale elementene i faget mye bedre.</p>
+        <p>Det er sentralt å peke på at kunnskapen fra dette faget følger deg i de senere SAM fagene, og litt i SOL1. Det gir en grunnleggende forståelse for adferdsøkonomi og Cappelen er virkelig ikke en foreleser man vil gå glipp av.</p>
+        <p>Eksamen er et wild-card, og sentralt her er å ikke bare kunne flashcardsene, men også å kunne utdype hvert tema. Dette kommer av at man ofte på eksamen må skrive mye om hvert tema, så en grundig forståelse lønner seg. Det er vanskelig her å si hva som kommer, men Cappelen har uttrykt et ønske om å ta noe nytt, så nå med 2-3 eksamener kan man vel begynne å se hva som kanskje kan gjenstå ;).</p></div>
+        <p class="semester-signature">BH</p>
+      </article>
+
+    </div>
+    <section id="forklaring" class="semester-explanation" aria-labelledby="explanation-title">
+      <p class="semester-eyebrow">Arbeidsmåte</p><h2 id="explanation-title">Fra begrep til forklaring</h2>
+      <p>Slik henger de to øvingsformene i memoaret sammen:</p>
+      <figure><ol class="semester-flow"><li><span class="semester-step">01</span><h3>Begrep</h3><p>Kan du forklare hva det betyr?</p></li><li><span class="semester-step">02</span><h3>Eksperiment</h3><p>Hva undersøkes, og hva viser det?</p></li><li><span class="semester-step">03</span><h3>Utdyping</h3><p>Knytt funnet til temaet og forklar sammenhengen.</p></li></ol><figcaption>Illustrasjon av arbeidsmåten i memoaret.</figcaption></figure>
+    </section>
+    <section class="semester-closing" aria-label="Videre arbeid"><div><p class="semester-eyebrow">Mitt råd</p><p>Lær begrepene, og tren på å forklare dem med egne ord.</p></div><a class="semester-study-link" href="../flashcards/?subject=sam1a">Øv med flashcards <span aria-hidden="true">→</span></a></section>
+  </main>
+  <footer class="semester-footer"><a href="../user/subjects.html">← Mine fag</a><span>SAM1A · Haugnes Flashcards</span></footer>
+</body>
+</html>

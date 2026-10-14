@@ -1,6 +1,6 @@
 # Project Map
 
-Last updated: 2026-09-30
+Last updated: 2026-10-14
 
 Purpose: make future app changes faster by documenting the stable entry points, data sources, and search paths. Update this file whenever a change moves, renames, adds, or removes app-facing functionality.
 
@@ -79,7 +79,10 @@ Purpose: make future app changes faster by documenting the stable entry points, 
   - `ret14/`: RET14 Skatterett hub, exam radar (`eksamen/`), pensum (`pensum/`), quiz (`quiz/`), and progress (`progresjon/`).
   - `sol1/`: SOL1 subject pages, complete/advanced flashcards (`flashcards-2-avansert.html`, `flashcards-2-komplett.html`), and theory writing (`teorideler-teoriskriving.html`).
 - Lightweight / Template Hubs (driven by `shared/subject-page-renderer.js` and `shared/learning-content.js`):
-  - `sam1a/`, `met1/`, `kom1/`, `ret1a/`, `bed1/`, `mat10/`, `met2/`: Clean template subject hubs providing overview, learning tools, topics, recommended study paths, and flashcard links.
+  - `mat10/`, `met2/`: Template hubs driven by the shared subject renderer.
+  - `sam1a/`, `met1/`, `kom1/`, `ret1a/`, `bed1/`: Author-led first-semester pages. `data/first-semester.json` is the active source for BH's verbatim memo text, concise introductions, resource links and two explanatory learning-method diagrams. The old generated study paths, radar percentages, placeholder notes and progress widgets are not used on these pages. KOM1 deliberately has no exam or flashcard call to action. Course names follow NHH's course catalog (source URL and verification date in the JSON), including SAM1A Etikk, økonomi og bærekraft.
+  - `scripts/generate-first-semester.mjs` generates these five static HTML pages, `shared/first-semester-content.js`, and the marked first-semester resource catalog in `shared/subject-resources.js`; run `npm run semester:generate` after source edits and `npm run check:semester` to check freshness and document targets. Layout: `shared/first-semester.css`. Shared content is loaded before subject catalog decoration, so remote legacy metadata cannot restore old names/descriptions/routes; `user/subjects.html` uses simple memo/answer cards for these five courses, and `user/memoarer.html` uses the author's summaries.
+  - `subject/?id=<first-semester-code>` (also `?subject=`) redirects to the corresponding author-led page, preserving other query parameters and the anchor. First-semester page copy is maintained in the JSON source, not the legacy Fagstudio page editor.
   - `subject/`: Universal dynamic subject shell (`subject/index.html`). Accepts query parameter `?id=<kode>` or `?subject=<kode>`. Renders all 6 subject shell modules (Fagoversikt, Eksamensradar, A-besvarelser, Forelesningsnotater, Oppgavebank, Flashcards) for newly created and existing courses. Injects a top admin toolbar when viewed by an administrator, med direkte in-page CRUD-redigering for «Viktige temaer» og «Anbefalt øvingsløp», samt live preview-visningsbryter (Admin-modus vs. Studentvisning).
 - Generic Flashcard Application:
   - `flashcards/`: generic flashcard app entry (`flashcards/index.html`). Supports parameters `?subject=<id>` (e.g. `ret14`, `subj_sol1`, `sam2`, `sam3`, `met2`, `mat10`, `bed1`, etc.) and `&mode=quiz`. Fallback library keeps catalog visible if card initialization is pending.
@@ -114,6 +117,7 @@ Important behavior:
 - PDF URLs are intended to stay in Supabase-protected metadata, not hardcoded in public client bundles, unless a package is intentionally local/public.
 - Legacy V25 SAM3 Google Drive links also exist in `shared/haugnes-dashboard-progress.js`.
 - Local SAM3 V26 PDFs currently live under `sam3/eksamenspakker/v26/`.
+- Existing public BED1 H25 documents: `bed1/eksamenspakker/h25/` (A-besvarelse, exam, solution). RET1A H25: `ret1a/eksamenspakker/h25/` (A-besvarelse PDF, sensorveiledning Word `.doc`). The first-semester pages and `shared/subject-resources.js` link directly to these already published files; they are not newly protected uploads. The answer library retains its existing package/access behavior.
 
 Typical package IDs:
 - Package: `sam3-v26`.

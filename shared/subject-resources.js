@@ -44,29 +44,88 @@
       { type: 'eksamen', title: 'Eksamensdrill', description: 'Oppgaver og metodevalg samles i oppgavebanken.', status: 'available', href: '../user/oppgavebank.html?subject=MAT10' },
       { type: 'a_besvarelse', title: 'A-besvarelser', description: 'Kobles til beskyttet eksamensarkiv når dokumentene er klare for deling.', status: 'coming', href: '../user/a-besvarelser.html#/mat10' }
     ],
-    sam1a: [
-      { type: 'kompendium', title: 'Kompendium og læringsmål', description: 'Lokalt grunnlag er funnet og kan struktureres til kort og oversikt.', status: 'coming' },
-      { type: 'eksamen', title: 'Canvas-eksamener', description: 'Canvas-funn kan kobles til oppgavebank når filene er klargjort.', status: 'coming', href: '../user/oppgavebank.html?subject=SAM1A' }
-    ],
-    met1: [
-      { type: 'kompendium', title: 'NNV og rente', description: 'Lokale oppgaver for nåverdi, sluttverdi, annuitet og effektiv rente.', status: 'coming' },
-      { type: 'formelark', title: 'Finansmatematikk', description: 'Formler for rente, annuitet, rekker og kontantstrømmer.', status: 'coming' },
-      { type: 'eksamen', title: 'Regneoppgaver', description: 'Oppgaver samles i oppgavebanken etter tema.', status: 'available', href: '../user/oppgavebank.html?subject=MET1' }
-    ],
-    kom1: [
-      { type: 'kompendium', title: 'Rapport og presentasjon', description: 'Plass for rapportmal, skrivegrep og presentasjonsstruktur.', status: 'coming' },
-      { type: 'annet', title: 'Skrivekort', description: 'Problemstilling, analyseavsnitt og overganger kobles til flashcards.', status: 'available', href: '../flashcards/?subject=kom1' }
+    // first-semester:start (generated)
+    bed1: [
+      {
+        "type": "memoar",
+        "title": "Memoar BED1",
+        "description": "Faget jeg ville brukt mest tid på i første semester. Kunnskapen om budsjett, regnskap og bedriftsøkonomiske beslutninger følger deg videre i studiet.",
+        "status": "available",
+        "href": "../bed1/#memo"
+      },
+      {
+        "type": "a_besvarelse",
+        "title": "A-besvarelse BED1 H25",
+        "description": "Høsten 2025",
+        "status": "available",
+        "href": "../bed1/eksamenspakker/h25/bed1-a-besvarelse-h25.pdf"
+      },
+      {
+        "type": "eksamen",
+        "title": "Eksamensoppgave BED1 H25",
+        "description": "Høsten 2025",
+        "status": "available",
+        "href": "../bed1/eksamenspakker/h25/bed1-eksamen-h25.pdf"
+      },
+      {
+        "type": "annet",
+        "title": "Løsningsforslag BED1 H25",
+        "description": "Høsten 2025",
+        "status": "available",
+        "href": "../bed1/eksamenspakker/h25/bed1-losning-h25.pdf"
+      }
     ],
     ret1a: [
-      { type: 'kompendium', title: 'Juridisk metode', description: 'Vilkår, subsumsjon og konklusjon som repetisjonsgrunnlag.', status: 'coming' },
-      { type: 'eksamen', title: 'Eksamensøving', description: 'Tidligere eksamener og teorioppgaver kan samles i oppgavebanken.', status: 'available', href: '../user/oppgavebank.html?subject=RET1A' },
-      { type: 'a_besvarelse', title: 'A-besvarelser', description: 'Kobles til beskyttet eksamensarkiv når dokumentene er klare for deling.', status: 'coming', href: '../user/a-besvarelser.html#/ret1a' }
+      {
+        "type": "memoar",
+        "title": "Memoar RET1A",
+        "description": "Et omfattende første møte med forretningsjuss. I memoaret trekker jeg særlig frem avtalerett, dispositive utsagn og grunnleggende skatterett.",
+        "status": "available",
+        "href": "../ret1a/#memo"
+      },
+      {
+        "type": "a_besvarelse",
+        "title": "A-besvarelse RET1A H25",
+        "description": "Høsten 2025",
+        "status": "available",
+        "href": "../ret1a/eksamenspakker/h25/ret1a-a-besvarelse-h25.pdf"
+      },
+      {
+        "type": "sensorveiledning",
+        "title": "Sensorveiledning RET1A H25",
+        "description": "Høsten 2025",
+        "status": "available",
+        "href": "../ret1a/eksamenspakker/h25/ret1a-sensorveiledning-h25.doc"
+      }
     ],
-    bed1: [
-      { type: 'formelark', title: 'Kalkyle- og investeringsark', description: 'Dekningsbidrag, selvkost, NNV og beslutningsregler.', status: 'coming' },
-      { type: 'eksamen', title: 'Eksamensoppgaver', description: 'Gamle eksamener og gruppeøvinger kan struktureres i oppgavebanken.', status: 'available', href: '../user/oppgavebank.html?subject=BED1' },
-      { type: 'a_besvarelse', title: 'A-besvarelser', description: 'Kobles til beskyttet eksamensarkiv når dokumentene er klare for deling.', status: 'coming', href: '../user/a-besvarelser.html#/bed1' }
+    met1: [
+      {
+        "type": "memoar",
+        "title": "Memoar MET1",
+        "description": "Det første møtet med økonomisk matematikk. Jeg opplevde mye av pensum som kjent fra R1, men eksamen kunne by på uventede vridninger.",
+        "status": "available",
+        "href": "../met1/#memo"
+      }
+    ],
+    sam1a: [
+      {
+        "type": "memoar",
+        "title": "Memoar SAM1A",
+        "description": "Begreper, eksperimenter og atferdsøkonomi. Flashcards hjalp meg å huske stoffet, men på eksamen måtte jeg også kunne utdype temaene.",
+        "status": "available",
+        "href": "../sam1a/#memo"
+      }
+    ],
+    kom1: [
+      {
+        "type": "memoar",
+        "title": "Memoar KOM1",
+        "description": "Mitt råd er å levere det obligatoriske og bruke mesteparten av tiden på de andre fagene. I mitt semester var vurderingen godkjent / ikke godkjent, uten eksamen.",
+        "status": "available",
+        "href": "../kom1/#memo"
+      }
     ]
+    // first-semester:end
   };
 
   function clone(value) {
