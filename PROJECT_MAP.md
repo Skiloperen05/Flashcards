@@ -52,7 +52,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 
 ## Shared Core Scripts
 
-- Auth/session/client bootstrap: `shared/auth-guard.js`.
+- Auth/session/client bootstrap: `shared/auth-guard.js`. Root paths resolve from the bootstrap script even when called by inline subject code, keeping login redirects and assets correct for universal subject links.
 - Entitlements and subject access: `shared/entitlements.js`, `shared/subject-access.js`, `shared/subject-gate.js`.
 - Subject metadata: `shared/subject-meta.js`. Merges the published `app_subjects` catalogue with published custom Fagstudio rows from `subject_pages`, so newly created subjects appear in navigation and the shop.
 - Subject page rendering/data/enhancements: `shared/subject-page-renderer.js`, `shared/subject-page-data.js`, `shared/subject-page-enhancements.js`, `shared/subject-resources.js`.

@@ -460,6 +460,17 @@ for (const route of ['ret14', 'sol1', 'sam2', 'sam3', 'met2', 'mat10', 'sam1a', 
   }
   page.window.close();
 }
+// Calling auth from an inline subject script must still resolve the app root.
+for (const prefix of ['', '/Flashcards']) {
+  const authDom = new JSDOM('<script src="' + prefix + '/shared/auth-guard.js"></script><script id="inline"></script>', { url: 'https://example.test' + prefix + '/subject/?id=rrr11', runScripts: 'outside-only' });
+  const aw = authDom.window;
+  Object.defineProperty(aw.document, 'currentScript', { configurable: true, get: () => aw.document.getElementById('inline') });
+  aw.eval(read('shared/auth-guard.js'));
+  assert.equal(aw.AuthGuard.getRootPath(), prefix + '/');
+  assert.equal(aw.AuthGuard.getLoginPath(), prefix + '/login.html');
+  assert.equal(aw.AuthGuard.getAssetPath('Flashcardslogo.png'), prefix + '/assets/Flashcardslogo.png');
+  authDom.window.close();
+}
 // User-supplied COSO content works in both modes in the universal subject shell.
 const cosoDom = new JSDOM(read('subject/index.html'), {
   url: 'http://localhost/subject/?id=rrr11&dev=1#flashcards',
