@@ -462,7 +462,7 @@
       <div class="sfc-heading">
         <div class="sfc-heading-content">
           <span class="sfc-entry-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><rect x="9" y="5" width="17" height="22" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M6 9H5a2 2 0 0 0-2 2v15a3 3 0 0 0 3 3h13M14 12h7m-7 5h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
-          <div><span class="sfc-eyebrow">Øving i ${esc(code)}</span><h2 data-sfc-heading>Flashcards</h2><p class="sfc-description">En liten økt nå. Litt mer som sitter neste gang.</p></div>
+          <div><span class="sfc-eyebrow">${subject === 'rrr11' ? '02 · Test deg selv' : 'Øving i ' + esc(code)}</span><h2 data-sfc-heading>Flashcards</h2><p class="sfc-description">En liten økt nå. Litt mer som sitter neste gang.</p></div>
         </div>
         <button type="button" data-sfc-close hidden>Tilbake til faget</button>
       </div>
@@ -494,9 +494,11 @@
       '<div data-sfc-view="cards" hidden><div class="sfc-session-bar"><button type="button" data-sfc-back>← Til dekk</button><span data-sfc-counter></span></div><div class="sfc-progress"><i data-sfc-progress></i></div><p class="sfc-feedback" data-sfc-feedback role="status" aria-live="polite"></p><div class="sfc-card"><span class="sfc-card-basket" data-sfc-basket></span><span class="sfc-source-deck" data-sfc-source-deck></span><h3 data-sfc-question></h3><div class="sfc-quiz" data-sfc-quiz hidden aria-label="Svaralternativer"></div><div data-sfc-answer-wrap hidden><span class="sfc-answer-label">Svar</span><p data-sfc-answer></p><p class="sfc-explanation" data-sfc-explanation hidden></p><small data-sfc-source></small></div></div>' +
       '<button class="sfc-primary sfc-reveal" type="button" data-sfc-quiz-next hidden>Neste spørsmål →</button><button class="sfc-primary sfc-reveal" type="button" data-sfc-reveal>Vis svar <kbd>mellomrom</kbd></button><div class="sfc-ratings" data-sfc-ratings hidden><button type="button" data-sfc-rate="wrong"><span>Øv mer <kbd>1</kbd></span><small>Kurv 1 · om 10 min</small></button><button type="button" data-sfc-rate="right"><span>Kunne det <kbd>2</kbd></span><small data-sfc-next></small></button></div><p class="sfc-note">Du trenger ikke kunne alt nå. Hvert forsøk hjelper deg videre.</p><button class="sfc-finish" type="button" data-sfc-finish>Avslutt og se oppsummering →</button></div>' +
       '<div class="sfc-end" data-sfc-view="end" hidden><div class="sfc-end-mark" aria-hidden="true">✓</div><span class="sfc-eyebrow">Økten er lagret</span><h3 data-sfc-end-title></h3><p data-sfc-end-copy></p><div class="sfc-overview" data-sfc-end-stats></div><p data-sfc-end-next class="sfc-note"></p><button class="sfc-primary" type="button" data-sfc-retry>Øv litt mer på de vanskelige →</button><button type="button" data-sfc-back>Til dekk og fremgang</button></div><p class="sfc-sync" data-sfc-sync role="status"></p>';
+    var notes = subject === 'rrr11' && main.querySelector('#notater');
     var tools = main.querySelector('#met3Decks,#toolGrid,.hf-card-grid');
     var closing = main.querySelector('.semester-closing');
-    if (tools) tools.before(root);
+    if (notes) notes.after(root);
+    else if (tools) tools.before(root);
     else if (closing) closing.before(root);
     else main.appendChild(root);
     if (root.parentElement === main && !main.classList.contains('semester-main')) root.classList.add('hf-shell');
@@ -516,11 +518,15 @@
         );
       })
       .join('');
+    if (subject === 'rrr11')
+      root.insertAdjacentHTML('beforeend', '<a class="sfc-notes-link" href="#notater">↑ Til forelesningsnotatene</a>');
     root.querySelector('[data-sfc-open]').disabled = !decks.length;
     if (hasQuiz()) {
       root.setAttribute('aria-label', 'Flashcards og quiz i ' + code);
       root.querySelector('.sfc-description').textContent =
-        'Hent frem svaret selv, eller prøv en quiz. Litt mer sitter hver gang.';
+        subject === 'rrr11'
+          ? 'Øv på COSO – intern kontroll med egne svar eller flervalgsquiz.'
+          : 'Hent frem svaret selv, eller prøv en quiz. Litt mer sitter hver gang.';
     }
     if (!decks.length)
       root.querySelector('.sfc-description').textContent = 'Det er ikke publisert noen flashcards i dette faget ennå.';

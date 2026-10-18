@@ -185,6 +185,80 @@
       + '</div>';
   }
 
+  function isRrrWorkspace(page) {
+    return String(page.id || page.code || '').trim().toLowerCase() === 'rrr11';
+  }
+
+  // RRR11 has two real learning surfaces; the generic template's tool cards,
+  // exam advice and percentage display do not describe this course.
+  function decorateWorkspace(page) {
+    if (!page || !isRrrWorkspace(page)) return;
+    document.body.dataset.subjectLayout = 'rrr11';
+    var vis = page.visibility || {};
+    var toolGrid = document.getElementById('toolGrid');
+    if (toolGrid) toolGrid.replaceChildren();
+    ['memo', 'learningSuite', 'sourceCard'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.remove();
+    });
+    document.querySelectorAll('#subjectTabBar a[href="#memo"],#subjectTabBar a[href="#oversikt"]').forEach(function (link) { link.remove(); });
+    var lead = document.getElementById('subjectLead');
+    if (lead) lead.textContent = 'Les forelesningsnotatene, og øv videre på COSO med flashcards og quiz. Alt samlet her i faget.';
+    var primary = document.getElementById('heroPrimaryAction');
+    if (primary) {
+      primary.href = vis.notes !== false ? '#notater' : '#flashcards';
+      primary.textContent = vis.notes !== false ? 'Les forelesningsnotatene ↓' : 'Øv på COSO →';
+      primary.style.display = vis.notes !== false || vis.flashcards !== false ? 'inline-flex' : 'none';
+    }
+    var flashTab = document.getElementById('flashcardsTabLink');
+    if (flashTab) { flashTab.href = '#flashcards'; flashTab.dataset.subjectStudy = '1'; flashTab.textContent = 'Flashcards og quiz'; }
+    var notesTab = document.getElementById('tabNotes');
+    if (notesTab) notesTab.textContent = 'Forelesningsnotater';
+    var tabbar = document.getElementById('subjectTabBar');
+    function activeTab(hash) {
+      if (!tabbar) return;
+      tabbar.querySelectorAll('a').forEach(function (link) {
+        var active = link.hash === hash;
+        link.classList.toggle('active', active);
+        if (active) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      });
+    }
+    activeTab(window.location.hash || (vis.notes !== false ? '#notater' : '#flashcards'));
+    if (tabbar && !tabbar.dataset.workspaceBound) {
+      tabbar.dataset.workspaceBound = '1';
+      document.addEventListener('click', function (event) {
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        var link = event.target.closest('a');
+        if (link && (link.hash === '#notater' || link.hash === '#flashcards')) activeTab(link.hash);
+        else if (event.target.closest('[data-sfc-open]')) activeTab('#flashcards');
+      });
+      window.addEventListener('hashchange', function () { activeTab(window.location.hash); });
+    }
+    var notes = document.getElementById('notater');
+    if (notes) {
+      var heading = notes.querySelector('h3');
+      if (heading) {
+        heading.textContent = 'Forelesningsnotater';
+        if (!notes.querySelector('.rrr-workspace-step')) heading.insertAdjacentHTML('beforebegin', '<span class="rrr-workspace-step">01 · Les og forstå</span>');
+      }
+      var copy = notes.querySelector('.hf-section-title-sub');
+      if (copy) copy.textContent = 'Åpne notatene og jobb deg gjennom temaene i faget.';
+      var next = notes.querySelector('[data-rrr-study-link]');
+      if (!next) {
+        notes.insertAdjacentHTML('beforeend', '<a class="rrr-study-link" data-rrr-study-link data-subject-study="1" href="#flashcards"><span>Vil du øve på intern kontroll?</span> Test deg på COSO med flashcards og quiz <span aria-hidden="true">→</span></a>');
+        next = notes.querySelector('[data-rrr-study-link]');
+      }
+      next.hidden = vis.flashcards === false;
+      var room = document.getElementById('flashcards');
+      if (room) {
+        if (room.previousElementSibling !== notes) notes.after(room);
+        var returnLink = room.querySelector('.sfc-notes-link');
+        if (returnLink) returnLink.hidden = vis.notes === false;
+      }
+    }
+  }
+
   function render(page) {
     if (!page) return;
     document.title = page.code + ' ' + page.name + ' — Haugnes Flashcards';
@@ -203,28 +277,30 @@
       }).join('');
     }
     var toolGrid = document.getElementById('toolGrid');
-    if (toolGrid && page.tools) toolGrid.innerHTML = page.tools.map(toolHtml).join('');
+    if (toolGrid && page.tools) toolGrid.innerHTML = isRrrWorkspace(page) ? '' : page.tools.map(toolHtml).join('');
     var topicList = document.getElementById('topicList');
     if (topicList && page.topics) topicList.innerHTML = page.topics.map(function (topic) { return topicHtml(topic, page.accent); }).join('');
     var planList = document.getElementById('planList');
     if (planList && page.plan) planList.innerHTML = page.plan.map(planHtml).join('');
-    addLearningTabs(page);
-    var planHost = planList ? planList.closest('.hf-wide-grid') : null;
-    if (planHost && page.memo && !document.getElementById('memo')) {
-      planHost.insertAdjacentHTML('beforebegin', memoHtml(page.memo));
-    }
-    if (planHost && page.sources && !document.getElementById('sourceCard')) {
-      planHost.insertAdjacentHTML('afterend', '<div id="sourceCard" class="hf-source-grid">' + sourcesHtml(page.sources) + '</div>');
-    }
-    if (planHost && !document.getElementById('ressurser')) {
-      var resourceAnchor = document.getElementById('sourceCard') || planHost;
-      resourceAnchor.insertAdjacentHTML('afterend', resourcesHtml(page));
-      bindResources();
-    }
-    if (planHost && (page.compendium || page.preferredStudyMethod || (page.personalWarnings && page.personalWarnings.length) || page.examRadar || page.formulaSheet || page.canvasMaterials || page.practice || page.examChecklist) && !document.getElementById('learningSuite')) {
-      var sourceCard = document.getElementById('sourceCard');
-      (sourceCard || planHost).insertAdjacentHTML('afterend', learningHtml(page));
-      bindPractice(page);
+    if (!isRrrWorkspace(page)) {
+      addLearningTabs(page);
+      var planHost = planList ? planList.closest('.hf-wide-grid') : null;
+      if (planHost && page.memo && !document.getElementById('memo')) {
+        planHost.insertAdjacentHTML('beforebegin', memoHtml(page.memo));
+      }
+      if (planHost && page.sources && !document.getElementById('sourceCard')) {
+        planHost.insertAdjacentHTML('afterend', '<div id="sourceCard" class="hf-source-grid">' + sourcesHtml(page.sources) + '</div>');
+      }
+      if (planHost && !document.getElementById('ressurser')) {
+        var resourceAnchor = document.getElementById('sourceCard') || planHost;
+        resourceAnchor.insertAdjacentHTML('afterend', resourcesHtml(page));
+        bindResources();
+      }
+      if (planHost && (page.compendium || page.preferredStudyMethod || (page.personalWarnings && page.personalWarnings.length) || page.examRadar || page.formulaSheet || page.canvasMaterials || page.practice || page.examChecklist) && !document.getElementById('learningSuite')) {
+        var sourceCard = document.getElementById('sourceCard');
+        (sourceCard || planHost).insertAdjacentHTML('afterend', learningHtml(page));
+        bindPractice(page);
+      }
     }
     var nextStep = document.getElementById('nextStep');
     if (nextStep && page.next) nextStep.textContent = page.next;
@@ -284,6 +360,7 @@
     if (adminHost && !document.querySelector('.hf-admin-subject-bar')) {
       adminHost.insertAdjacentHTML('beforebegin', adminBarHtml(page));
     }
+    decorateWorkspace(page);
   }
 
   function resolveSubjectId() {
@@ -306,6 +383,7 @@
 
   window.HaugnesSubjectRenderer = {
     render: render,
+    decorateWorkspace: decorateWorkspace,
     resolveSubjectId: resolveSubjectId
   };
 })();

@@ -462,9 +462,15 @@ for (const route of ['ret14', 'sol1', 'sam2', 'sam3', 'met2', 'mat10', 'sam1a', 
 }
 // Calling auth from an inline subject script must still resolve the app root.
 for (const prefix of ['', '/Flashcards']) {
-  const authDom = new JSDOM('<script src="' + prefix + '/shared/auth-guard.js"></script><script id="inline"></script>', { url: 'https://example.test' + prefix + '/subject/?id=rrr11', runScripts: 'outside-only' });
+  const authDom = new JSDOM(
+    '<script src="' + prefix + '/shared/auth-guard.js"></script><script id="inline"></script>',
+    { url: 'https://example.test' + prefix + '/subject/?id=rrr11', runScripts: 'outside-only' },
+  );
   const aw = authDom.window;
-  Object.defineProperty(aw.document, 'currentScript', { configurable: true, get: () => aw.document.getElementById('inline') });
+  Object.defineProperty(aw.document, 'currentScript', {
+    configurable: true,
+    get: () => aw.document.getElementById('inline'),
+  });
   aw.eval(read('shared/auth-guard.js'));
   assert.equal(aw.AuthGuard.getRootPath(), prefix + '/');
   assert.equal(aw.AuthGuard.getLoginPath(), prefix + '/login.html');
@@ -480,7 +486,36 @@ const cosoDom = new JSDOM(read('subject/index.html'), {
 const cw = cosoDom.window;
 cw.HTMLElement.prototype.scrollIntoView = function () {};
 cw.AuthGuard = { requireAuth: () => Promise.resolve({ user: { email: 'dev@student.local' } }), getRootPath: () => '/' };
-cw.HaugnesSubjectPages = { get: () => ({ visibility: { flashcards: true } }) };
+const rrrPage = {
+  id: 'rrr11',
+  code: 'RRR11',
+  name: 'Moderne regnskapsføring i egen bedrift',
+  kicker: 'Fag',
+  accent: '#2563eb',
+  progress: '0%',
+  lead: 'Generisk fagtekst',
+  visibility: { notes: true, flashcards: true, radar: false, answers: false, tasks: false, topics: false, plan: false },
+  tools: [
+    ['📋', 'Eksamensradar', 'Tom radar', 'Radar', '#eksamensradar', '#2563eb'],
+    ['📚', 'Forelesningsnotater', 'Notater', 'Notater', '#notater', '#20b97a'],
+  ],
+  memo: { intro: 'Generisk intro', exam: 'Generisk eksamensråd', studyAdvice: 'Gå til oppgavebanken' },
+  notes: [
+    {
+      id: 'coso-note',
+      title: 'COSO – forelesningsnotat',
+      desc: 'Intern kontroll',
+      body: 'Les om de fem komponentene.',
+      pdfUrl: '/user/document.html?file=00000000-0000-0000-0000-000000000001',
+    },
+  ],
+  topics: [],
+  plan: [],
+  answers: [],
+  tasks: [],
+  examRadar: [],
+};
+cw.HaugnesSubjectPages = { get: () => rrrPage, refresh: async () => rrrPage, savePage: async (_, page) => page };
 for (const file of [
   'subject-meta',
   'learning-content',
@@ -507,11 +542,39 @@ for (const [i, card] of coso.cards.entries()) {
   }
 }
 assert.doesNotMatch(coso.cards[24].q, /disse/);
+cw.eval(read('shared/subject-page-renderer.js'));
+for (const script of cw.document.querySelectorAll('script:not([src])')) cw.eval(script.textContent);
+await new Promise((resolve) => setTimeout(resolve, 10));
+assert.equal(cw.document.body.dataset.subjectLayout, 'rrr11');
+assert.equal(cw.document.getElementById('toolGrid').children.length, 0, 'No placeholder tool cards in RRR11');
+assert.equal(cw.document.getElementById('memo'), null, 'Generic exam and study advice is removed');
+assert.equal(cw.document.getElementById('learningSuite'), null, 'No empty generated radar');
+assert.equal(cw.document.getElementById('heroPrimaryAction').hash, '#notater');
+assert.equal(cw.document.querySelector('#subjectTabBar a[href="#oversikt"]'), null);
+assert.equal(cw.document.getElementById('tabRadar').style.display, 'none');
+assert.equal(cw.document.querySelector('#notesList h4').textContent, rrrPage.notes[0].title);
+assert.ok(
+  cw.document.querySelector('#notesList a').href.includes('/user/document.html?file='),
+  'Existing protected document targets survive the layout change',
+);
+cw.toggleNoteSummary(cw.document.querySelector('#notesList button[onclick^="toggleNoteSummary"]'));
+assert.equal(cw.document.querySelector('.hf-note-summary-body').style.display, 'block');
+cw.HaugnesSubjectRenderer.render(rrrPage);
+cw.HaugnesSubjectRenderer.render(rrrPage);
+assert.equal(
+  cw.document.querySelectorAll('[data-rrr-study-link]').length,
+  1,
+  'Live updates do not duplicate navigation',
+);
+assert.equal(cw.document.querySelectorAll('.rrr-workspace-step').length, 1);
 cw.eval(read('shared/subject-flashcards.js'));
 await new Promise((resolve) => setTimeout(resolve, 25));
 const cr = cw.document.getElementById('flashcards');
 assert.ok(cr && !cr.hidden);
-assert.equal(cr.nextElementSibling.id, 'toolGrid');
+assert.equal(cr.previousElementSibling.id, 'notater', 'Study follows the actual lecture notes');
+const beforeRefresh = cr;
+cw.HaugnesSubjectRenderer.render(rrrPage);
+assert.equal(cw.document.getElementById('flashcards'), beforeRefresh, 'Studio rerenders preserve the study room');
 assert.equal(cr.dataset.sfcActive, 'setup');
 assert.match(cw.document.getElementById('flashcardsTabLink').href, /#flashcards$/);
 const changeCoso = (name, value) => {
@@ -529,6 +592,12 @@ cr.querySelector('[data-sfc-quiz-next]').click();
 assert.match(cr.querySelector('[data-sfc-counter]').textContent, /0 av 30/);
 const quizOrder = [];
 for (let i = 0; i < 30; i++) {
+  if (i === 12) {
+    const currentCard = cr.querySelector('[data-sfc-question]');
+    cw.HaugnesSubjectRenderer.render(rrrPage);
+    assert.equal(cr.querySelector('[data-sfc-question]'), currentCard, 'A Studio update preserves the active quiz card');
+    assert.match(cr.querySelector('[data-sfc-counter]').textContent, /^12 av 30/);
+  }
   const q = cr.querySelector('[data-sfc-question]').textContent;
   const sourceIndex = coso.cards.findIndex((card) => card.quiz.q === q);
   quizOrder.push(sourceIndex);
@@ -587,7 +656,24 @@ assert.equal(
 );
 cr.querySelector('[data-sfc-finish]').click();
 assert.equal(JSON.parse(cw.localStorage.getItem('hf_subject_stats')).rrr11.sessions.length, 3);
+cr.querySelector('[data-sfc-close]').click();
+cw.document.querySelector('[data-rrr-study-link]').click();
+assert.equal(cr.dataset.sfcActive, 'setup', 'The notes CTA opens the native study setup');
+assert.equal(cw.document.querySelector('#subjectTabBar [aria-current="location"]').id, 'flashcardsTabLink');
+assert.equal(cw.location.pathname, '/subject/');
 cosoDom.window.close();
+const genericWorkspace = new JSDOM(read('met2/index.html'), {
+  url: 'https://example.test/met2/',
+  runScripts: 'outside-only',
+});
+genericWorkspace.window.eval(read('shared/subject-page-data.js'));
+genericWorkspace.window.eval(read('shared/subject-page-renderer.js'));
+assert.notEqual(genericWorkspace.window.document.body.dataset.subjectLayout, 'rrr11');
+assert.ok(
+  genericWorkspace.window.document.querySelectorAll('#toolGrid .hf-tool-card').length > 0,
+  'Other subject layouts retain their tools',
+);
+genericWorkspace.window.close();
 console.log(
   'Flashcard study tests passed: Leitner scheduling, legacy content, native subject sessions, provenance, filters, keyboard, retry, completion, sync recovery and account isolation.',
 );

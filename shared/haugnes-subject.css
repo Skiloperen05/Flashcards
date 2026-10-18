@@ -69,3 +69,29 @@
 .hf-subject-aside .hf-info-card span[style]{color:#8fa5ca!important}
 .hf-subject-aside .hf-stat[style]{background:rgba(255,255,255,.06)!important;color:#fff!important;border:1px solid rgba(255,255,255,.10)!important}
 @media(max-width:980px){.hf-subject-layout{grid-template-columns:1fr}.hf-source-item,.hf-learning-suite,.hf-radar-row,.hf-memo-grid,.hf-resource-item{grid-template-columns:1fr}.hf-learning-suite .hf-info-card:first-child{grid-column:auto}.hf-radar-row b{text-align:left}.hf-resource-action{justify-items:start}}
+
+/* RRR11: lecture notes and the native study room replace the empty tool dashboard. */
+body[data-subject-layout="rrr11"] .hf-subject-layout{display:block;max-width:1100px}
+body[data-subject-layout="rrr11"] .hf-hero{max-width:1100px;padding-bottom:28px}
+body[data-subject-layout="rrr11"] .hf-hero-grid{display:block}
+body[data-subject-layout="rrr11"] .hf-hero-grid>.hf-panel,
+body[data-subject-layout="rrr11"] .hf-subject-aside,
+body[data-subject-layout="rrr11"] .hf-subject-layout>div>.hf-section-head,
+body[data-subject-layout="rrr11"] #toolGrid,
+body[data-subject-layout="rrr11"] .hf-cta{display:none!important}
+body[data-subject-layout="rrr11"] .hf-title{font-size:clamp(30px,4vw,48px);max-width:900px;line-height:1.25;letter-spacing:-.035em}
+body[data-subject-layout="rrr11"] .hf-lead{max-width:720px;font-size:16px;line-height:1.8}
+body[data-subject-layout="rrr11"] #notater{margin:0 0 24px;scroll-margin-top:24px;padding:26px;border-radius:16px;border-color:rgba(162,188,225,.18);background:linear-gradient(125deg,rgba(20,43,78,.9),rgba(9,29,57,.96))}
+body[data-subject-layout="rrr11"] #notater h3{font-size:25px!important;font-weight:500!important;line-height:1.4}
+body[data-subject-layout="rrr11"] #notater .hf-section-title-sub{font-size:13px;line-height:1.7}
+.rrr-workspace-step{display:block;color:#e8bc68;font-size:10px;font-weight:650;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
+.rrr-study-link{display:block;border-top:1px solid rgba(162,188,225,.16);padding-top:18px;margin-top:22px;color:#c8d9fb;font-size:13px;line-height:1.8;text-decoration:none}
+.rrr-study-link>span:first-child{display:block;color:#adbed7;font-size:12px}
+.rrr-study-link:hover{color:#fff}
+.rrr-study-link:focus-visible{outline:3px solid #aec5ff;outline-offset:5px;border-radius:4px}
+.subject-flashcards .sfc-notes-link{display:inline-block;color:#adbed7;font-size:12px;line-height:1.7;margin-top:8px;text-decoration:underline;text-underline-offset:4px}
+@media(max-width:600px){body[data-subject-layout="rrr11"] #notater{padding:20px}body[data-subject-layout="rrr11"] .hf-lead{font-size:14px}body[data-subject-layout="rrr11"] .hf-hero-actions{gap:8px}}
+
+.rrr-study-link[hidden]{display:none!important}
+body[data-subject-layout="rrr11"] #notater .hf-packages-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr))}
+body[data-subject-layout="rrr11"] #notater .hf-pkg-card{min-width:0;overflow-wrap:anywhere}
