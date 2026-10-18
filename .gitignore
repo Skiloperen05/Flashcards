@@ -17,3 +17,6 @@ service-account*.json
 gcp-*.json
 google-credentials*.json
 *.serviceaccount.json
+
+# Local browser QA artifacts
+output/playwright/

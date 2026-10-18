@@ -1,6 +1,6 @@
 # Project Map
 
-Last updated: 2026-10-14
+Last updated: 2026-10-18
 
 Purpose: make future app changes faster by documenting the stable entry points, data sources, and search paths. Update this file whenever a change moves, renames, adds, or removes app-facing functionality.
 
@@ -46,7 +46,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - A-besvarelser / eksamensarkiv shell: `user/a-besvarelser.html`.
 - Study plan shell: `user/studieplan.html`.
 - Memoarer overview: `user/memoarer.html`.
-- Notes/settings: `user/notater.html`, `user/settings.html`. Settings live in `localStorage` key `hf_user_settings_v2` and sync to Supabase `user_custom_data.data.settings`; they are applied app-wide by `shared/user-settings.js` (theme/identity) and `shared/haugnes-flashcard-session.js` (session behavior).
+- Notes/settings: `user/notater.html`, `user/settings.html`. Settings live in `localStorage` key `hf_user_settings_v2` and sync to Supabase `user_custom_data.data.settings`; they are applied app-wide by `shared/user-settings.js` (theme/identity) and the flashcard study controls (session length; optional library sound in `shared/haugnes-flashcard-session.js`).
 - Removed user pages: `user/oppgavebank.html` (erstattet av fagspesifikk oppgavebank direkte på hver fagside), `user/progress.html`, `user/achievements.html`.
 - User-page loader/enhancer: `user/auth-guard.js`.
 
@@ -64,9 +64,13 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Logo normalization: `shared/logo-normalizer.js`. Re-applies the logo image if later branding scripts clear an already normalized logo mark.
 - Global user-settings applier: `shared/user-settings.js`. Loaded on every app page from `shared/auth-guard.js` (`loadGlobalPolish`). Reads `hf_user_settings_v2` (plus a one-shot pull from `user_custom_data.data.settings` when newer) and applies accent color, background theme, font-size scaling, reduced motion, high contrast, avatar/display name in sidebars, the friendly check-in banner, and hides recommendation panels when disabled. Exposes `window.HaugnesUserSettings`.
 - TimeEdit/NHH schedule integration: `shared/timeedit-fetch-proxy.js`, `shared/nhh-schedule-api.js`, `shared/nhh-schedule-normalizer.js`, `shared/nhh-strict-course-filter.js`, `shared/haugnes-studyplan.js`. Runtime proxy targets are the local `/api/timeedit` endpoint (via `server.js` and `api/timeedit.js`) and the Supabase `timeedit` Edge Function.
-- Flashcard session shared logic: `shared/haugnes-flashcard-session.js`, `shared/haugnes-flashcards-structure.js`. The session script also applies learning settings from `hf_user_settings_v2`: session length cap, default start filter (`startWith`), difficult-first ordering (`autoDiff`), exam-topic priority (`examMode`), and optional sound feedback.
-  - Generic study setup: `shared/flashcard-study-options.js` and `shared/flashcard-study-options.css`; users select one or more decks, card/rating subset, difficulty, order (random/fixed/difficult-first), and length. Choices persist in `hf_study_options_v1` and explicitly control ordering/filtering instead of the older settings hooks. Initial length uses `hf_user_settings_v2.sessionLen` when present. Sound settings still apply.
-  - Collection/filter/progress engine: `shared/flashcard-study-session.js`. Combined sessions preserve source deck IDs and source card indices, save ratings and history per original deck, and mirror one combined summary to `hf_subject_stats`. Empty filters stay empty; the last unique rating completes the session. Topic/rating switches retain the session's answers. `?deck=<deck-id>` starts a specific deck from its subject page.
+- In-subject flashcards: `shared/subject-flashcards.js` and `shared/subject-flashcards.css`, loaded by `shared/auth-guard.js`. Native `#flashcards` study room on supported subject home pages and `subject/?id=<id>`; respects the subject's flashcard visibility. Deck selection, question/answer, binary self-rating, retries and summary stay on the subject page. Subject study/deck links open this room; the global sidebar's “Alle flashcards” remains a separate library. KOM1 has no study-room CTA. Subject length/filter choices reuse `hf_study_options_v1` and initially honor the saved session-length preference.
+- Shared Leitner engine: `shared/flashcard-study-session.js`. Stable source deck/card identities also work in mixed sessions. Five baskets: 10 minutes, 1 day, 3 days, 7 days, 21 days. A new correct card starts in basket 2; due correct cards advance one basket, wrong/legacy “half” answers reset to basket 1. Early correct practice keeps the existing basket/due time. Recommended sessions select due cards before new cards; not-yet-due cards are available through explicit extra practice. Existing ratings are migrated lazily.
+- Shared flashcard content API: `shared/flashcard-library.js` owns the existing RET14 and SOL1 built-in decks (moved from inline HTML without changing their IDs/order), adds `shared/haugnes-study-data.js` / `shared/learning-content.js` decks and custom published content. SAM3's 13 dedicated decks / 166 cards are available through `shared/sam3-flashcard-catalog.js`, generated from the existing `sam3/sam3-flashcards-data.js` compressed source by `scripts/generate-sam3-flashcards.mjs`; run `npm run sam3:generate` after editing that source. HTML in these legacy answers becomes readable plain text in the shared engine.
+- Shared progress persistence: `shared/flashcard-store.js`. Both study surfaces use `fc_stats` and existing per-user Supabase `user_stats.stats` JSON, with `box` / `dueAt` stored per source card (no schema changes). Merges newest card states and deduplicated history, preserves pending local answers on reload, retries on reconnect and flushes when hidden. Reset timestamps prevent resurrection of cleared statistics. Local ownership guards isolate account switches; existing local SAM3 ratings are imported once into the prefixed `sam3-d*` identities. Local SAM3 source data is retained.
+- Global flashcard presentation: `shared/flashcard-progress.js`, `shared/haugnes-flashcards.css` and `shared/haugnes-flashcards-structure.js`. `shared/haugnes-flashcard-session.js` retains optional sound, last-route tracking and mirroring to `hf_subject_stats`; native subject sessions mirror there directly so the existing dashboard still receives summaries.
+  - Global study setup: `shared/flashcard-study-options.js` and `.css`; defaults to smart due/new practice, with advanced deck/filter/difficulty/order/length controls. Choices persist in `hf_study_options_v1`; session length initially honors `hf_user_settings_v2.sessionLen`.
+  - Global sessions freeze the selected collection, preserve original deck IDs/indices, and finish after the last unique rating. Topic/rating switches retain answers; retries select failures from the current session. `?deck=<deck-id>` opens a subject deck; the global library remains optional.
 
 ## Subject Areas
 
@@ -177,7 +181,7 @@ Typical package IDs:
 - Build check: `npm run build` (`npm run check:js && npm run check:smoke && npm run check:study`).
 - JS check: `npm run check:js`.
 - Smoke check: `npm run check:smoke`.
-- Study regression check: `npm run check:study` (`node scripts/flashcard-study-test.mjs`), using the existing jsdom dependency. Covers MET3 source coverage, combined source identities, filters/order/limits, keyboard, completion/retry, persistence, and legacy decks.
+- Study regression check: `npm run check:study` validates SAM3 generated-catalog freshness and runs `node scripts/flashcard-study-test.mjs` with the existing jsdom dependency. Covers timed Leitner transitions, early practice/lapses, legacy content, native in-subject sessions, combined source identities, filters/order/limits, keyboard, completion/retry, cloud failure recovery and account isolation.
 - Full check: `npm run check`.
 - Known repo policy: `biome check` has preexisting failures and should not block unless the task specifically concerns Biome cleanup.
 

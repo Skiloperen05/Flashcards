@@ -109,138 +109,6 @@
     else playTones([260]);
   }
 
-  function defaultSessionFilter() {
-    // "Start hver økt med" from settings: repetisjon -> the app's "Igjen"
-    // filter (unrated or wrong cards); nye/blandet start from all cards and
-    // rely on the ordering applied in applySessionPreferences.
-    return getUserSettings().startWith === 'repetisjon' ? 'wrong' : 'all';
-  }
-
-  function applySessionPreferences() {
-    // Explicit study options have already ordered and capped this collection.
-    if (window.currentSessionOptions) return;
-    var cards = window.currentCards;
-    if (!Array.isArray(cards) || !cards.length || !window.currentDeck) return;
-    var prefs = getUserSettings();
-    var stats = typeof window.getStats === 'function' ? window.getStats() : {};
-    var cardStats = (stats[window.currentDeck.id] || {}).cardStats || {};
-    var decorated = cards.map(function (card, index) {
-      var cs = cardStats[card.idx];
-      var weight = 0;
-      if (prefs.startWith === 'nye' && !cs) weight -= 4;
-      if (prefs.autoDiff !== false && cs && cs.lastRating === 'wrong') weight -= 3;
-      if (prefs.autoDiff !== false && cs && cs.lastRating === 'half') weight -= 2;
-      if (prefs.examMode !== false && /eksamen|exam/i.test([card.topic, card.tag, card.source].join(' '))) weight -= 1;
-      return { card: card, index: index, weight: weight };
-    });
-    decorated.sort(function (a, b) { return a.weight - b.weight || a.index - b.index; });
-    var ordered = decorated.map(function (item) { return item.card; });
-    var limit = parseInt(prefs.sessionLen, 10);
-    if (Number.isFinite(limit) && limit > 0 && ordered.length > limit) ordered = ordered.slice(0, limit);
-    window.currentCards = ordered;
-  }
-
-  function installSettingsHooks() {
-    if (typeof window.filterCards === 'function' && !window.filterCards.__hfSettings) {
-      var originalFilter = window.filterCards;
-      window.filterCards = function () {
-        var result = originalFilter.apply(this, arguments);
-        applySessionPreferences();
-        return result;
-      };
-      window.filterCards.__hfSettings = true;
-    }
-    if (typeof window.startDeck === 'function' && !window.startDeck.__hfSettings) {
-      var originalStart = window.startDeck;
-      window.startDeck = function (id, filter, options) {
-        return originalStart.call(this, id, filter || (window.HaugnesStudyOptions ? window.HaugnesStudyOptions.read().filter : defaultSessionFilter()), options);
-      };
-      window.startDeck.__hfSettings = true;
-    }
-    if (typeof window.rateCard === 'function' && !window.rateCard.__hfSettings) {
-      var originalRate = window.rateCard;
-      window.rateCard = function (rating) {
-        playRatingSound(rating);
-        return originalRate.apply(this, arguments);
-      };
-      window.rateCard.__hfSettings = true;
-    }
-  }
-
-  function injectStyles() {
-    if (document.getElementById('hf-session-enhancements-css')) return;
-    var style = document.createElement('style');
-    style.id = 'hf-session-enhancements-css';
-    style.textContent = [
-      '.hf-session-status{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 12px}',
-      '.hf-session-chip{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:9px 10px;text-align:center;box-shadow:0 1px 6px rgba(0,0,0,.04)}',
-      '.hf-session-chip b{display:block;font-size:16px;line-height:1;color:var(--text)}',
-      '.hf-session-chip span{display:block;margin-top:3px;font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em}',
-      '.hf-next-action{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:14px 0 4px}',
-      '.hf-next-action a,.hf-next-action button{border:0;border-radius:12px;padding:10px 13px;background:#f3f4f6;color:var(--text);font:700 12px Lora,Georgia,serif;text-decoration:none;cursor:pointer}',
-      '.hf-next-action .primary{background:var(--accent);color:#fff}',
-      '.hf-session-note{font-size:11px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.45}',
-      '.deck-item .hf-deck-mini{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}',
-      '.deck-item .hf-deck-mini span{font-size:10px;font-weight:800;color:var(--muted);background:#f8fafc;border:1px solid #eef2f7;border-radius:999px;padding:4px 8px}',
-      '@media(max-width:480px){.hf-session-status{grid-template-columns:1fr}.hf-next-action{display:grid}.hf-next-action a,.hf-next-action button{width:100%;text-align:center}}'
-    ].join('\n');
-    document.head.appendChild(style);
-  }
-
-  function getRatedCount() {
-    return (window.currentCards || []).filter(function (card) { return window.sessionResults && window.sessionResults[card.idx]; }).length;
-  }
-
-  function ensureSessionStatus() {
-    var cardsView = document.getElementById('view-cards');
-    var filterRow = document.getElementById('filterRow');
-    if (!cardsView || !filterRow) return;
-    var status = document.getElementById('hfSessionStatus');
-    if (!status) {
-      status = document.createElement('div');
-      status.id = 'hfSessionStatus';
-      status.className = 'hf-session-status';
-      filterRow.insertAdjacentElement('afterend', status);
-    }
-    var total = window.currentCards ? window.currentCards.length : 0;
-    var current = total ? ((window.currentIndex || 0) + 1) : 0;
-    var rated = getRatedCount();
-    status.innerHTML = '<div class="hf-session-chip"><b>' + current + '/' + total + '</b><span>kort</span></div>'
-      + '<div class="hf-session-chip"><b>' + rated + '</b><span>vurdert</span></div>'
-      + '<div class="hf-session-chip"><b>' + Math.max(0, total - rated) + '</b><span>igjen</span></div>';
-  }
-
-  function relabelRatingButtons() {
-    var wrong = document.querySelector('.rate-btn.red');
-    var half = document.querySelector('.rate-btn.yellow');
-    var right = document.querySelector('.rate-btn.green');
-    if (wrong) wrong.textContent = 'Igjen';
-    if (half) half.textContent = 'Vanskelig';
-    if (right) right.textContent = 'Bra';
-  }
-
-  function patchDeckList() {
-    if (!window.currentSubjectId || typeof window.getDecksForSubject !== 'function' || typeof window.getStats !== 'function') return;
-    var stats = window.getStats();
-    document.querySelectorAll('.deck-item[data-deck-id]').forEach(function (item) {
-      if (item.querySelector('.hf-deck-mini')) return;
-      var id = item.getAttribute('data-deck-id');
-      var data = stats[id] || {};
-      var sessions = data.sessions || [];
-      var cardStats = data.cardStats || {};
-      var difficult = Object.keys(cardStats).filter(function (key) {
-        return cardStats[key] && (cardStats[key].lastRating === 'wrong' || cardStats[key].lastRating === 'half');
-      }).length;
-      var last = sessions.length ? sessions[sessions.length - 1] : null;
-      var mini = document.createElement('div');
-      mini.className = 'hf-deck-mini';
-      mini.innerHTML = '<span>' + (sessions.length ? sessions.length + ' økter' : 'ny økt') + '</span>'
-        + '<span>' + difficult + ' å repetere</span>'
-        + '<span>' + (last ? 'sist: ' + new Date(last.date).toLocaleDateString('no-NO', { day: 'numeric', month: 'short' }) : 'ikke startet') + '</span>';
-      item.appendChild(mini);
-    });
-  }
-
   function getSubjectStore() {
     return readJson('hf_subject_stats', {});
   }
@@ -343,7 +211,7 @@
     end.appendChild(actions);
     var note = document.createElement('div');
     note.className = 'hf-session-note';
-    note.textContent = 'Økten er lagret lokalt og brukes av dashboardet og progresjonssidene.';
+    note.textContent = 'Fremgangen din lagres etter hvert svar. Økten er også med i fagoversikten din.';
     end.appendChild(note);
     var statsBtn = actions.querySelector('[data-hf-stats]');
     if (statsBtn) statsBtn.addEventListener('click', function () { window.showView('stats'); });
@@ -356,41 +224,6 @@
     note.className = 'hf-session-note';
     note.textContent = 'Tallene her er per deck. Dashboardet leser en samlet fagoversikt fra de samme øktene.';
     section.appendChild(note);
-  }
-
-  function patchProgressBar() {
-    if (!window.currentCards || !window.currentCards.length) return;
-    var fill = document.getElementById('cardProgress');
-    if (!fill) return;
-    fill.style.width = (((window.currentIndex || 0) + 1) / window.currentCards.length * 100) + '%';
-  }
-
-  function bindKeyboardShortcuts() {
-    if (document.body.dataset.hfKeyboardShortcuts) return;
-    document.body.dataset.hfKeyboardShortcuts = '1';
-    document.addEventListener('keydown', function (event) {
-      if (event.defaultPrevented) return;
-      var tag = (event.target && event.target.tagName || '').toLowerCase();
-      if (tag === 'input' || tag === 'textarea' || tag === 'select' || tag === 'button' || tag === 'a' || event.target.isContentEditable || event.metaKey || event.ctrlKey || event.altKey) return;
-      var cardsActive = document.getElementById('view-cards') && document.getElementById('view-cards').classList.contains('active');
-      if (!cardsActive) return;
-      if (event.key === ' ' || event.code === 'Space') {
-        event.preventDefault();
-        window.flipCard();
-      }
-      if (event.key === '1') clickVisible('.rate-btn.red');
-      if (event.key === '2') clickVisible('.rate-btn.yellow');
-      if (event.key === '3') clickVisible('.rate-btn.green');
-      if (event.key.toLowerCase() === 'f') clickVisible('#finishDeckBtn');
-    });
-  }
-
-  function clickVisible(selector) {
-    var el = document.querySelector(selector);
-    if (!el) return;
-    var style = window.getComputedStyle(el.parentElement || el);
-    if (style.display === 'none' || style.visibility === 'hidden') return;
-    el.click();
   }
 
   function wrap(name, after) {
@@ -407,9 +240,6 @@
 
   function install() {
     if (!isFlashcardsPage() || installed) return;
-    injectStyles();
-    relabelRatingButtons();
-    bindKeyboardShortcuts();
 
     var needed = ['startDeck', 'renderCard', 'renderDecks', 'showEndScreen', 'renderStats', 'saveQuizResult'];
     var readyToWrap = needed.every(function (name) { return typeof window[name] === 'function'; });
@@ -420,22 +250,12 @@
     }
 
     installed = true;
-    installSettingsHooks();
-    wrap('startDeck', function () {
-      rememberLastRoute();
-      ensureSessionStatus();
-      relabelRatingButtons();
-    });
-    wrap('renderDecks', patchDeckList);
-    wrap('renderCard', function () {
-      ensureSessionStatus();
-      relabelRatingButtons();
-      patchProgressBar();
-    });
-    wrap('rateCard', function () {
-      ensureSessionStatus();
-      patchProgressBar();
-    });
+    wrap('startDeck', rememberLastRoute);
+    var originalRate = window.rateCard;
+    window.rateCard = function (rating) {
+      if (window.isFlipped && !window.sessionSaved) playRatingSound(rating);
+      return originalRate.apply(this, arguments);
+    };
     wrap('showEndScreen', function () {
       playTones([523, 659, 784]);
       mirrorLatestDeckSession();
@@ -448,9 +268,6 @@
       if (deck) mirrorLatestQuizSession(deck);
     });
 
-    patchDeckList();
-    ensureSessionStatus();
-    relabelRatingButtons();
   }
 
   ready(install);

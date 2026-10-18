@@ -3,13 +3,14 @@
   var subject = null;
   var selected = [];
   var levels = { grunnleggende: 'Grunnleggende', middels: 'Middels', avansert: 'Avansert' };
-  var options = { order: 'random', difficulty: 'all', limit: 50, filter: 'all' };
+  var options = { order: 'smart', difficulty: 'all', limit: 20, filter: 'due' };
   try {
     const settings = JSON.parse(window.localStorage.getItem('hf_user_settings_v2') || '{}');
     if (Number(settings.sessionLen) > 0) options.limit = Number(settings.sessionLen);
   } catch (e) {}
   try {
-    options = Object.assign(options, JSON.parse(window.localStorage.getItem('hf_study_options_v1') || '{}'));
+    var saved = JSON.parse(window.localStorage.getItem('hf_study_options_v1') || '{}');
+    if (saved.scheduleVersion === 1) options = Object.assign(options, saved);
   } catch (e) {}
 
   function read() {
@@ -44,16 +45,27 @@
   function update(decks) {
     read();
     try {
-      window.localStorage.setItem('hf_study_options_v1', JSON.stringify(options));
+      window.localStorage.setItem(
+        'hf_study_options_v1',
+        JSON.stringify(Object.assign({ scheduleVersion: 1 }, options)),
+      );
     } catch (e) {}
     var combined = window.HaugnesStudySession.combine(decks, selected);
     var total = combined ? window.HaugnesStudySession.prepare(combined, window.getStats(), options).length : 0;
     var status = document.getElementById('studySelectionStatus');
     status.textContent = selected.length + ' dekk valgt · ' + total + ' kort i økten';
-    if (selected.length && !total) status.textContent += ' · Ingen kort passer valgene. Endre nivå eller kortutvalg.';
+    if (selected.length && !total)
+      status.textContent +=
+        options.filter === 'due'
+          ? ' · Du er ajour! Kom tilbake senere, eller velg alle kort for ekstra øving.'
+          : ' · Ingen kort passer valgene. Endre nivå eller kortutvalg.';
     var start = document.getElementById('startCombinedStudy');
     start.disabled = !total;
-    start.textContent = total ? 'Start økt med ' + total + ' kort →' : 'Velg dekk og kort';
+    start.textContent = total
+      ? 'Start øving · ' + total + ' kort →'
+      : options.filter === 'due' && selected.length
+        ? 'Ajour for nå'
+        : 'Velg dekk og kort';
     document.querySelectorAll('[data-study-deck]').forEach(function (input) {
       input.checked = selected.indexOf(input.getAttribute('data-study-deck')) !== -1;
     });
@@ -64,7 +76,13 @@
     if (subject === window.currentSubjectId) read();
     else {
       subject = window.currentSubjectId;
-      selected = [];
+      selected = decks
+        .filter(function (deck) {
+          return deck.cards.length;
+        })
+        .map(function (deck) {
+          return deck.id;
+        });
     }
     selected = selected.filter(function (id) {
       return decks.some(function (deck) {
@@ -92,9 +110,11 @@
     )
       limits.push([String(options.limit), options.limit + ' kort (din innstilling)']);
     host.innerHTML =
-      '<h2>Sett sammen en øving</h2><p>Marker dekkene du vil kombinere. Du kan også starte ett dekk direkte med valgene nedenfor.</p>' +
-      '<div class="study-options-grid">' +
+      '<div class="study-setup-heading"><div><span class="fc-eyebrow">Din neste økt</span><h2>Litt øving. Mer som sitter.</h2>' +
+      '<p>Vi prioriterer kort som er klare for repetisjon, og fyller på med nye. Velg dekkene du vil øve på nedenfor.</p></div></div>' +
+      '<details class="study-customize"><summary>Tilpass økten</summary><div class="study-options-grid">' +
       selectHtml('order', 'Rekkefølge', [
+        ['smart', 'Anbefalt · repetisjon først'],
         ['random', 'Tilfeldig'],
         ['fixed', 'Fast rekkefølge'],
         ['difficult', 'Vanskelige først'],
@@ -107,13 +127,14 @@
         ['avansert', 'Avansert'],
       ]) +
       selectHtml('filter', 'Hvilke kort?', [
+        ['due', 'Klare for repetisjon + nye'],
         ['all', 'Alle kort'],
         ['new', 'Nye kort'],
         ['review', 'Igjen og vanskelige'],
         ['wrong', 'Kun igjen'],
         ['half', 'Kun vanskelige'],
       ]) +
-      '</div><div class="study-summary" id="studySelectionStatus" role="status" aria-live="polite"></div>' +
+      '</div></details><div class="study-summary" id="studySelectionStatus" role="status" aria-live="polite"></div>' +
       '<div class="study-actions"><button type="button" id="studySelectAll">Velg alle dekk</button>' +
       '<button type="button" id="studySelectNone">Fjern valg</button><button class="primary" type="button" id="startCombinedStudy"></button></div>';
     Object.keys(options).forEach(function (key) {

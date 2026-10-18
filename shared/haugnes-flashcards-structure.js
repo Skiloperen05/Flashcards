@@ -134,7 +134,7 @@
     }
     if (view === 'decks' && meta) {
       setText('headerTitle', meta.label);
-      setText('headerSub', 'Velg flashcard-deck eller quiz.');
+      setText('headerSub', 'Øving og fremgang, samlet på ett sted.');
     }
     if (view === 'cards') {
       setText('headerSub', meta ? meta.label : 'Flashcards');
@@ -205,8 +205,8 @@
     ensureIntro(
       'view-decks',
       'decks',
-      'Velg økt i ' + meta.short,
-      'Velg ett dekk, eller kombiner flere dekk med egne valg for øvingen.',
+      'Øv i ' + meta.short,
+      'En rolig økt nå. Litt mer som sitter neste gang.',
       actions
     );
 
@@ -233,16 +233,11 @@
       'view-cards',
       'cards',
       title,
-      'Snu kortet, vurder svaret ditt og fullfør økten når du er ferdig.',
+      'Hent frem svaret selv, snu kortet og kjenn etter om det satt.',
       '<span class="hf-session-chip">' + meta.short + '</span>'
     );
 
-    var wrong = document.querySelector('.rate-btn.red');
-    var half = document.querySelector('.rate-btn.yellow');
-    var right = document.querySelector('.rate-btn.green');
-    if (wrong) wrong.textContent = 'Igjen';
-    if (half) half.textContent = 'Vanskelig';
-    if (right) right.textContent = 'Bra';
+
   }
 
   function enhanceStats() {
