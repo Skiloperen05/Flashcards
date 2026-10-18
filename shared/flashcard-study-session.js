@@ -142,6 +142,25 @@
     return limit > 0 ? cards.slice(0, limit) : cards;
   }
 
+  function sessionLengths(available, preferred) {
+    available = Math.max(0, Math.floor(Number(available) || 0));
+    preferred = Math.max(0, Math.floor(Number(preferred) || 0));
+    var lengths = [5, 10, 20, 50];
+    if (preferred > 0 && lengths.indexOf(preferred) === -1) lengths.push(preferred);
+    var choices = lengths
+      .filter(function (length) {
+        return length < available;
+      })
+      .sort(function (a, b) {
+        return a - b;
+      })
+      .map(function (length) {
+        return { value: length, label: length + ' kort' };
+      });
+    choices.push({ value: 0, label: available ? 'Alle ' + available + ' kort' : 'Ingen kort tilgjengelige' });
+    return { choices: choices, value: preferred > 0 && preferred < available ? preferred : 0 };
+  }
+
   function rate(stats, card, rating, now) {
     if (!card || ['right', 'half', 'wrong'].indexOf(rating) === -1) return;
     var data = stats[card.sourceDeckId] || { sessions: [], cardStats: {} };
@@ -232,6 +251,7 @@
   window.HaugnesStudySession = {
     combine: combine,
     prepare: prepare,
+    sessionLengths: sessionLengths,
     rate: rate,
     record: record,
     cardStatsFor: cardStatsFor,

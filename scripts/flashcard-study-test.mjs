@@ -8,6 +8,24 @@ const read = (path) => readFileSync(new URL(path, root), 'utf8');
 const sandbox = { window: {} };
 vm.runInNewContext(read('shared/flashcard-study-session.js'), sandbox);
 const engine = sandbox.window.HaugnesStudySession;
+for (const count of [0, 1, 4, 6, 10, 13, 20, 49, 50, 51]) {
+  for (const preference of [0, 7, 20, 50]) {
+    const lengths = engine.sessionLengths(count, preference);
+    assert.ok(
+      lengths.choices.every((choice) => choice.value === 0 || choice.value < count),
+      'No offered session length may exceed the eligible collection',
+    );
+    assert.ok(lengths.choices.some((choice) => choice.value === lengths.value));
+    assert.equal(new Set(lengths.choices.map((choice) => choice.value)).size, lengths.choices.length);
+  }
+}
+assert.equal(
+  engine
+    .sessionLengths(6, 50)
+    .choices.map((choice) => choice.label)
+    .join(),
+  '5 kort,Alle 6 kort',
+);
 const sample = [
   {
     id: 'a',
@@ -134,6 +152,7 @@ for (const file of [
   'shared/flashcard-study-session.js',
   'shared/flashcard-progress.js',
   'shared/sam3-flashcard-catalog.js',
+  'shared/rrr11-coso-study.js',
   'shared/flashcard-library.js',
   'shared/flashcard-store.js',
   'shared/flashcard-study-options.js',
@@ -144,12 +163,32 @@ await new Promise((resolve) => setTimeout(resolve, 20));
 for (const file of ['shared/haugnes-flashcards-structure.js', 'shared/haugnes-flashcard-session.js'])
   w.eval(read(file));
 w.HaugnesFlashcardSession.install();
+assert.equal(w.getQuizDecksForSubject('rrr11')[0].questions.length, 30);
+assert.equal(w.getDecksForSubject('rrr11')[0].cards.length, 30);
 assert.equal(w.currentSubjectId, 'met3');
 assert.equal(w.document.querySelectorAll('[data-study-deck]').length, 13);
 w.document.getElementById('studySelectAll').click();
 assert.equal(w.document.getElementById('startCombinedStudy').disabled, false);
 w.document.getElementById('studySelectNone').click();
 assert.equal(w.document.getElementById('startCombinedStudy').disabled, true);
+w.document.getElementById('studySelectAll').click();
+const globalLength = w.document.querySelector('#studyOptions [name="limit"]');
+globalLength.value = '50';
+globalLength.dispatchEvent(new w.Event('change', { bubbles: true }));
+w.currentSubjectId = 'mat10';
+w.showView('decks');
+assert.equal(
+  w.document.querySelector('#studyOptions [name="limit"]').textContent,
+  '5 kortAlle 6 kort',
+  'The library setup also caps its lengths to the selected subject',
+);
+w.currentSubjectId = 'met3';
+w.showView('decks');
+assert.equal(
+  w.document.querySelector('#studyOptions [name="limit"]').value,
+  '50',
+  'A temporary cap must not replace the saved length preference',
+);
 w.startDeck(['met3-grundlag-missing'], 'all', options);
 assert.equal(w.currentDeck, null, 'Unknown deck IDs are ignored');
 w.startDeck(['met3-grunnlag', 'met3-summering'], 'all', { ...options, limit: 2 });
@@ -237,7 +276,39 @@ const component = sw.document.getElementById('flashcards');
 assert.ok(component, 'The subject page has its own native flashcard room');
 assert.equal(sw.document.querySelectorAll('iframe').length, 0);
 assert.match(sw.document.querySelector('.hf-hero-actions a').href, /\/met3\/\?dev=1#flashcards$/);
+assert.equal(component.nextElementSibling.id, 'met3Decks', 'The entry belongs beside the subject’s deck tools');
+assert.equal(component.previousElementSibling.id, 'dekk', 'The subject tool heading stays above the flashcard entry');
 component.querySelector('[data-sfc-open]').click();
+component.querySelector('[name="sfc-limit"]').value = '50';
+component.querySelector('[name="sfc-limit"]').dispatchEvent(new sw.Event('change', { bubbles: true }));
+const smallDeck = sw.HaugnesFlashcardLibrary.decksFor('met3').find((deck) => deck.cards.length === 4);
+sw.HaugnesSubjectFlashcards.open(smallDeck.id);
+assert.equal(
+  component.querySelector('[data-sfc-view="setup"]').hidden,
+  false,
+  'A subject deck shortcut opens its specific setup before studying',
+);
+assert.equal(component.querySelectorAll('[data-sfc-deck]:checked').length, 1);
+assert.equal(component.querySelector('[name="sfc-limit"]').textContent, 'Alle 4 kort');
+assert.equal(component.querySelector('[data-sfc-start]').textContent, 'Start øving · 4 kort →');
+assert.equal(JSON.parse(sw.localStorage.getItem('hf_study_options_v1')).limit, 50);
+component.querySelector('[data-sfc-all]').click();
+assert.equal(
+  component.querySelector('[name="sfc-limit"]').value,
+  '50',
+  'Adding decks makes the preferred length available again',
+);
+component.querySelector('[name="sfc-filter"]').value = 'review';
+component.querySelector('[name="sfc-filter"]').dispatchEvent(new sw.Event('change', { bubbles: true }));
+assert.equal(
+  component.querySelector('[name="sfc-limit"]').disabled,
+  true,
+  'An empty filtered collection has no selectable lengths',
+);
+assert.equal(component.querySelector('[data-sfc-start]').disabled, true);
+component.querySelector('[name="sfc-filter"]').value = 'due';
+component.querySelector('[name="sfc-filter"]').dispatchEvent(new sw.Event('change', { bubbles: true }));
+assert.equal(component.querySelector('[name="sfc-limit"]').value, '50');
 component.querySelector('[name="sfc-limit"]').value = '10';
 component.querySelector('[name="sfc-limit"]').dispatchEvent(new sw.Event('change', { bubbles: true }));
 component.querySelector('[data-sfc-start]').click();
@@ -361,6 +432,21 @@ for (const route of ['ret14', 'sol1', 'sam2', 'sam3', 'met2', 'mat10', 'sam1a', 
   const room = pw.document.getElementById('flashcards');
   assert.equal(!!room, route !== 'kom1', route + ': subject room is mounted only where appropriate');
   if (room) {
+    const studyTab = Array.from(pw.document.querySelectorAll('.hf-tabbar a,.semester-tabs a')).find((link) =>
+      /^Flashcards\s*[↗→]?$/.test(link.textContent.trim()),
+    );
+    if (studyTab)
+      assert.equal(
+        new URL(studyTab.href).hash,
+        '#flashcards',
+        route + ': the subject flashcard tab opens its local room',
+      );
+    const heading = pw.document.querySelector('.semester-heading');
+    if (heading)
+      assert.ok(
+        heading.compareDocumentPosition(room) & pw.Node.DOCUMENT_POSITION_FOLLOWING,
+        'The author-led subject heading must precede the study entry',
+      );
     assert.equal(
       room.querySelector('[data-sfc-open]').disabled,
       false,
@@ -374,6 +460,123 @@ for (const route of ['ret14', 'sol1', 'sam2', 'sam3', 'met2', 'mat10', 'sam1a', 
   }
   page.window.close();
 }
+// User-supplied COSO content works in both modes in the universal subject shell.
+const cosoDom = new JSDOM(read('subject/index.html'), {
+  url: 'http://localhost/subject/?id=rrr11&dev=1#flashcards',
+  runScripts: 'outside-only',
+  pretendToBeVisual: true,
+});
+const cw = cosoDom.window;
+cw.HTMLElement.prototype.scrollIntoView = function () {};
+cw.AuthGuard = { requireAuth: () => Promise.resolve({ user: { email: 'dev@student.local' } }), getRootPath: () => '/' };
+cw.HaugnesSubjectPages = { get: () => ({ visibility: { flashcards: true } }) };
+for (const file of [
+  'subject-meta',
+  'learning-content',
+  'haugnes-study-data',
+  'rrr11-coso-study',
+  'flashcard-study-session',
+  'flashcard-progress',
+  'flashcard-library',
+  'flashcard-store',
+])
+  cw.eval(read('shared/' + file + '.js'));
+const originalCoso = JSON.parse(read('data/rrr11-coso-flashcards.json'));
+const coso = cw.HaugnesFlashcardLibrary.decksFor('rrr11')[0];
+assert.equal(coso.cards.length, 30);
+for (const [i, card] of coso.cards.entries()) {
+  const original = originalCoso.cards[i];
+  assert.equal(card.quiz.q, original.question);
+  assert.equal(card.quiz.options[card.quiz.correct], original.answer);
+  assert.equal(card.explanation, original.explanation);
+  assert.equal(card.source, originalCoso.source);
+  if (original.id !== 25) {
+    assert.equal(card.q, original.question);
+    assert.equal(card.a, original.answer);
+  }
+}
+assert.doesNotMatch(coso.cards[24].q, /disse/);
+cw.eval(read('shared/subject-flashcards.js'));
+await new Promise((resolve) => setTimeout(resolve, 25));
+const cr = cw.document.getElementById('flashcards');
+assert.ok(cr && !cr.hidden);
+assert.equal(cr.nextElementSibling.id, 'toolGrid');
+assert.equal(cr.dataset.sfcActive, 'setup');
+assert.match(cw.document.getElementById('flashcardsTabLink').href, /#flashcards$/);
+const changeCoso = (name, value) => {
+  const el = cr.querySelector('[name="' + name + '"]');
+  el.value = value;
+  el.dispatchEvent(new cw.Event('change', { bubbles: true }));
+};
+changeCoso('sfc-mode', 'quiz');
+changeCoso('sfc-limit', '0');
+assert.ok(Array.from(cr.querySelector('[name="sfc-limit"]').options).every((option) => Number(option.value) <= 30));
+cr.querySelector('[data-sfc-start]').click();
+assert.equal(cr.querySelector('[data-sfc-reveal]').hidden, true);
+assert.equal(cr.querySelector('[data-sfc-ratings]').hidden, true);
+cr.querySelector('[data-sfc-quiz-next]').click();
+assert.match(cr.querySelector('[data-sfc-counter]').textContent, /0 av 30/);
+const quizOrder = [];
+for (let i = 0; i < 30; i++) {
+  const q = cr.querySelector('[data-sfc-question]').textContent;
+  const sourceIndex = coso.cards.findIndex((card) => card.quiz.q === q);
+  quizOrder.push(sourceIndex);
+  const card = coso.cards[sourceIndex];
+  assert.equal(cr.querySelector('[data-sfc-answer-wrap]').hidden, true);
+  cr.dispatchEvent(new cw.KeyboardEvent('keydown', { key: '2', bubbles: true }));
+  assert.equal(cr.querySelector('[data-sfc-answer-wrap]').hidden, true, 'Flashcard shortcuts cannot rate a quiz');
+  const choices = Array.from(cr.querySelectorAll('[data-sfc-choice]'));
+  const correctText = card.quiz.options[card.quiz.correct];
+  const answer = choices.find((button) => (button.children[1].textContent === correctText) === (i !== 0));
+  answer.click();
+  assert.match(cr.querySelector('[data-sfc-counter]').textContent, new RegExp('^' + (i + 1) + ' av 30'));
+  assert.equal(cr.dataset.sfcActive, 'cards', 'Wait for Next so the learner can read the explanation');
+  assert.equal(cr.querySelector('[data-sfc-answer]').textContent, correctText);
+  assert.equal(cr.querySelector('[data-sfc-explanation]').textContent, card.explanation);
+  assert.equal(
+    cr.querySelector('.sfc-correct').children[1].textContent,
+    correctText,
+    'Shuffling must preserve correct answer identity',
+  );
+  const stats = cw.HaugnesFlashcardStore.get()['rrr11-coso'].cardStats[sourceIndex];
+  assert.equal(stats.box, i === 0 ? 1 : 2);
+  answer.dispatchEvent(new cw.MouseEvent('click', { bubbles: true }));
+  assert.equal(
+    cw.HaugnesFlashcardStore.get()['rrr11-coso'].cardStats[sourceIndex][i === 0 ? 'wrong' : 'right'],
+    1,
+    'A quiz question can be answered once',
+  );
+  cr.querySelector('[data-sfc-quiz-next]').click();
+}
+assert.equal(new Set(quizOrder).size, 30);
+assert.equal(cr.dataset.sfcActive, 'end');
+assert.equal(cw.HaugnesFlashcardStore.get()['rrr11-coso'].sessions.length, 1);
+cr.querySelector('[data-sfc-retry]').click();
+assert.match(cr.querySelector('[data-sfc-counter]').textContent, /0 av 1/);
+const retryCorrect = coso.cards[quizOrder[0]].quiz;
+Array.from(cr.querySelectorAll('[data-sfc-choice]'))
+  .find((button) => button.children[1].textContent === retryCorrect.options[retryCorrect.correct])
+  .click();
+cr.querySelector('[data-sfc-quiz-next]').click();
+assert.equal(cr.dataset.sfcActive, 'end');
+cr.querySelector('[data-sfc-view="end"] [data-sfc-back]').click();
+changeCoso('sfc-mode', 'flashcards');
+changeCoso('sfc-filter', 'all');
+changeCoso('sfc-limit', '0');
+cr.querySelector('[data-sfc-start]').click();
+assert.equal(cr.querySelector('[data-sfc-quiz]').hidden, true);
+const flashSourceIndex = coso.cards.findIndex((card) => card.q === cr.querySelector('[data-sfc-question]').textContent);
+cr.querySelector('[data-sfc-reveal]').click();
+assert.equal(cr.querySelector('[data-sfc-explanation]').textContent, coso.cards[flashSourceIndex].explanation);
+cr.querySelector('[data-sfc-rate="wrong"]').click();
+assert.equal(
+  cw.HaugnesFlashcardStore.get()['rrr11-coso'].cardStats[flashSourceIndex].box,
+  1,
+  'A flashcard lapse resets the same progress established by quiz',
+);
+cr.querySelector('[data-sfc-finish]').click();
+assert.equal(JSON.parse(cw.localStorage.getItem('hf_subject_stats')).rrr11.sessions.length, 3);
+cosoDom.window.close();
 console.log(
   'Flashcard study tests passed: Leitner scheduling, legacy content, native subject sessions, provenance, filters, keyboard, retry, completion, sync recovery and account isolation.',
 );

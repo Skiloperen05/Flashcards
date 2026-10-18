@@ -8,10 +8,13 @@
     const settings = JSON.parse(window.localStorage.getItem('hf_user_settings_v2') || '{}');
     if (Number(settings.sessionLen) > 0) options.limit = Number(settings.sessionLen);
   } catch (e) {}
+
   try {
     var saved = JSON.parse(window.localStorage.getItem('hf_study_options_v1') || '{}');
     if (saved.scheduleVersion === 1) options = Object.assign(options, saved);
   } catch (e) {}
+
+  var preferredLength = options.limit;
 
   function read() {
     var host = document.getElementById('studyOptions');
@@ -44,13 +47,26 @@
 
   function update(decks) {
     read();
+    var combined = window.HaugnesStudySession.combine(decks, selected);
+    var available = combined
+      ? window.HaugnesStudySession.prepare(combined, window.getStats(), Object.assign({}, options, { limit: 0 })).length
+      : 0;
+    var lengths = window.HaugnesStudySession.sessionLengths(available, preferredLength);
+    var lengthSelect = document.querySelector('#studyOptions [name="limit"]');
+    lengthSelect.innerHTML = lengths.choices
+      .map(function (choice) {
+        return '<option value="' + choice.value + '">' + choice.label + '</option>';
+      })
+      .join('');
+    lengthSelect.value = String(lengths.value);
+    lengthSelect.disabled = !available;
+    options.limit = lengths.value;
     try {
       window.localStorage.setItem(
         'hf_study_options_v1',
-        JSON.stringify(Object.assign({ scheduleVersion: 1 }, options)),
+        JSON.stringify(Object.assign({ scheduleVersion: 1 }, options, { limit: preferredLength })),
       );
     } catch (e) {}
-    var combined = window.HaugnesStudySession.combine(decks, selected);
     var total = combined ? window.HaugnesStudySession.prepare(combined, window.getStats(), options).length : 0;
     var status = document.getElementById('studySelectionStatus');
     status.textContent = selected.length + ' dekk valgt · ' + total + ' kort i økten';
@@ -97,18 +113,7 @@
       });
     });
     if (!hasLevels) options.difficulty = 'all';
-    var limits = [
-      ['10', '10 kort'],
-      ['20', '20 kort'],
-      ['50', '50 kort'],
-      ['0', 'Alle kort'],
-    ];
-    if (
-      !limits.some(function (entry) {
-        return Number(entry[0]) === options.limit;
-      })
-    )
-      limits.push([String(options.limit), options.limit + ' kort (din innstilling)']);
+    var limits = [['0', 'Alle kort']];
     host.innerHTML =
       '<div class="study-setup-heading"><div><span class="fc-eyebrow">Din neste økt</span><h2>Litt øving. Mer som sitter.</h2>' +
       '<p>Vi prioriterer kort som er klare for repetisjon, og fyller på med nye. Velg dekkene du vil øve på nedenfor.</p></div></div>' +
@@ -142,7 +147,8 @@
       if (select) select.value = String(options[key]);
     });
     host.querySelector('[name="difficulty"]').disabled = !hasLevels;
-    host.onchange = function () {
+    host.onchange = function (event) {
+      if (event.target.name === 'limit') preferredLength = Number(event.target.value);
       update(decks);
     };
     document.getElementById('studySelectAll').onclick = function () {

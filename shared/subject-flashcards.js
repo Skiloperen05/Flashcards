@@ -21,11 +21,14 @@
     revealed = false,
     finished = false;
   var selected = [],
+    preferredLength = 20,
     custom = {},
     engine,
     store,
     session,
-    previousView = 'setup';
+    previousView = 'setup',
+    sessionMode = 'flashcards',
+    quizChoices = [];
   var rootPath = window.AuthGuard.getRootPath();
   function asset(path) {
     return rootPath.replace(/\/$/, '/') + path;
@@ -83,6 +86,14 @@
       el.hidden = el.dataset.sfcView !== name;
     });
     root.querySelector('[data-sfc-close]').hidden = name === 'intro';
+    root.querySelector('[data-sfc-heading]').textContent =
+      name === 'setup'
+        ? 'Gjør klart en økt'
+        : sessionMode === 'quiz' && name === 'cards'
+          ? 'Quiz'
+          : hasQuiz()
+            ? 'Flashcards og quiz'
+            : 'Flashcards';
     focus();
   }
   function updateSummary() {
@@ -94,6 +105,11 @@
       }),
     );
     var state = engine.overview(all, store.get());
+    root.querySelector('[data-sfc-entry-meta]').textContent = state.due
+      ? state.due + ' klare for repetisjon'
+      : state.fresh
+        ? state.fresh + ' nye kort å utforske'
+        : 'Du er ajour med repetisjonen';
     root.querySelector('[data-sfc-overview]').innerHTML =
       '<span><b>' +
       state.due +
@@ -125,28 +141,69 @@
       order: 'smart',
     };
   }
+  function hasQuiz() {
+    return decks.some(function (deck) {
+      return deck.cards.some(function (card) {
+        return !!card.quiz;
+      });
+    });
+  }
+  function eligible(collection) {
+    if (!collection || root.querySelector('[name="sfc-mode"]').value !== 'quiz') return collection;
+    return Object.assign({}, collection, {
+      cards: collection.cards.filter(function (card) {
+        return !!card.quiz;
+      }),
+    });
+  }
   function updateSelection() {
     selected = Array.from(root.querySelectorAll('[data-sfc-deck]:checked')).map(function (el) {
       return el.dataset.sfcDeck;
     });
-    var collection = engine.combine(decks, selected);
-    var size = collection ? engine.prepare(collection, store.get(), options()).length : 0;
+    var hasQuiz = decks.some(function (deck) {
+      return (
+        selected.indexOf(deck.id) !== -1 &&
+        deck.cards.some(function (card) {
+          return !!card.quiz;
+        })
+      );
+    });
+    root.querySelector('[data-sfc-mode-field]').hidden = !hasQuiz;
+    if (!hasQuiz) root.querySelector('[name="sfc-mode"]').value = 'flashcards';
+    var collection = eligible(engine.combine(decks, selected));
+    var available = collection
+      ? engine.prepare(collection, store.get(), Object.assign({}, options(), { limit: 0 })).length
+      : 0;
+    var lengths = engine.sessionLengths(available, preferredLength);
+    var lengthSelect = root.querySelector('[name="sfc-limit"]');
+    lengthSelect.innerHTML = lengths.choices
+      .map(function (choice) {
+        return '<option value="' + choice.value + '">' + choice.label + '</option>';
+      })
+      .join('');
+    lengthSelect.value = String(lengths.value);
+    lengthSelect.disabled = !available;
+    var size = lengths.value ? Math.min(lengths.value, available) : available;
     var button = root.querySelector('[data-sfc-start]');
     button.disabled = !size;
     button.textContent = size
       ? 'Start øving · ' + size + ' kort →'
       : selected.length
-        ? 'Ajour for nå'
+        ? options().filter === 'due'
+          ? 'Ajour for nå'
+          : 'Ingen kort i utvalget'
         : 'Velg minst ett dekk';
+    root.querySelector('[data-sfc-available]').textContent = available + ' kort tilgjengelig i utvalget';
+    root.querySelector('[data-sfc-deck-count]').textContent = selected.length + ' av ' + decks.length + ' valgt';
     root.querySelector('[data-sfc-selection]').textContent = size
-      ? selected.length + ' dekk valgt · repetisjon først'
+      ? size + ' kort i økten · ' + (options().filter === 'due' ? 'repetisjon først' : 'ditt valgte utvalg')
       : selected.length
         ? 'Ingen kort passer valget. Velg alle kort for ekstra øving, eller kom tilbake til neste repetisjon.'
         : 'Velg dekkene du vil øve på nedenfor.';
     try {
       window.localStorage.setItem(
         'hf_study_options_v1',
-        JSON.stringify(Object.assign({ scheduleVersion: 1, difficulty: 'all' }, options())),
+        JSON.stringify(Object.assign({ scheduleVersion: 1, difficulty: 'all' }, options(), { limit: preferredLength })),
       );
     } catch (e) {}
   }
@@ -154,10 +211,12 @@
     updateSummary();
     updateSelection();
     view('setup');
+    root.scrollIntoView({ block: 'start', behavior: 'auto' });
   }
   function start(deckId, retryCards) {
     var ids = deckId ? [deckId] : selected;
-    combined = engine.combine(decks, ids);
+    if (!retryCards) sessionMode = root.querySelector('[name="sfc-mode"]').value;
+    combined = eligible(engine.combine(decks, ids));
     if (!combined) return;
     cards = retryCards || engine.prepare(combined, store.get(), options());
     if (!cards.length) {
@@ -199,18 +258,49 @@
       ? 'Kurv ' + state.box + ' · ' + engine.labels[state.box]
       : 'Nytt kort · ta deg god tid';
     root.querySelector('[data-sfc-source-deck]').textContent = card.sourceDeckTitle;
-    root.querySelector('[data-sfc-question]').textContent = card.q;
-    root.querySelector('[data-sfc-answer]').textContent = card.a;
+    root.querySelector('[data-sfc-question]').textContent = sessionMode === 'quiz' ? card.quiz.q : card.q;
+    root.querySelector('[data-sfc-answer]').textContent =
+      sessionMode === 'quiz' ? card.quiz.options[card.quiz.correct] : card.a;
+    root.querySelector('[data-sfc-explanation]').textContent = card.explanation || '';
+    root.querySelector('[data-sfc-explanation]').hidden = !card.explanation;
     root.querySelector('[data-sfc-source]').textContent = card.source || '';
     root.querySelector('[data-sfc-answer-wrap]').hidden = true;
-    root.querySelector('[data-sfc-reveal]').hidden = false;
+    root.querySelector('[data-sfc-reveal]').hidden = sessionMode === 'quiz';
     root.querySelector('[data-sfc-ratings]').hidden = true;
+    var quiz = root.querySelector('[data-sfc-quiz]');
+    quiz.hidden = sessionMode !== 'quiz';
+    root.querySelector('[data-sfc-quiz-next]').hidden = true;
+    if (sessionMode === 'quiz') {
+      root.querySelector('[data-sfc-feedback]').textContent = '';
+      quizChoices = card.quiz.options.map(function (text, i) {
+        return { text: text, original: i };
+      });
+      for (var i = quizChoices.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1)),
+          temp = quizChoices[i];
+        quizChoices[i] = quizChoices[j];
+        quizChoices[j] = temp;
+      }
+      quiz.innerHTML = quizChoices
+        .map(function (choice, i) {
+          return (
+            '<button type="button" data-sfc-choice="' +
+            i +
+            '"><span aria-hidden="true">' +
+            String.fromCharCode(65 + i) +
+            '</span><span>' +
+            esc(choice.text) +
+            '</span><b data-sfc-choice-result></b></button>'
+          );
+        })
+        .join('');
+    } else quiz.innerHTML = '';
     var next = engine.nextSchedule(cs, 'right');
     root.querySelector('[data-sfc-next]').textContent =
       'Kurv ' + next.box + ' · ' + window.HaugnesFlashcardProgress.nextDate(next.dueAt);
   }
   function reveal() {
-    if (previousView !== 'cards' || finished) return;
+    if (previousView !== 'cards' || finished || sessionMode === 'quiz') return;
     revealed = true;
     root.querySelector('[data-sfc-answer-wrap]').hidden = false;
     root.querySelector('[data-sfc-reveal]').hidden = true;
@@ -218,11 +308,43 @@
     focus();
   }
   function rate(rating) {
-    if (!revealed || finished || previousView !== 'cards') return;
+    if (!revealed || finished || previousView !== 'cards' || sessionMode === 'quiz') return;
+    applyRating(rating);
+    advance();
+  }
+  function answerQuiz(choiceIndex) {
+    if (sessionMode !== 'quiz' || revealed || finished || previousView !== 'cards') return;
+    var choice = quizChoices[choiceIndex],
+      card = cards[index];
+    if (!choice) return;
+    revealed = true;
+    var right = choice.original === card.quiz.correct;
+    applyRating(right ? 'right' : 'wrong');
+    root.querySelector('[data-sfc-answer-wrap]').hidden = false;
+    root.querySelectorAll('[data-sfc-choice]').forEach(function (button, i) {
+      button.disabled = true;
+      var correct = quizChoices[i].original === card.quiz.correct;
+      button.classList.toggle('sfc-correct', correct);
+      button.classList.toggle('sfc-incorrect', i === choiceIndex && !right);
+      button.querySelector('[data-sfc-choice-result]').textContent = correct
+        ? 'Riktig svar'
+        : i === choiceIndex
+          ? 'Ditt svar'
+          : '';
+    });
+    var nextButton = root.querySelector('[data-sfc-quiz-next]');
+    nextButton.hidden = false;
+    nextButton.textContent = index + 1 === cards.length ? 'Se oppsummering →' : 'Neste spørsmål →';
+    nextButton.focus({ preventScroll: true });
+  }
+  function applyRating(rating) {
     var card = cards[index],
       stats = store.get();
     var next = engine.rate(stats, card, rating);
     results[card.idx] = rating;
+    root.querySelector('[data-sfc-counter]').textContent =
+      Object.keys(results).length + ' av ' + cards.length + ' gjennomgått';
+    root.querySelector('[data-sfc-progress]').style.width = (Object.keys(results).length / cards.length) * 100 + '%';
     store.save(stats);
     updateSummary();
     root.querySelector('[data-sfc-feedback]').textContent =
@@ -233,6 +355,9 @@
           window.HaugnesFlashcardProgress.nextDate(next.dueAt) +
           '.'
         : 'Dette øver vi mer på. Kortet kommer tilbake om 10 min.';
+  }
+  function advance() {
+    if (finished || previousView !== 'cards' || !revealed) return;
     index++;
     if (index === cards.length) {
       finish();
@@ -280,7 +405,16 @@
     if (!root || root.hidden) return;
     if (deckId) {
       if (previousView === 'cards' && !finished && Object.keys(results).length) finish();
-      start(deckId);
+      if (
+        decks.some(function (deck) {
+          return deck.id === deckId;
+        })
+      ) {
+        root.querySelectorAll('[data-sfc-deck]').forEach(function (input) {
+          input.checked = input.dataset.sfcDeck === deckId;
+        });
+      }
+      setup();
     } else if (previousView !== 'cards' || finished) setup();
     root.scrollIntoView({ block: 'start', behavior: 'auto' });
   }
@@ -294,9 +428,10 @@
         return;
       }
       if (url.origin !== window.location.origin || url.searchParams.get('mode') === 'quiz') return;
-      var target = url.searchParams.get('subject');
+      var target = (url.searchParams.get('subject') || '').toLowerCase();
       var localShortcut =
-        ['flashcardsTabLink', 'heroPrimaryAction', 'ctaAction', 'asideFlashcardsLink'].indexOf(link.id) !== -1;
+        ['flashcardsTabLink', 'heroPrimaryAction', 'ctaAction', 'asideFlashcardsLink'].indexOf(link.id) !== -1 ||
+        (link.closest('.hf-tabbar,.semester-tabs') && /^Flashcards\s*[↗→]?$/.test(link.textContent.trim()));
       var generic =
         /\/flashcards\/(?:index\.html)?$/.test(url.pathname) &&
         (target === subject || target === subject.replace('subj_', '') || (!target && localShortcut));
@@ -304,6 +439,7 @@
       if (!generic && !sam3) return;
       link.dataset.subjectStudy = '1';
       if (url.searchParams.get('deck')) link.dataset.subjectStudyDeck = url.searchParams.get('deck');
+      else if (link.classList.contains('hf-tool-card')) link.setAttribute('data-sfc-inline-entry', '');
       link.href = '#flashcards';
     });
   }
@@ -318,25 +454,52 @@
     document.head.appendChild(css);
     root = document.createElement('section');
     root.id = 'flashcards';
-    root.className = 'hf-shell subject-flashcards';
+    root.className = 'subject-flashcards';
     root.tabIndex = -1;
     root.setAttribute('aria-label', 'Flashcards i ' + code);
     root.innerHTML =
-      '<div class="sfc-heading"><div><span class="sfc-eyebrow">Ditt øvingsrom · ' +
-      esc(code) +
-      '</span><h2>Flashcards</h2><p>Mer som sitter. Ett kort av gangen, her i faget ditt.</p></div><button type="button" data-sfc-close hidden>Lukk øvingsrom</button></div>' +
-      '<div class="sfc-overview" data-sfc-overview></div><div data-sfc-view="intro"><p class="sfc-description">Øv mest på det du ikke kan ennå. Kortene flyttes mellom fem kurver, med lengre pauser når du husker svaret.</p><button class="sfc-primary" type="button" data-sfc-open>Øv på flashcards i ' +
-      esc(code) +
-      ' →</button></div>' +
-      '<div data-sfc-view="setup" hidden><div class="sfc-baskets" data-sfc-baskets aria-label="Dine fem repetisjonskurver"></div>' +
-      '<details class="sfc-method"><summary>Slik fungerer kurvene</summary><p>«Kunne det» flytter nye kort til kurv 2. Ved planlagt repetisjon flyttes riktige svar én kurv videre. «Øv mer» sender alltid kortet tilbake til kurv 1. Ekstra riktige svar før fristen beholder kurven og tidspunktet. Nye kort venter utenfor kurvene til du prøver dem.</p></details>' +
-      '<div class="sfc-setup"><label>Lengde<select name="sfc-limit"><option value="10">10 kort</option><option value="20" selected>20 kort</option><option value="50">50 kort</option><option value="0">Alle kort</option></select></label><label>Kortutvalg<select name="sfc-filter"><option value="due">Repetisjon + nye</option><option value="all">Alle kort · ekstra øving</option><option value="review">Øv mer på vanskelige</option><option value="new">Bare nye kort</option></select></label></div>' +
-      '<p data-sfc-selection class="sfc-muted" role="status"></p><button class="sfc-primary" type="button" data-sfc-start>Start øving →</button>' +
-      '<details class="sfc-deck-picker"><summary>Velg dekk <span data-sfc-deck-count></span></summary><div class="sfc-select-actions"><button type="button" data-sfc-all>Velg alle</button><button type="button" data-sfc-none>Fjern valg</button></div><div class="sfc-decks" data-sfc-decks></div></details></div>' +
-      '<div data-sfc-view="cards" hidden><div class="sfc-session-bar"><button type="button" data-sfc-back>← Til dekk</button><span data-sfc-counter></span></div><div class="sfc-progress"><i data-sfc-progress></i></div><p class="sfc-feedback" data-sfc-feedback role="status" aria-live="polite"></p><div class="sfc-card"><span class="sfc-card-basket" data-sfc-basket></span><span class="sfc-source-deck" data-sfc-source-deck></span><h3 data-sfc-question></h3><div data-sfc-answer-wrap hidden><span class="sfc-answer-label">Svar</span><p data-sfc-answer></p><small data-sfc-source></small></div></div>' +
-      '<button class="sfc-primary sfc-reveal" type="button" data-sfc-reveal>Vis svar <kbd>mellomrom</kbd></button><div class="sfc-ratings" data-sfc-ratings hidden><button type="button" data-sfc-rate="wrong"><span>Øv mer <kbd>1</kbd></span><small>Kurv 1 · om 10 min</small></button><button type="button" data-sfc-rate="right"><span>Kunne det <kbd>2</kbd></span><small data-sfc-next></small></button></div><p class="sfc-note">Du trenger ikke kunne alt nå. Hvert forsøk hjelper deg videre.</p><button class="sfc-finish" type="button" data-sfc-finish>Avslutt og se oppsummering →</button></div>' +
+      `
+      <div class="sfc-heading">
+        <div class="sfc-heading-content">
+          <span class="sfc-entry-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><rect x="9" y="5" width="17" height="22" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M6 9H5a2 2 0 0 0-2 2v15a3 3 0 0 0 3 3h13M14 12h7m-7 5h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+          <div><span class="sfc-eyebrow">Øving i ${esc(code)}</span><h2 data-sfc-heading>Flashcards</h2><p class="sfc-description">En liten økt nå. Litt mer som sitter neste gang.</p></div>
+        </div>
+        <button type="button" data-sfc-close hidden>Tilbake til faget</button>
+      </div>
+      <div class="sfc-entry-actions" data-sfc-view="intro">
+        <span data-sfc-entry-meta></span><button class="sfc-primary" type="button" data-sfc-open>Velg økt <span aria-hidden="true">→</span></button>
+      </div>
+      <div data-sfc-view="setup" hidden>
+        <div class="sfc-setup-layout">
+          <details class="sfc-deck-picker" open>
+            <summary><span>01 · Velg dekk</span><small data-sfc-deck-count></small></summary>
+            <div class="sfc-select-actions"><button type="button" data-sfc-all>Velg alle</button><button type="button" data-sfc-none>Fjern valg</button></div>
+            <div class="sfc-decks" data-sfc-decks></div>
+          </details>
+          <div class="sfc-session-plan">
+            <h3>02 · Din økt</h3><p class="sfc-available" data-sfc-available></p>
+            <label class="sfc-mode-field" data-sfc-mode-field hidden>Øvingsform<select name="sfc-mode"><option value="flashcards">Flashcards · hent frem svaret selv</option><option value="quiz">Quiz · velg blant fire alternativer</option></select><small>Begge øvingsformer deler repetisjonskurvene dine.</small></label>
+            <div class="sfc-setup">
+              <label>Kortutvalg<select name="sfc-filter"><option value="due">Repetisjon + nye</option><option value="all">Alle kort · ekstra øving</option><option value="review">Øv mer på vanskelige</option><option value="new">Bare nye kort</option></select></label>
+              <label>Øktlengde<select name="sfc-limit"><option value="20">20 kort</option></select></label>
+            </div>
+            <div class="sfc-session-start"><p data-sfc-selection class="sfc-muted" role="status"></p><button class="sfc-primary" type="button" data-sfc-start>Start øving →</button></div>
+          </div>
+        </div>
+        <details class="sfc-progress-details"><summary>Fremgangen din og repetisjonskurvene</summary>
+          <div class="sfc-overview" data-sfc-overview></div><div class="sfc-baskets" data-sfc-baskets aria-label="Dine fem repetisjonskurver"></div>
+          <details class="sfc-method"><summary>Slik fungerer kurvene</summary><p>«Kunne det» flytter nye kort til kurv 2. Ved planlagt repetisjon flyttes riktige svar én kurv videre. «Øv mer» sender alltid kortet tilbake til kurv 1. Ekstra riktige svar før fristen beholder kurven og tidspunktet. Nye kort venter utenfor kurvene til du prøver dem.</p></details>
+        </details>
+      </div>` +
+      '<div data-sfc-view="cards" hidden><div class="sfc-session-bar"><button type="button" data-sfc-back>← Til dekk</button><span data-sfc-counter></span></div><div class="sfc-progress"><i data-sfc-progress></i></div><p class="sfc-feedback" data-sfc-feedback role="status" aria-live="polite"></p><div class="sfc-card"><span class="sfc-card-basket" data-sfc-basket></span><span class="sfc-source-deck" data-sfc-source-deck></span><h3 data-sfc-question></h3><div class="sfc-quiz" data-sfc-quiz hidden aria-label="Svaralternativer"></div><div data-sfc-answer-wrap hidden><span class="sfc-answer-label">Svar</span><p data-sfc-answer></p><p class="sfc-explanation" data-sfc-explanation hidden></p><small data-sfc-source></small></div></div>' +
+      '<button class="sfc-primary sfc-reveal" type="button" data-sfc-quiz-next hidden>Neste spørsmål →</button><button class="sfc-primary sfc-reveal" type="button" data-sfc-reveal>Vis svar <kbd>mellomrom</kbd></button><div class="sfc-ratings" data-sfc-ratings hidden><button type="button" data-sfc-rate="wrong"><span>Øv mer <kbd>1</kbd></span><small>Kurv 1 · om 10 min</small></button><button type="button" data-sfc-rate="right"><span>Kunne det <kbd>2</kbd></span><small data-sfc-next></small></button></div><p class="sfc-note">Du trenger ikke kunne alt nå. Hvert forsøk hjelper deg videre.</p><button class="sfc-finish" type="button" data-sfc-finish>Avslutt og se oppsummering →</button></div>' +
       '<div class="sfc-end" data-sfc-view="end" hidden><div class="sfc-end-mark" aria-hidden="true">✓</div><span class="sfc-eyebrow">Økten er lagret</span><h3 data-sfc-end-title></h3><p data-sfc-end-copy></p><div class="sfc-overview" data-sfc-end-stats></div><p data-sfc-end-next class="sfc-note"></p><button class="sfc-primary" type="button" data-sfc-retry>Øv litt mer på de vanskelige →</button><button type="button" data-sfc-back>Til dekk og fremgang</button></div><p class="sfc-sync" data-sfc-sync role="status"></p>';
-    main.insertBefore(root, main.firstChild);
+    var tools = main.querySelector('#met3Decks,#toolGrid,.hf-card-grid');
+    var closing = main.querySelector('.semester-closing');
+    if (tools) tools.before(root);
+    else if (closing) closing.before(root);
+    else main.appendChild(root);
+    if (root.parentElement === main && !main.classList.contains('semester-main')) root.classList.add('hf-shell');
     root.querySelector('[data-sfc-deck-count]').textContent = '· ' + decks.length + ' dekk';
     root.querySelector('[data-sfc-decks]').innerHTML = decks
       .map(function (d) {
@@ -347,31 +510,25 @@
           esc(d.title) +
           '</b><small>' +
           d.cards.length +
-          ' kort</small></span></label>'
+          ' kort' +
+          (d.description ? ' · ' + esc(d.description) : '') +
+          '</small></span></label>'
         );
       })
       .join('');
     root.querySelector('[data-sfc-open]').disabled = !decks.length;
+    if (hasQuiz()) {
+      root.setAttribute('aria-label', 'Flashcards og quiz i ' + code);
+      root.querySelector('.sfc-description').textContent =
+        'Hent frem svaret selv, eller prøv en quiz. Litt mer sitter hver gang.';
+    }
     if (!decks.length)
       root.querySelector('.sfc-description').textContent = 'Det er ikke publisert noen flashcards i dette faget ennå.';
     try {
       var prefs = JSON.parse(window.localStorage.getItem('hf_study_options_v1') || '{}');
       var settings = JSON.parse(window.localStorage.getItem('hf_user_settings_v2') || '{}');
       var length = Number(prefs.scheduleVersion === 1 ? prefs.limit : settings.sessionLen || 20);
-      var lengthSelect = root.querySelector('[name="sfc-limit"]');
-      if (Number.isFinite(length) && length >= 0) {
-        if (
-          !Array.from(lengthSelect.options).some(function (option) {
-            return Number(option.value) === length;
-          })
-        ) {
-          var option = document.createElement('option');
-          option.value = String(length);
-          option.textContent = length + ' kort';
-          lengthSelect.appendChild(option);
-        }
-        lengthSelect.value = String(length);
-      }
+      if (Number.isFinite(length) && length >= 0) preferredLength = length;
       if (prefs.scheduleVersion === 1 && ['due', 'all', 'review', 'new'].indexOf(prefs.filter) !== -1)
         root.querySelector('[name="sfc-filter"]').value = prefs.filter;
     } catch (e) {}
@@ -389,6 +546,8 @@
       if (button.hasAttribute('data-sfc-start')) start();
       if (button.hasAttribute('data-sfc-reveal')) reveal();
       if (button.dataset.sfcRate) rate(button.dataset.sfcRate);
+      if (button.hasAttribute('data-sfc-choice')) answerQuiz(Number(button.dataset.sfcChoice));
+      if (button.hasAttribute('data-sfc-quiz-next')) advance();
       if (button.hasAttribute('data-sfc-finish')) {
         if (Object.keys(results).length) finish();
         else
@@ -409,10 +568,14 @@
         start(null, retry);
       }
     };
-    root.onchange = updateSelection;
+    root.onchange = function (event) {
+      if (event.target.name === 'sfc-limit') preferredLength = Number(event.target.value);
+      updateSelection();
+    };
     root.onkeydown = function (event) {
       if (
         previousView !== 'cards' ||
+        sessionMode === 'quiz' ||
         /INPUT|SELECT|TEXTAREA/.test(event.target.tagName) ||
         event.target.isContentEditable ||
         event.metaKey ||
@@ -471,6 +634,7 @@
     ['flashcard-library', 'HaugnesFlashcardLibrary'],
     ['flashcard-store', 'HaugnesFlashcardStore'],
   ];
+  if (subject === 'rrr11') files.splice(4, 0, ['rrr11-coso-study', 'HaugnesCosoStudy']);
   if (subject === 'sam3') files.splice(4, 0, ['sam3-flashcard-catalog', 'HaugnesSam3Flashcards']);
   var ready = files.reduce(function (chain, item) {
     return chain.then(function () {

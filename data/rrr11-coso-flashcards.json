@@ -1,0 +1,281 @@
+{
+  "deck": "COSO – intern kontroll",
+  "description": "Flashcards til læringsarket om COSO Internal Control – Integrated Framework (2013): målsettinger, komponenter, de 17 prinsippene, krav til effektiv intern kontroll og begrensninger.",
+  "language": "nb",
+  "source": "COSO (2013). Internal Control – Integrated Framework: Executive Summary. Norske formuleringer er frie oversettelser.",
+  "created": "2026-10-18",
+  "format_notes": "Hvert kort har 'question' (forside), 'answer' (bakside, korrekt svar), 'explanation' (utdyping), 'options' (svaralternativer for quiz) og 'correct_option' (id til riktig alternativ). 'tags' angir tema.",
+  "card_count": 30,
+  "cards": [
+    {
+      "id": 1,
+      "tags": ["grunnlag"],
+      "question": "Hva står COSO for?",
+      "answer": "Committee of Sponsoring Organizations of the Treadway Commission",
+      "explanation": "Etablert i USA i 1985 av fem organisasjoner: AAA, AICPA, FEI, IIA og IMA. Rammeverket kom i 1992 og ble oppdatert i mai 2013.",
+      "options": {"a": "Committee of Sponsoring Organizations of the Treadway Commission", "b": "Council of Standard-setting Organizations", "c": "Committee on Supervision and Oversight", "d": "Corporate Oversight Standards Organization"},
+      "correct_option": "a"
+    },
+    {
+      "id": 2,
+      "tags": ["definisjon"],
+      "question": "Fullfør definisjonen: Intern kontroll er en prosess, utført av styre, ledelse og øvrige ansatte, utformet for å gi … sikkerhet for måloppnåelse.",
+      "answer": "rimelig",
+      "explanation": "Rimelig, ikke absolutt, sikkerhet – fordi intern kontroll har iboende begrensninger (feil, overstyring, samarbeid, eksterne hendelser).",
+      "options": {"a": "absolutt", "b": "rimelig", "c": "tilstrekkelig", "d": "høy"},
+      "correct_option": "b"
+    },
+    {
+      "id": 3,
+      "tags": ["definisjon"],
+      "question": "Hvilke fem nøkkelbegreper ligger i COSOs definisjon av intern kontroll?",
+      "answer": "Målrettet, prosess, utført av mennesker, rimelig sikkerhet, tilpasningsdyktig",
+      "explanation": "Et middel for å nå mål, løpende og innvevd i driften, handler om hva folk gjør, gir rimelig sikkerhet og kan brukes på hele eller deler av virksomheten.",
+      "options": {"a": "Målrettet, prosess, utført av mennesker, rimelig sikkerhet, tilpasningsdyktig", "b": "Uavhengig, dokumentert, revidert, lovpålagt, årlig", "c": "Forebyggende, avdekkende, korrigerende, manuell, automatisk", "d": "Styre, ledelse, revisor, ansatte, myndigheter"},
+      "correct_option": "a"
+    },
+    {
+      "id": 4,
+      "tags": ["målsettinger"],
+      "question": "Hva er COSOs tre kategorier av målsettinger?",
+      "answer": "Drift, rapportering, etterlevelse",
+      "explanation": "Drift (effektivitet og sikring av eiendeler), rapportering (pålitelig, rettidig, transparent) og etterlevelse (lover og regler). Strategi hører til COSO ERM, ikke internkontrollrammeverket.",
+      "options": {"a": "Strategi, drift, rapportering", "b": "Drift, rapportering, etterlevelse", "c": "Lønnsomhet, likviditet, soliditet", "d": "Risiko, kontroll, overvåking"},
+      "correct_option": "b"
+    },
+    {
+      "id": 5,
+      "tags": ["målsettinger"],
+      "question": "Hva endret seg for rapporteringsmålet i 2013-versjonen?",
+      "answer": "Det ble utvidet til også intern og ikke-finansiell rapportering",
+      "explanation": "I 1992 dreide det seg om ekstern finansiell rapportering. I 2013 ble målet utvidet til intern og ekstern, finansiell og ikke-finansiell rapportering.",
+      "options": {"a": "Det ble fjernet", "b": "Det ble begrenset til ekstern finansiell rapportering", "c": "Det ble utvidet til også intern og ikke-finansiell rapportering", "d": "Det ble slått sammen med etterlevelse"},
+      "correct_option": "c"
+    },
+    {
+      "id": 6,
+      "tags": ["komponenter"],
+      "question": "Hva er de fem komponentene i COSO-modellen?",
+      "answer": "Kontrollmiljø, risikovurdering, kontrollaktiviteter, informasjon og kommunikasjon, overvåking",
+      "explanation": "Huskeregel: Kultur → Risiko → Tiltak → Info → Oppfølging.",
+      "options": {"a": "Kontrollmiljø, risikovurdering, kontrollaktiviteter, informasjon og kommunikasjon, overvåking", "b": "Styring, strategi, risiko, kontroll, revisjon", "c": "Planlegging, gjennomføring, kontroll, rapportering, forbedring", "d": "Kontrollmiljø, risikostyring, IT, internrevisjon, rapportering"},
+      "correct_option": "a"
+    },
+    {
+      "id": 7,
+      "tags": ["komponenter", "kontrollmiljø"],
+      "question": "Hvilken komponent er fundamentet og omfatter «tone at the top»?",
+      "answer": "Kontrollmiljø",
+      "explanation": "Kontrollmiljøet er standardene, prosessene og strukturene som danner grunnlaget for all intern kontroll, og påvirker hele systemet.",
+      "options": {"a": "Risikovurdering", "b": "Kontrollmiljø", "c": "Overvåking", "d": "Kontrollaktiviteter"},
+      "correct_option": "b"
+    },
+    {
+      "id": 8,
+      "tags": ["prinsipper"],
+      "question": "Hvordan fordeler de 17 prinsippene seg på de fem komponentene?",
+      "answer": "5 – 4 – 3 – 3 – 2",
+      "explanation": "Kontrollmiljø 5 (1–5), risikovurdering 4 (6–9), kontrollaktiviteter 3 (10–12), informasjon og kommunikasjon 3 (13–15), overvåking 2 (16–17).",
+      "options": {"a": "4 – 4 – 3 – 3 – 3", "b": "5 – 4 – 3 – 3 – 2", "c": "3 – 4 – 5 – 3 – 2", "d": "5 – 3 – 4 – 2 – 3"},
+      "correct_option": "b"
+    },
+    {
+      "id": 9,
+      "tags": ["prinsipper", "kontrollmiljø"],
+      "question": "Hva sier prinsipp 1?",
+      "answer": "Organisasjonen viser forpliktelse til integritet og etiske verdier",
+      "explanation": "Prinsipp 1 (kontrollmiljø): etikk og integritet.",
+      "options": {"a": "Styret er uavhengig av ledelsen", "b": "Organisasjonen viser forpliktelse til integritet og etiske verdier", "c": "Målene spesifiseres tydelig", "d": "Organisasjonen holder ansatte ansvarlige"},
+      "correct_option": "b"
+    },
+    {
+      "id": 10,
+      "tags": ["prinsipper", "kontrollmiljø"],
+      "question": "Hva sier prinsipp 2?",
+      "answer": "Styret er uavhengig av ledelsen og fører tilsyn med intern kontroll",
+      "explanation": "Prinsipp 2 (kontrollmiljø): uavhengig styre med tilsyn. Viktig mot ledelsens mulighet til å overstyre kontroller.",
+      "options": {"a": "Ledelsen etablerer strukturer og fullmakter", "b": "Styret er uavhengig av ledelsen og fører tilsyn med intern kontroll", "c": "Svakheter rapporteres til styret", "d": "Det kommuniseres med eksterne parter"},
+      "correct_option": "b"
+    },
+    {
+      "id": 11,
+      "tags": ["prinsipper", "kontrollmiljø"],
+      "question": "Hva sier prinsipp 3?",
+      "answer": "Ledelsen etablerer, under styrets tilsyn, strukturer, rapporteringslinjer, fullmakter og ansvar",
+      "explanation": "Prinsipp 3 (kontrollmiljø): struktur og ansvar – organisasjonskart, rapporteringslinjer, fullmaktsmatriser.",
+      "options": {"a": "Ledelsen etablerer, under styrets tilsyn, strukturer, rapporteringslinjer, fullmakter og ansvar", "b": "Organisasjonen tiltrekker og beholder kompetente personer", "c": "Kontrollaktiviteter settes ut i livet gjennom prosedyrer", "d": "Risikoer identifiseres i hele virksomheten"},
+      "correct_option": "a"
+    },
+    {
+      "id": 12,
+      "tags": ["prinsipper", "kontrollmiljø"],
+      "question": "Hvilket prinsipp handler om å tiltrekke, utvikle og beholde kompetente personer?",
+      "answer": "Prinsipp 4",
+      "explanation": "Prinsipp 4 (kontrollmiljø): kompetanse i tråd med målene.",
+      "options": {"a": "Prinsipp 3", "b": "Prinsipp 4", "c": "Prinsipp 5", "d": "Prinsipp 13"},
+      "correct_option": "b"
+    },
+    {
+      "id": 13,
+      "tags": ["prinsipper", "kontrollmiljø"],
+      "question": "Hva sier prinsipp 5?",
+      "answer": "Organisasjonen holder enkeltpersoner ansvarlige for sitt internkontrollansvar",
+      "explanation": "Prinsipp 5 (kontrollmiljø): ansvarliggjøring – f.eks. via prestasjonsmål, insentiver og konsekvenser.",
+      "options": {"a": "Organisasjonen holder enkeltpersoner ansvarlige for sitt internkontrollansvar", "b": "Organisasjonen vurderer misligheter", "c": "Styret fører tilsyn", "d": "Det gjennomføres separate evalueringer"},
+      "correct_option": "a"
+    },
+    {
+      "id": 14,
+      "tags": ["prinsipper", "risikovurdering"],
+      "question": "Hva er de fire prinsippene under risikovurdering, i rekkefølge (6–9)?",
+      "answer": "Klare mål → identifisere og analysere risiko → misligheter → endringer",
+      "explanation": "Logikken: man må ha mål før man kan vurdere risiko for dem, deretter særskilt svindelrisiko og risiko fra endringer.",
+      "options": {"a": "Klare mål → identifisere og analysere risiko → misligheter → endringer", "b": "Risiko → kontroll → info → overvåking", "c": "Misligheter → IT → endringer → mål", "d": "Identifisere → måle → prioritere → håndtere"},
+      "correct_option": "a"
+    },
+    {
+      "id": 15,
+      "tags": ["prinsipper", "risikovurdering"],
+      "question": "Hvilket prinsipp sier at muligheten for misligheter skal vurderes?",
+      "answer": "Prinsipp 8",
+      "explanation": "Prinsipp 8 (risikovurdering): misligheter. Fikk økt vekt i 2013-oppdateringen.",
+      "options": {"a": "Prinsipp 7", "b": "Prinsipp 8", "c": "Prinsipp 10", "d": "Prinsipp 17"},
+      "correct_option": "b"
+    },
+    {
+      "id": 16,
+      "tags": ["prinsipper", "risikovurdering", "case"],
+      "question": "Et selskap kjøper opp et konkurrerende firma. Hvilket prinsipp er mest direkte berørt?",
+      "answer": "Prinsipp 9 – endringer",
+      "explanation": "Prinsipp 9: identifisere og vurdere endringer som kan påvirke internkontrollen vesentlig (oppkjøp, ny IT, nye markeder, lederskifte).",
+      "options": {"a": "Prinsipp 9 – endringer", "b": "Prinsipp 1 – etikk", "c": "Prinsipp 15 – ekstern kommunikasjon", "d": "Prinsipp 12 – policy og prosedyre"},
+      "correct_option": "a"
+    },
+    {
+      "id": 17,
+      "tags": ["prinsipper", "kontrollaktiviteter"],
+      "question": "Hva er de tre prinsippene under kontrollaktiviteter (10–12)?",
+      "answer": "Kontrolltiltak som reduserer risiko → generelle IT-kontroller → policy og prosedyrer",
+      "explanation": "Fra generelle tiltak, via teknologi, til skriftliggjøring (hva som forventes og hvordan det gjøres).",
+      "options": {"a": "Kontrolltiltak som reduserer risiko → generelle IT-kontroller → policy og prosedyrer", "b": "Arbeidsdeling → attestasjon → avstemming", "c": "Forebyggende → avdekkende → korrigerende", "d": "Evaluering → rapportering → oppfølging"},
+      "correct_option": "a"
+    },
+    {
+      "id": 18,
+      "tags": ["prinsipper", "kontrollaktiviteter"],
+      "question": "Hvilket prinsipp handler om generelle kontroller over teknologi?",
+      "answer": "Prinsipp 11",
+      "explanation": "Prinsipp 11 (kontrollaktiviteter): IT-kontroller, f.eks. tilgangsstyring og endringshåndtering i systemer.",
+      "options": {"a": "Prinsipp 10", "b": "Prinsipp 11", "c": "Prinsipp 13", "d": "Prinsipp 16"},
+      "correct_option": "b"
+    },
+    {
+      "id": 19,
+      "tags": ["prinsipper", "kontrollaktiviteter"],
+      "question": "Hva sier prinsipp 12?",
+      "answer": "Kontrollene settes ut i livet gjennom retningslinjer (hva som forventes) og prosedyrer (hvordan)",
+      "explanation": "Prinsipp 12 (kontrollaktiviteter): policy + prosedyre.",
+      "options": {"a": "Kontrollene settes ut i livet gjennom retningslinjer (hva som forventes) og prosedyrer (hvordan)", "b": "Informasjon kommuniseres internt", "c": "Kontroller evalueres løpende", "d": "Ledelsen fastsetter fullmakter"},
+      "correct_option": "a"
+    },
+    {
+      "id": 20,
+      "tags": ["prinsipper", "informasjon og kommunikasjon"],
+      "question": "Hva er de tre prinsippene under informasjon og kommunikasjon (13–15)?",
+      "answer": "Kvalitetsinformasjon → intern kommunikasjon → ekstern kommunikasjon",
+      "explanation": "Først selve informasjonen (relevant og av god kvalitet), så hvordan den deles internt, så med eksterne parter.",
+      "options": {"a": "Kvalitetsinformasjon → intern kommunikasjon → ekstern kommunikasjon", "b": "Rapportering → revisjon → publisering", "c": "IT-systemer → varsling → årsrapport", "d": "Intern → ekstern → styret"},
+      "correct_option": "a"
+    },
+    {
+      "id": 21,
+      "tags": ["prinsipper", "overvåking"],
+      "question": "Hva er de to prinsippene under overvåking (16–17)?",
+      "answer": "Løpende og/eller separate evalueringer → rettidig vurdering og rapportering av svakheter",
+      "explanation": "16: evaluere om komponentene er til stede og fungerer. 17: melde svakheter i tide til dem som skal rette dem, inkl. toppledelse og styre.",
+      "options": {"a": "Løpende og/eller separate evalueringer → rettidig vurdering og rapportering av svakheter", "b": "Internrevisjon → ekstern revisjon", "c": "Risikovurdering → kontrolltiltak", "d": "Styrets tilsyn → ledelsens ansvar"},
+      "correct_option": "a"
+    },
+    {
+      "id": 22,
+      "tags": ["effektiv intern kontroll"],
+      "question": "Hvilke to krav stiller COSO for at intern kontroll skal være effektiv?",
+      "answer": "Alle komponenter og relevante prinsipper er til stede og fungerer, og komponentene virker sammen integrert",
+      "explanation": "Komponentene vurderes samlet. Alle 17 prinsipper anses relevante – det finnes ingen «terskel» under 17.",
+      "options": {"a": "Alle komponenter og relevante prinsipper er til stede og fungerer, og komponentene virker sammen integrert", "b": "Kontrollene er dokumentert og revidert årlig", "c": "Ingen feil har oppstått, og revisor har godkjent", "d": "Minst 12 av 17 prinsipper er oppfylt"},
+      "correct_option": "a"
+    },
+    {
+      "id": 23,
+      "tags": ["effektiv intern kontroll"],
+      "question": "Hva er forskjellen på «til stede» og «fungerer»?",
+      "answer": "Til stede = finnes i utformingen og implementeringen; fungerer = virker faktisk i den løpende driften",
+      "explanation": "Eksempel: en attestasjonsrutine står i håndboken (til stede), men blir den faktisk fulgt hver gang (fungerer)?",
+      "options": {"a": "Til stede = finnes i utformingen og implementeringen; fungerer = virker faktisk i den løpende driften", "b": "Til stede = dokumentert; fungerer = revidert", "c": "Til stede = ledelsens ansvar; fungerer = styrets ansvar", "d": "Det er to ord for det samme"},
+      "correct_option": "a"
+    },
+    {
+      "id": 24,
+      "tags": ["effektiv intern kontroll"],
+      "question": "Hva skjer hvis det finnes en vesentlig svakhet (major deficiency) i én komponent?",
+      "answer": "Virksomheten kan ikke konkludere med effektiv intern kontroll",
+      "explanation": "Sterke kontrollaktiviteter veier ikke opp for f.eks. et svakt kontrollmiljø – komponentene må virke sammen.",
+      "options": {"a": "Virksomheten kan ikke konkludere med effektiv intern kontroll", "b": "Svakheten kan kompenseres av sterke kontrollaktiviteter", "c": "Det har kun betydning for etterlevelsesmålet", "d": "Den må rapporteres til politiet"},
+      "correct_option": "a"
+    },
+    {
+      "id": 25,
+      "tags": ["begrensninger"],
+      "question": "Hvilken av disse er IKKE en av COSOs iboende begrensninger ved intern kontroll?",
+      "answer": "Kostnaden ved kontroll må alltid være null",
+      "explanation": "De seks begrensningene: uegnede mål, feilaktig skjønn/bias, menneskelige feil, overstyring fra ledelsen, samarbeid (collusion) og eksterne hendelser.",
+      "options": {"a": "Ledelsen kan overstyre kontrollene", "b": "Kontroller kan omgås ved samarbeid", "c": "Kostnaden ved kontroll må alltid være null", "d": "Eksterne hendelser utenfor virksomhetens kontroll"},
+      "correct_option": "c"
+    },
+    {
+      "id": 26,
+      "tags": ["begrensninger"],
+      "question": "Hvilken begrensning gjør at arbeidsdeling ikke gir full beskyttelse?",
+      "answer": "Samarbeid (collusion) mellom de som deler oppgavene",
+      "explanation": "Arbeidsdeling forutsetter at ingen alene kan gjennomføre og skjule en feil. Samarbeider to personer, faller kontrollen bort.",
+      "options": {"a": "Samarbeid (collusion) mellom de som deler oppgavene", "b": "Uegnede mål", "c": "Eksterne hendelser", "d": "Manglende IT-kontroller"},
+      "correct_option": "a"
+    },
+    {
+      "id": 27,
+      "tags": ["case", "kontrollaktiviteter"],
+      "question": "Case: Kassereren avstemmer selv sin egen kasse. Hvilken komponent og hvilket prinsipp svikter?",
+      "answer": "Kontrollaktiviteter – prinsipp 10 (arbeidsdeling)",
+      "explanation": "Arbeidsdeling er en kontrollaktivitet som bygges inn ved valg av kontrolltiltak (prinsipp 10).",
+      "options": {"a": "Kontrollaktiviteter – prinsipp 10 (arbeidsdeling)", "b": "Kontrollmiljø – prinsipp 1", "c": "Overvåking – prinsipp 16", "d": "Informasjon og kommunikasjon – prinsipp 13"},
+      "correct_option": "a"
+    },
+    {
+      "id": 28,
+      "tags": ["case", "kontrollmiljø"],
+      "question": "Case: Daglig leder er også styreleder og godkjenner sin egen bonus. Hvilket prinsipp brytes mest direkte?",
+      "answer": "Prinsipp 2 – styrets uavhengighet",
+      "explanation": "Styret skal være uavhengig av ledelsen. Indirekte berøres også prinsipp 1 (etikk) og 5 (ansvarliggjøring).",
+      "options": {"a": "Prinsipp 2 – styrets uavhengighet", "b": "Prinsipp 11 – IT-kontroller", "c": "Prinsipp 9 – endringer", "d": "Prinsipp 15 – ekstern kommunikasjon"},
+      "correct_option": "a"
+    },
+    {
+      "id": 29,
+      "tags": ["grunnlag", "COSO-kuben"],
+      "question": "Hva representerer de tre dimensjonene i COSO-kuben?",
+      "answer": "Målsettinger (topp), komponenter (front), organisasjonsstruktur (side)",
+      "explanation": "Poenget: alle fem komponenter gjelder for alle tre målsettinger, på alle nivåer i organisasjonen (virksomhet, divisjon, enhet, funksjon).",
+      "options": {"a": "Målsettinger (topp), komponenter (front), organisasjonsstruktur (side)", "b": "Styre, ledelse, ansatte", "c": "Risiko, kontroll, revisjon", "d": "Fortid, nåtid, fremtid"},
+      "correct_option": "a"
+    },
+    {
+      "id": 30,
+      "tags": ["komponenter", "eksamensfelle"],
+      "question": "Er kontrollaktiviteter det samme som intern kontroll?",
+      "answer": "Nei – kontrollaktiviteter er bare én av fem komponenter",
+      "explanation": "Klassisk eksamensfelle: intern kontroll er hele systemet av fem komponenter og 17 prinsipper.",
+      "options": {"a": "Nei – kontrollaktiviteter er bare én av fem komponenter", "b": "Ja – begrepene er synonyme", "c": "Ja, men bare for rapporteringsmålet", "d": "Nei – kontrollaktiviteter er en del av overvåking"},
+      "correct_option": "a"
+    }
+  ]
+}

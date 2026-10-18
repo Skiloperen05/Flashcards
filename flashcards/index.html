@@ -429,6 +429,7 @@ body{font-family:'Lora',Georgia,'Times New Roman',serif;background:var(--bg);col
 <script src="../shared/flashcard-study-session.js"></script>
 <script src="../shared/flashcard-progress.js"></script>
 <script src="../shared/sam3-flashcard-catalog.js"></script>
+<script src="../shared/rrr11-coso-study.js"></script>
 <script src="../shared/flashcard-library.js"></script>
 <script src="../shared/flashcard-store.js"></script>
 <script src="../shared/flashcard-study-options.js"></script>
@@ -902,7 +903,7 @@ function renderCard() {
   inner.querySelector('.back').setAttribute('aria-hidden', 'true');
   inner.classList.remove("fade-in"); void inner.offsetWidth; inner.classList.add("fade-in");
   document.getElementById("cardFront").textContent = card.q;
-  document.getElementById("cardBack").textContent = card.a;
+  document.getElementById("cardBack").textContent = card.a + (card.explanation ? "\n\nForklaring: " + card.explanation : "");
   // Show tag badge if available
   var tagEl = document.getElementById("cardTagBadge");
   if (card.tag) { tagEl.textContent = card.tag + (card.difficulty ? ' · ' + (HaugnesStudyOptions.levels[card.difficulty] || card.difficulty) : ''); tagEl.style.display = ""; }
@@ -1362,7 +1363,7 @@ function getQuizDecksForSubject(subjId) {
   if (subjId === "ret14" && RET14_QUIZ_DECKS) builtin = builtin.concat(RET14_QUIZ_DECKS);
   if (subjId === "subj_sol1" && SOL1_QUIZ_DECKS) builtin = builtin.concat(SOL1_QUIZ_DECKS);
   var custom = (CUSTOM_DATA.quizDecks && CUSTOM_DATA.quizDecks[subjId]) ? CUSTOM_DATA.quizDecks[subjId] : [];
-  return builtin.concat(custom);
+  return builtin.concat(HaugnesFlashcardLibrary.quizDecksFor(subjId), custom);
 }
 
 function renderQuizDecks() {
