@@ -42,7 +42,7 @@
     if (window[global]) return Promise.resolve();
     return new Promise(function (resolve, reject) {
       var script = document.createElement('script');
-      script.src = asset('shared/' + file + '.js');
+      script.src = asset('shared/' + file + '.js?v=20261018-coso');
       script.onload = resolve;
       script.onerror = reject;
       document.head.appendChild(script);
@@ -450,7 +450,7 @@
     if (meta && meta.code) code = meta.code;
     var css = document.createElement('link');
     css.rel = 'stylesheet';
-    css.href = asset('shared/subject-flashcards.css');
+    css.href = asset('shared/subject-flashcards.css?v=20261018-coso');
     document.head.appendChild(css);
     root = document.createElement('section');
     root.id = 'flashcards';
