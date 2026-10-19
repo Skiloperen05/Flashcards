@@ -614,7 +614,7 @@ body.hf-student-preview-active #btnNewTaskTopBar {
 .hf-subject-loading .hf-footer { display: none; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../shared/auth-guard.js?v=20261018-workspace"></script>
+<script src="../shared/auth-guard.js?v=20261019-publishing"></script>
 <script>
 AuthGuard.requireAuth();
 </script>
@@ -960,7 +960,7 @@ AuthGuard.requireAuth();
         <textarea id="ansDesc" style="min-height:75px" placeholder="Hva skiller denne besvarelsen ut, og hvilke oppgaver dekkes..."></textarea>
       </div>
       <div class="hf-form-group">
-        <label>Last opp besvarelse som PDF (valgfritt)</label>
+        <label>Last opp besvarelse som PDF eller velg en Drive-lenke</label>
         <div class="hf-file-dropzone" onclick="document.getElementById('ansPdfInput').click()">
           <div style="font-size:24px;margin-bottom:4px">📥</div>
           <strong style="font-size:13px;color:#fff">Klikk eller dra inn PDF-fil</strong>
@@ -1154,10 +1154,10 @@ AuthGuard.requireAuth();
 <script src="../shared/learning-content.js"></script>
 <script src="../shared/subject-meta.js"></script>
 <script src="../shared/subject-page-data.js"></script>
-<script src="../shared/subjects-studio.js"></script>
-<script src="../shared/subject-page-studio-bridge.js"></script>
+<script src="../shared/subjects-studio.js?v=20261019-publishing"></script>
+<script src="../shared/subject-page-studio-bridge.js?v=20261019-publishing"></script>
 <script src="../shared/subject-resources.js"></script>
-<script src="../shared/subject-page-renderer.js?v=20261018-workspace"></script>
+<script src="../shared/subject-page-renderer.js?v=20261019-publishing"></script>
 <script>
 (function () {
   function getSubjectCode() {
@@ -1525,6 +1525,10 @@ AuthGuard.requireAuth();
     var pdfSize = document.getElementById('ansPdfSize').textContent || '';
     var extUrl = document.getElementById('ansExternalUrl').value.trim();
 
+    if (!pdfData && !extUrl) { showToast('Velg en PDF-fil eller en Google Drive-lenke før du publiserer.', 'error'); return Promise.resolve(false); }
+    var submit = document.querySelector('#modalSubjectAnswer button[type="submit"]');
+    if (submit.disabled) return Promise.resolve(false);
+    submit.disabled = true;
     var answers = page.answers ? page.answers.slice() : [];
     answers.push({
       id: 'ans_' + Date.now(),
@@ -1539,12 +1543,16 @@ AuthGuard.requireAuth();
     });
 
     var updated = Object.assign({}, page, { answers: answers });
-    window.HaugnesSubjectPages.savePage(subjectId, updated).then(function () {
+    return window.HaugnesSubjectPages.savePage(subjectId, updated).then(function (saved) {
       closeSubjectModal('modalSubjectAnswer');
-      renderSubjectPage(updated);
-      broadcastPageUpdate(updated);
-      showToast('Eksamensløsning lagret!');
-    });
+      renderSubjectPage(saved || updated);
+      broadcastPageUpdate(saved || updated);
+      showToast('Eksamensløsning publisert!');
+      return true;
+    }).catch(function (error) {
+      showToast('Kunne ikke publisere besvarelsen: ' + (error.message || error), 'error');
+      return false;
+    }).finally(function () { submit.disabled = false; });
   };
 
   // Save Task
@@ -1943,6 +1951,7 @@ AuthGuard.requireAuth();
         + (hasPdf ? '<div class="hf-pdf-badge" style="margin-bottom:8px">Dokument ' + (ans.pdfSize ? '(' + ans.pdfSize + ')' : '') + '</div>' : '')
         + '<div class="hf-pkg-actions">'
         + (hasPdf ? downloadControl(ans.pdfData || ans.pdfUrl, ans.pdfName || 'eksamensbesvarelse.pdf', 'Last ned dokument') : '')
+        + (!hasPdf ? '<p style="font-size:12px;color:#ffd98f">Dokumentet er ikke lastet opp ennå.</p>' + (isAdmin && !isStudentPreviewActive ? '<a class="hf-pkg-btn secondary" href="../user/admin.html?subject=' + encodeURIComponent(subjectId) + '&tab=answers">Legg til dokument i Fagstudio</a>' : '') : '')
         + (hasPdf ? '<button class="hf-pkg-btn secondary" onclick="openPdfFile(\'' + (ans.pdfData || ans.pdfUrl) + '\')">👁️ Åpne</button>' : '')
         + '</div>'
         + '</div>'

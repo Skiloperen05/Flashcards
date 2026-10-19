@@ -1,5 +1,5 @@
 (function (window, document) {
-  var SHARED_SCRIPT = '../shared/auth-guard.js';
+  var SHARED_SCRIPT = '../shared/auth-guard.js?v=20261019-publishing';
   var MODEL_PAGES = {
     'butikk.html': { label: 'Butikk', icon: '⚷', subtitle: 'Lås opp fag' },
     'eksamensanalyse.html': { label: 'Eksamensanalyse', icon: '◈', subtitle: 'Åpne faktiske analyser' },

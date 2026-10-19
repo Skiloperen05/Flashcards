@@ -374,7 +374,24 @@
     });
   }
 
+  function showAnswerSection(row) {
+    if (!row || row.kind !== 'answer') return Promise.resolve(row);
+    var sb = client();
+    return sb.from('subject_pages').select('visibility').eq('subject_code', row.subject_code).maybeSingle().then(function (result) {
+      if (result.error) throw result.error;
+      if (!result.data) throw new Error('Faget ble ikke funnet.');
+      if (result.data.visibility && result.data.visibility.answers === true) return row;
+      return upsertSubject({ subject_code: row.subject_code, visibility: Object.assign({}, result.data.visibility || {}, { answers: true }) }).then(function () { return row; });
+    }).catch(function (error) {
+      throw new Error('Dokumentet er lagret, men A-besvarelser kunne ikke gjøres synlig: ' + (error.message || error));
+    });
+  }
+
   function uploadFile(input) {
+    return saveNewFile(input).then(showAnswerSection);
+  }
+
+  function saveNewFile(input) {
     if (!input || !input.subject_code || !input.kind) return Promise.reject(new Error('subject_code og kind kreves'));
     var sb = client();
     if (!sb) return Promise.reject(new Error('Ikke tilkoblet'));
@@ -397,6 +414,8 @@
       uploaded_by: userId()
     };
 
+    if (file && (basePayload.external_url || input.drive_id || input.storage_bucket === 'google_drive')) return Promise.reject(new Error('Velg enten en lokal fil eller en Drive-fil.'));
+
     if (basePayload.external_url) {
       var driveLink = basePayload.external_url.match(/^https:\/\/(?:drive|docs)\.google\.com\/(?:.*\/d\/|.*[?&]id=)([A-Za-z0-9_-]+)/);
       if (!driveLink) return Promise.reject(new Error('Velg en fil fra Google Drive eller last opp filen. Eksterne dokumentlenker er ikke beskyttet.'));
@@ -406,6 +425,10 @@
     if (input.storage_bucket === 'google_drive' || input.drive_id) {
       return importDrive(Object.assign({}, basePayload, { drive_id: input.drive_id || input.storage_path }));
     }
+
+    if (kind === 'answer' && !file) return Promise.reject(new Error('Velg en PDF-fil eller en fil fra Google Drive før du publiserer besvarelsen.'));
+    if (file && !file.size) return Promise.reject(new Error('Filen er tom. Velg en annen fil.'));
+    if (file) basePayload.meta = Object.assign({}, meta, { original_name: file.name });
 
     if (!file && !basePayload.external_url) {
       return sb.from('subject_files').insert(basePayload).select().maybeSingle().then(function (result) {
@@ -441,8 +464,7 @@
         contentType: file.type || undefined
       }).then(function (uploadResult) {
         if (uploadResult && uploadResult.error) {
-          sb.from('subject_files').delete().eq('id', fileId);
-          throw uploadResult.error;
+          return sb.from('subject_files').delete().eq('id', fileId).then(function () { throw uploadResult.error; });
         }
         return sb.from('subject_files').update({
           storage_bucket: 'subject-files',
@@ -466,8 +488,33 @@
     if (!sb || !fileId) return Promise.reject(new Error('Fil-id mangler'));
     var payload = Object.assign({}, patch);
     delete payload.id;
+    var file = payload.file;
+    delete payload.file;
+    if (file) {
+      if (!file.size) return Promise.reject(new Error('Filen er tom. Velg en annen fil.'));
+      if (payload.external_url || payload.storage_bucket === 'google_drive') return Promise.reject(new Error('Velg enten en lokal fil eller en Drive-fil.'));
+      return sb.from('subject_files').select().eq('id', fileId).maybeSingle().then(function (result) {
+        if (result.error) throw result.error;
+        if (!result.data) throw new Error('Dokumentoppføringen ble ikke funnet.');
+        var row = result.data;
+        var replacementMeta = Object.assign({}, row.meta || {}, payload.meta || {}, { original_name: file.name });
+        delete replacementMeta.drive_id;
+        delete replacementMeta.drive_name;
+        if (replacementMeta.source === 'google_drive') delete replacementMeta.source;
+        var path = code(row.subject_code) + '/' + fileId + '-' + Date.now() + '-' + slugify(file.name);
+        var ext = (file.name.split('.').pop() || 'bin').toLowerCase().slice(0, 8);
+        path += '.' + ext;
+        return sb.storage.from('subject-files').upload(path, file, { upsert: false, contentType: file.type || undefined }).then(function (uploaded) {
+          if (uploaded.error) throw uploaded.error;
+          return updateFile(fileId, Object.assign({}, payload, {
+            storage_bucket: 'subject-files', storage_path: path, size_bytes: file.size, mime_type: file.type || null,
+            meta: replacementMeta
+          }));
+        });
+      }).then(showAnswerSection);
+    }
     if (payload.external_url) return Promise.reject(new Error('Velg en fil fra Google Drive. Eksterne dokumentlenker er ikke beskyttet.'));
-    if (payload.storage_bucket === 'google_drive') return importDrive(Object.assign({}, payload, { id: fileId, drive_id: payload.storage_path }));
+    if (payload.storage_bucket === 'google_drive') return importDrive(Object.assign({}, payload, { id: fileId, drive_id: payload.storage_path })).then(showAnswerSection);
     return sb.from('subject_files').update(payload).eq('id', fileId).select().maybeSingle().then(function (result) {
       if (result && result.error) throw result.error;
       var row = result && result.data;

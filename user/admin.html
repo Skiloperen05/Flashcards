@@ -562,7 +562,7 @@ button,input,select,textarea{font-family:inherit}
 <script src="../shared/subject-meta.js"></script>
 <script src="../shared/subject-page-data.js"></script>
 <script src="../shared/user-sidebar.js"></script>
-<script src="auth-guard.js"></script>
+<script src="auth-guard.js?v=20261019-publishing"></script>
 <script>
 (function () {
   'use strict';
@@ -1608,6 +1608,7 @@ button,input,select,textarea{font-family:inherit}
         title: payload.title, description: payload.description, body: payload.body,
         term: payload.term, grade: payload.grade, external_url: payload.external_url, meta: payload.meta
       };
+      if (pendingFile) updates.file = pendingFile;
       if (pendingDriveFile) {
         updates.storage_bucket = 'google_drive';
         updates.storage_path = pendingDriveFile.id;

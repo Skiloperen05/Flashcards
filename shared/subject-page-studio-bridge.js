@@ -199,6 +199,18 @@
     return Promise.all(jobs);
   }
 
+  function selectedFile(row) {
+    if (!/^data:/.test(row.pdfData || '')) return null;
+    var match = row.pdfData.match(/^data:([^;,]*);base64,([A-Za-z0-9+/=\s]+)$/);
+    if (!match) throw new Error('Filen kunne ikke leses. Velg filen på nytt.');
+    var binary;
+    try { binary = window.atob(match[2]); } catch (e) { throw new Error('Filen kunne ikke leses. Velg filen på nytt.'); }
+    if (!binary.length) throw new Error('Filen er tom. Velg en annen fil.');
+    var bytes = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return new window.File([bytes], row.pdfName || 'dokument.pdf', { type: match[1] || 'application/octet-stream' });
+  }
+
   function persistFiles(subjectCode, kind, newRows, previousRows) {
     var s = studio();
     if (!s) return Promise.resolve();
@@ -221,6 +233,11 @@
         meta: meta,
         sort_order: index
       };
+      var file = selectedFile(row);
+      if (file) {
+        payload.file = file;
+        payload.meta.original_name = file.name;
+      }
       if (existing && existing.id) {
         delete seenIds[existing.id];
         jobs.push(s.updateFile(existing.id, payload));

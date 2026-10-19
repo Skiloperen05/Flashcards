@@ -203,7 +203,7 @@
     });
     document.querySelectorAll('#subjectTabBar a[href="#memo"],#subjectTabBar a[href="#oversikt"]').forEach(function (link) { link.remove(); });
     var lead = document.getElementById('subjectLead');
-    if (lead) lead.textContent = 'Les forelesningsnotatene, og øv videre på COSO med flashcards og quiz. Alt samlet her i faget.';
+    if (lead) lead.textContent = vis.answers !== false && (page.answers || []).length ? 'Forelesningsnotater, A-besvarelser og COSO-øving, samlet her i faget.' : 'Les forelesningsnotatene, og øv videre på COSO med flashcards og quiz. Alt samlet her i faget.';
     var primary = document.getElementById('heroPrimaryAction');
     if (primary) {
       primary.href = vis.notes !== false ? '#notater' : '#flashcards';

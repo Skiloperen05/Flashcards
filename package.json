@@ -10,7 +10,7 @@
     "check:js": "node scripts/check-js.mjs",
     "check:smoke": "node scripts/smoke-test.mjs",
     "check:study": "node scripts/generate-sam3-flashcards.mjs --check && node scripts/generate-coso-study.mjs --check && node scripts/flashcard-study-test.mjs",
-    "check:documents": "node scripts/document-access-test.mjs",
+    "check:documents": "node scripts/document-access-test.mjs && node scripts/subject-publishing-test.mjs",
     "learning:generate": "node scripts/generate-learning-content.mjs",
     "check:learning": "node scripts/generate-learning-content.mjs --check",
     "check:biome": "biome check .",
