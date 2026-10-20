@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../shared/auth-guard.js"></script>
+<script src="../shared/auth-guard.js?v=20261020-cleanup"></script>
 <script>AuthGuard.requireAuth();</script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -423,9 +423,9 @@ body{font-family:'Lora',Georgia,'Times New Roman',serif;background:var(--bg);col
 
 <div class="toast" id="toast"></div>
 
-<script src="../shared/subject-meta.js"></script>
-<script src="../shared/learning-content.js"></script>
-<script src="../shared/haugnes-study-data.js"></script>
+<script src="../shared/subject-meta.js?v=20261020-cleanup"></script>
+<script src="../shared/learning-content.js?v=20261020-cleanup"></script>
+<script src="../shared/haugnes-study-data.js?v=20261020-cleanup"></script>
 <script src="../shared/flashcard-study-session.js?v=20261018-coso"></script>
 <script src="../shared/flashcard-progress.js"></script>
 <script src="../shared/sam3-flashcard-catalog.js"></script>
@@ -434,7 +434,7 @@ body{font-family:'Lora',Georgia,'Times New Roman',serif;background:var(--bg);col
 <script src="../shared/flashcard-store.js"></script>
 <script src="../shared/flashcard-study-options.js?v=20261018-coso"></script>
 <script src="../shared/haugnes-flashcards-structure.js" defer></script>
-<script src="../shared/flashcards-library-fallback.js" defer></script>
+<script src="../shared/flashcards-library-fallback.js?v=20261020-cleanup" defer></script>
 <script>
 // ==================== BUILT-IN DATA ====================
 
@@ -643,7 +643,7 @@ function showView(name) {
 // ==================== RENDER HOME ====================
 function renderHome() {
   renderSubjectFilters();
-  var allSubjects = getAllSubjects();
+  var allSubjects = getAllSubjects().filter(function (subject) { return !subject.builtin || getDecksForSubject(subject.id).some(function (deck) { return (deck.cards || []).length; }); });
   currentSubjectSearch = (document.getElementById("flashcardSubjectSearch") && document.getElementById("flashcardSubjectSearch").value || "").trim().toLowerCase();
   var subjects = allSubjects.filter(function(subj) {
     var haystack = [subj.code, subj.name, subj.label, subj.description, subj.categoryLabel].join(" ").toLowerCase();

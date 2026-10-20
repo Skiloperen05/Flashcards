@@ -1,5 +1,5 @@
 (function (window, document) {
-  var SHARED_SCRIPT = '../shared/auth-guard.js?v=20261019-publishing';
+  var SHARED_SCRIPT = '../shared/auth-guard.js?v=20261020-cleanup';
   var MODEL_PAGES = {
     'butikk.html': { label: 'Butikk', icon: '⚷', subtitle: 'Lås opp fag' },
     'eksamensanalyse.html': { label: 'Eksamensanalyse', icon: '◈', subtitle: 'Åpne faktiske analyser' },
@@ -103,7 +103,7 @@
       if (onload) onload();
       return;
     }
-    addScript('haugnes-subject-meta-js', '../shared/subject-meta.js', onload);
+    addScript('haugnes-subject-meta-js', '../shared/subject-meta.js?v=20261020-cleanup', onload);
   }
 
   function loadSubjectAccess(onload) {
@@ -218,7 +218,7 @@
         addScript('nhh-schedule-api-js', '../shared/nhh-schedule-api.js', function () {
           addScript('nhh-schedule-normalizer-js', '../shared/nhh-schedule-normalizer.js', function () {
             addScript('nhh-strict-course-filter-js', '../shared/nhh-strict-course-filter.js', function () {
-              addScript('haugnes-studyplan-js', '../shared/haugnes-studyplan.js', function () {
+              addScript('haugnes-studyplan-js', '../shared/haugnes-studyplan.js?v=20261020-cleanup', function () {
                 if (window.HaugnesStudyplan && typeof window.HaugnesStudyplan.render === 'function') window.HaugnesStudyplan.render();
                 if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.enhanceCurrentPage === 'function') window.HaugnesSubjectAccess.enhanceCurrentPage();
               });
@@ -232,7 +232,7 @@
   function loadAnswerLibrary() {
     if (currentUserPage() !== 'a-besvarelser.html') return;
     loadSubjectAccess(function () {
-      addScript('haugnes-answer-library-js', '../shared/haugnes-answer-library.js');
+      addScript('haugnes-answer-library-js', '../shared/haugnes-answer-library.js?v=20261020-cleanup');
     });
   }
 

@@ -42,7 +42,7 @@
     if (window[global]) return Promise.resolve();
     return new Promise(function (resolve, reject) {
       var script = document.createElement('script');
-      script.src = asset('shared/' + file + '.js?v=20261018-coso');
+      script.src = asset('shared/' + file + '.js?v=20261020-cleanup');
       script.onload = resolve;
       script.onerror = reject;
       document.head.appendChild(script);
@@ -446,6 +446,10 @@
   function mount() {
     var main = document.querySelector('main');
     if (!main || document.getElementById('flashcards')) return;
+    if (!decks.length) {
+      document.querySelectorAll('a[data-subject-study],#heroPrimaryAction,#flashcardsTabLink,#ctaAction').forEach(function (link) { link.style.display = 'none'; });
+      return;
+    }
     var meta = window.HaugnesSubjects && window.HaugnesSubjects.findById(subject);
     if (meta && meta.code) code = meta.code;
     var css = document.createElement('link');

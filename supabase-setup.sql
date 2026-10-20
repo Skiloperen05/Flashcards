@@ -928,3 +928,8 @@ values
    '../sam3/eksamenspakker/v26/sam3-sensorveiledning-v26.pdf',
    3)
 on conflict (id) do nothing;
+
+-- Legacy content cleanup (data only, 2026-10-20): after importing historical
+-- subject-page seeds, run data/remove-placeholder-content.sql. It removes audited
+-- demo blocks/copy and unpublishes empty seeded packages without deleting files,
+-- entitlements, user state or source-based MET3 content. Current clients start empty.

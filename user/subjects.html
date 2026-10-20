@@ -76,10 +76,10 @@
     </main>
   </div>
 </div>
-<script src="../shared/first-semester-content.js"></script>
-<script src="../shared/learning-content.js"></script>
-<script src="../shared/subject-meta.js"></script>
-<script src="auth-guard.js"></script>
+<script src="../shared/first-semester-content.js?v=20261020-cleanup"></script>
+<script src="../shared/learning-content.js?v=20261020-cleanup"></script>
+<script src="../shared/subject-meta.js?v=20261020-cleanup"></script>
+<script src="auth-guard.js?v=20261020-cleanup"></script>
 <script>
 var SUBJECTS = window.HaugnesSubjects ? window.HaugnesSubjects.getAll() : [];
 var currentFilter = 'all';
@@ -91,19 +91,7 @@ var CRITERIA = [
   { key: 'curriculum', label: 'Pensum', low: 'Lite', high: 'Mye' },
   { key: 'lectureValue', label: 'Forelesninger', low: 'Lav verdi', high: 'Høy verdi' }
 ];
-var HAUGNES_RATINGS = {
-  ret14: { workload: 4, relevance: 5, examDifficulty: 4, curriculum: 4, lectureValue: 3, verdict: 'Høy praktisk verdi, men krever presis metode og jevn drilling.' },
-  subj_sol1: { workload: 3, relevance: 4, examDifficulty: 3, curriculum: 3, lectureValue: 4, verdict: 'Mye handler om å forstå teoriene godt nok til å bruke dem i case.' },
-  sam2: { workload: 4, relevance: 4, examDifficulty: 5, curriculum: 4, lectureValue: 3, verdict: 'Eksamen kan bli tung hvis modellvalg og figurer ikke sitter tidlig.' },
-  sam3: { workload: 4, relevance: 4, examDifficulty: 4, curriculum: 5, lectureValue: 3, verdict: 'Stort modellfag der oversikt og sammenhenger teller mer enn enkeltdetaljer.' },
-  met2: { workload: 4, relevance: 4, examDifficulty: 4, curriculum: 4, lectureValue: 3, verdict: 'Blir langt lettere når hypotesetesting og regresjon kobles til oppgavetyper.' },
-  mat10: { workload: 4, relevance: 3, examDifficulty: 4, curriculum: 4, lectureValue: 3, verdict: 'Regnetrening slår passiv lesing. Formler må brukes, ikke bare gjenkjennes.' },
-  sam1a: { workload: 3, relevance: 4, examDifficulty: 3, curriculum: 3, lectureValue: 4, verdict: 'Godt grunnlagsfag der elastisitet og velferdsanalyse bør sitte tidlig.' },
-  met1: { workload: 3, relevance: 4, examDifficulty: 3, curriculum: 3, lectureValue: 3, verdict: 'Rente, nåverdi og rekker gir mye igjen hvis du øver jevnt.' },
-  kom1: { workload: 2, relevance: 3, examDifficulty: 2, curriculum: 2, lectureValue: 3, verdict: 'Mest verdifullt når struktur og akademisk språk omsettes i egne tekster.' },
-  ret1a: { workload: 4, relevance: 4, examDifficulty: 4, curriculum: 4, lectureValue: 3, verdict: 'Juridisk metode er nøkkelen. Det er lett å kunne temaet uten å svare godt.' },
-  bed1: { workload: 4, relevance: 5, examDifficulty: 4, curriculum: 4, lectureValue: 3, verdict: 'Praktisk og viktig fag, men krever mengdetrening på oppgavetyper.' }
-};
+var HAUGNES_RATINGS = {};
 var COMMUNITY_RATINGS = {};
 var ratings = readRatings();
 var ratingsRemoteLoaded = false;
@@ -369,16 +357,12 @@ function cardHtml(s){
     + '<div class="subject-top"><div class="subject-icon">'+(s.emblem?'<img class="emblem-img" src="'+s.emblem+'" alt="" onerror="this.remove()">':'')+'<span class="emblem-fallback">'+s.icon+'</span></div><span class="status '+(s.status==='active'?'active':'')+'">'+s.statusText+'</span></div>'
     + '<div class="subject-code">'+s.code+'</div><div class="subject-name">'+s.name+'</div>'
     + '<p class="subject-desc">'+description+'</p>'
-    + '<section class="official-rating"><div class="official-rating-head"><span>Haugnes-vurdering</span><strong>'+formatScore(haugnesScore)+'</strong></div>'
-    + '<p>'+escapeHtml(verdict)+'</p><div class="official-grid">'+officialMetrics+'</div>'
-    + '<div class="rating-comparison"><span>Fellessnitt: <b>'+communityText+'</b></span><span>Din vurdering: <b data-rating-summary="'+s.id+'">'+scoreText+'</b></span></div></section>'
+    + (haugnesScore ? '<section class="official-rating"><div class="official-rating-head"><span>Haugnes-vurdering</span><strong>'+formatScore(haugnesScore)+'</strong></div><p>'+escapeHtml(verdict)+'</p><div class="official-grid">'+officialMetrics+'</div></section>' : '')
     + '<details class="rating-box"><summary><span>Gi din vurdering</span><b data-rating-summary="'+s.id+'">'+scoreText+'</b></summary>'
     + '<div class="rating-total"><span>Din samlede score</span><strong data-rating-total="'+s.id+'">'+formatScore(score)+'</strong></div>'
     + '<div class="rating-fields">'+criteriaHtml+'</div>'
     + '<label class="rating-note"><span>Kort notat</span><textarea rows="2" data-subject="'+s.id+'" data-rating-note placeholder="Din kommentar til faget">'+escapeHtml(note)+'</textarea></label>'
     + '<button class="clear-rating" type="button" data-clear-rating="'+s.id+'">Nullstill din vurdering</button></details>'
-    + '<div class="metrics"><div class="metric"><b>'+s.decks+'</b><span>Deck</span></div><div class="metric"><b>'+s.cards+'</b><span>Innhold</span></div><div class="metric"><b>'+s.tools+'</b><span>Verktøy</span></div></div>'
-    + '<div class="progress-labels"><span>Progresjon</span><b>'+s.progress+'%</b></div><div class="bar"><i></i></div>'
     + '<div class="card-actions"><a class="card-btn primary" href="'+s.path+'">'+(isDisabled?'Kommer senere':'Åpne fag')+'</a><a class="card-btn secondary" href="'+(hasFlashcards?s.flashcards:s.path)+'">'+(hasFlashcards?'Start øving':'Se plan')+'</a></div>'
     + '</article>';
 }
@@ -406,9 +390,11 @@ function renderRankingList(list){
     .slice(0, 5);
   var target = document.getElementById('rankingList');
   if (!ranked.length) {
-    target.innerHTML = '<div class="ranking-empty">Haugnes-vurderinger kommer snart.</div>';
+    target.innerHTML = '';
+    target.closest('.ranking-panel').hidden = true;
     return;
   }
+  target.closest('.ranking-panel').hidden = false;
   target.innerHTML = ranked.map(function(subject, index){
     var score = formatScore(scoreHaugnes(subject.id));
     var rating = getHaugnesRating(subject.id);

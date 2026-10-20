@@ -120,8 +120,8 @@
       emblem: '../assets/emblems/MET2.png',
       accent: '#7c3aed',
       status: 'active',
-      statusText: 'MVP',
-      progress: 28,
+      statusText: 'Øving',
+      progress: 0,
       decks: '5',
       cards: '5+',
       tools: '3',
@@ -137,14 +137,14 @@
       emblem: '../assets/emblems/MAT10.png',
       accent: '#0891b2',
       status: 'active',
-      statusText: 'MVP',
-      progress: 34,
+      statusText: 'Øving',
+      progress: 0,
       decks: '6',
       cards: '4+',
       tools: '3',
       path: '../mat10/',
       flashcards: '../flashcards/?subject=mat10',
-      description: 'Analyse, lineær algebra, formler, regneøkter og eksamensdrill.'
+      description: 'Metodekort og oversikt for matematikk.'
     }, 'electives', 10),
     withCategory({
       id: 'sam1a',
@@ -155,13 +155,13 @@
       accent: '#f09828',
       status: 'active',
       statusText: 'Ny',
-      progress: 18,
+      progress: 0,
       decks: '3',
       cards: '4+',
       tools: '3',
       path: '../sam1a/',
-      flashcards: '../flashcards/?subject=sam1a',
-      description: 'Første semester: læringsmål, markedslikevekt, elastisitet og velferdsanalyse.'
+      flashcards: '#',
+      description: 'Personlig memoar om etikk, økonomi, bærekraft og begrepslæring.'
     }, 'semester1', 30),
     withCategory({
       id: 'met1',
@@ -172,7 +172,7 @@
       accent: '#06b6d4',
       status: 'active',
       statusText: 'Ny',
-      progress: 22,
+      progress: 0,
       decks: '3',
       cards: '4+',
       tools: '3',
@@ -189,7 +189,7 @@
       accent: '#e8bc68',
       status: 'active',
       statusText: 'Ny',
-      progress: 20,
+      progress: 0,
       decks: '3',
       cards: '4+',
       tools: '3',
@@ -206,7 +206,7 @@
       accent: '#3b82f6',
       status: 'exam',
       statusText: 'Eksamen',
-      progress: 24,
+      progress: 0,
       decks: '4',
       cards: '4+',
       tools: '3',
@@ -223,7 +223,7 @@
       accent: '#20b97a',
       status: 'exam',
       statusText: 'Eksamen',
-      progress: 26,
+      progress: 0,
       decks: '4',
       cards: '4+',
       tools: '3',
@@ -262,6 +262,7 @@
       subject.path = '../' + authored.id + '/';
       subject.status = 'active';
       subject.statusText = 'Første semester';
+      if (authored.studyEnabled === false || subject.code === 'KOM1') subject.flashcards = '#';
       return subject;
     }
     var learning = learningContent();
@@ -277,7 +278,7 @@
     if (quality.status === 'exam_ready') {
       subject.status = 'active';
       subject.statusText = 'Eksamensklar';
-      subject.progress = 100;
+
     }
     return subject;
   }
@@ -696,7 +697,7 @@
     var script = document.createElement('script');
     script.id = 'haugnes-rating-admin-js';
     script.defer = true;
-    script.src = current && current.src ? new URL('haugnes-rating-admin.js', current.src).href : '../shared/haugnes-rating-admin.js';
+    script.src = current && current.src ? new URL('haugnes-rating-admin.js?v=20261020-cleanup', current.src).href : '../shared/haugnes-rating-admin.js?v=20261020-cleanup';
     document.head.appendChild(script);
   }
 

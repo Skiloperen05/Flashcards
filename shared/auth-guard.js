@@ -164,9 +164,9 @@
   }
 
   function loadSubjectAccess(callback) {
-    addScript('haugnes-first-semester-js', rootRelative('shared/first-semester-content.js'), () => {
-      addScript('haugnes-learning-content-js', rootRelative('shared/learning-content.js'), function () {
-        addScript('haugnes-subject-meta-js', rootRelative('shared/subject-meta.js'), function () {
+    addScript('haugnes-first-semester-js', rootRelative('shared/first-semester-content.js?v=20261020-cleanup'), () => {
+      addScript('haugnes-learning-content-js', rootRelative('shared/learning-content.js?v=20261020-cleanup'), function () {
+        addScript('haugnes-subject-meta-js', rootRelative('shared/subject-meta.js?v=20261020-cleanup'), function () {
           addScript('haugnes-subject-access-js', rootRelative('shared/subject-access.js'), function () {
             if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.enhanceCurrentPage === 'function') window.HaugnesSubjectAccess.enhanceCurrentPage();
             if (callback) callback();
@@ -248,7 +248,7 @@
         }
         if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.filterVisibleDom === 'function') window.HaugnesSubjectAccess.filterVisibleDom();
       });
-      addScript('haugnes-dashboard-progress-js', rootRelative('shared/haugnes-dashboard-progress.js'), function () {
+      addScript('haugnes-dashboard-progress-js', rootRelative('shared/haugnes-dashboard-progress.js?v=20261020-cleanup'), function () {
         if (window.HaugnesDashboardProgress && typeof window.HaugnesDashboardProgress.run === 'function') {
           window.HaugnesDashboardProgress.run();
         }
@@ -258,7 +258,7 @@
   }
 
   function loadGlobalPolish() {
-    addScript('haugnes-subject-flashcards-js', rootRelative('shared/subject-flashcards.js?v=20261018-workspace'));
+    addScript('haugnes-subject-flashcards-js', rootRelative('shared/subject-flashcards.js?v=20261020-cleanup'));
     addStylesheet('haugnes-mobile-css', rootRelative('shared/haugnes-mobile.css'));
     addScript('haugnes-mobile-bottom-nav-js', rootRelative('shared/mobile-bottom-nav.js'));
     addScript('haugnes-user-settings-js', rootRelative('shared/user-settings.js'), function () {
@@ -293,7 +293,7 @@
   }
 
   function loadSubjectsStudio() {
-    addScript('haugnes-subjects-studio-js', rootRelative('shared/subjects-studio.js?v=20261019-publishing'), function () {
+    addScript('haugnes-subjects-studio-js', rootRelative('shared/subjects-studio.js?v=20261020-cleanup'), function () {
       if (window.SubjectsStudio && typeof window.SubjectsStudio.migrateLegacyIfNeeded === 'function') {
         window.SubjectsStudio.migrateLegacyIfNeeded();
       }

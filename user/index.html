@@ -155,12 +155,7 @@ svg{display:block}
     </nav>
     <div class="side-bottom">
       <a class="user-mini" href="settings.html"><div class="avatar" id="sideAvatar">?</div><div class="user-mini-text"><strong id="sideName">Bruker</strong><span>NHH-student</span></div><span class="chev">›</span></a>
-      <div class="upgrade">
-        <div class="crown"><svg viewBox="0 0 24 24"><path d="M3 8l4.5 3.5L12 5l4.5 6.5L21 8l-1.5 11h-15z"/></svg></div>
-        <b>Premium</b>
-        <p>Få tilgang til eksklusive verktøy og analyser.</p>
-        <a class="up-btn" href="settings.html">Oppgrader nå →</a>
-      </div>
+
       <button class="logout" onclick="handleLogout()">Logg ut</button>
     </div>
   </aside>
@@ -176,10 +171,7 @@ svg{display:block}
     <div class="dashboard">
       <div class="grid-main">
         <div class="section-title" id="mine-fag"><h2>Mine fag</h2><a href="../flashcards/">Se alle fag →</a></div>
-        <section class="subjects">
-          <a class="subject-card" style="--accent:#2f62ff;--pct:86" href="../ret14/"><div class="subject-top"><span class="subject-icon"><img class="emblem-img" src="../assets/emblems/RET14.png" alt="" onerror="this.remove()"><span class="emblem-fallback">⚖️</span></span><span class="dots">⋮</span></div><div class="subject-code">RET14</div><div class="subject-name">Skatterett</div><div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">86%</div></div><div class="ring-sub">48 kort i dag</div><span class="subject-cta">Start øving</span></a>
-          <a class="subject-card" style="--accent:#20b97a;--pct:72" href="../sol1/"><div class="subject-top"><span class="subject-icon"><img class="emblem-img" src="../assets/emblems/SOL1.png" alt="" onerror="this.remove()"><span class="emblem-fallback">🧠</span></span><span class="dots">⋮</span></div><div class="subject-code">SOL1</div><div class="subject-name">Organisasjonsatferd</div><div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">72%</div></div><div class="ring-sub">32 kort i dag</div><span class="subject-cta">Start øving</span></a>
-          <a class="subject-card" style="--accent:#f09828;--pct:65" href="../sam2/"><div class="subject-top"><span class="subject-icon"><img class="emblem-img" src="../assets/emblems/SAM2.png" alt="" onerror="this.remove()"><span class="emblem-fallback">📈</span></span><span class="dots">⋮</span></div><div class="subject-code">SAM2</div><div class="subject-name">Mikroøkonomi</div><div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">65%</div></div><div class="ring-sub">28 kort i dag</div><span class="subject-cta">Start øving</span></a>
+        <section class="subjects" aria-live="polite"><p>Laster fagene dine …</p>
         </section>
       </div>
 
@@ -208,7 +200,7 @@ svg{display:block}
   </main>
 </div>
 
-<script src="auth-guard.js"></script>
+<script src="auth-guard.js?v=20261020-cleanup"></script>
 <script>
 function getStats(){try{return JSON.parse(localStorage.getItem('fc_stats')||'{}')}catch(e){return {}}}
 function countStats(){var s=getStats(),sess=0,cards=0,q=0,qp=[];Object.values(s).forEach(function(d){(d.sessions||[]).forEach(function(x){sess++;cards+=x.total||0});(d.quizSessions||[]).forEach(function(x){q++;qp.push(x.pct||0)})});return{sessions:sess,cards:cards,quiz:q,avg:qp.length?Math.round(qp.reduce(function(a,b){return a+b},0)/qp.length):0}}

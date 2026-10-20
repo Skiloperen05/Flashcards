@@ -162,15 +162,15 @@
 
   function enabledSubjects() {
     var available = availableCodes();
-    return SUBJECTS.filter(function (s) { return available.indexOf(s.code) !== -1; });
+    return SUBJECTS.filter(function (s) { return available.indexOf(s.code) !== -1 && packagesForSubject(s.code).length; });
   }
 
   function enabledPackages() {
-    return PACKAGES.filter(hasPackageAccess);
+    return PACKAGES.filter(function (p) { return p.resources.length && hasPackageAccess(p); });
   }
 
   function subjectByCode(c) { return SUBJECTS.find(function (s) { return s.code === code(c); }); }
-  function packagesForSubject(c) { return PACKAGES.filter(function (p) { return p.subject === code(c); }); }
+  function packagesForSubject(c) { return PACKAGES.filter(function (p) { return p.subject === code(c) && p.resources.length > 0; }); }
   function packageById(id) { return PACKAGES.find(function (p) { return p.id === id; }); }
   function allResources() { return enabledPackages().reduce(function (out, p) { return out.concat(p.resources.map(function (r) { return Object.assign({ subject: p.subject, term: p.term, packageId: p.id, packageTitle: p.title }, r); })); }, []).sort(function (a, b) { return (a.subject + a.order).localeCompare(b.subject + b.order); }); }
   function publishedPackages() { return enabledPackages().filter(function (p) { return p.resources.length > 0; }); }
@@ -389,9 +389,9 @@
     }
     var s = summary();
     var q = state.query.toLowerCase().trim();
-    var subjects = SUBJECTS.filter(function (subject) { return !q || (subject.code + ' ' + subject.name + ' ' + subject.summary).toLowerCase().indexOf(q) !== -1; });
+    var subjects = SUBJECTS.filter(function (subject) { return packagesForSubject(subject.code).length && (!q || (subject.code + ' ' + subject.name + ' ' + subject.summary).toLowerCase().indexOf(q) !== -1); });
     var shopHref = shopUrl();
-    var toolbar = '<div class="hf-answer-toolbar"><input class="hf-answer-search" id="hfAnswerSearch" type="search" placeholder="Søk i fag..." value="' + esc(state.query) + '"><span class="hf-answer-muted">' + s.subjects + ' av ' + SUBJECTS.length + ' fag låst opp · ' + s.resources + ' dokumenter ute</span></div>';
+    var toolbar = '<div class="hf-answer-toolbar"><input class="hf-answer-search" id="hfAnswerSearch" type="search" placeholder="Søk i fag..." value="' + esc(state.query) + '"><span class="hf-answer-muted">' + s.subjects + ' fag med tilgang · ' + s.resources + ' dokumenter ute</span></div>';
     if (!subjects.length) return breadcrumb() + toolbar + '<div class="hf-empty-panel">Ingen fag matcher søket.</div>';
     return breadcrumb() + toolbar + '<div class="hf-subject-grid">' + subjects.map(function (subject) {
       if (!isUnlocked(subject.code) && !subjectHasPackageAccess(subject.code)) {

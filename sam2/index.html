@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="../shared/haugnes-subject.css">
 <link rel="stylesheet" href="../shared/haugnes-sam2.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../shared/auth-guard.js"></script>
+<script src="../shared/auth-guard.js?v=20261020-cleanup"></script>
 <script>AuthGuard.requireAuth();</script>
 </head>
 <body class="haugnes-app">
@@ -42,7 +42,7 @@
         <a href="memoar/">Memoar</a>
         <a href="oppgaver-klikkbar/">Oppgaveprioritering</a>
         <a href="oppgaver/">Oppgaver</a>
-        <a href="#materiale">Materiale</a>
+
         <a href="#sjekkliste">Sjekkliste</a>
       </div>
       <div class="hf-hero-actions">
@@ -93,17 +93,17 @@
         </a>
       </div>
       <div class="hf-wide-grid">
-        <section class="hf-info-card"><h3>Høyprioriterte områder</h3><div class="hf-topic"><div><strong>Konsumentteori</strong><span>Budsjett, preferanser og optimering</span></div><div class="hf-meter" style="--accent:#f09828;--p:88%"><i></i></div></div><div class="hf-topic"><div><strong>Kostnader og tilbud</strong><span>Regneteknisk viktig</span></div><div class="hf-meter" style="--accent:#2f62ff;--p:80%"><i></i></div></div><div class="hf-topic"><div><strong>Monopol og velferd</strong><span>Typiske kombinasjonsoppgaver</span></div><div class="hf-meter" style="--accent:#20b97a;--p:76%"><i></i></div></div></section>
-        <section class="hf-info-card"><h3>Anbefalt arbeidsmåte</h3><div class="hf-sam2-path"><div class="hf-sam2-path-row"><span class="hf-sam2-step">1</span><div><strong>Velg oppgave</strong><span>Start med topp 10-listen</span></div><em>10 min</em></div><div class="hf-sam2-path-row"><span class="hf-sam2-step">2</span><div><strong>Tegn figur</strong><span>Forklar modellvalget</span></div><em>15 min</em></div><div class="hf-sam2-path-row"><span class="hf-sam2-step">3</span><div><strong>Kontroller mot radar</strong><span>Koble temaer sammen</span></div><em>10 min</em></div></div></section>
+
+
       </div>
       <div class="hf-learning-suite">
-        <section class="hf-info-card hf-material-card" id="materiale"><h3>Canvas- og filgrunnlag</h3><div class="hf-learning-row"><div><strong>Oppgavebok sortert lokalt</strong><span>Konsumentteori kapittel 1-4, produsentteori kapittel 5-7, markedsteori kapittel 8-10 og markedsmakt/strategi kapittel 11-13 er funnet som egne oppgavefiler.</span></div><em>Oppgaver</em></div><div class="hf-learning-row"><div><strong>Forelesningsmateriell funnet</strong><span>Canvas-cache og nedlastinger inneholder blant annet forelesningsmateriale om samfunnseffektivitet, som passer direkte inn i radaren.</span></div><em>Canvas</em></div><div class="hf-learning-row"><div><strong>Neste import</strong><span>Oppgaveprioriteringen bør utvides med egne kort for figurvalg, regneoppsett og typiske kombinasjonsoppgaver.</span></div><em>Neste</em></div></section>
+
         <section class="hf-info-card hf-checklist-card" id="sjekkliste"><h3>Eksamenssjekkliste</h3><div class="hf-learning-row"><div><strong>Start med modell</strong><span>Identifiser om oppgaven er konsument, produsent, marked, velferd, monopol eller strategi.</span></div><em>Start</em></div><div class="hf-learning-row"><div><strong>Tegn før regning</strong><span>Bruk figur til å forklare mekanismen før du går inn i algebra eller tall.</span></div><em>Figur</em></div><div class="hf-learning-row"><div><strong>Svar i økonomisk språk</strong><span>Konkluder med hva som skjer med pris, mengde, overskudd, profitt eller effektivitet.</span></div><em>Svar</em></div></section>
       </div>
       <div class="hf-cta"><div><strong>Neste anbefalte økt: Konsumentteori + oppgaveprioritering</strong><p style="margin:5px 0 0;color:#becbdf;font-size:14px">66 oppgaver · start med høyest eksamensverdi</p></div><a class="hf-btn" href="oppgaver-klikkbar/">Start nå →</a></div>
     </div>
     <aside class="hf-subject-aside">
-      <section class="hf-info-card"><h3>Fremgang</h3><div style="display:flex;align-items:center;gap:18px"><div class="hf-score"><strong>65%</strong></div><div><strong style="display:block;color:#08172f;font-size:18px">24 / 66</strong><span style="color:#65738d;font-size:13px">oppgaver prioritert</span></div></div></section>
+
       <section class="hf-info-card"><h3>Snarveier</h3><div class="hf-priority"><a href="memoar/" style="color:#2f62ff;text-decoration:none;font-weight:900">SAM2 memoar</a><span>→</span></div><div class="hf-priority"><a href="../user/index.html" style="color:#2f62ff;text-decoration:none;font-weight:900">Dashboard</a><span>→</span></div><div class="hf-priority"><a href="eksamen/" style="color:#2f62ff;text-decoration:none;font-weight:900">Eksamensradar</a><span>→</span></div><div class="hf-priority"><a href="oppgaver/" style="color:#2f62ff;text-decoration:none;font-weight:900">Oppgavebank</a><span>→</span></div></section>
     </aside>
   </div>
@@ -122,10 +122,10 @@
   </div>
 </div>
 <footer class="hf-footer"><div class="hf-shell"><a href="../user/index.html">← Tilbake til dashboard</a></div></footer>
-<script src="../shared/learning-content.js"></script>
-<script src="../shared/subject-page-data.js"></script>
-<script src="../shared/subject-resources.js"></script>
-<script src="../shared/subject-page-enhancements.js"></script>
+<script src="../shared/learning-content.js?v=20261020-cleanup"></script>
+<script src="../shared/subject-page-data.js?v=20261020-cleanup"></script>
+<script src="../shared/subject-resources.js?v=20261020-cleanup"></script>
+<script src="../shared/subject-page-enhancements.js?v=20261020-cleanup"></script>
 <script>
 (function () {
   var key = 'haugnes_sam2_memoar_seen';

@@ -57,7 +57,7 @@
     <section class="hero-panel">
       <div class="hero-inner">
         <div><div class="kicker">Ryddet analysearkiv</div><h2 class="hero-title">Åpne riktig <span>analyse</span> direkte.</h2><p class="hero-copy">MET1 og andre fag uten publisert analyse er fjernet fra oversikten. Når en ny analyse faktisk finnes, kan den legges inn her.</p></div>
-        <div class="hero-stats"><div class="hero-stat"><b>3</b><span>analyser</span></div><div class="hero-stat"><b>0</b><span>placeholders</span></div><div class="hero-stat"><b>100%</b><span>direkte lenker</span></div></div>
+
       </div>
     </section>
     <div class="workspace">
@@ -98,7 +98,7 @@
     </div>
   </main>
 </div>
-<script src="auth-guard.js"></script>
+<script src="auth-guard.js?v=20261020-cleanup"></script>
 <script>
 function nameFromEmail(e){var n=(e||'student').split('@')[0];return n.charAt(0).toUpperCase()+n.slice(1)}
 window.onUserAuthorized=function(s){var n=nameFromEmail(s&&s.user&&s.user.email),i=n.charAt(0);['sideName','topName'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=n});['sideAvatar','topAvatar'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=i})}

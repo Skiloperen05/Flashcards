@@ -7,20 +7,6 @@
     sensor: { id: '1myk7l12OsR-jZ76am6e-W7iS1u6FNuTy', title: 'SAM3 sensorveiledning V25', label: 'Sensorveiledning', url: 'https://drive.google.com/file/d/1myk7l12OsR-jZ76am6e-W7iS1u6FNuTy/view', download: 'https://drive.google.com/uc?export=download&id=1myk7l12OsR-jZ76am6e-W7iS1u6FNuTy' }
   };
 
-  var RECOMMENDATIONS = {
-    RET14: { title: 'Fradragsrett i RET14', sub: 'Fokus på tema', cards: 28, minutes: 30, href: '../flashcards/?subject=ret14' },
-    SOL1: { title: 'Motivasjon og ledelse i SOL1', sub: 'Fokus på teori', cards: 32, minutes: 25, href: '../flashcards/?subject=subj_sol1' },
-    SAM2: { title: 'Konsumentteori i SAM2', sub: 'Fokus på modell', cards: 24, minutes: 25, href: '../sam2/oppgaver-klikkbar/' },
-    SAM3: { title: 'Makromodeller i SAM3', sub: 'Fokus på eksamen', cards: 31, minutes: 25, href: '../sam3/flashcards.html' },
-    MET2: { title: 'Testvalg og tolkning i MET2', sub: 'Fokus på metode', cards: 27, minutes: 30, href: '../flashcards/?subject=met2' },
-    MAT10: { title: 'Formelvalg i MAT10', sub: 'Fokus på regnedrill', cards: 27, minutes: 30, href: '../flashcards/?subject=mat10' },
-    BED1: { title: 'Kalkyle og beslutning i BED1', sub: 'Fokus på regneoppsett', cards: 27, minutes: 30, href: '../flashcards/?subject=bed1' },
-    SAM1A: { title: 'Markedskryss i SAM1A', sub: 'Fokus på figur', cards: 27, minutes: 25, href: '../flashcards/?subject=sam1a' },
-    MET1: { title: 'Tidslinje i MET1', sub: 'Fokus på rente', cards: 27, minutes: 25, href: '../flashcards/?subject=met1' },
-    KOM1: { title: 'Analyseavsnitt i KOM1', sub: 'Fokus på skriving', cards: 27, minutes: 25, href: '../flashcards/?subject=kom1' },
-    RET1A: { title: 'Vilkår og subsumsjon i RET1A', sub: 'Fokus på metode', cards: 27, minutes: 25, href: '../flashcards/?subject=ret1a' }
-  };
-
   var tries = {};
 
   function ready(fn) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
@@ -105,9 +91,9 @@
     var planned = isPlanned(subject);
     var pct = stats.total ? stats.pct : 0;
     var emblem = subject.emblem ? '<img class="emblem-img" src="' + subject.emblem + '" alt="" onerror="this.remove()">' : '';
-    var sub = planned ? 'Planlagt fag · synlig fordi du har valgt det' : (stats.total ? formatNumber(stats.total) + ' kort øvd · ' + stats.sessions + ' økter' : 'Ikke startet ennå');
-    var cta = planned ? '<span class="subject-cta" data-planned="1">Planlagt fag</span>' : '<span class="subject-cta" data-flashcards="' + flashcardHref(subject) + '">Start øving</span>';
-    return '<a class="subject-card" style="--accent:' + subject.accent + ';--pct:' + pct + '" href="' + subjectHref(subject) + '"><div class="subject-top"><span class="subject-icon">' + emblem + '<span class="emblem-fallback">' + subject.icon + '</span></span><span class="dots">⋮</span></div><div class="subject-code">' + subject.code + '</div><div class="subject-name">' + subject.name + '</div><div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">' + pct + '%</div></div><div class="ring-sub">' + sub + '</div>' + cta + '</a>';
+    var sub = planned ? 'Planlagt fag · synlig fordi du har valgt det' : (stats.total ? formatNumber(stats.total) + ' svar · ' + stats.sessions + ' økter' : 'Ikke startet ennå');
+    var cta = !subject.flashcards || subject.flashcards === '#' ? '<span class="subject-cta">Åpne fag</span>' : planned ? '<span class="subject-cta" data-planned="1">Planlagt fag</span>' : '<span class="subject-cta" data-flashcards="' + flashcardHref(subject) + '">Start øving</span>';
+    return '<a class="subject-card" style="--accent:' + subject.accent + ';--pct:' + pct + '" href="' + subjectHref(subject) + '"><div class="subject-top"><span class="subject-icon">' + emblem + '<span class="emblem-fallback">' + subject.icon + '</span></span><span class="dots">⋮</span></div><div class="subject-code">' + subject.code + '</div><div class="subject-name">' + subject.name + '</div><div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">' + pct + '%<small style="display:block;font-size:11px">riktige svar</small></div></div><div class="ring-sub">' + sub + '</div>' + cta + '</a>';
   }
 
   function groupedCardsHtml(subjects) {
@@ -131,42 +117,6 @@
     var subjects = window.HaugnesSubjects.getAll();
     if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.filterSubjects === 'function') subjects = window.HaugnesSubjectAccess.filterSubjects(subjects);
     return subjects;
-  }
-
-  function chooseRecommendation(subjects, summary) {
-    var pool = (subjects || []).filter(function (subject) { return !isPlanned(subject); });
-    var subject = summary.weakest && summary.weakest.subject ? summary.weakest.subject : pool[0];
-    if (!subject) return null;
-    var learning = window.HaugnesLearningContent;
-    var catalogRec = learning && typeof learning.recommendationFor === 'function' ? learning.recommendationFor(subject.code || subject.id) : null;
-    if (catalogRec) return Object.assign({ subject: subject }, catalogRec);
-    var rec = RECOMMENDATIONS[subject.code] || { title: subject.code + ' · ' + subject.name, sub: 'Fokus på valgt fag', cards: 20, minutes: 25, href: flashcardHref(subject) };
-    return Object.assign({ subject: subject }, rec);
-  }
-
-  function setRecommendation(subjects, summary) {
-    var panel = document.querySelector('.recommend .panel-inner');
-    if (!panel) return;
-    var rec = chooseRecommendation(subjects, summary);
-    if (!rec) {
-      panel.innerHTML = '<div class="rec-head"><div class="isq isq-purple">+</div><div><div class="rec-title">Neste anbefaling</div><div class="rec-sub">Velg et aktivt fag</div></div></div><h3>Ingen aktiv anbefaling ennå</h3><div class="rec-meta"><span>Velg et fag med innhold</span></div><a class="start-btn" href="subjects.html" style="height:44px">Administrer fag →</a>';
-      return;
-    }
-    var cardsLabel = rec.cards ? rec.cards + ' kort' : (rec.planned ? 'Planlagt' : 'Økt');
-    var minutesLabel = rec.minutes ? '≈ ' + rec.minutes + ' min' : (rec.planned ? 'Kommer' : 'Fleksibel');
-    panel.innerHTML = '<div class="rec-head"><div class="isq isq-purple"><svg viewBox="0 0 24 24"><path d="M12 4v16M7 20h10"/><path d="M5 8h14"/><path d="M5 8l-2.2 4.5a2.2 2.2 0 0 0 4.4 0z"/><path d="M19 8l-2.2 4.5a2.2 2.2 0 0 0 4.4 0z"/><circle cx="12" cy="5" r="1.3"/></svg></div><div><div class="rec-title">Neste anbefaling</div><div class="rec-sub">' + esc(rec.sub) + '</div></div></div><h3>' + esc(rec.title) + '</h3><div class="rec-meta"><span><svg viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V20.5H7z"/><path d="M14 3.5V8h4"/></svg>' + esc(cardsLabel) + '</span><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>' + esc(minutesLabel) + '</span></div><a class="start-btn" href="' + esc(rec.href) + '" style="height:44px">' + (rec.planned ? 'Se fag →' : 'Start nå →') + '</a>';
-  }
-
-  function setWeakestArea(subjects, summary) {
-    var panel = document.querySelector('.weak-list');
-    if (!panel) return;
-    var subject = summary.weakest && summary.weakest.subject ? summary.weakest.subject : (subjects || []).filter(function (s) { return !isPlanned(s); })[0];
-    if (!subject) {
-      panel.innerHTML = '<div class="weak"><div class="isq isq-sm isq-blue">+</div><strong>Velg et aktivt fag først</strong></div>';
-      return;
-    }
-    var title = summary.weakest ? 'Neste område å styrke' : 'Ikke nok øvingsdata ennå';
-    panel.innerHTML = '<div class="weak"><div class="isq isq-sm isq-blue"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.8"/></svg></div><strong>' + esc(title) + '</strong></div><div class="weak"><div class="isq isq-sm isq-red"><svg viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg></div><strong>' + esc(subject.code + ' · ' + subject.name) + '</strong></div><div class="weak-meta"><span><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8.5 12.5l2.5 2.5 5-5"/></svg>' + formatNumber(subjectStats(subject).total) + ' kort</span><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>' + (subjectStats(subject).sessions || 0) + ' økter</span></div>';
   }
 
   function enhanceDashboard() {

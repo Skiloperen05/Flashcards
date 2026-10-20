@@ -77,21 +77,11 @@ function validate(data) {
   const sourceIds = new Set();
 
   data.subjects.forEach((subject, index) => {
-    pushMissing(errors, `subjects[${index}]`, subject, ['id', 'code', 'name', 'accent', 'lead', 'sourceSummary', 'defaultHref', 'flashcardsHref']);
-    pushMissing(errors, `subjects[${index}]`, subject, ['toolProfile', 'qualityStatus', 'qualityTarget', 'preferredStudyMethod']);
+    pushMissing(errors, `subjects[${index}]`, subject, ['id', 'code', 'name', 'accent', 'lead', 'defaultHref']);
     if (subjectIds.has(subject.id) && data.subjects.filter((item) => item.id === subject.id).length > 1) errors.push(`Duplisert fag-id: ${subject.id}`);
-    if (!hasArray(subject.primaryTools)) errors.push(`subjects[${index}] mangler primaryTools`);
     (subject.primaryTools || []).forEach((tool, toolIndex) => {
       pushMissing(errors, `subjects[${index}].primaryTools[${toolIndex}]`, tool, ['icon', 'title', 'description', 'status', 'href']);
     });
-    if (!subject.personalNotes || typeof subject.personalNotes !== 'object' || Array.isArray(subject.personalNotes)) {
-      errors.push(`subjects[${index}] mangler personalNotes`);
-    } else {
-      pushMissing(errors, `subjects[${index}].personalNotes`, subject.personalNotes, ['summary']);
-      if (!hasArray(subject.personalNotes.sourceIds)) errors.push(`subjects[${index}].personalNotes mangler sourceIds`);
-      if (!hasArray(subject.personalNotes.useInApp)) errors.push(`subjects[${index}].personalNotes mangler useInApp`);
-    }
-    if (!hasArray(subject.personalWarnings)) errors.push(`subjects[${index}] mangler personalWarnings`);
   });
 
   data.sources.forEach((source, index) => {
@@ -275,15 +265,7 @@ function runtimeSource(data) {
   }
 
   function memoFor(value) {
-    var subject = subjectFor(value);
-    var memo = keyedLookup(data.memos, value);
-    if (memo) return clone(memo);
-    if (!subject) return null;
-    return {
-      intro: subject.lead,
-      exam: 'Faget bruker samme fagsidemal: oversikt, begrep eller formel, oppgaver, eksamensflyt og refleksjon.',
-      studyAdvice: 'Start med memo og læringssti, ta en kort økt, og bruk neste anbefalte steg for å holde progresjonen i gang.'
-    };
+    return clone(keyedLookup(data.memos, value));
   }
 
   function toolsFor(value) {
@@ -364,11 +346,7 @@ function runtimeSource(data) {
   }
 
   function recommendationFor(value) {
-    var subject = subjectFor(value);
-    var recommendation = keyedLookup(data.recommendations, value);
-    if (recommendation) return clone(recommendation);
-    if (!subject) return null;
-    return { title: subject.code + ': første økt', sub: 'Anbefalt start', cards: 10, minutes: 20, href: subject.flashcardsHref };
+    return clone(keyedLookup(data.recommendations, value));
   }
 
   function notes() {
@@ -388,43 +366,18 @@ function runtimeSource(data) {
     });
   }
 
-  function percentFromTopic(topic, fallback) {
-    var score = Number(topic && topic[3]);
-    if (Number.isFinite(score) && score > 0) return Math.max(45, Math.min(95, Math.round(score * 10))) + '%';
-    return fallback || '68%';
-  }
-
   function topicsForPage(subject) {
-    var analysis = analysisFor(subject.id);
-    if (analysis && analysis.topics && analysis.topics.length) {
-      return analysis.topics.slice(0, 4).map(function (topic, index) {
-        return [topic[0], topic[1] || topic[2] || 'Prioritert tema', percentFromTopic(topic, ['84%', '74%', '66%', '58%'][index])];
-      });
-    }
-    var seen = {};
-    var sourceTopics = [];
-    sourcesFor(subject.id).forEach(function (source) {
-      (source.topics || []).forEach(function (topic) {
-        if (seen[topic]) return;
-        seen[topic] = true;
-        sourceTopics.push([topic, 'Bygges fra lokalt kildegrunnlag', sourceTopics.length === 0 ? '72%' : sourceTopics.length === 1 ? '64%' : '56%']);
-      });
-    });
-    return sourceTopics.slice(0, 4);
+    if (subject.id !== 'met3') return [];
+    return sourcesFor(subject.id).reduce(function (rows, source) {
+      (source.topics || []).forEach(function (topic) { rows.push([topic, '', '']); });
+      return rows;
+    }, []).slice(0, 4);
   }
 
   function toolsForPage(subject) {
-    if (subject.primaryTools && subject.primaryTools.length) {
-      return subject.primaryTools.map(function (tool) {
-        return [tool.icon, tool.title, tool.description, tool.status, tool.href, tool.accent || subject.accent];
-      });
-    }
-    return [
-      ['▦', 'Fagmemo', 'Kort arbeidsmåte, eksamensform og beste start for faget.', 'Start', '#memo', subject.accent],
-      ['✓', 'Flashcards', 'Korte kort fra katalogen og eksisterende fagpakker.', 'Kort', subject.flashcardsHref, subject.accent],
-      ['▣', 'Oppgavebank', 'Eksamensnære oppgaver filtrert på fag og tema.', 'Oppgaver', '../user/oppgavebank.html?subject=' + encodeURIComponent(subject.code), '#2f62ff'],
-      ['◈', 'Eksamensradar', 'Prioriter tema etter kilder, sensor og tidligere eksamen.', 'Radar', '#eksamensradar', '#e8bc68']
-    ];
+    return (subject.primaryTools || []).map(function (tool) {
+      return [tool.icon, tool.title, tool.description, tool.status, tool.href, tool.accent || subject.accent];
+    });
   }
 
   function sourceRowsForPage(subject) {
@@ -460,25 +413,7 @@ function runtimeSource(data) {
     });
   }
 
-  function kickerForPage(subject) {
-    if (subject.qualityStatus === 'exam_ready') return 'Eksamensklar V1';
-    if (subject.stage === 'rich') return 'Plattformklar fagpakke';
-    if (subject.stage === 'mvp_gap') return 'MVP-løft';
-    return 'Strukturert fagmal';
-  }
-
-  function progressForPage(subject) {
-    if (subject.qualityStatus === 'exam_ready') return '100%';
-    if (subject.stage === 'rich') return '62%';
-    if (subject.stage === 'ready_for_import') return '42%';
-    if (subject.stage === 'mvp_gap') return '34%';
-    return '28%';
-  }
-
-  function statusForPage(subject) {
-    if (subject.qualityStatus === 'exam_ready') return 'Eksamensklar';
-    return subject.stage === 'rich' ? 'Aktiv' : 'Bygges';
-  }
+  function kickerForPage(subject) { return subject.code; }
 
   function pageFor(value) {
     var subject = subjectFor(value);
@@ -494,7 +429,7 @@ function runtimeSource(data) {
       name: subject.name,
       kicker: kickerForPage(subject),
       accent: subject.accent,
-      progress: progressForPage(subject),
+      progress: null,
       lead: subject.lead,
       toolProfile: subject.toolProfile,
       qualityStatus: subject.qualityStatus,
@@ -502,29 +437,18 @@ function runtimeSource(data) {
       preferredStudyMethod: subject.preferredStudyMethod,
       personalNotes: subject.personalNotes,
       personalWarnings: subject.personalWarnings,
-      stats: [[String(sources.length), 'kilder'], [String(cards || decks.length), cards ? 'kort fra katalogen' : 'kortpakker'], [statusForPage(subject), 'V1-status']],
+      stats: cards ? [[String(cards), 'kort i læringskatalogen'], [String(decks.length), 'dekk']] : [],
       tools: toolsForPage(subject),
       topics: topicsForPage(subject),
-      plan: (path.length ? path : [
-        { title: '1. Oversikt', detail: 'Les memo og se kildegrunnlag.', duration: '10 min' },
-        { title: '2. Kort', detail: 'Ta første kortøkt.', duration: '20 min' },
-        { title: '3. Oppgave', detail: 'Løs en eksamensnær oppgave.', duration: '30 min' }
-      ]).map(function (step) { return [step.title, step.detail, step.duration]; }),
+      plan: path.map(function (step) { return [step.title, step.detail, step.duration]; }),
       sources: sourceRowsForPage(subject),
       canvasMaterials: canvasRowsForPage(subject),
       formulaSheet: formulaItemsFor(subject.id),
       memo: memoFor(subject.id),
-      examRadar: analysis ? {
-        label: 'Kildebasert prioritet',
-        summary: analysis.summary,
-        accent: subject.accent,
-        rows: analysis.topics.map(function (topic, index) {
-          return [topic[0], topic[1], percentFromTopic(topic, ['86%', '76%', '66%', '58%'][index])];
-        })
-      } : null,
+      examRadar: null,
       practice: practiceForPage(subject),
       examChecklist: checklistForPage(subject),
-      next: recommendationFor(subject.id).title
+      next: (recommendationFor(subject.id) || {}).title || ''
     };
   }
 

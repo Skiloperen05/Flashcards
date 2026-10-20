@@ -13,16 +13,17 @@
   }
 
   function deckStats(subject) {
-    var learning = window.HaugnesLearningContent;
-    var decks = learning && typeof learning.decksFor === 'function' ? learning.decksFor(subject.id) : [];
+    var library = window.HaugnesFlashcardLibrary;
+    var decks = library ? library.decksFor(subject.id, {}) : [];
     return {
-      decks: decks.length || Number(String(subject.decks || '').replace(/\D/g, '')) || 0,
-      cards: decks.reduce(function (sum, deck) { return sum + ((deck.cards || []).length); }, 0) || Number(String(subject.cards || '').replace(/\D/g, '')) || 0
+      ready: !!library,
+      decks: decks.length,
+      cards: decks.reduce(function (sum, deck) { return sum + ((deck.cards || []).length); }, 0)
     };
   }
 
   function linkFor(subject) {
-    return subject.flashcards || ('../flashcards/?subject=' + encodeURIComponent(subject.id || subject.code));
+    return subject.flashcards && subject.flashcards !== '#' ? subject.flashcards : ('../flashcards/?subject=' + encodeURIComponent(subject.id || subject.code));
   }
 
   function cardHtml(subject) {
@@ -32,10 +33,10 @@
       + '<div class="subject-card-header" style="background:linear-gradient(135deg,' + esc(color) + ',' + esc(color) + 'bb)">'
       + '<span class="fc-subject-code">' + esc(subject.code || subject.name) + '</span>'
       + '<h3>' + esc(subject.name || subject.code) + '</h3>'
-      + '<p>' + esc(subject.categoryShortLabel || subject.categoryLabel || 'Fag') + ' · ' + stats.decks + ' deck · ' + stats.cards + ' kort</p>'
+      + '<p>' + esc(subject.categoryShortLabel || subject.categoryLabel || 'Fag') + (stats.ready ? ' · ' + stats.decks + ' dekk · ' + stats.cards + ' kort' : ' · Laster kort …') + '</p>'
       + '</div><div class="subject-card-body">'
       + '<p class="hf-subject-desc">' + esc(subject.description || 'Åpne fagpakken for kort, quiz og repetisjon.') + '</p>'
-      + '<div class="meta"><span>' + esc(subject.statusText || 'Klar') + '</span><span>' + esc(subject.tools || '0') + ' verktøy</span></div>'
+      + '<div class="meta"><span>' + esc(subject.statusText || '') + '</span></div>'
       + '</div></a>';
   }
 
@@ -66,7 +67,7 @@
     if (!grid || !window.HaugnesSubjects || typeof window.HaugnesSubjects.getCatalog !== 'function') return false;
     if (!force && grid.querySelector('.subject-card[data-id]')) return true;
 
-    var all = window.HaugnesSubjects.getCatalog();
+    var all = window.HaugnesSubjects.getCatalog().filter(function (subject) { return !window.HaugnesFlashcardLibrary || deckStats(subject).cards > 0; });
     var query = (document.getElementById('flashcardSubjectSearch') && document.getElementById('flashcardSubjectSearch').value || '').trim().toLowerCase();
     var visible = all.filter(function (subject) {
       var text = [subject.code, subject.name, subject.description, subject.categoryLabel].join(' ').toLowerCase();
@@ -83,8 +84,8 @@
     var deckCount = document.getElementById('fcDeckCount');
     var cardCount = document.getElementById('fcCardCount');
     if (subjectCount) subjectCount.textContent = String(all.length);
-    if (deckCount) deckCount.textContent = String(totals.decks);
-    if (cardCount) cardCount.textContent = String(totals.cards);
+    if (deckCount) deckCount.textContent = window.HaugnesFlashcardLibrary ? String(totals.decks) : '…';
+    if (cardCount) cardCount.textContent = window.HaugnesFlashcardLibrary ? String(totals.cards) : '…';
 
     var grouped = {};
     visible.forEach(function (subject) {

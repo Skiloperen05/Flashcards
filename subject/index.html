@@ -614,7 +614,7 @@ body.hf-student-preview-active #btnNewTaskTopBar {
 .hf-subject-loading .hf-footer { display: none; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../shared/auth-guard.js?v=20261019-publishing"></script>
+<script src="../shared/auth-guard.js?v=20261020-cleanup"></script>
 <script>
 AuthGuard.requireAuth();
 </script>
@@ -811,16 +811,7 @@ AuthGuard.requireAuth();
     </div>
 
     <aside class="hf-subject-aside">
-      <section class="hf-info-card">
-        <h3>Fagstatus</h3>
-        <div style="display:flex;align-items:center;gap:18px">
-          <div class="hf-score"><strong id="progressValue">0%</strong></div>
-          <div>
-            <strong style="display:block;color:#fff;font-size:18px" id="categoryName">NHH-fag</strong>
-            <span style="color:#8fa5ca;font-size:13px" id="statusLabel">Aktivt pensum</span>
-          </div>
-        </div>
-      </section>
+
       <section class="hf-info-card">
         <h3>Snarveier</h3>
         <div class="hf-priority"><a href="../user/index.html">Dashboard</a><span>→</span></div>
@@ -1151,13 +1142,13 @@ AuthGuard.requireAuth();
 <!-- Global toast notification -->
 <div id="toast" class="notice-toast"></div>
 
-<script src="../shared/learning-content.js"></script>
-<script src="../shared/subject-meta.js"></script>
-<script src="../shared/subject-page-data.js"></script>
-<script src="../shared/subjects-studio.js?v=20261019-publishing"></script>
+<script src="../shared/learning-content.js?v=20261020-cleanup"></script>
+<script src="../shared/subject-meta.js?v=20261020-cleanup"></script>
+<script src="../shared/subject-page-data.js?v=20261020-cleanup"></script>
+<script src="../shared/subjects-studio.js?v=20261020-cleanup"></script>
 <script src="../shared/subject-page-studio-bridge.js?v=20261019-publishing"></script>
-<script src="../shared/subject-resources.js"></script>
-<script src="../shared/subject-page-renderer.js?v=20261019-publishing"></script>
+<script src="../shared/subject-resources.js?v=20261020-cleanup"></script>
+<script src="../shared/subject-page-renderer.js?v=20261020-cleanup"></script>
 <script>
 (function () {
   function getSubjectCode() {
@@ -1600,8 +1591,8 @@ AuthGuard.requireAuth();
     }
     tbody.innerHTML = topics.map(function (topic, idx) {
       var title = Array.isArray(topic) ? topic[0] : (topic.title || topic.name || topic.theme || '');
-      var desc = Array.isArray(topic) ? (topic[2] && topic[2].indexOf('%') !== -1 ? topic[1] : (topic[2] || topic[1])) : (topic.desc || topic.subtitle || '');
-      var pct = Array.isArray(topic) ? (topic[2] && topic[2].indexOf('%') !== -1 ? topic[2] : topic[1]) : (topic.pct || topic.weight || '80%');
+      var desc = Array.isArray(topic) ? (topic[2] && topic[2].indexOf('%') !== -1 ? topic[1] : (topic[1] || topic[2])) : (topic.desc || topic.subtitle || '');
+      var pct = Array.isArray(topic) ? (topic[2] && topic[2].indexOf('%') !== -1 ? topic[2] : '') : (topic.pct || topic.weight || '');
       return '<tr>'
         + '<td style="font-weight:800;color:#fff">' + esc(title) + '</td>'
         + '<td style="font-weight:800;color:#ffd98f">' + esc(pct) + '</td>'
@@ -1637,8 +1628,8 @@ AuthGuard.requireAuth();
     var topic = topics[idx];
     if (!topic) return;
     var title = Array.isArray(topic) ? topic[0] : (topic.title || topic.name || topic.theme || '');
-    var desc = Array.isArray(topic) ? (topic[2] && topic[2].indexOf('%') !== -1 ? topic[1] : (topic[2] || topic[1])) : (topic.desc || topic.subtitle || '');
-    var pct = Array.isArray(topic) ? (topic[2] && topic[2].indexOf('%') !== -1 ? topic[2] : topic[1]) : (topic.pct || topic.weight || '80%');
+    var desc = Array.isArray(topic) ? (topic[2] && topic[2].indexOf('%') !== -1 ? topic[1] : (topic[1] || topic[2])) : (topic.desc || topic.subtitle || '');
+    var pct = Array.isArray(topic) ? (topic[2] && topic[2].indexOf('%') !== -1 ? topic[2] : '') : (topic.pct || topic.weight || '');
 
     document.getElementById('topicEditIndex').value = String(idx);
     document.getElementById('modalTopicTitle').textContent = 'Rediger tema';
@@ -2026,15 +2017,15 @@ AuthGuard.requireAuth();
       } else {
         var topicsHtml = topics.map(function (topic, idx) {
           var title = Array.isArray(topic) ? topic[0] : (topic.title || topic.name || topic.theme || '');
-          var desc = Array.isArray(topic) ? (topic[2] && topic[2].indexOf('%') !== -1 ? topic[1] : (topic[2] || topic[1])) : (topic.desc || topic.subtitle || '');
-          var pct = Array.isArray(topic) ? (topic[2] && topic[2].indexOf('%') !== -1 ? topic[2] : topic[1]) : (topic.pct || topic.weight || '80%');
+          var desc = Array.isArray(topic) ? (topic[2] && topic[2].indexOf('%') !== -1 ? topic[1] : (topic[1] || topic[2])) : (topic.desc || topic.subtitle || '');
+          var pct = Array.isArray(topic) ? (topic[2] && topic[2].indexOf('%') !== -1 ? topic[2] : '') : (topic.pct || topic.weight || '');
           return '<div class="hf-topic">'
             + '<div style="flex:1;min-width:0">'
             + '<strong style="display:block;color:#fff">' + esc(title) + '</strong>'
             + (desc ? '<span style="display:block;color:#aebddd;font-size:12px;margin-top:3px">' + esc(desc) + '</span>' : '')
             + '</div>'
             + '<div style="display:flex;align-items:center;gap:10px;flex-shrink:0">'
-            + '<div class="hf-meter" style="--accent:' + (page.accent || '#2563eb') + ';--p:' + esc(pct) + '"><i style="width:' + esc(pct) + '"></i></div>'
+            + (pct ? '<div class="hf-meter" style="--accent:' + (page.accent || '#2563eb') + ';--p:' + esc(pct) + '"><i style="width:' + esc(pct) + '"></i></div>' : '')
             + '<span style="font-size:12px;font-weight:800;color:#ffd98f;min-width:34px;text-align:right">' + esc(pct) + '</span>'
             + (showTopicsAdmin ? '<div class="hf-item-admin-actions">'
               + '<button type="button" class="hf-mini-action-btn" title="Rediger tema" onclick="editSingleTopic(' + idx + ')">✏️</button>'
@@ -2121,6 +2112,7 @@ AuthGuard.requireAuth();
     renderAnswers(page);
     renderNotes(page);
     renderTasks(page);
+    if (window.HaugnesSubjectRenderer?.applyContentVisibility) window.HaugnesSubjectRenderer.applyContentVisibility(page, isAdmin && !isStudentPreviewActive);
     if (window.HaugnesSubjectRenderer && window.HaugnesSubjectRenderer.decorateWorkspace) window.HaugnesSubjectRenderer.decorateWorkspace(page);
   }
 

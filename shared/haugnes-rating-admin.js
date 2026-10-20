@@ -134,8 +134,9 @@
       var subjectId = getSubjectIdFromCard(card);
       if (!subjectId || card.querySelector('[data-haugnes-editor="' + subjectId + '"]')) return;
       var official = card.querySelector('.official-rating');
-      if (!official) return;
-      official.insertAdjacentHTML('afterend', renderEditor(subjectId));
+      var anchor = official || card.querySelector('.rating-box');
+      if (!anchor) return;
+      anchor.insertAdjacentHTML(official ? 'afterend' : 'beforebegin', renderEditor(subjectId));
     });
   }
 

@@ -15,18 +15,16 @@
     ret14: [
       { type: 'kompendium', title: 'Pensumoversikt', description: 'Interaktiv oversikt over skatteregler, lovhjemler og typiske eksamensfeller.', status: 'available', href: '../ret14/pensum/' },
       { type: 'eksamen', title: 'Eksamensradar', description: 'Analyse av tidligere RET14-eksamener og temaer som går igjen.', status: 'available', href: '../ret14/eksamen/' },
-      { type: 'a_besvarelse', title: 'A-besvarelser', description: 'Beskyttet eksamensarkiv. Vises via brukerområdet når tilgang og filer er klare.', status: 'available', href: '../user/a-besvarelser.html#/ret14' }
     ],
     subj_sol1: [
       { type: 'kompendium', title: 'Teorier, modeller og begreper', description: 'Samlet SOL1-side for teorier, modeller og begreper.', status: 'available', href: '../sol1/teorier-modeller-begreper-flashcards.html' },
       { type: 'eksamen', title: 'Teoriskriving', description: 'Ressurs for å øve på teoridel og struktur i skriftlige svar.', status: 'available', href: '../sol1/teorideler-teoriskriving.html' },
-      { type: 'a_besvarelse', title: 'A-besvarelser', description: 'Kobles til beskyttet eksamensarkiv når dokumentene er klare for deling.', status: 'coming', href: '../user/a-besvarelser.html#/sol1' }
+      { type: 'a_besvarelse', title: 'A-besvarelser SOL1', description: 'Publiserte dokumenter fra V25 og V26.', status: 'available', href: '../user/a-besvarelser.html#/sol1' },
     ],
     sam2: [
       { type: 'memoar', title: 'SAM2 memoar', description: 'To korte startmemoarer om forventninger til faget og hvordan du bør jobbe mot eksamen.', status: 'available', href: '../sam2/memoar/' },
       { type: 'eksamen', title: 'Eksamensradar', description: 'Prioritering av mikrotemaer, oppgavetyper og modellvalg.', status: 'available', href: '../sam2/eksamen/' },
       { type: 'kompendium', title: 'Oppgaver og figurer', description: 'Oppgaveprioritering og klikkbar oppgavetrening.', status: 'available', href: '../sam2/oppgaver-klikkbar/' },
-      { type: 'a_besvarelse', title: 'A-besvarelser', description: 'Kobles til beskyttet eksamensarkiv når dokumentene er klare for deling.', status: 'coming', href: '../user/a-besvarelser.html#/sam2' }
     ],
     sam3: [
       { type: 'formelark', title: 'Formelark', description: 'Formler og makromodeller samlet for rask repetisjon.', status: 'available', href: '../sam3/formelark.html' },
@@ -35,14 +33,8 @@
       { type: 'a_besvarelse', title: 'SAM3 V26-pakke', description: 'Eksamen, A-besvarelse og sensorveiledning ligger i beskyttet eksamensarkiv.', status: 'available', href: '../user/a-besvarelser.html#/sam3/v26' }
     ],
     met2: [
-      { type: 'kompendium', title: 'Metodekompendium', description: 'Plass for samlet metodeoversikt fra notater, forelesning og oppgaver.', status: 'coming' },
-      { type: 'formelark', title: 'Test- og regresjonsark', description: 'Standardtester, konfidensintervall og regresjonstolkning.', status: 'coming' },
-      { type: 'eksamen', title: 'Eksamensoppgaver', description: 'Kobles til oppgavebank og Canvas-funn når materialet er strukturert.', status: 'coming', href: '../user/oppgavebank.html?subject=MET2' }
     ],
     mat10: [
-      { type: 'formelark', title: 'Formelbank', description: 'Derivasjon, integrasjon, matriser og økonomisk tolkning.', status: 'coming' },
-      { type: 'eksamen', title: 'Eksamensdrill', description: 'Oppgaver og metodevalg samles i oppgavebanken.', status: 'available', href: '../user/oppgavebank.html?subject=MAT10' },
-      { type: 'a_besvarelse', title: 'A-besvarelser', description: 'Kobles til beskyttet eksamensarkiv når dokumentene er klare for deling.', status: 'coming', href: '../user/a-besvarelser.html#/mat10' }
     ],
     // first-semester:start (generated)
     bed1: [
@@ -139,7 +131,7 @@
   }
 
   function forSubject(id) {
-    return clone(resources[key(id)] || []);
+    return clone((resources[key(id)] || []).filter(function (item) { return item.status === 'available' && item.href; }));
   }
 
   window.HaugnesSubjectResources = {

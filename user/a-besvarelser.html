@@ -42,56 +42,25 @@ html{scroll-behavior:smooth}body{font-family:'Lora',Georgia,'Times New Roman',se
 
     <header class="topline">
       <div class="hello"><div class="breadcrumb"><a href="index.html">Dashboard</a><span>›</span><span>A-besvarelser</span></div><h1>A-besvarelser</h1><p>Gode tidligere besvarelser samlet etter fag, semester og tema.</p></div>
-      <div class="top-actions"><div class="search-mini">⌕ Søk</div><button class="icon-btn" title="Varsler">🔔</button><div class="avatar-top"><div class="avatar" id="topAvatar">?</div><span id="topName">Bruker</span></div></div>
+
     </header>
 
     <section class="hero-panel">
       <div class="hero-inner">
         <div><div class="kicker">Eksamensteknikk · Sensorblikk</div><h2 class="hero-title">Lær av <span>A-besvarelser</span>.</h2><p class="hero-copy">Se hvordan sterke besvarelser strukturerer drøfting, bruker teori og prioriterer poeng. Filtrer på fag og finn relevante mønster før du skriver selv.</p></div>
-        <div class="hero-stats"><div class="hero-stat"><b>24</b><span>besvarelser</span></div><div class="hero-stat"><b>6</b><span>aktive fag</span></div><div class="hero-stat"><b>92%</b><span>eksamensrelevant</span></div></div>
+        <div class="hero-stats"><div class="hero-stat"><b>0</b><span>dokumenter ute</span></div><div class="hero-stat"><b>0</b><span>pakker</span></div><div class="hero-stat"><b>0</b><span>A-besvarelser</span></div></div>
       </div>
     </section>
 
     <div class="workspace">
-      <section>
-        <div class="toolbar">
-          <div class="select-wrap"><select id="subjectFilter" aria-label="Velg fag"><option value="all">Alle fag</option><option value="RET14">RET14</option><option value="SOL1">SOL1</option><option value="SAM2">SAM2</option><option value="SAM3">SAM3</option><option value="FINA300">FINA300</option><option value="BØK100">BØK100</option></select></div>
-          <label class="searchbar"><span>⌕</span><input id="searchInput" type="search" placeholder="Søk i A-besvarelser, tema eller eksamen..."></label>
-        </div>
-        <div class="chip-row" id="chips"><button class="chip active" data-type="all">Alle</button><button class="chip" data-type="juridisk">Juridisk metode</button><button class="chip" data-type="analyse">Analyse</button><button class="chip" data-type="drøfting">Drøfting</button><button class="chip" data-type="case">Case</button></div>
-        <div class="answer-grid" id="answerGrid"></div>
-        <div class="empty" id="emptyState">Ingen A-besvarelser matcher filtrene dine.</div>
-      </section>
+      <section id="answerLibraryHost" aria-live="polite"><p>Laster eksamensarkivet …</p></section>
 
-      <aside class="side-col">
-        <section class="side-panel"><div class="side-head"><h2>Populære</h2><a href="#answerGrid">Se alle →</a></div><div class="popular-list" id="popularList"></div></section>
-        <section class="side-panel"><div class="side-head"><h2>Slik bruker du dem</h2></div><div class="popular-list"><div class="popular-item"><span class="rank">1</span><div><strong>Les strukturen først</strong><span>Se hvordan avsnitt og delkonklusjoner bygges.</span></div></div><div class="popular-item"><span class="rank">2</span><div><strong>Marker poengspråk</strong><span>Finn formuleringer som viser drøfting, ikke bare oppramsing.</span></div></div><div class="popular-item"><span class="rank">3</span><div><strong>Skriv en mini-versjon</strong><span>Bruk mønsteret på en ny oppgave etterpå.</span></div></div></div></section>
-      </aside>
+      <aside class="side-col"></aside>
     </div>
   </main>
 </div>
 
-<script src="auth-guard.js"></script>
-<script>
-var answers=[
-{course:'RET14',icon:'%',color:'#2f62ff',term:'H24',title:'Fradragsrett og inngående mva',subtitle:'Skatterett',type:'juridisk',desc:'Sterk juridisk struktur med vilkår, subsumsjon og tydelige delkonklusjoner.',meta:['A','PDF','4 sider'],popular:1},
-{course:'SOL1',icon:'♣',color:'#20b97a',term:'V24',title:'Motivasjon og ledelse',subtitle:'Organisasjonsatferd',type:'drøfting',desc:'God kobling mellom teori, caseobservasjoner og praktiske implikasjoner.',meta:['A','Case','5 sider'],popular:2},
-{course:'SAM3',icon:'↗',color:'#ef4444',term:'H24',title:'IS-MP og inflasjonssjokk',subtitle:'Makroøkonomi',type:'analyse',desc:'Ryddig grafbruk og presis forklaring av virkninger på rente, output og inflasjon.',meta:['A','Modell','3 sider'],popular:3},
-{course:'SAM2',icon:'◔',color:'#f09828',term:'V24',title:'Markedssvikt og skatt',subtitle:'Mikroøkonomi',type:'analyse',desc:'Viser hvordan man prioriterer intuisjon, figurer og økonomisk resonnering.',meta:['A','Figurer','4 sider'],popular:4},
-{course:'RET14',icon:'%',color:'#2f62ff',term:'V23',title:'Aksjeutbytte og personinntekt',subtitle:'Skatterett',type:'juridisk',desc:'Eksempel på effektiv rettsanvendelse og god behandling av unntak.',meta:['A','PDF','6 sider'],popular:5},
-{course:'FINA300',icon:'♜',color:'#476dff',term:'H23',title:'Kapitalstruktur og WACC',subtitle:'Finansregnskap',type:'analyse',desc:'Kompakt besvarelse med gode antakelser, mellomregning og forklarende tekst.',meta:['A','Beregning','4 sider'],popular:6},
-{course:'BØK100',icon:'₿',color:'#d59b2a',term:'V24',title:'Dekningsbidrag og produktvalg',subtitle:'Finansiell økonomi',type:'case',desc:'Viser hvordan man presenterer beregninger og anbefaling på en sensorsmart måte.',meta:['A','Case','3 sider'],popular:7},
-{course:'SAM2',icon:'◔',color:'#f09828',term:'H23',title:'Konsumentteori og elastisitet',subtitle:'Mikroøkonomi',type:'analyse',desc:'Fin balanse mellom algebra, forklaring og tolkning av resultat.',meta:['A','Notat','5 sider'],popular:8}
-];
-var activeType='all';
-function render(){var q=(document.getElementById('searchInput').value||'').toLowerCase();var subj=document.getElementById('subjectFilter').value;var list=answers.filter(function(a){var hay=(a.course+' '+a.term+' '+a.title+' '+a.subtitle+' '+a.desc+' '+a.type).toLowerCase();return (subj==='all'||a.course===subj)&&(activeType==='all'||a.type===activeType)&&(!q||hay.indexOf(q)>-1)});document.getElementById('answerGrid').innerHTML=list.map(card).join('');document.getElementById('emptyState').style.display=list.length?'none':'block'}
-function card(a){return '<article class="answer-card" style="--accent:'+a.color+'"><div class="answer-top"><span class="course-icon">'+a.icon+'</span><span class="badge-stack"><span class="badge gold">'+a.term+'</span><span class="badge">'+a.course+'</span></span></div><h3 class="answer-title">'+a.title+'</h3><div class="answer-sub">'+a.subtitle+'</div><p class="answer-desc">'+a.desc+'</p><div class="meta-row">'+a.meta.map(function(m){return '<span class="meta">'+m+'</span>'}).join('')+'</div><div class="card-actions"><a class="open-btn" href="#">Se</a><a class="ghost-btn" href="#" title="Lagre">☆</a><a class="ghost-btn" href="#" title="Mer">⋯</a></div></article>'}
-function renderPopular(){var pop=answers.slice().sort(function(a,b){return a.popular-b.popular}).slice(0,5);document.getElementById('popularList').innerHTML=pop.map(function(a,i){return '<a class="popular-item" href="#answerGrid"><span class="rank">'+(i+1)+'</span><div><strong>'+a.course+' '+a.term+'</strong><span>'+a.title+'</span></div><span class="pop-tag">A</span></a>'}).join('')}
-document.getElementById('searchInput').addEventListener('input',render);document.getElementById('subjectFilter').addEventListener('change',render);document.getElementById('chips').addEventListener('click',function(e){var b=e.target.closest('.chip');if(!b)return;document.querySelectorAll('.chip').forEach(function(x){x.classList.remove('active')});b.classList.add('active');activeType=b.dataset.type;render()});
-function nameFromEmail(email){var username=(email||'student').split('@')[0];return username.charAt(0).toUpperCase()+username.slice(1)}
-window.onUserAuthorized=function(session){var email=session&&session.user&&session.user.email||'';var name=nameFromEmail(email);var initial=name.charAt(0).toUpperCase();['sideName','topName'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=name});['sideAvatar','topAvatar'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=initial})}
-function handleLogout(){return AuthGuard.logout()}
-render();renderPopular();
-</script>
+<script src="auth-guard.js?v=20261020-cleanup"></script>
+<script>function handleLogout(){return AuthGuard.logout()}</script>
 </body>
 </html>

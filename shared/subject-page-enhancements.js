@@ -14,36 +14,8 @@
     return part === 'index.html' ? String(parent || '').toLowerCase() : String(part || '').toLowerCase();
   }
 
-  var fallbackMemos = {
-    ret14: {
-      intro: 'RET14 samler skatteregler, metode og beregninger i ett fag der struktur og hjemmelsbruk betyr mye.',
-      exam: 'Eksamen tester ofte evnen til å identifisere skattesubjekt, velge regel, drøfte vilkår og regne ryddig.',
-      studyAdvice: 'Start med pensumoversikten, bruk eksamensradaren til prioritering, og avslutt med kort eller quiz på svake temaer.'
-    },
-    sam2: {
-      intro: 'SAM2 bygger videre på mikroøkonomi med konsument, produsent, marked, velferd og strategisk tilpasning.',
-      exam: 'Eksamen er typisk modell- og figurorientert, med poeng for riktig fremgangsmåte og klar økonomisk tolkning.',
-      studyAdvice: 'Bruk oppgaveprioriteringen først, tegn figur før regning, og kontroller temaet mot eksamensradaren.'
-    },
-    sam3: {
-      intro: 'SAM3 handler om makromodeller, politikk og økonomiske sjokk forklart med tydelige mekanismer.',
-      exam: 'Eksamen belønner modellvalg, forklaring av skift og kobling til pengepolitikk, finanspolitikk eller åpen økonomi.',
-      studyAdvice: 'Repeter begreper med flashcards, lås formlene med formelquiz, og bruk V26-flyten som eksamensnær trening.'
-    },
-    subj_sol1: {
-      intro: 'SOL1 samler organisasjonsatferd, ledelse, motivasjon, grupper og beslutninger i teorier som må brukes på case.',
-      exam: 'Eksamen krever ofte presis teoriforklaring, relevant anvendelse og tydelig drøfting av tiltak eller konsekvenser.',
-      studyAdvice: 'Start med begrepskort, tren på casekobling, og skriv korte teorisvar med begrep, anvendelse og konklusjon.'
-    },
-    sol1: {
-      intro: 'SOL1 samler organisasjonsatferd, ledelse, motivasjon, grupper og beslutninger i teorier som må brukes på case.',
-      exam: 'Eksamen krever ofte presis teoriforklaring, relevant anvendelse og tydelig drøfting av tiltak eller konsekvenser.',
-      studyAdvice: 'Start med begrepskort, tren på casekobling, og skriv korte teorisvar med begrep, anvendelse og konklusjon.'
-    }
-  };
-
   function memoHtml(memo) {
-    if (!memo) return '';
+    if (!memo || ![memo.intro, memo.exam, memo.studyAdvice].some(function (text) { return String(text || '').trim(); })) return '';
     return '<section class="hf-memo-grid" id="memo">'
       + memoCard('Kort intro', memo.intro)
       + memoCard('Eksamen', memo.exam)
@@ -90,7 +62,7 @@
   function install() {
     var id = subjectId();
     var page = window.HaugnesSubjectPages && window.HaugnesSubjectPages.get(id);
-    var memo = page && page.memo || fallbackMemos[id];
+    var memo = page && page.memo;
     var mainColumn = document.querySelector('.hf-subject-layout > div:first-child');
     if (!mainColumn) return;
     var firstWideGrid = mainColumn.querySelector('.hf-wide-grid');
@@ -104,7 +76,7 @@
       bindResources();
     }
     var tabbar = document.querySelector('.hf-tabbar');
-    if (tabbar && !tabbar.querySelector('a[href="#memo"]')) tabbar.insertAdjacentHTML('beforeend', '<a href="#memo">Memo</a>');
+    if (tabbar && memo && !tabbar.querySelector('a[href="#memo"]')) tabbar.insertAdjacentHTML('beforeend', '<a href="#memo">Memo</a>');
     if (tabbar && resourcePanel && !tabbar.querySelector('a[href="#ressurser"]')) tabbar.insertAdjacentHTML('beforeend', '<a href="#ressurser">Ressurser</a>');
   }
 

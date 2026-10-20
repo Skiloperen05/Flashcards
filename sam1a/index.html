@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="../shared/haugnes-theme.css">
   <link rel="stylesheet" href="../shared/first-semester.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../shared/auth-guard.js"></script>
+  <script src="../shared/auth-guard.js?v=20261020-cleanup"></script>
   <script>window.HAUGNES_SUBJECT_ID = 'sam1a'; AuthGuard.requireAuth();</script>
 </head>
 <body class="haugnes-app semester-page" style="--semester-accent:#d3ab78">
@@ -28,7 +28,7 @@
         <a href="#memo">Memoar</a>
 
         <a href="#forklaring">Arbeidsmåte</a>
-        <a href="../flashcards/?subject=sam1a">Flashcards <span aria-hidden="true">↗</span></a>
+
       </nav>
     </header>
     <div class="semester-layout semester-layout-reading">
@@ -48,7 +48,7 @@
       <p>Slik henger de to øvingsformene i memoaret sammen:</p>
       <figure><ol class="semester-flow"><li><span class="semester-step">01</span><h3>Begrep</h3><p>Kan du forklare hva det betyr?</p></li><li><span class="semester-step">02</span><h3>Eksperiment</h3><p>Hva undersøkes, og hva viser det?</p></li><li><span class="semester-step">03</span><h3>Utdyping</h3><p>Knytt funnet til temaet og forklar sammenhengen.</p></li></ol><figcaption>Illustrasjon av arbeidsmåten i memoaret.</figcaption></figure>
     </section>
-    <section class="semester-closing" aria-label="Videre arbeid"><div><p class="semester-eyebrow">Mitt råd</p><p>Lær begrepene, og tren på å forklare dem med egne ord.</p></div><a class="semester-study-link" href="../flashcards/?subject=sam1a">Øv med flashcards <span aria-hidden="true">→</span></a></section>
+    <section class="semester-closing" aria-label="Videre arbeid"><div><p class="semester-eyebrow">Mitt råd</p><p>Lær begrepene, og tren på å forklare dem med egne ord.</p></div><a class="semester-study-link" href="../user/subjects.html">Til de andre fagene <span aria-hidden="true">→</span></a></section>
   </main>
   <footer class="semester-footer"><a href="../user/subjects.html">← Mine fag</a><span>SAM1A · Haugnes Flashcards</span></footer>
 </body>

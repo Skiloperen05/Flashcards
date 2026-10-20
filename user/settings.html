@@ -248,8 +248,8 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
         <section class="setting-section">
           <header><h2>Konto</h2></header>
           <div class="settings-list">
-            <div class="setting-row"><div><strong>E-post</strong><p id="emailText">Laster konto...</p></div><button class="ghost-btn" type="button" data-soft-action="email">Endre</button></div>
-            <div class="setting-row"><div><strong>Passord</strong><p>Sist endret av kontoleverandøren din</p></div><button class="ghost-btn" type="button" data-soft-action="password">Endre</button></div>
+            <div class="setting-row"><div><strong>E-post</strong><p id="emailText">Laster konto...</p></div></div>
+
           </div>
         </section>
       </div>
@@ -295,23 +295,23 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
       <div class="section-stack">
         <section class="learning-card">
           <div class="learning-head">
-            <div><strong>Øktlengde</strong><p class="setting-help">Antall kort per studieøkt. Vi anbefaler rundt 75.</p></div>
+            <div><strong>Øktlengde</strong><p class="setting-help">Ønsket antall kort per økt. Økten avgrenses til kortene som er tilgjengelige.</p></div>
             <div class="metric-chip"><b><span id="sessionLenChip">50</span> kort</b><span id="sessionLenLabel">Kort øvingsrunde</span></div>
           </div>
           <input id="sessionRange" type="range" min="10" max="200" step="5" data-input-setting="sessionLen">
           <div class="range-actions">
             <label style="display:inline-flex;align-items:center;gap:8px"><span style="font-size:13px;font-weight:800;color:var(--text-secondary)">Skriv antall</span><input class="number-field" id="sessionNumber" type="number" min="1" data-input-setting="sessionLen"></label>
-            <button class="accent-btn" type="button" data-set-session="75">Anbefalt · 75</button>
+            <button class="accent-btn" type="button" data-set-session="75">75 kort</button>
             <button class="ghost-btn" type="button" data-random-session>Tilfeldig</button>
           </div>
         </section>
 
         <section class="settings-list">
-          <div class="setting-row"><div><strong>Start hver økt med</strong><p>Velg første modus når du åpner flashcards.</p></div><div class="segmented"><button class="segment-btn" type="button" data-choice-setting="startWith" data-value="repetisjon">Repetisjon</button><button class="segment-btn" type="button" data-choice-setting="startWith" data-value="nye">Nye kort</button><button class="segment-btn" type="button" data-choice-setting="startWith" data-value="blandet">Blandet</button></div></div>
-          <div class="setting-row"><div><strong>Organisering</strong><p>Hvordan appen prioriterer neste arbeidsflate.</p></div><div class="segmented"><button class="segment-btn" type="button" data-choice-setting="organizing" data-value="fag">Fag → tema → eksamen</button><button class="segment-btn" type="button" data-choice-setting="organizing" data-value="frist">Etter frist</button><button class="segment-btn" type="button" data-choice-setting="organizing" data-value="blandet">Blandet</button></div></div>
-          <div class="setting-row"><div><strong>Automatisk vanskelighet</strong><p>Juster intervaller basert på svarene dine.</p></div><button class="toggle" type="button" data-toggle-setting="autoDiff" aria-label="Automatisk vanskelighet"></button></div>
-          <div class="setting-row"><div><strong>Eksamensmodus</strong><p>Prioriter tidligere eksamensoppgaver når det nærmer seg.</p></div><button class="toggle" type="button" data-toggle-setting="examMode" aria-label="Eksamensmodus"></button></div>
-          <div class="setting-row"><div><strong>Språk</strong><p>Bruk samme språkvalg i nye verktøy.</p></div><div class="segmented"><button class="segment-btn" type="button" data-choice-setting="language" data-value="norsk">Norsk</button><button class="segment-btn" type="button" data-choice-setting="language" data-value="engelsk">Engelsk</button></div></div>
+
+
+
+
+
         </section>
       </div>
     </section>
@@ -320,21 +320,21 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
       <div class="settings-list">
         <div class="setting-row"><div><strong>Vennlig sjekk-inn</strong><p>En rolig melding hvis du har vært borte en stund.</p></div><button class="toggle" type="button" data-toggle-setting="checkIn" aria-label="Vennlig sjekk-inn"></button></div>
         <div class="setting-row"><div><strong>Send sjekk-inn etter</strong><p>Velg hvor lenge appen skal vente før den sier hei.</p></div><div class="segmented"><button class="segment-btn" type="button" data-choice-setting="checkInAfter" data-value="uke">1 uke</button><button class="segment-btn" type="button" data-choice-setting="checkInAfter" data-value="to_uker">2 uker</button><button class="segment-btn" type="button" data-choice-setting="checkInAfter" data-value="maaned">1 måned</button></div></div>
-        <div class="setting-row"><div><strong>Eksamensvarsler</strong><p>Gi beskjed når viktige eksamensressurser oppdateres.</p></div><button class="toggle" type="button" data-toggle-setting="examAlerts" aria-label="Eksamensvarsler"></button></div>
+
         <div class="setting-row"><div><strong>Lyd og effekter</strong><p>Diskré feedback i økter.</p></div><button class="toggle" type="button" data-toggle-setting="sound" aria-label="Lyd og effekter"></button></div>
         <div class="divider" aria-hidden="true"></div>
         <div class="setting-row"><div><strong>Varsel i appen</strong><p>Vis et diskret banner neste gang du åpner siden.</p></div><button class="toggle" type="button" data-toggle-setting="appNotice" aria-label="Varsel i appen"></button></div>
-        <div class="setting-row"><div><strong>E-post</strong><p>Vil du motta varsler fra oss på e-post?</p></div><button class="toggle" type="button" data-toggle-setting="email" aria-label="E-postvarsler"></button></div>
+
       </div>
     </section>
 
     <section class="tab-panel" id="tab-personvern">
       <div class="settings-list">
-        <div class="setting-row"><div><strong>Bruksstatistikk</strong><p>Anonym analyse av hvilke deler av appen som brukes.</p></div><button class="toggle" type="button" data-toggle-setting="analytics" aria-label="Bruksstatistikk"></button></div>
-        <div class="setting-row"><div><strong>Personlige anbefalinger</strong><p>Bruk progresjon og fagvalg til å foreslå neste økt.</p></div><button class="toggle" type="button" data-toggle-setting="recommend" aria-label="Personlige anbefalinger"></button></div>
-        <div class="setting-row"><div><strong>Del fremgang med studiegruppe</strong><p>Gjør samlet progresjon synlig for valgte grupper når funksjonen åpnes.</p></div><button class="toggle" type="button" data-toggle-setting="shareGroup" aria-label="Del fremgang med studiegruppe"></button></div>
+
+
+
         <div class="setting-row"><div><strong>Eksporter dataene mine</strong><p>Last ned innstillinger, lokal progresjon og fagvalg som JSON.</p></div><button class="accent-btn" type="button" id="exportDataBtn">Eksporter</button></div>
-        <div class="setting-row danger-zone"><div><strong>Slett konto</strong><p>Permanent sletting må bekreftes før noe fjernes.</p></div><button class="danger-btn" type="button" data-soft-action="delete">Slett konto</button></div>
+
       </div>
     </section>
 
@@ -360,7 +360,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 
 <div class="toast" id="saveToast" role="status" aria-live="polite">Lagret</div>
 
-<script src="auth-guard.js"></script>
+<script src="auth-guard.js?v=20261020-cleanup"></script>
 <script>
 (function () {
   'use strict';
@@ -714,11 +714,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 
       if (event.target.closest('#exportDataBtn')) exportData();
 
-      var soft = event.target.closest('[data-soft-action]');
-      if (soft) {
-        var action = soft.getAttribute('data-soft-action');
-        showToast(action === 'delete' ? 'Kontosletting må bekreftes manuelt' : 'Kontoendring kommer snart');
-      }
+
     });
 
     document.addEventListener('input', function (event) {

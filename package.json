@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "node server.js",
     "start": "node server.js",
-    "build": "npm run check:js && npm run check:smoke && npm run check:study",
-    "check": "npm run check:js && npm run check:smoke && npm run check:learning && npm run check:semester && npm run check:study && npm run check:biome",
+    "build": "npm run check:js && npm run check:smoke && npm run check:study && npm run check:content",
+    "check": "npm run check:js && npm run check:smoke && npm run check:learning && npm run check:semester && npm run check:study && npm run check:content && npm run check:biome",
     "check:js": "node scripts/check-js.mjs",
     "check:smoke": "node scripts/smoke-test.mjs",
     "check:study": "node scripts/generate-sam3-flashcards.mjs --check && node scripts/generate-coso-study.mjs --check && node scripts/flashcard-study-test.mjs",
@@ -18,7 +18,8 @@
     "sam3:generate": "node scripts/generate-sam3-flashcards.mjs",
     "semester:generate": "node scripts/generate-first-semester.mjs",
     "check:semester": "node scripts/generate-first-semester.mjs --check",
-    "coso:generate": "node scripts/generate-coso-study.mjs"
+    "coso:generate": "node scripts/generate-coso-study.mjs",
+    "check:content": "node scripts/content-cleanup-test.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.16",

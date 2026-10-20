@@ -117,21 +117,10 @@
     bar.querySelector('[data-add-week-event]').addEventListener('click', function () { openEventModal({ date: iso(currentWeekStart) }); });
   }
 
-  function getDemoEvents() {
-    var monday = currentWeekStart;
-    return [
-      { id: 'demo-ret14', subjectCode: 'RET14', title: 'RET14 · Fradragsrett', type: 'flashcards', date: iso(monday), time: '09:00', durationMin: 20, source: 'demo' },
-      { id: 'demo-a', subjectCode: 'SAM3', title: 'A-besvarelse V25', type: 'assignment', date: iso(monday), time: '13:00', durationMin: 25, source: 'demo' },
-      { id: 'demo-sol1', subjectCode: 'SOL1', title: 'SOL1 · Flashcards', type: 'flashcards', date: iso(addDays(monday, 1)), time: '10:00', durationMin: 25, source: 'demo' },
-      { id: 'demo-sam2', subjectCode: 'SAM2', title: 'SAM2 · Markedssvikt', type: 'assignment', date: iso(addDays(monday, 2)), time: '12:00', durationMin: 30, source: 'demo' },
-      { id: 'demo-sam3', subjectCode: 'SAM3', title: 'SAM3 · AS-AD', type: 'flashcards', date: iso(addDays(monday, 4)), time: '10:00', durationMin: 25, source: 'demo' }
-    ];
-  }
-
   function allEvents() {
     var selected = subjectsSelected();
     var items = api() ? api().getAllEvents(selected) : [];
-    if (!items.length) items = getDemoEvents().filter(function (event) { return selected.indexOf(event.subjectCode) !== -1; });
+    items = items.filter(function (event) { return event.source !== 'demo' && !/^demo-/.test(event.id || ''); });
     if (filter !== 'Alle') {
       var needle = filter.toLowerCase();
       items = items.filter(function (event) {

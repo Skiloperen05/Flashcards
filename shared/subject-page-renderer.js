@@ -15,8 +15,8 @@
   function topicHtml(topic, accent) {
     var title = Array.isArray(topic) ? topic[0] : (topic.title || topic.name || topic.theme || '');
     var desc = Array.isArray(topic) ? topic[1] : (topic.desc || topic.subtitle || topic.weight || '');
-    var pct = Array.isArray(topic) ? topic[2] : (topic.pct || topic.weight || '80%');
-    return '<div class="hf-topic"><div><strong>' + esc(title) + '</strong><span>' + esc(desc) + '</span></div><div class="hf-meter" style="--accent:' + esc(accent) + ';--p:' + esc(pct) + '"><i></i></div></div>';
+    var pct = Array.isArray(topic) ? topic[2] : (topic.pct || topic.weight || '');
+    return '<div class="hf-topic"><div><strong>' + esc(title) + '</strong><span>' + esc(desc) + '</span></div></div>';
   }
 
   function planHtml(item) {
@@ -34,7 +34,7 @@
   }
 
   function memoHtml(memo) {
-    if (!memo) return '';
+    if (!memo || ![memo.intro, memo.exam, memo.studyAdvice].some(function (text) { return String(text || '').trim(); })) return '';
     return '<section class="hf-memo-grid" id="memo">'
       + memoCard('Kort intro', memo.intro)
       + memoCard('Eksamen', memo.exam)
@@ -65,7 +65,7 @@
   }
 
   function examRadarHtml(radar) {
-    if (!radar) return '';
+    if (!radar || !radar.rows || !radar.rows.length || document.getElementById('radarContent')) return '';
     var rows = (radar.rows || []).map(function (row) {
       return '<div class="hf-radar-row"><div><strong>' + esc(row[0]) + '</strong><span>' + esc(row[1]) + '</span></div><div class="hf-radar-meter" style="--p:' + esc(row[2]) + ';--accent:' + esc(radar.accent || '#e8bc68') + '"><i></i></div><b>' + esc(row[2]) + '</b></div>';
     }).join('');
@@ -87,7 +87,7 @@
 
   function pageResources(page) {
     var api = window.HaugnesSubjectResources;
-    return page.resources || (api && typeof api.forSubject === 'function' ? api.forSubject(page.id || page.code) : []);
+    return (page.resources || (api && typeof api.forSubject === 'function' ? api.forSubject(page.id || page.code) : [])).filter(function (item) { return item.status === 'available' && item.href; });
   }
 
   function resourcesHtml(page) {
@@ -123,15 +123,15 @@
   function addLearningTabs(page) {
     var tabbar = document.querySelector('.hf-tabbar');
     if (!tabbar) return;
-    if (page.compendium) tabbar.insertAdjacentHTML('beforeend', '<a href="#kompendium">Kompendium</a>');
-    if (page.memo) tabbar.insertAdjacentHTML('beforeend', '<a href="#memo">Memo</a>');
-    if (page.preferredStudyMethod || (page.personalWarnings && page.personalWarnings.length)) tabbar.insertAdjacentHTML('beforeend', '<a href="#personlig">Personlig</a>');
-    if (pageResources(page).length) tabbar.insertAdjacentHTML('beforeend', '<a href="#ressurser">Ressurser</a>');
-    if (page.examRadar) tabbar.insertAdjacentHTML('beforeend', '<a href="#eksamensradar">Eksamensradar</a>');
-    if (page.formulaSheet) tabbar.insertAdjacentHTML('beforeend', '<a href="#formelark">Formelark</a>');
-    if (page.canvasMaterials) tabbar.insertAdjacentHTML('beforeend', '<a href="#materiale">Materiale</a>');
-    if (page.practice) tabbar.insertAdjacentHTML('beforeend', '<a href="#hurtigkort">Hurtigkort</a>');
-    if (page.examChecklist) tabbar.insertAdjacentHTML('beforeend', '<a href="#sjekkliste">Sjekkliste</a>');
+    tabbar.querySelectorAll('[data-learning-tab]').forEach(function (tab) { tab.remove(); });
+    [['kompendium', 'Kompendium'], ['memo', 'Memo'], ['personlig', 'Arbeidsmåte'],
+      ['ressurser', 'Ressurser'], ['formelark', 'Formelark'], ['materiale', 'Materiale'],
+      ['hurtigkort', 'Hurtigkort'], ['sjekkliste', 'Sjekkliste']].forEach(function (entry) {
+      var target = document.getElementById(entry[0]);
+      if (target && !tabbar.querySelector('a[href="#' + entry[0] + '"]')) {
+        tabbar.insertAdjacentHTML('beforeend', '<a data-learning-tab href="#' + entry[0] + '">' + entry[1] + '</a>');
+      }
+    });
   }
 
   function bindPractice(page) {
@@ -283,12 +283,12 @@
     var planList = document.getElementById('planList');
     if (planList && page.plan) planList.innerHTML = page.plan.map(planHtml).join('');
     if (!isRrrWorkspace(page)) {
-      addLearningTabs(page);
+      ['memo', 'learningSuite', 'sourceCard', 'ressurser'].forEach(function (id) { var node = document.getElementById(id); if (node) node.remove(); });
       var planHost = planList ? planList.closest('.hf-wide-grid') : null;
       if (planHost && page.memo && !document.getElementById('memo')) {
         planHost.insertAdjacentHTML('beforebegin', memoHtml(page.memo));
       }
-      if (planHost && page.sources && !document.getElementById('sourceCard')) {
+      if (planHost && page.sources && page.sources.length && !document.getElementById('sourceCard')) {
         planHost.insertAdjacentHTML('afterend', '<div id="sourceCard" class="hf-source-grid">' + sourcesHtml(page.sources) + '</div>');
       }
       if (planHost && !document.getElementById('ressurser')) {
@@ -361,6 +361,58 @@
       adminHost.insertAdjacentHTML('beforebegin', adminBarHtml(page));
     }
     decorateWorkspace(page);
+    applyContentVisibility(page);
+    addLearningTabs(page);
+  }
+
+  function applyContentVisibility(page, editing) {
+    var admin = editing === undefined ? isAdminUser() && !document.body.classList.contains('hf-student-preview-active') : editing;
+    var visibility = page.visibility || {};
+    var present = {};
+    function section(id, tabId, key, rows) {
+      var populated = Array.isArray(rows) ? rows.length > 0 : !!(rows && rows.rows && rows.rows.length);
+      present[key] = visibility[key] !== false && populated;
+      var show = visibility[key] !== false && (populated || admin);
+      var el = document.getElementById(id);
+      if (el) el.style.display = show ? 'block' : 'none';
+      var tab = document.getElementById(tabId);
+      if (tab) tab.style.display = present[key] ? 'inline-block' : 'none';
+      return show;
+    }
+    section('eksamensradar', 'tabRadar', 'radar', page.examRadar);
+    section('besvarelser', 'tabAnswers', 'answers', page.answers);
+    section('notater', 'tabNotes', 'notes', page.notes);
+    section('oppgaver', 'tabTasks', 'tasks', page.tasks);
+    var topicCard = document.getElementById('topicsCard') || document.getElementById('topicList')?.closest('section');
+    var planCard = document.getElementById('planCard') || document.getElementById('planList')?.closest('section');
+    if (topicCard) topicCard.style.display = visibility.topics !== false && (admin || (page.topics || []).length) ? '' : 'none';
+    if (planCard) planCard.style.display = visibility.plan !== false && (admin || (page.plan || []).length) ? '' : 'none';
+    var grid = document.getElementById('topicsAndPlanGrid') || topicCard?.closest('.hf-wide-grid');
+    if (grid) grid.style.display = [topicCard, planCard].some(function (card) { return card && card.style.display !== 'none'; }) ? '' : 'none';
+    var stats = document.getElementById('subjectStats');
+    if (stats) { var panel = stats.closest('aside'); if (panel) panel.style.display = stats.children.length ? '' : 'none'; }
+    var tools = document.getElementById('toolGrid');
+    if (tools) {
+      var targets = { '#eksamensradar': 'radar', '#besvarelser': 'answers', '#notater': 'notes', '#oppgaver': 'tasks' };
+      tools.querySelectorAll('a').forEach(function (link) {
+        var key = targets[link.getAttribute('href')];
+        var href = link.getAttribute('href') || '';
+        link.style.display = key && !present[key] || href === '#' || href.includes('user/oppgavebank.html') ? 'none' : '';
+      });
+      var hasTools = Array.from(tools.children).some(function (item) { return item.style.display !== 'none'; });
+      tools.style.display = hasTools ? '' : 'none';
+      var heading = Array.from(tools.parentElement.children).find(function (node) { return node.classList.contains('hf-section-head'); });
+      if (heading && heading.classList.contains('hf-section-head')) heading.style.display = hasTools ? '' : 'none';
+    }
+    // Course-completion percentages were template values, never learner results.
+    var progress = document.getElementById('progressValue');
+    if (progress) progress.closest('section')?.remove();
+    var next = document.getElementById('nextStep');
+    if (next) next.closest('.hf-cta').style.display = page.next ? '' : 'none';
+    document.querySelectorAll('.hf-subject-aside a[href^="#"]').forEach(function (link) {
+      var target = document.getElementById(link.hash.slice(1));
+      link.closest('.hf-priority').style.display = target && target.style.display !== 'none' ? '' : 'none';
+    });
   }
 
   function resolveSubjectId() {
@@ -384,6 +436,7 @@
   window.HaugnesSubjectRenderer = {
     render: render,
     decorateWorkspace: decorateWorkspace,
+    applyContentVisibility: applyContentVisibility,
     resolveSubjectId: resolveSubjectId
   };
 })();

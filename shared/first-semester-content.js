@@ -127,6 +127,7 @@ window.HaugnesFirstSemester = {
         ]
       },
       "id": "sam1a",
+      "studyEnabled": false,
       "source": "Memoar SAM1a.docx",
       "paragraphs": [
         "Hei førstekullist. SAM1a er introduksjonen din både til den psykologiske delen av NHH-utdanningen din, den filosofiske delen og den samfunnsfaglige delen. Jeg opplevde faget som informativt og nyttig.",

@@ -179,7 +179,7 @@ w.currentSubjectId = 'mat10';
 w.showView('decks');
 assert.equal(
   w.document.querySelector('#studyOptions [name="limit"]').textContent,
-  '5 kortAlle 6 kort',
+  'Alle 4 kort',
   'The library setup also caps its lengths to the selected subject',
 );
 w.currentSubjectId = 'met3';
@@ -430,7 +430,7 @@ for (const route of ['ret14', 'sol1', 'sam2', 'sam3', 'met2', 'mat10', 'sam1a', 
   pw.eval(read('shared/subject-flashcards.js'));
   await new Promise((resolve) => setTimeout(resolve, 10));
   const room = pw.document.getElementById('flashcards');
-  assert.equal(!!room, route !== 'kom1', route + ': subject room is mounted only where appropriate');
+  assert.equal(!!room, !['kom1', 'sam1a'].includes(route), route + ': subject room is mounted only where appropriate');
   if (room) {
     const studyTab = Array.from(pw.document.querySelectorAll('.hf-tabbar a,.semester-tabs a')).find((link) =>
       /^Flashcards\s*[↗→]?$/.test(link.textContent.trim()),
@@ -666,12 +666,13 @@ const genericWorkspace = new JSDOM(read('met2/index.html'), {
   url: 'https://example.test/met2/',
   runScripts: 'outside-only',
 });
+genericWorkspace.window.eval(read('shared/learning-content.js'));
 genericWorkspace.window.eval(read('shared/subject-page-data.js'));
 genericWorkspace.window.eval(read('shared/subject-page-renderer.js'));
 assert.notEqual(genericWorkspace.window.document.body.dataset.subjectLayout, 'rrr11');
 assert.ok(
   genericWorkspace.window.document.querySelectorAll('#toolGrid .hf-tool-card').length > 0,
-  'Other subject layouts retain their tools',
+  'Other subject layouts retain their actual catalog tools',
 );
 genericWorkspace.window.close();
 console.log(

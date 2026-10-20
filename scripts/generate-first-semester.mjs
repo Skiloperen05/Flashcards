@@ -27,7 +27,7 @@ function documentLink(doc, primary = false) {
 }
 
 function page(subject) {
-  const { id, code, name, summary, focus, documents, diagram, paragraphs } = subject;
+  const { id, code, name, summary, focus, documents, studyEnabled, diagram, paragraphs } = subject;
   const answers = documents.length > 0;
   return `<!DOCTYPE html>
 <html lang="nb">
@@ -40,7 +40,7 @@ function page(subject) {
   <link rel="stylesheet" href="../shared/haugnes-theme.css">
   <link rel="stylesheet" href="../shared/first-semester.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../shared/auth-guard.js"></script>
+  <script src="../shared/auth-guard.js?v=20261020-cleanup"></script>
   <script>window.HAUGNES_SUBJECT_ID = '${id}'; AuthGuard.requireAuth();</script>
 </head>
 <body class="haugnes-app semester-page" style="--semester-accent:${subject.accent}">
@@ -59,7 +59,7 @@ function page(subject) {
         <a href="#memo">Memoar</a>
         ${answers ? '<a href="#besvarelser">A-besvarelse og eksamen</a>' : ''}
         ${diagram ? '<a href="#forklaring">Arbeidsmåte</a>' : ''}
-        ${id !== 'kom1' ? `<a href="../flashcards/?subject=${id}">Flashcards <span aria-hidden="true">↗</span></a>` : ''}
+        ${id !== 'kom1' && studyEnabled !== false ? `<a href="../flashcards/?subject=${id}">Flashcards <span aria-hidden="true">↗</span></a>` : ''}
       </nav>
     </header>
     <div class="semester-layout${answers ? '' : ' semester-layout-reading'}">
@@ -90,7 +90,7 @@ function page(subject) {
     </section>`
         : ''
     }
-    <section class="semester-closing" aria-label="Videre arbeid"><div><p class="semester-eyebrow">Mitt råd</p><p>${esc(focus)}</p></div>${id !== 'kom1' ? `<a class="semester-study-link" href="../flashcards/?subject=${id}">Øv med flashcards <span aria-hidden="true">→</span></a>` : '<a class="semester-study-link" href="../user/subjects.html">Til de andre fagene <span aria-hidden="true">→</span></a>'}</section>
+    <section class="semester-closing" aria-label="Videre arbeid"><div><p class="semester-eyebrow">Mitt råd</p><p>${esc(focus)}</p></div>${id !== 'kom1' && studyEnabled !== false ? `<a class="semester-study-link" href="../flashcards/?subject=${id}">Øv med flashcards <span aria-hidden="true">→</span></a>` : '<a class="semester-study-link" href="../user/subjects.html">Til de andre fagene <span aria-hidden="true">→</span></a>'}</section>
   </main>
   <footer class="semester-footer"><a href="../user/subjects.html">← Mine fag</a><span>${code} · Haugnes Flashcards</span></footer>
 </body>
