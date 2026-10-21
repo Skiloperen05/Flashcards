@@ -153,6 +153,7 @@ for (const file of [
   'shared/flashcard-progress.js',
   'shared/sam3-flashcard-catalog.js',
   'shared/rrr11-coso-study.js',
+  'shared/rrr11-study.js',
   'shared/flashcard-library.js',
   'shared/flashcard-store.js',
   'shared/flashcard-study-options.js',
@@ -165,6 +166,42 @@ for (const file of ['shared/haugnes-flashcards-structure.js', 'shared/haugnes-fl
 w.HaugnesFlashcardSession.install();
 assert.equal(w.getQuizDecksForSubject('rrr11')[0].questions.length, 30);
 assert.equal(w.getDecksForSubject('rrr11')[0].cards.length, 30);
+const newRrr11Decks = JSON.parse(read('data/rrr11-nye-flashcards.json'));
+const rrr11Decks = w.getDecksForSubject('rrr11');
+assert.equal(rrr11Decks.length, 8);
+assert.equal(
+  rrr11Decks.reduce((sum, deck) => sum + deck.cards.length, 0),
+  110,
+);
+assert.equal(
+  JSON.stringify(rrr11Decks.slice(1)),
+  JSON.stringify(newRrr11Decks),
+  'Preserve all supplied content and order',
+);
+const catalogDecks = [
+  'rrr11',
+  'ret14',
+  'subj_sol1',
+  'sam3',
+  'sam2',
+  'met3',
+  'met2',
+  'mat10',
+  'bed1',
+  'ret1a',
+  'met1',
+  'sam1a',
+  'kom1',
+].flatMap((id) => w.getDecksForSubject(id));
+for (const deck of newRrr11Decks) {
+  assert.equal(catalogDecks.filter((candidate) => candidate.id === deck.id).length, 1, 'New deck IDs must not collide');
+  for (const card of deck.cards) {
+    assert.equal(
+      catalogDecks.flatMap((candidate) => candidate.cards).filter((candidate) => candidate.id === card.id).length,
+      1,
+    );
+  }
+}
 assert.equal(w.currentSubjectId, 'met3');
 assert.equal(w.document.querySelectorAll('[data-study-deck]').length, 13);
 w.document.getElementById('studySelectAll').click();
@@ -246,6 +283,29 @@ assert.ok(
   !w.HaugnesSam3Flashcards.some((deck) => deck.cards.some((card) => /<\/?(?:b|div|span)/.test(card.a))),
   'SAM3 HTML is converted to readable card text',
 );
+w.currentSubjectId = 'rrr11';
+w.showView('decks');
+assert.equal(w.document.querySelectorAll('[data-study-deck]').length, 8, 'Register every RRR11 deck in the library');
+w.renderQuizDecks();
+assert.equal(w.document.querySelectorAll('[data-quiz-id]').length, 8);
+for (const deck of newRrr11Decks) {
+  w.startDeck([deck.id], 'all', { ...options, order: 'original', limit: 0 });
+  const card = w.currentCards[0];
+  assert.equal(w.document.getElementById('cardFront').textContent, card.q);
+  assert.equal(w.document.getElementById('cardSourceLabel').textContent, card.source);
+  w.flipCard();
+  assert.ok(w.document.getElementById('cardBack').textContent.includes(card.a));
+  w.currentQuizDeck = w.getQuizDecksForSubject('rrr11').find((candidate) => candidate.id === deck.id + '-quiz');
+  w.startQuiz();
+  const q = w.quizShuffledQ[0];
+  assert.equal(w.document.getElementById('quizQText').textContent, q.q);
+  w.document.querySelector('[data-original-idx="' + q.correct + '"]').click();
+  assert.equal(w.quizScore, 1);
+  assert.equal(w.document.querySelector('.quiz-option.correct').textContent, q.options[q.correct]);
+  assert.equal(w.document.getElementById('quizSourceLabel').hidden, false);
+  assert.equal(w.document.getElementById('quizSourceLabel').textContent, q.source);
+  assert.ok(w.document.getElementById('quizExplanation').textContent.includes(q.explanation));
+}
 assert.deepEqual(runtimeErrors, [], 'The app must not throw runtime errors');
 dom.window.close();
 
@@ -521,6 +581,7 @@ for (const file of [
   'learning-content',
   'haugnes-study-data',
   'rrr11-coso-study',
+  'rrr11-study',
   'flashcard-study-session',
   'flashcard-progress',
   'flashcard-library',
@@ -582,6 +643,9 @@ const changeCoso = (name, value) => {
   el.value = value;
   el.dispatchEvent(new cw.Event('change', { bubbles: true }));
 };
+assert.equal(cr.querySelectorAll('[data-sfc-deck]').length, 8);
+assert.equal(cr.querySelector('[data-sfc-deck-count]').textContent, '8 av 8 valgt');
+cw.HaugnesSubjectFlashcards.open('rrr11-coso');
 changeCoso('sfc-mode', 'quiz');
 changeCoso('sfc-limit', '0');
 assert.ok(Array.from(cr.querySelector('[name="sfc-limit"]').options).every((option) => Number(option.value) <= 30));
@@ -595,7 +659,11 @@ for (let i = 0; i < 30; i++) {
   if (i === 12) {
     const currentCard = cr.querySelector('[data-sfc-question]');
     cw.HaugnesSubjectRenderer.render(rrrPage);
-    assert.equal(cr.querySelector('[data-sfc-question]'), currentCard, 'A Studio update preserves the active quiz card');
+    assert.equal(
+      cr.querySelector('[data-sfc-question]'),
+      currentCard,
+      'A Studio update preserves the active quiz card',
+    );
     assert.match(cr.querySelector('[data-sfc-counter]').textContent, /^12 av 30/);
   }
   const q = cr.querySelector('[data-sfc-question]').textContent;
@@ -661,6 +729,50 @@ cw.document.querySelector('[data-rrr-study-link]').click();
 assert.equal(cr.dataset.sfcActive, 'setup', 'The notes CTA opens the native study setup');
 assert.equal(cw.document.querySelector('#subjectTabBar [aria-current="location"]').id, 'flashcardsTabLink');
 assert.equal(cw.location.pathname, '/subject/');
+for (const deck of newRrr11Decks) {
+  cw.HaugnesSubjectFlashcards.open(deck.id);
+  assert.equal(cr.querySelectorAll('[data-sfc-deck]:checked').length, 1);
+  assert.equal(cr.querySelector('[data-sfc-deck]:checked').dataset.sfcDeck, deck.id);
+  changeCoso('sfc-mode', 'quiz');
+  changeCoso('sfc-filter', 'all');
+  changeCoso('sfc-limit', '0');
+  cr.querySelector('[data-sfc-start]').click();
+  const seen = new Set();
+  for (let i = 0; i < deck.cards.length; i++) {
+    const q = cr.querySelector('[data-sfc-question]').textContent;
+    const card = deck.cards.find((candidate) => candidate.quiz.q === q);
+    assert.ok(card, 'The native quiz shows a question from the selected deck');
+    seen.add(card.id);
+    const choices = Array.from(cr.querySelectorAll('[data-sfc-choice]'));
+    assert.deepEqual(choices.map((button) => button.children[1].textContent).sort(), card.quiz.options.slice().sort());
+    choices.find((button) => button.children[1].textContent === card.a).click();
+    assert.equal(cr.querySelector('.sfc-correct').children[1].textContent, card.a);
+    assert.equal(cr.querySelector('[data-sfc-answer]').textContent, card.a);
+    assert.equal(cr.querySelector('[data-sfc-explanation]').textContent, card.explanation);
+    assert.equal(cr.querySelector('[data-sfc-source]').textContent, card.source);
+    cr.querySelector('[data-sfc-quiz-next]').click();
+  }
+  assert.equal(seen.size, deck.cards.length, 'Every supplied question is reachable exactly once');
+  assert.equal(cr.dataset.sfcActive, 'end');
+  cw.HaugnesSubjectFlashcards.open(deck.id);
+  changeCoso('sfc-mode', 'flashcards');
+  changeCoso('sfc-filter', 'all');
+  changeCoso('sfc-limit', '0');
+  cr.querySelector('[data-sfc-start]').click();
+  const flashSeen = new Set();
+  for (let i = 0; i < deck.cards.length; i++) {
+    const card = deck.cards.find((candidate) => candidate.q === cr.querySelector('[data-sfc-question]').textContent);
+    assert.ok(card);
+    flashSeen.add(card.id);
+    cr.querySelector('[data-sfc-reveal]').click();
+    assert.equal(cr.querySelector('[data-sfc-answer]').textContent, card.a);
+    assert.equal(cr.querySelector('[data-sfc-explanation]').textContent, card.explanation);
+    assert.equal(cr.querySelector('[data-sfc-source]').textContent, card.source);
+    cr.querySelector('[data-sfc-rate="right"]').click();
+  }
+  assert.equal(flashSeen.size, deck.cards.length);
+  assert.equal(cr.dataset.sfcActive, 'end');
+}
 cosoDom.window.close();
 const genericWorkspace = new JSDOM(read('met2/index.html'), {
   url: 'https://example.test/met2/',

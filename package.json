@@ -9,7 +9,7 @@
     "check": "npm run check:js && npm run check:smoke && npm run check:learning && npm run check:semester && npm run check:study && npm run check:content && npm run check:biome",
     "check:js": "node scripts/check-js.mjs",
     "check:smoke": "node scripts/smoke-test.mjs",
-    "check:study": "node scripts/generate-sam3-flashcards.mjs --check && node scripts/generate-coso-study.mjs --check && node scripts/flashcard-study-test.mjs",
+    "check:study": "node scripts/generate-sam3-flashcards.mjs --check && node scripts/generate-coso-study.mjs --check && node scripts/generate-rrr11-study.mjs --check && node scripts/flashcard-study-test.mjs",
     "check:documents": "node scripts/document-access-test.mjs && node scripts/subject-publishing-test.mjs",
     "learning:generate": "node scripts/generate-learning-content.mjs",
     "check:learning": "node scripts/generate-learning-content.mjs --check",
@@ -19,6 +19,7 @@
     "semester:generate": "node scripts/generate-first-semester.mjs",
     "check:semester": "node scripts/generate-first-semester.mjs --check",
     "coso:generate": "node scripts/generate-coso-study.mjs",
+    "rrr11:generate": "node scripts/generate-rrr11-study.mjs",
     "check:content": "node scripts/content-cleanup-test.mjs"
   },
   "devDependencies": {

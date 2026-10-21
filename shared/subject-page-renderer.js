@@ -203,11 +203,11 @@
     });
     document.querySelectorAll('#subjectTabBar a[href="#memo"],#subjectTabBar a[href="#oversikt"]').forEach(function (link) { link.remove(); });
     var lead = document.getElementById('subjectLead');
-    if (lead) lead.textContent = vis.answers !== false && (page.answers || []).length ? 'Forelesningsnotater, A-besvarelser og COSO-øving, samlet her i faget.' : 'Les forelesningsnotatene, og øv videre på COSO med flashcards og quiz. Alt samlet her i faget.';
+    if (lead) lead.textContent = vis.answers !== false && (page.answers || []).length ? 'Forelesningsnotater, A-besvarelser, flashcards og quiz, samlet her i faget.' : 'Les forelesningsnotatene, og øv videre på regnskapssystemer, rutiner og intern kontroll med flashcards og quiz.';
     var primary = document.getElementById('heroPrimaryAction');
     if (primary) {
       primary.href = vis.notes !== false ? '#notater' : '#flashcards';
-      primary.textContent = vis.notes !== false ? 'Les forelesningsnotatene ↓' : 'Øv på COSO →';
+      primary.textContent = vis.notes !== false ? 'Les forelesningsnotatene ↓' : 'Øv med flashcards og quiz →';
       primary.style.display = vis.notes !== false || vis.flashcards !== false ? 'inline-flex' : 'none';
     }
     var flashTab = document.getElementById('flashcardsTabLink');
@@ -246,7 +246,7 @@
       if (copy) copy.textContent = 'Åpne notatene og jobb deg gjennom temaene i faget.';
       var next = notes.querySelector('[data-rrr-study-link]');
       if (!next) {
-        notes.insertAdjacentHTML('beforeend', '<a class="rrr-study-link" data-rrr-study-link data-subject-study="1" href="#flashcards"><span>Vil du øve på intern kontroll?</span> Test deg på COSO med flashcards og quiz <span aria-hidden="true">→</span></a>');
+        notes.insertAdjacentHTML('beforeend', '<a class="rrr-study-link" data-rrr-study-link data-subject-study="1" href="#flashcards"><span>Klar for å teste det du har lest?</span> Øv på temaene med flashcards og quiz <span aria-hidden="true">→</span></a>');
         next = notes.querySelector('[data-rrr-study-link]');
       }
       next.hidden = vis.flashcards === false;

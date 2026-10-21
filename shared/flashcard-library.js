@@ -5,7 +5,7 @@ var SOL1_DECKS = [{"id":"deck_sol1_begreper_temabasert","title":"Begreper (temab
 
   function decksFor(id, custom) {
     var decks = id === 'ret14' ? RET14_DECKS.slice() : id === 'subj_sol1' || id === 'sol1' ? SOL1_DECKS.slice() : [];
-    if (id === 'rrr11') decks = decks.concat(window.HaugnesCosoStudy || []);
+    if (id === 'rrr11') decks = decks.concat(window.HaugnesCosoStudy || [], window.HaugnesRrr11Study || []);
     if (id === 'sam3') decks = decks.concat(window.HaugnesSam3Flashcards || []);
     if (window.HaugnesStudyData) decks = decks.concat(window.HaugnesStudyData.decksFor(id));
     return decks.concat((custom && custom.decks && custom.decks[id]) || []);
@@ -15,7 +15,7 @@ var SOL1_DECKS = [{"id":"deck_sol1_begreper_temabasert","title":"Begreper (temab
       return deck.cards.some(function (card) { return !!card.quiz; });
     }).map(function (deck) {
       return { id: deck.id + '-quiz', title: deck.title, questions: deck.cards.filter(function (card) { return !!card.quiz; }).map(function (card) {
-        return Object.assign({}, card.quiz, { explanation: card.explanation });
+        return Object.assign({}, card.quiz, { explanation: card.explanation, source: card.source });
       }) };
     });
   }

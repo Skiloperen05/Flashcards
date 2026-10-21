@@ -42,7 +42,7 @@
     if (window[global]) return Promise.resolve();
     return new Promise(function (resolve, reject) {
       var script = document.createElement('script');
-      script.src = asset('shared/' + file + '.js?v=20261020-cleanup');
+      script.src = asset('shared/' + file + '.js?v=20261021-rrr11');
       script.onload = resolve;
       script.onerror = reject;
       document.head.appendChild(script);
@@ -529,7 +529,7 @@
       root.setAttribute('aria-label', 'Flashcards og quiz i ' + code);
       root.querySelector('.sfc-description').textContent =
         subject === 'rrr11'
-          ? 'Øv på COSO – intern kontroll med egne svar eller flervalgsquiz.'
+          ? 'Øv på regnskapssystemer, rutiner og intern kontroll med egne svar eller flervalgsquiz.'
           : 'Hent frem svaret selv, eller prøv en quiz. Litt mer sitter hver gang.';
     }
     if (!decks.length)
@@ -644,7 +644,7 @@
     ['flashcard-library', 'HaugnesFlashcardLibrary'],
     ['flashcard-store', 'HaugnesFlashcardStore'],
   ];
-  if (subject === 'rrr11') files.splice(4, 0, ['rrr11-coso-study', 'HaugnesCosoStudy']);
+  if (subject === 'rrr11') files.splice(4, 0, ['rrr11-coso-study', 'HaugnesCosoStudy'], ['rrr11-study', 'HaugnesRrr11Study']);
   if (subject === 'sam3') files.splice(4, 0, ['sam3-flashcard-catalog', 'HaugnesSam3Flashcards']);
   var ready = files.reduce(function (chain, item) {
     return chain.then(function () {
