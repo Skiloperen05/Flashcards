@@ -20,7 +20,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - The new Kompass app is the active successor being built in Sites. Its source lives in the connected Sites repository, while this repository remains the source for legacy subject pages and the shared Supabase schema/migrations.
 - Kompass has no paywall. Existing Stripe/commerce code remains legacy-only and is not used by the new Kompass clients.
 - Main public landing page: `index.html`.
-- Login/auth entry: `login.html`.
+- Login/auth entry: `login.html` (incl. "Glemt passord?"); password reset landing: `reset-password.html`.
 - Authenticated user pages: `user/`.
 - Subject pages: one folder per subject, for example `sam3/`, `sam2/`, `ret14/`, `sol1/`.
 - Subject app icons/emblems and A-besvarelser flow emblems: `assets/emblems/`, referenced from `shared/subject-meta.js` and `shared/haugnes-answer-library.js`.
