@@ -1,5 +1,5 @@
 (function (window, document) {
-  var SHARED_SCRIPT = '../shared/auth-guard.js?v=20261020-cleanup';
+  var SHARED_SCRIPT = '../shared/auth-guard.js?v=20261022-2';
   var MODEL_PAGES = {
     'butikk.html': { label: 'Butikk', icon: '⚷', subtitle: 'Lås opp fag' },
     'eksamensanalyse.html': { label: 'Eksamensanalyse', icon: '◈', subtitle: 'Åpne faktiske analyser' },
@@ -72,8 +72,8 @@
 
   function addPageStylesheet() {
     var page = currentUserPage();
-    if (page === 'subjects.html') addStylesheet('haugnes-subjects-css', '../shared/haugnes-subjects.css');
-    else if (!isModelPage(page)) addStylesheet('haugnes-dashboard-css', '../shared/haugnes-dashboard.css');
+    if (page === 'subjects.html') addStylesheet('haugnes-subjects-css', '../shared/haugnes-subjects.css?v=20261022-2');
+    else if (!isModelPage(page)) addStylesheet('haugnes-dashboard-css', '../shared/haugnes-dashboard.css?v=20261022-2');
   }
 
   function installNavVisibilityStyles() {
@@ -103,12 +103,12 @@
       if (onload) onload();
       return;
     }
-    addScript('haugnes-subject-meta-js', '../shared/subject-meta.js?v=20261020-cleanup', onload);
+    addScript('haugnes-subject-meta-js', '../shared/subject-meta.js?v=20261022-2', onload);
   }
 
   function loadSubjectAccess(onload) {
     loadSubjectMeta(function () {
-      addScript('haugnes-subject-access-js', '../shared/subject-access.js', function () {
+      addScript('haugnes-subject-access-js', '../shared/subject-access.js?v=20261022-2', function () {
         if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.enhanceCurrentPage === 'function') window.HaugnesSubjectAccess.enhanceCurrentPage();
         if (onload) onload();
       });
@@ -142,11 +142,14 @@
     var subjects = window.HaugnesSubjects.getAll().filter(function (subject) { return subject.status !== 'build'; });
     container.innerHTML = subjects.map(function (subject) {
       var emblem = subject.emblem ? '<img class="emblem-img" src="' + subject.emblem + '" alt="" onerror="this.remove()">' : '';
+      var shortCat = subject.categoryShortLabel ? String(subject.categoryShortLabel).replace('semester', 'sem') : '';
+      var stateLabel = subject.statusText === 'Første semester' || !subject.statusText ? 'Klar' : subject.statusText;
+      var badgeText = shortCat ? (shortCat + ' · ' + stateLabel) : stateLabel;
       return '<a class="subject-card" style="--accent:' + subject.accent + ';--pct:' + (subject.progress || 0) + '" href="' + subject.path + '">'
-        + '<div class="subject-top"><span class="subject-icon">' + emblem + '<span class="emblem-fallback">' + subject.icon + '</span></span><span class="dots">⋮</span></div>'
+        + '<div class="subject-top"><span class="subject-icon">' + emblem + '<span class="emblem-fallback">' + subject.icon + '</span></span><span class="subject-badge">' + badgeText + '</span></div>'
         + '<div class="subject-code">' + subject.code + '</div><div class="subject-name">' + subject.name + '</div>'
-        + '<div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">' + (subject.progress || 0) + '%</div></div>'
-        + '<div class="ring-sub">Ikke startet ennå</div><span class="subject-cta">Start øving</span></a>';
+        + '<div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label"><span>' + (subject.progress || 0) + '%</span><small>riktige svar</small></div></div>'
+        + '<div class="ring-sub">Ikke startet ennå</div><span class="subject-cta">Start øving →</span></a>';
     }).join('') || '<div class="panel"><div class="panel-inner">Du har ingen fag i Mine fag ennå. <a href="butikk.html">Gå til Butikk</a> for å kjøpe et fag.</div></div>';
     var sectionLink = document.querySelector('#mine-fag a');
     if (sectionLink) { sectionLink.href = 'subjects.html'; sectionLink.textContent = 'Administrer fag →'; }
@@ -157,7 +160,9 @@
     if (subjectsNav) subjectsNav.href = 'subjects.html';
     var recommendationStart = document.querySelector('.recommend .start-btn[href="../ret14/"]');
     if (recommendationStart) { recommendationStart.href = '../flashcards/?subject=ret14'; recommendationStart.textContent = 'Start nå →'; }
-    document.querySelectorAll('.subject-card .subject-cta').forEach(function (button) { button.textContent = 'Start øving'; });
+    document.querySelectorAll('.subject-card .subject-cta').forEach(function (button) {
+      if (!button.textContent || button.textContent === 'Start øving') button.textContent = 'Start øving →';
+    });
     document.querySelectorAll('.subject-card .subject-btn').forEach(function (button) { button.textContent = 'Åpne fag'; });
   }
 
@@ -232,7 +237,7 @@
   function loadAnswerLibrary() {
     if (currentUserPage() !== 'a-besvarelser.html') return;
     loadSubjectAccess(function () {
-      addScript('haugnes-answer-library-js', '../shared/haugnes-answer-library.js?v=20261020-cleanup');
+      addScript('haugnes-answer-library-js', '../shared/haugnes-answer-library.js?v=20261022-2');
     });
   }
 

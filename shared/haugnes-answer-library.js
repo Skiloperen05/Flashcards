@@ -7,12 +7,12 @@
   // Display-only catalog (no premium content – just icons, colours, names).
   // Actual package/resource data is fetched from Supabase and protected by RLS.
   var SUBJECTS = [
-    { code: 'RET14', name: 'Skatterett', accent: '#2f62ff', icon: '%', summary: 'Eksamenspakker for skatterett samles her når PDF-er legges ut.' },
-    { code: 'SOL1', name: 'Organisasjonsatferd', accent: '#20b97a', icon: '♣', summary: 'V25-pakken har to ulike A-besvarelser til samme eksamen. V26-pakken har A-besvarelse og sensorveiledning.' },
-    { code: 'SAM3', name: 'Makroøkonomi', accent: '#ef4444', icon: '↗', summary: 'V25- og V26-pakkene ligger ute med original eksamen, A-besvarelse og sensorveiledning.' },
-    { code: 'SAM1A', name: 'Mikroøkonomi intro', accent: '#f09828', icon: '↗', emblem: '../assets/emblems/SAM1A.png', summary: 'Første-semesterpakke for læringsmål, kompendium og eksamensrelevante modeller.' },
-    { code: 'RET1A', name: 'Juridiske emner', accent: '#3b82f6', icon: '§', emblem: '../assets/emblems/RET1A.png', summary: 'H25-pakken ligger ute med A-besvarelse og sensorveiledning.' },
-    { code: 'BED1', name: 'Bedriftsøkonomi', accent: '#20b97a', icon: '◆', emblem: '../assets/emblems/BED1.png', summary: 'H25-pakken ligger ute med eksamen, A-besvarelse og løsningsforslag.' }
+    { code: 'RET14', name: 'Skatterett', accent: '#2f62ff', icon: '%', emblem: '../assets/emblems/RET14.png?v=20261022-2', summary: 'Eksamenspakker for skatterett samles her når PDF-er legges ut.' },
+    { code: 'SOL1', name: 'Organisasjonsatferd', accent: '#20b97a', icon: '♣', emblem: '../assets/emblems/SOL1.png?v=20261022-2', summary: 'V25-pakken har to ulike A-besvarelser til samme eksamen. V26-pakken har A-besvarelse og sensorveiledning.' },
+    { code: 'SAM3', name: 'Makroøkonomi', accent: '#ef4444', icon: '↗', emblem: '../assets/emblems/SAM3.png?v=20261022-2', summary: 'V25- og V26-pakkene ligger ute med original eksamen, A-besvarelse og sensorveiledning.' },
+    { code: 'SAM1A', name: 'Mikroøkonomi intro', accent: '#f09828', icon: '↗', emblem: '../assets/emblems/SAM1A.png?v=20261022-2', summary: 'Første-semesterpakke for læringsmål, kompendium og eksamensrelevante modeller.' },
+    { code: 'RET1A', name: 'Juridiske emner', accent: '#3b82f6', icon: '§', emblem: '../assets/emblems/RET1A.png?v=20261022-2', summary: 'H25-pakken ligger ute med A-besvarelse og sensorveiledning.' },
+    { code: 'BED1', name: 'Bedriftsøkonomi', accent: '#20b97a', icon: '◆', emblem: '../assets/emblems/BED1.png?v=20261022-2', summary: 'H25-pakken ligger ute med eksamen, A-besvarelse og løsningsforslag.' }
   ];
   var ARCHIVE_SUBJECT_CODES = SUBJECTS.map(function (s) { return s.code; });
 

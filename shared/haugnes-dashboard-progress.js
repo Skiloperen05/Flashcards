@@ -24,7 +24,9 @@
     if (lower.indexOf('sol1') !== -1 || lower.indexOf('subj_sol1') !== -1) return 'subj_sol1';
     if (lower.indexOf('sam2') !== -1) return 'sam2';
     if (lower.indexOf('sam3') !== -1) return 'sam3';
+    if (lower.indexOf('met3') !== -1) return 'met3';
     if (lower.indexOf('met2') !== -1) return 'met2';
+    if (lower.indexOf('rrr11') !== -1) return 'rrr11';
     if (lower.indexOf('mat10') !== -1) return 'mat10';
     if (lower.indexOf('bed1') !== -1) return 'bed1';
     if (lower.indexOf('sam1a') !== -1) return 'sam1a';
@@ -91,9 +93,14 @@
     var planned = isPlanned(subject);
     var pct = stats.total ? stats.pct : 0;
     var emblem = subject.emblem ? '<img class="emblem-img" src="' + subject.emblem + '" alt="" onerror="this.remove()">' : '';
+    var shortCat = subject.categoryShortLabel ? String(subject.categoryShortLabel).replace('semester', 'sem') : '';
+    var stateLabel = stats.total ? 'Aktiv' : (subject.statusText === 'Første semester' || !subject.statusText ? 'Klar' : subject.statusText);
+    var badgeText = shortCat ? (shortCat + ' · ' + stateLabel) : stateLabel;
+    var badgeClass = 'subject-badge' + (stats.total ? ' active' : '');
     var sub = planned ? 'Planlagt fag · synlig fordi du har valgt det' : (stats.total ? formatNumber(stats.total) + ' svar · ' + stats.sessions + ' økter' : 'Ikke startet ennå');
-    var cta = !subject.flashcards || subject.flashcards === '#' ? '<span class="subject-cta">Åpne fag</span>' : planned ? '<span class="subject-cta" data-planned="1">Planlagt fag</span>' : '<span class="subject-cta" data-flashcards="' + flashcardHref(subject) + '">Start øving</span>';
-    return '<a class="subject-card" style="--accent:' + subject.accent + ';--pct:' + pct + '" href="' + subjectHref(subject) + '"><div class="subject-top"><span class="subject-icon">' + emblem + '<span class="emblem-fallback">' + subject.icon + '</span></span><span class="dots">⋮</span></div><div class="subject-code">' + subject.code + '</div><div class="subject-name">' + subject.name + '</div><div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label">' + pct + '%<small style="display:block;font-size:11px">riktige svar</small></div></div><div class="ring-sub">' + sub + '</div>' + cta + '</a>';
+    var ctaLabel = stats.total ? 'Fortsett →' : 'Start øving →';
+    var cta = !subject.flashcards || subject.flashcards === '#' ? '<span class="subject-cta">Åpne fag →</span>' : planned ? '<span class="subject-cta" data-planned="1">Planlagt fag</span>' : '<span class="subject-cta" data-flashcards="' + flashcardHref(subject) + '">' + ctaLabel + '</span>';
+    return '<a class="subject-card" style="--accent:' + subject.accent + ';--pct:' + pct + '" href="' + subjectHref(subject) + '"><div class="subject-top"><span class="subject-icon">' + emblem + '<span class="emblem-fallback">' + subject.icon + '</span></span><span class="' + badgeClass + '">' + esc(badgeText) + '</span></div><div class="subject-code">' + subject.code + '</div><div class="subject-name">' + subject.name + '</div><div class="ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg><div class="ring-label"><span>' + pct + '%</span><small>riktige svar</small></div></div><div class="ring-sub">' + sub + '</div>' + cta + '</a>';
   }
 
   function groupedCardsHtml(subjects) {

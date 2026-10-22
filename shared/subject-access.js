@@ -11,18 +11,18 @@
   var CORE_CODES = ['RET14', 'SOL1', 'SAM2', 'SAM3'];
   var DEFAULT_CODES = ['RET14', 'SOL1', 'SAM2', 'SAM3', 'MET2', 'MET3', 'MAT10', 'SAM1A', 'MET1', 'KOM1', 'RET1A', 'BED1'];
   var FALLBACK_CATALOG = [
-    { code: 'MET3', name: 'Databehandling for økonomer', accent: '#15803d', icon: 'ƒ', emblem: '../assets/emblems/MET3.png' },
-    { code: 'RET14', name: 'Skatterett', accent: '#2f62ff', icon: '⚖️', emblem: '../assets/emblems/RET14.png' },
-    { code: 'SOL1', name: 'Organisasjonsatferd', accent: '#20b97a', icon: '🧠', emblem: '../assets/emblems/SOL1.png' },
-    { code: 'SAM2', name: 'Mikroøkonomi', accent: '#f09828', icon: '📈', emblem: '../assets/emblems/SAM2.png' },
-    { code: 'SAM3', name: 'Makroøkonomi', accent: '#ef4444', icon: '🌍', emblem: '../assets/emblems/SAM3.png' },
-    { code: 'MET2', name: 'Metode', accent: '#7c3aed', icon: 'Σ', emblem: '../assets/emblems/MET2.png' },
-    { code: 'MAT10', name: 'Matematikk', accent: '#0891b2', icon: '∫', emblem: '../assets/emblems/MAT10.png' },
-    { code: 'SAM1A', name: 'Etikk, økonomi og bærekraft', accent: '#f09828', icon: '↗', emblem: '../assets/emblems/SAM1A.png' },
-    { code: 'MET1', name: 'Matematikk for økonomer', accent: '#06b6d4', icon: '%', emblem: '../assets/emblems/MET1.png' },
-    { code: 'KOM1', name: 'Kommunikasjon', accent: '#e8bc68', icon: '✎', emblem: '../assets/emblems/KOM1.png' },
-    { code: 'RET1A', name: 'Juridiske emner', accent: '#3b82f6', icon: '§', emblem: '../assets/emblems/RET1A.png' },
-    { code: 'BED1', name: 'Bedriftsøkonomi', accent: '#20b97a', icon: '◆', emblem: '../assets/emblems/BED1.png' }
+    { code: 'MET3', name: 'Databehandling for økonomer', accent: '#15803d', icon: 'ƒ', emblem: '../assets/emblems/MET3.png?v=20261022-2' },
+    { code: 'RET14', name: 'Skatterett', accent: '#2f62ff', icon: '⚖️', emblem: '../assets/emblems/RET14.png?v=20261022-2' },
+    { code: 'SOL1', name: 'Organisasjonsatferd', accent: '#20b97a', icon: '🧠', emblem: '../assets/emblems/SOL1.png?v=20261022-2' },
+    { code: 'SAM2', name: 'Mikroøkonomi', accent: '#f09828', icon: '📈', emblem: '../assets/emblems/SAM2.png?v=20261022-2' },
+    { code: 'SAM3', name: 'Makroøkonomi', accent: '#ef4444', icon: '🌍', emblem: '../assets/emblems/SAM3.png?v=20261022-2' },
+    { code: 'MET2', name: 'Metode', accent: '#7c3aed', icon: 'Σ', emblem: '../assets/emblems/MET2.png?v=20261022-2' },
+    { code: 'MAT10', name: 'Matematikk', accent: '#0891b2', icon: '∫', emblem: '../assets/emblems/MAT10.png?v=20261022-2' },
+    { code: 'SAM1A', name: 'Etikk, økonomi og bærekraft', accent: '#f09828', icon: '↗', emblem: '../assets/emblems/SAM1A.png?v=20261022-2' },
+    { code: 'MET1', name: 'Matematikk for økonomer', accent: '#06b6d4', icon: '%', emblem: '../assets/emblems/MET1.png?v=20261022-2' },
+    { code: 'KOM1', name: 'Kommunikasjon', accent: '#e8bc68', icon: '✎', emblem: '../assets/emblems/KOM1.png?v=20261022-2' },
+    { code: 'RET1A', name: 'Juridiske emner', accent: '#3b82f6', icon: '§', emblem: '../assets/emblems/RET1A.png?v=20261022-2' },
+    { code: 'BED1', name: 'Bedriftsøkonomi', accent: '#20b97a', icon: '◆', emblem: '../assets/emblems/BED1.png?v=20261022-2' }
   ];
   var COURSE_CODES = FALLBACK_CATALOG.map(function (s) { return s.code; });
 
