@@ -31,7 +31,7 @@
       code: 'MET3',
       name: 'Databehandling for økonomer',
       icon: 'ƒ',
-      emblem: '../assets/haugnes-logo-mark.svg',
+      emblem: '../assets/emblems/MET3.png',
       accent: '#15803d',
       status: 'active',
       statusText: 'Klar',
@@ -318,6 +318,31 @@
     } catch (e) {}
   }
 
+  var DEDICATED_EMBLEMS = {
+    BED1: '../assets/emblems/BED1.png',
+    KOM1: '../assets/emblems/KOM1.png',
+    MAT10: '../assets/emblems/MAT10.png',
+    MET1: '../assets/emblems/MET1.png',
+    MET2: '../assets/emblems/MET2.png',
+    MET3: '../assets/emblems/MET3.png',
+    RET14: '../assets/emblems/RET14.png',
+    RET1A: '../assets/emblems/RET1A.png',
+    RRR11: '../assets/emblems/RRR11.png',
+    SAM1A: '../assets/emblems/SAM1A.png',
+    SAM2: '../assets/emblems/SAM2.png',
+    SAM3: '../assets/emblems/SAM3.png',
+    SOL1: '../assets/emblems/SOL1.png'
+  };
+
+  function resolveSubjectEmblem(subjectCode, candidate, fallback) {
+    var clean = code(subjectCode);
+    var dedicated = DEDICATED_EMBLEMS[clean];
+    if (dedicated && (!candidate || /haugnes-logo-mark\.svg$|Flashcardslogo\.png$/i.test(String(candidate)))) {
+      return dedicated;
+    }
+    return candidate || dedicated || fallback || '../assets/Flashcardslogo.png';
+  }
+
   function allSubjectList() {
     var custom = loadCustomSubjectsLocal();
     var map = {};
@@ -328,14 +353,15 @@
     });
     custom.forEach(function (c) {
       var cCode = code(c.code);
+      var patched = Object.assign({}, c, { emblem: resolveSubjectEmblem(cCode, c.emblem) });
       if (!map[cCode]) {
         map[cCode] = true;
-        var decorated = withCategory(Object.assign({}, c), c.categoryId || 'electives', c.sortOrder || 99);
+        var decorated = withCategory(patched, c.categoryId || 'electives', c.sortOrder || 99);
         list.push(decorated);
       } else {
         var idx = list.findIndex(function (item) { return code(item.code) === cCode; });
         if (idx !== -1) {
-          list[idx] = withCategory(Object.assign({}, list[idx], c), c.categoryId || list[idx].categoryId || 'electives', c.sortOrder || list[idx].sortOrder || 99);
+          list[idx] = withCategory(Object.assign({}, list[idx], patched), c.categoryId || list[idx].categoryId || 'electives', c.sortOrder || list[idx].sortOrder || 99);
         }
       }
     });
@@ -362,7 +388,7 @@
       categoryId: categoryId,
       accent: accent,
       icon: iconStr,
-      emblem: data.emblem || '../assets/Flashcardslogo.png',
+      emblem: resolveSubjectEmblem(cleanCode, data.emblem),
       path: path,
       flashcards: flashcards,
       status: data.status || 'active',
@@ -464,7 +490,7 @@
       name: row.name || cleanCode,
       kicker: row.kicker || '',
       icon: row.icon || '📚',
-      emblem: '../assets/Flashcardslogo.png',
+      emblem: resolveSubjectEmblem(cleanCode, row.emblem),
       accent: row.accent || '#2563eb',
       categoryId: row.category_id || 'electives',
       status: deriveStatus(row.status_text),
@@ -635,7 +661,7 @@
         code: subjectCode,
         name: row.name || previous.name || subjectCode,
         icon: row.icon || previous.icon || '✦',
-        emblem: row.emblem || previous.emblem || '',
+        emblem: resolveSubjectEmblem(subjectCode, row.emblem || previous.emblem, ''),
         accent: row.accent || previous.accent || '#2f62ff',
         status: row.status || previous.status || 'active',
         statusText: previous.statusText || 'Aktiv',

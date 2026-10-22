@@ -8,8 +8,8 @@ insert into public.app_subjects
 values
   ('MET3', 'Databehandling for økonomer',
    'Excel-formler, formelvalg, praktiske modeller og Power Query fra MET3-oversikten.',
-   'semester3', '#15803d', 'ƒ', '../assets/haugnes-logo-mark.svg', '../met3/', '../flashcards/?subject=met3', 'active', true, 30)
-on conflict (code) do nothing;
+   'semester3', '#15803d', 'ƒ', '../assets/emblems/MET3.png', '../met3/', '../flashcards/?subject=met3', 'active', true, 30)
+on conflict (code) do update set emblem = excluded.emblem;
 
 insert into public.subject_pages
   (subject_code, name, kicker, icon, accent, category_id, status_text, lead, next_step,

@@ -1,6 +1,6 @@
 # Project Map
 
-Last updated: 2026-10-21
+Last updated: 2026-10-22
 
 Purpose: make future app changes faster by documenting the stable entry points, data sources, and search paths. Update this file whenever a change moves, renames, adds, or removes app-facing functionality.
 
@@ -23,7 +23,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Login/auth entry: `login.html` (incl. "Glemt passord?"); password reset landing: `reset-password.html`.
 - Authenticated user pages: `user/`.
 - Subject pages: one folder per subject, for example `sam3/`, `sam2/`, `ret14/`, `sol1/`.
-- Subject app icons/emblems and A-besvarelser flow emblems: `assets/emblems/`, referenced from `shared/subject-meta.js` and `shared/haugnes-answer-library.js`.
+- Subject app icons/emblems and A-besvarelser flow emblems: `assets/emblems/` (including `MET3.png`, `RRR11.png`, and updated `SAM1A.png`, `SAM2.png`, `SAM3.png`, `MAT10.png`, `SOL1.png`), referenced from `shared/subject-meta.js`, `shared/subject-access.js`, `user/butikk.html`, and `shared/haugnes-answer-library.js`.
 - Shared behavior, data, styling, and page enhancement scripts: `shared/`.
 - Supabase setup/schema seed reference: `supabase-setup.sql`.
 - Supabase Edge Functions: `supabase/functions/`.
@@ -54,7 +54,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 
 - Auth/session/client bootstrap: `shared/auth-guard.js`. Root paths resolve from the bootstrap script even when called by inline subject code, keeping login redirects and assets correct for universal subject links. The COSO release versions its subject auth/study entry points and updated study assets to refresh browser caches.
 - Entitlements and subject access: `shared/entitlements.js`, `shared/subject-access.js`, `shared/subject-gate.js`.
-- Subject metadata: `shared/subject-meta.js`. Merges the published `app_subjects` catalogue with published custom Fagstudio rows from `subject_pages`, so newly created subjects appear in navigation and the shop.
+- Subject metadata: `shared/subject-meta.js`. Merges the published `app_subjects` catalogue with published custom Fagstudio rows from `subject_pages`, so newly created subjects appear in navigation and the shop, and maps dedicated emblems (`assets/emblems/*.png`, including `MET3.png` and `RRR11.png`).
 - Subject page rendering/data/enhancements: `shared/subject-page-renderer.js`, `shared/subject-page-data.js`, `shared/subject-page-enhancements.js`, `shared/subject-resources.js`.
 - Subject Studio API (single source of truth for admin-editable subject pages): `shared/subjects-studio.js`. Reads/writes `subject_pages`, `subject_page_blocks` and `subject_files` (Storage bucket `subject-files`) in Supabase. Automatic import from legacy localStorage templates is retired to prevent removed demos from being restored or published Studio edits from being overwritten. Existing local data is retained; `migrateLegacyIfNeeded` remains a no-op compatibility API. Exposes `window.SubjectsStudio` (listSubjects/getSubject/upsertSubject/upsertBlock/reorderBlocks/deleteBlock/uploadFile/updateFile/deleteFile/signedUrl/subscribeChanges).
 - Subject document publishing: `shared/subject-page-studio-bridge.js` converts files selected in the subject modals from FileReader data to real File uploads. `shared/subjects-studio.js` uploads to private Storage before returning protected viewer links, enables the A-besvarelser section after document publication, rejects empty new answer entries, and supports attaching/replacing a local document on an existing entry through Fagstudio. Failed new uploads remove their incomplete metadata; replacing a file preserves the old document on upload failure. Missing legacy attachments are explicitly marked on the subject page.
