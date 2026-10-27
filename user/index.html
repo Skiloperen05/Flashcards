@@ -174,7 +174,7 @@ svg{display:block}
 
     <div class="dashboard">
       <div class="grid-main">
-        <div class="section-title" id="mine-fag"><h2>Mine fag</h2><a href="../flashcards/">Se alle fag →</a></div>
+        <div class="section-title" id="mine-fag"><h2>Aktive fag</h2><a href="subjects.html">Alle mine fag →</a></div>
         <section class="subjects" aria-live="polite"><p>Laster fagene dine …</p>
         </section>
       </div>
@@ -204,7 +204,7 @@ svg{display:block}
   </main>
 </div>
 
-<script src="auth-guard.js?v=20261022-2"></script>
+<script src="auth-guard.js?v=20261027-active-subjects"></script>
 <script>
 function getStats(){try{return JSON.parse(localStorage.getItem('fc_stats')||'{}')}catch(e){return {}}}
 function countStats(){var s=getStats(),sess=0,cards=0,q=0,qp=[];Object.values(s).forEach(function(d){(d.sessions||[]).forEach(function(x){sess++;cards+=x.total||0});(d.quizSessions||[]).forEach(function(x){q++;qp.push(x.pct||0)})});return{sessions:sess,cards:cards,quiz:q,avg:qp.length?Math.round(qp.reduce(function(a,b){return a+b},0)/qp.length):0}}

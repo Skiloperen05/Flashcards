@@ -1,6 +1,6 @@
 # Project Map
 
-Last updated: 2026-10-22
+Last updated: 2026-10-27
 
 Purpose: make future app changes faster by documenting the stable entry points, data sources, and search paths. Update this file whenever a change moves, renames, adds, or removes app-facing functionality.
 
@@ -37,9 +37,9 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 - Document gateway regression tests: `node scripts/document-access-test.mjs` (Node 24+), or `npm run check:documents` (also runs `scripts/subject-publishing-test.mjs` for subject-document publication). Migration `20260913191233_protect_document_access.sql` aligns metadata/Storage publication checks and blocks newly saved external document URLs.
 - Known legacy exposure: old exam packages under `*/eksamenspakker/`, the SAM2 DOCX and SAM3 model PDFs are public static assets in this public GitHub repository. Existing hardcoded Drive links in the legacy answer library/dashboard are not protected by the new subject-file gateway. Moving or removing current copies cannot retract already public Git history/downloads. See `docs/document-access.md`.
 
-- Dashboard: `user/index.html`.
+- Dashboard: `user/index.html`. Shows only active subjects and a link to Mine fag; subject selection lives exclusively on Mine fag to keep Hjem uncluttered.
 - Admin-hub & Fagstudio: `user/admin.html`. Sentral kontrollside for administratorer (`profiles.is_admin = true`) bygd på `shared/subjects-studio.js`. Redigerer alle fag (både innebygde og egne) fra én katalog med akkordeon-editor: fag-header (kode, navn, kicker, ikon, farge, semester), publisering, memo & studietips (intro/eksamen/studieråd), seksjonssynlighet-brytere, viktige temaer, anbefalt øvingsløp, eksamensradar (m/prioritet), A-besvarelser og forelesningsnotater med støtte for både Google Drive 5 TB skylagring og lokal PDF-opplasting til Supabase Storage (`subject-files` bucket), oppgavebank med trinnvis fasit, samt flashcard-innstillinger. Inkluderer live Google Drive-utforsker (GIS token client), forhåndsvisning i iframe (student- eller admin-visning) Gamle lokale nettlesermaler importeres ikke automatisk; publisert Studio-innhold er autoritativt. Alle endringer publiseres umiddelbart til studenter med entitlement via Supabase Realtime.
-- Subject management: `user/subjects.html`.
+- Subject management: `user/subjects.html`. Always shows every entitled subject (including inactive ones); the expanded «Velg fag» panel above the search controls changes the personal active set without removing access or progress.
 - Shop/entitlement claiming, Stripe checkout entry, discount field, and admin commerce editor for subjects, bundles, Vennepass, prices, and rabattkoder: `user/butikk.html`.
 - Admin Hub: `user/admin-hub.html`. Admin-only course catalogue, subject pricing, standalone exam-package pricing, activity overview, user list, and ownership counts.
 - Exam analysis catalog with only published/direct analysis links: `user/eksamensanalyse.html`.
@@ -53,7 +53,7 @@ Purpose: make future app changes faster by documenting the stable entry points, 
 ## Shared Core Scripts
 
 - Auth/session/client bootstrap: `shared/auth-guard.js`. Root paths resolve from the bootstrap script even when called by inline subject code, keeping login redirects and assets correct for universal subject links. The COSO release versions its subject auth/study entry points and updated study assets to refresh browser caches.
-- Entitlements and subject access: `shared/entitlements.js`, `shared/subject-access.js`, `shared/subject-gate.js`.
+- Entitlements and subject access: `shared/entitlements.js`, `shared/subject-access.js`, `shared/subject-gate.js`. Active choices are independent of ownership, also for admins/Vennepass. `HaugnesSubjectAccess.getAvailable()` returns the full entitled collection; `getSelected()` / patched `HaugnesSubjects.getAll()` supply active subjects to Hjem and existing study overviews. Defaults to all available subjects until the user chooses; an explicit empty set stays empty. Choices sync in existing `user_custom_data.data.activeSubjects` (`codes`, `updatedAt` in Unix milliseconds), with per-user local cache `hf_active_subjects_v1:<user-id>` and pending local edits retained on failure. Sync runs on startup, edits, entitlements, focus and reconnect; newer timestamps win. Writes merge with existing custom data. The legacy browser-wide choice is claimed once via `hf_enabled_subjects_owner`. No schema migration is needed.
 - Subject metadata: `shared/subject-meta.js`. Merges the published `app_subjects` catalogue with published custom Fagstudio rows from `subject_pages`, so newly created subjects appear in navigation and the shop, and maps dedicated 3:4 3D emblems (`assets/emblems/*.png`, including `MET3.png` and `RRR11.png`) with cache-busting version query parameters.
 - Subject page rendering/data/enhancements: `shared/subject-page-renderer.js`, `shared/subject-page-data.js`, `shared/subject-page-enhancements.js`, `shared/subject-resources.js`.
 - Subject Studio API (single source of truth for admin-editable subject pages): `shared/subjects-studio.js`. Reads/writes `subject_pages`, `subject_page_blocks` and `subject_files` (Storage bucket `subject-files`) in Supabase. Automatic import from legacy localStorage templates is retired to prevent removed demos from being restored or published Studio edits from being overwritten. Existing local data is retained; `migrateLegacyIfNeeded` remains a no-op compatibility API. Exposes `window.SubjectsStudio` (listSubjects/getSubject/upsertSubject/upsertBlock/reorderBlocks/deleteBlock/uploadFile/updateFile/deleteFile/signedUrl/subscribeChanges).
@@ -182,12 +182,13 @@ Typical package IDs:
 
 - Dev server: `npm run dev` (starts `server.js` on port 3000).
 - Production start: `npm run start` (`node server.js`).
-- Build check: `npm run build` (`npm run check:js && npm run check:smoke && npm run check:study && npm run check:content`).
+- Build check: `npm run build` (`npm run check:js && npm run check:smoke && npm run check:study && npm run check:content && npm run check:subjects`).
 - JS check: `npm run check:js`.
 - Smoke check: `npm run check:smoke`.
 - Study regression check: `npm run check:study` validates SAM3 and both RRR11 generated catalogs, then runs `node scripts/flashcard-study-test.mjs` with the existing jsdom dependency. Covers timed Leitner transitions, early practice/lapses, legacy content, native in-subject sessions, combined source identities, filters/order/limits, keyboard, completion/retry, cloud failure recovery, account isolation, subject-tool placement, dynamically bounded session lengths, COSO source fidelity, all 80 additional RRR11 cards in flashcard and quiz modes, ID collision checks, deck registration on both surfaces, source display, native multiple-choice grading/retry/shared progress, and RRR11 notes/study navigation with repeated Studio rendering.
 - Content regression check: `npm run check:content` (`scripts/content-cleanup-test.mjs`): empty subjects, populated-section visibility, administrator authoring, explicit visibility flags, retained edited local notes, source cards and disabled legacy demo migration.
 - Content inventory: `docs/content-inventory.md` records the material kept per subject and the removed filler. `data/remove-placeholder-content.sql` removes only audited legacy seed blocks/copy and unpublishes empty seeded answer packages, leaving documents, user state, entitlements, MET3 blocks and authored RRR11 copy intact. Run it after historical seed imports; historical migrations are unchanged.
+- Active-subject regression check: `npm run check:subjects` (`scripts/active-subjects-test.mjs`): entitlement bounds, full-access selection, empty/reload, remote persistence and merge, failure recovery, account isolation, rapid edits, legacy migration, keyboard focus, dashboard filtering and the full Mine fag collection. Uses jsdom and a simulated cloud client.
 - Full check: `npm run check`.
 - Known repo policy: `biome check` has preexisting failures and should not block unless the task specifically concerns Biome cleanup.
 

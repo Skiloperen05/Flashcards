@@ -166,8 +166,8 @@
   function loadSubjectAccess(callback) {
     addScript('haugnes-first-semester-js', rootRelative('shared/first-semester-content.js?v=20261020-cleanup'), () => {
       addScript('haugnes-learning-content-js', rootRelative('shared/learning-content.js?v=20261020-cleanup'), function () {
-        addScript('haugnes-subject-meta-js', rootRelative('shared/subject-meta.js?v=20261022-2'), function () {
-          addScript('haugnes-subject-access-js', rootRelative('shared/subject-access.js?v=20261022-2'), function () {
+        addScript('haugnes-subject-meta-js', rootRelative('shared/subject-meta.js?v=20261027-active-subjects'), function () {
+          addScript('haugnes-subject-access-js', rootRelative('shared/subject-access.js?v=20261027-active-subjects'), function () {
             if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.enhanceCurrentPage === 'function') window.HaugnesSubjectAccess.enhanceCurrentPage();
             if (callback) callback();
           });
@@ -248,7 +248,7 @@
         }
         if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.filterVisibleDom === 'function') window.HaugnesSubjectAccess.filterVisibleDom();
       });
-      addScript('haugnes-dashboard-progress-js', rootRelative('shared/haugnes-dashboard-progress.js?v=20261022-2'), function () {
+      addScript('haugnes-dashboard-progress-js', rootRelative('shared/haugnes-dashboard-progress.js?v=20261027-active-subjects'), function () {
         if (window.HaugnesDashboardProgress && typeof window.HaugnesDashboardProgress.run === 'function') {
           window.HaugnesDashboardProgress.run();
         }

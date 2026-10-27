@@ -5,10 +5,12 @@
   window.__haugnesSubjectAccessInstalled = true;
 
   var STORAGE_KEY = 'hf_enabled_subjects';
-  var MIGRATION_KEY = 'hf_enabled_subjects_catalog_20260529';
-  var CORE_ONLY_KEY = 'hf_enabled_subjects_core_only';
+  var USER_KEY = 'hf_active_subjects_v1:';
+  var OWNER_KEY = 'hf_enabled_subjects_owner';
+  var syncing = null;
+  var syncedUser = '';
+  var syncStatus = '';
   var EXPLICIT_EMPTY_KEY = 'hf_enabled_subjects_explicit_empty';
-  var CORE_CODES = ['RET14', 'SOL1', 'SAM2', 'SAM3'];
   var DEFAULT_CODES = ['RET14', 'SOL1', 'SAM2', 'SAM3', 'MET2', 'MET3', 'MAT10', 'SAM1A', 'MET1', 'KOM1', 'RET1A', 'BED1'];
   var FALLBACK_CATALOG = [
     { code: 'MET3', name: 'Databehandling for økonomer', accent: '#15803d', icon: 'ƒ', emblem: '../assets/emblems/MET3.png?v=20261022-2' },
@@ -50,45 +52,119 @@
     return null;
   }
 
-  function getSelected() {
-    var selected = readJson(STORAGE_KEY, null);
+  function sessionUser() {
+    var session = window.AuthGuard && window.AuthGuard.getSession && window.AuthGuard.getSession();
+    if (!session || !session.user) return '';
+    return session.user.id || (session.user.email === 'dev@student.local' ? 'local-development' : '');
+  }
+
+  function getAvailable() {
     var owned = entitledSet();
-    if (Array.isArray(owned) && !owned.length) return [];
-    if (readJson(EXPLICIT_EMPTY_KEY, false)) return [];
-    if (!Array.isArray(selected) || !selected.length) selected = Array.isArray(owned) ? owned.slice() : DEFAULT_CODES;
-    if (!readJson(CORE_ONLY_KEY, false) && selected.map(code).sort().join(',') === CORE_CODES.slice().sort().join(',')) selected = DEFAULT_CODES.slice();
-    if (!readJson(MIGRATION_KEY, false)) {
-      var compactSelected = selected.map(code).sort().join(',');
-      if (compactSelected === CORE_CODES.slice().sort().join(',')) selected = DEFAULT_CODES.slice();
-      writeJson(MIGRATION_KEY, true);
-    }
-    var available = catalog().map(function (s) { return code(s.code || s.id); });
-    var value = selected.map(code).filter(function (item, index, arr) { return item && arr.indexOf(item) === index && (!available.length || available.indexOf(item) !== -1); });
-    // Administrators and Vennepass users have a real all-access bypass.
-    // Returning an old local selection here made newly created courses
-    // invisible to the very administrator who created them.
-    if (owned === null) {
-      if (window.HaugnesEntitlements && window.HaugnesEntitlements.isLoaded && window.HaugnesEntitlements.isLoaded() && window.HaugnesEntitlements.hasBypass && window.HaugnesEntitlements.hasBypass()) return available;
-      return value;
-    }
-    // Hard cap: cannot select subjects the user hasn't paid/claimed.
-    return value.filter(function (c) { return owned.indexOf(c) !== -1; });
+    return catalog().filter(function (subject) {
+      return owned === null || owned.indexOf(code(subject.code || subject.id)) !== -1;
+    });
+  }
+
+  function selectionRecord() {
+    var user = sessionUser();
+    return user ? readJson(USER_KEY + user, null) : null;
+  }
+
+  function getSelected() {
+    var record = selectionRecord();
+    var selected = record && Array.isArray(record.codes) ? record.codes.map(code) : null;
+    return getAvailable().map(function (subject) { return code(subject.code || subject.id); })
+      .filter(function (c) { return selected === null || selected.indexOf(c) !== -1; });
+  }
+
+  function notifySelection() {
+    patchIntegrations();
+    renderControls();
+    refreshSubjectPage();
+    filterVisibleDom();
+    window.dispatchEvent(new CustomEvent('haugnes:subject-access-changed', { detail: { subjects: getSelected() } }));
   }
 
   function setSelected(codes) {
-    var available = catalog().map(function (s) { return code(s.code || s.id); });
-    var value = (codes || []).map(code).filter(function (item, index, arr) { return item && arr.indexOf(item) === index && (!available.length || available.indexOf(item) !== -1); });
-    var owned = entitledSet();
-    if (Array.isArray(owned)) value = value.filter(function (c) { return owned.indexOf(c) !== -1; });
-    writeJson(EXPLICIT_EMPTY_KEY, value.length === 0);
-    writeJson(CORE_ONLY_KEY, value.slice().sort().join(',') === CORE_CODES.slice().sort().join(','));
-    writeJson(STORAGE_KEY, value);
-    patchIntegrations();
-    renderControls();
-    filterVisibleDom();
-    refreshSubjectPage();
-    window.dispatchEvent(new CustomEvent('haugnes:subject-access-changed', { detail: { subjects: value.slice() } }));
+    var user = sessionUser();
+    if (!user) return getSelected();
+    var available = getAvailable().map(function (s) { return code(s.code || s.id); });
+    var value = (codes || []).map(code).filter(function (item, index, arr) {
+      return item && arr.indexOf(item) === index && available.indexOf(item) !== -1;
+    });
+    var previous = selectionRecord();
+    var stamp = Math.max(Date.now(), Number(previous && previous.updatedAt || 0) + 1);
+    writeJson(USER_KEY + user, { codes: value, updatedAt: stamp, dirty: true });
+    syncStatus = user === 'local-development' ? 'Lagret i denne nettleseren.' : 'Lagrer fagvalget …';
+    notifySelection();
+    syncRemote();
     return value;
+  }
+
+  // The old browser-wide choice is claimed once, so another account cannot inherit it.
+  function migrateSelection(user) {
+    if (selectionRecord()) return;
+    var owner = readJson(OWNER_KEY, '');
+    if (owner && owner !== user) return;
+    var legacy = readJson(STORAGE_KEY, null);
+    if (Array.isArray(legacy)) {
+      writeJson(USER_KEY + user, {
+        codes: readJson(EXPLICIT_EMPTY_KEY, false) ? [] : legacy.map(code),
+        updatedAt: 1, dirty: true
+      });
+    }
+    writeJson(OWNER_KEY, user);
+  }
+
+  function syncRemote(force) {
+    var user = sessionUser();
+    if (!user) return Promise.resolve();
+    migrateSelection(user);
+    if (user === 'local-development') return Promise.resolve();
+    if (syncing) return syncing.then(function () {
+      return syncedUser !== user || (selectionRecord() || {}).dirty ? syncRemote(force) : undefined;
+    });
+    if (!force && syncedUser === user && !(selectionRecord() || {}).dirty) return Promise.resolve();
+    var client;
+    try { client = window.AuthGuard.getClient(); } catch (e) { return Promise.resolve(); }
+    syncing = Promise.resolve().then(function () {
+      return client.from('user_custom_data').select('data').eq('user_id', user).maybeSingle();
+    }).then(function (result) {
+      if (result.error) throw result.error;
+      if (sessionUser() !== user) return;
+      var data = result.data && result.data.data || {};
+      var remote = data.activeSubjects;
+      var local = selectionRecord();
+      if (remote && Array.isArray(remote.codes) && (!local || Number(remote.updatedAt) > Number(local.updatedAt))) {
+        writeJson(USER_KEY + user, { codes: remote.codes.map(code), updatedAt: Number(remote.updatedAt) || 0, dirty: false });
+        syncStatus = 'Fagvalget er lagret på kontoen din.';
+        notifySelection();
+        return;
+      }
+      if (!local || !local.dirty) return;
+      var snapshot = { codes: local.codes.slice(), updatedAt: local.updatedAt };
+      data.activeSubjects = snapshot;
+      return client.from('user_custom_data').upsert({
+        user_id: user, data: data, updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' }).then(function (saved) {
+        if (saved.error) throw saved.error;
+        if (sessionUser() !== user) return;
+        var current = selectionRecord();
+        if (current && current.updatedAt === snapshot.updatedAt) {
+          current.dirty = false;
+          writeJson(USER_KEY + user, current);
+        }
+        syncStatus = 'Fagvalget er lagret på kontoen din.';
+      });
+    }).then(function () {
+      if (sessionUser() === user) syncedUser = user;
+    }).catch(function () {
+      if (sessionUser() === user) syncStatus = 'Kun lagret i denne nettleseren foreløpig. Synkronisering prøves igjen når du er på nett.';
+    }).then(function () {
+      syncing = null;
+      renderControls();
+    });
+    return syncing;
   }
 
   function isEnabled(subject) {
@@ -151,34 +227,35 @@
       '.hf-access-pill.active{background:linear-gradient(135deg,#245cff,#4b7dff);border-color:rgba(126,162,255,.44);color:#fff}.hf-access-dot{width:9px;height:9px;border-radius:50%;background:var(--accent,#2f62ff)}',
       '.hf-access-shop{display:inline-flex;align-items:center;justify-content:center;min-height:38px;margin-top:12px;padding:0 13px;border-radius:12px;background:linear-gradient(135deg,#245cff,#4b7dff);color:#fff;font:900 12px Lora,Georgia,serif;box-shadow:0 12px 28px rgba(47,98,255,.28)}',
       '.hf-subject-hidden-by-access{display:none!important}',
+      '.hf-access-panel summary{cursor:pointer;color:#d8e5ff;font-weight:850;min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none}.hf-access-panel summary::-webkit-details-marker{display:none}.hf-access-panel summary::after{content:"+";font-size:24px}.hf-access-panel[open] summary::after{content:"−"}.hf-access-panel[open] summary{margin-bottom:14px}.hf-access-panel summary small{font-size:12px;color:#aebddd}.hf-access-pill{min-height:44px;white-space:normal;text-align:left;border-radius:13px}.hf-access-pill:focus-visible,.hf-access-actions button:focus-visible,.hf-access-panel summary:focus-visible{outline:3px solid #a8c4ff;outline-offset:3px}.hf-access-sync{font-size:12px;line-height:1.5;color:#aebddd;margin:12px 0 0}.hf-access-check{width:18px;flex-shrink:0}.hf-access-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}',
       '.hf-access-empty{padding:16px;border-radius:18px;background:rgba(255,255,255,.035);border:1px dashed rgba(126,162,255,.25);color:#aebddd;font:850 13px/1.5 Lora,Georgia,serif;margin-top:12px}'
     ].join('\n');
     document.head.appendChild(style);
   }
 
-  function panelHtml() {
+  function panelHtml(open) {
     var selected = getSelected();
-    var owned = entitledSet();
-    var subjects = catalog();
-    if (Array.isArray(owned)) subjects = subjects.filter(function (subject) { return owned.indexOf(code(subject.code || subject.id)) !== -1; });
-    if (Array.isArray(owned) && !owned.length) {
-      return '<section class="hf-access-panel" id="hfSubjectAccessPanel"><div class="hf-access-head"><div><strong>Mine fag</strong><span>Du eier ingen fag ennå. Gå til Butikk for å kjøpe et fag, så vises det her automatisk.</span><a class="hf-access-shop" href="butikk.html">Gå til Butikk</a></div></div></section>';
-    }
-    return '<section class="hf-access-panel" id="hfSubjectAccessPanel"><div class="hf-access-head"><div><strong>Mine fag</strong><span>Velg hvilke fag du vil ha synlig i dashboard, studieplan, eksamensarkiv og andre oversikter.</span></div><div class="hf-access-actions"><button type="button" data-access-all>Velg alle</button><button type="button" data-access-none>Velg ingen</button><button type="button" data-access-core>Kjernefag</button></div></div><div class="hf-access-grid">' + subjects.map(function (subject) {
-      var c = code(subject.code || subject.id);
-      return '<button type="button" class="hf-access-pill ' + (selected.indexOf(c) !== -1 ? 'active' : '') + '" data-access-subject="' + esc(c) + '" style="--accent:' + esc(subject.accent || '#2f62ff') + '"><span class="hf-access-dot"></span>' + esc(c) + ' · ' + esc(subject.name || subject.label || '') + '</button>';
-    }).join('') + '</div></section>';
+    var subjects = getAvailable();
+    var summary = '<summary><span>Velg fag</span><small>' + selected.length + ' av ' + subjects.length + ' aktive</small></summary>';
+    var content = !subjects.length
+      ? '<p class="hf-access-sync">Du har ingen fag tilgjengelig ennå. <a href="butikk.html">Finn fag i Butikk →</a></p>'
+      : '<div class="hf-access-head"><div><strong>Hvilke fag tar du nå?</strong><span>Aktive fag vises på Hjem og i studieoversiktene. Du beholder tilgang og progresjon i alle fag. Finn dem alltid under Mine fag.</span></div><div class="hf-access-actions"><button type="button" data-access-all>Velg alle</button><button type="button" data-access-none>Fjern alle</button></div></div><div class="hf-access-grid">' + subjects.map(function (subject) {
+        var c = code(subject.code || subject.id);
+        var active = selected.indexOf(c) !== -1;
+        return '<button type="button" class="hf-access-pill ' + (active ? 'active' : '') + '" aria-pressed="' + active + '" data-access-subject="' + esc(c) + '" style="--accent:' + esc(subject.accent || '#2f62ff') + '"><span class="hf-access-check" aria-hidden="true">' + (active ? '✓' : '○') + '</span><span>' + esc(c) + ' · ' + esc(subject.name || subject.label || '') + '</span></button>';
+      }).join('') + '</div>';
+    return '<details class="hf-access-panel" id="hfSubjectAccessPanel"' + (open ? ' open' : '') + '>' + summary + content
+      + '<p class="hf-access-sync" role="status">' + esc(syncStatus || 'Velg fagene du vil følge dette semesteret. Endringer lagres automatisk.') + '</p></details>';
   }
 
   function mountControls() {
     injectStyles();
     var page = pageName();
-    if (page !== 'subjects.html') return;
+    if (!/\/user\//.test(window.location.pathname) || page !== 'subjects.html') return;
     if (document.getElementById('hfSubjectAccessPanel')) return;
     var host = document.querySelector('main.main .toolbar');
     if (!host) return;
-    if (page === 'subjects.html') host.insertAdjacentHTML('beforebegin', panelHtml());
-    else host.insertAdjacentHTML('afterbegin', panelHtml());
+    host.insertAdjacentHTML('beforebegin', panelHtml(true));
     bindControls();
   }
 
@@ -192,7 +269,6 @@
       var current = getSelected();
       if (btn.hasAttribute('data-access-all')) setSelected(catalog().map(function (s) { return s.code || s.id; }));
       else if (btn.hasAttribute('data-access-none')) setSelected([]);
-      else if (btn.hasAttribute('data-access-core')) setSelected(CORE_CODES);
       else if (btn.hasAttribute('data-access-subject')) {
         var c = btn.getAttribute('data-access-subject');
         var next = current.indexOf(c) !== -1 ? current.filter(function (x) { return x !== c; }) : current.concat([c]);
@@ -204,14 +280,21 @@
   function renderControls() {
     var panel = document.getElementById('hfSubjectAccessPanel');
     if (!panel) return;
-    panel.outerHTML = panelHtml();
+    var focus = panel.contains(document.activeElement) ? document.activeElement : null;
+    var focusCode = focus && focus.getAttribute('data-access-subject');
+    var focusAction = focus && (focus.hasAttribute('data-access-all') ? '[data-access-all]' : focus.hasAttribute('data-access-none') ? '[data-access-none]' : 'summary');
+    panel.outerHTML = panelHtml(panel.open);
     bindControls();
+    if (focus) {
+      var replacement = focusCode ? Array.from(document.querySelectorAll('#hfSubjectAccessPanel [data-access-subject]')).find(function (button) { return button.getAttribute('data-access-subject') === focusCode; }) : document.querySelector('#hfSubjectAccessPanel ' + focusAction);
+      if (replacement) replacement.focus({ preventScroll: true });
+    }
   }
 
   function refreshSubjectPage() {
     if (pageName() !== 'subjects.html') return;
     try {
-      if (window.HaugnesSubjects && typeof window.HaugnesSubjects.getAll === 'function') window.SUBJECTS = window.HaugnesSubjects.getAll();
+      if (window.HaugnesSubjects && typeof window.HaugnesSubjects.getAll === 'function') window.SUBJECTS = getAvailable();
       if (typeof window.renderSubjects === 'function') window.renderSubjects();
     } catch (e) {}
   }
@@ -239,6 +322,7 @@
   }
 
   function hideBySubject(el, selected) {
+    if (pageName() === 'subjects.html' && el && el.closest && el.closest('#subjectsGrid')) return;
     if (!el || el.id === 'hfSubjectAccessPanel' || el.closest && el.closest('#hfSubjectAccessPanel')) return;
     var c = detectSubjectFromElement(el);
     if (!c) return;
@@ -299,6 +383,7 @@
   function boot() {
     patchIntegrations();
     enhanceCurrentPage();
+    syncRemote().then(notifySelection);
     window.setTimeout(enhanceCurrentPage, 120);
     window.setTimeout(enhanceCurrentPage, 600);
     window.setTimeout(filterVisibleDom, 1200);
@@ -312,12 +397,20 @@
   });
   window.addEventListener('haugnes:entitlements-changed', function () {
     enhanceCurrentPage();
+    syncRemote().then(notifySelection);
+  });
+  window.addEventListener('online', function () { syncRemote(true); });
+  window.addEventListener('focus', function () { syncRemote(true); });
+  window.addEventListener('storage', function (event) {
+    if (event.key === USER_KEY + sessionUser()) notifySelection();
   });
 
   window.HaugnesSubjectAccess = {
     storageKey: STORAGE_KEY,
     defaultCodes: DEFAULT_CODES.slice(),
     catalog: catalog,
+    getAvailable: getAvailable,
+    sync: syncRemote,
     getSelected: getSelected,
     setSelected: setSelected,
     isEnabled: isEnabled,

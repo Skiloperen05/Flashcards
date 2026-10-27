@@ -31,7 +31,7 @@
         <div>
           <div class="hero-kicker">Mine fag</div>
           <h1 class="hero-title">Velg hvor du vil <span>øve</span>.</h1>
-          <p class="hero-sub">Samlet oversikt over fagene dine, progresjon, verktøy og anbefalt neste handling.</p>
+          <p class="hero-sub">Alle fagene du har tilgang til. Velg hvilke du tar nå, og finn tilbake til tidligere fag når du trenger dem.</p>
         </div>
         <div class="hero-actions">
           <a class="hero-btn" href="../flashcards/">Alle flashcards</a>
@@ -78,10 +78,10 @@
 </div>
 <script src="../shared/first-semester-content.js?v=20261020-cleanup"></script>
 <script src="../shared/learning-content.js?v=20261020-cleanup"></script>
-<script src="../shared/subject-meta.js?v=20261022-2"></script>
-<script src="auth-guard.js?v=20261022-2"></script>
+<script src="../shared/subject-meta.js?v=20261027-active-subjects"></script>
+<script src="auth-guard.js?v=20261027-active-subjects"></script>
 <script>
-var SUBJECTS = window.HaugnesSubjects ? window.HaugnesSubjects.getAll() : [];
+var SUBJECTS = window.HaugnesSubjectAccess ? window.HaugnesSubjectAccess.getAvailable() : (window.HaugnesSubjects ? window.HaugnesSubjects.getCatalog() : []);
 var currentFilter = 'all';
 var RATINGS_KEY = 'hf_subject_ratings_v1';
 var CRITERIA = [
@@ -499,7 +499,7 @@ window.onUserAuthorized = function(session){
 // subjects-updated / subject-access-changed).
 function refreshSubjectsFromCatalog(){
   if (!window.HaugnesSubjects) return;
-  SUBJECTS = window.HaugnesSubjects.getAll();
+  SUBJECTS = window.HaugnesSubjectAccess ? window.HaugnesSubjectAccess.getAvailable() : window.HaugnesSubjects.getCatalog();
   renderSubjects();
 }
 window.addEventListener('haugnes:subject-catalog-changed', refreshSubjectsFromCatalog);

@@ -246,6 +246,7 @@
   }
 
   function selectedCodes() {
+    if (window.HaugnesSubjectAccess) return window.HaugnesSubjectAccess.getSelected();
     try {
       var raw = window.localStorage.getItem('hf_enabled_subjects');
       var parsed = raw ? JSON.parse(raw) : null;

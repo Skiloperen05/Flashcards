@@ -8,6 +8,8 @@
 -- ------------------------------------------------------------
 -- 1. Per-user storage (custom subjects, stats)
 -- ------------------------------------------------------------
+-- data.activeSubjects = {"codes":["SAM3"],"updatedAt":<Unix milliseconds>} stores
+-- the personal active-subject choice; [] is intentional. This does not change entitlements.
 create table if not exists user_custom_data (
   user_id    uuid primary key references auth.users(id) on delete cascade,
   data       jsonb not null default '{"subjects":[],"decks":{}}'::jsonb,

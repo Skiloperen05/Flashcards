@@ -134,7 +134,7 @@
     var grid = document.querySelector('.subjects');
     if (grid) {
       grid.classList.toggle('dashboard-subject-groups', !!active.length);
-      grid.innerHTML = active.length ? groupedCardsHtml(active) : '<div class="panel"><div class="panel-inner">Velg fag på Mine fag-siden for å fylle dashboardet.</div></div>';
+      grid.innerHTML = active.length ? groupedCardsHtml(active) : '<div class="panel"><div class="panel-inner">Ingen aktive fag akkurat nå. <a href="subjects.html">Velg aktive fag på Mine fag →</a></div></div>';
       if (!grid.dataset.hfBound) {
         grid.dataset.hfBound = '1';
         grid.addEventListener('click', function (event) {
@@ -146,7 +146,7 @@
       }
     }
     var mineFag = document.querySelector('#mine-fag a');
-    if (mineFag) { mineFag.href = 'subjects.html'; mineFag.textContent = 'Administrer fag →'; }
+    if (mineFag) { mineFag.href = 'subjects.html'; mineFag.textContent = 'Alle mine fag →'; }
     document.body.dataset.hfDashboardSummary = JSON.stringify(summary);
   }
 
