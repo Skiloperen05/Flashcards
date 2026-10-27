@@ -466,7 +466,7 @@ button,input,select,textarea{font-family:inherit}
             <div style="font-size:22px">📄</div>
             <strong id="fileDropLabel">Klikk eller dra inn PDF-fil</strong>
             <span id="fileDropSize">Maks 50 MB. Lagres privat i Supabase Storage.</span>
-            <input type="file" id="filePicker" accept="application/pdf,.pdf,.doc,.docx,.png,.jpg,.jpeg" style="display:none">
+            <input type="file" id="filePicker" multiple accept="application/pdf,.pdf,.doc,.docx,.png,.jpg,.jpeg" style="display:none">
           </div>
           <div class="upload-progress" id="fileProgress"><i style="width:0%"></i></div>
         </div>
@@ -476,6 +476,7 @@ button,input,select,textarea{font-family:inherit}
           <input type="text" id="fileExtUrl" placeholder="https://…">
         </div>
       </div>
+      <div id="answerBatchFiles" style="display:grid;gap:8px;margin-top:12px"></div>
       <div class="modal-actions">
         <span class="modal-state" id="modalFileState"></span>
         <button type="button" class="action-btn secondary" data-close-modal="modalFile">Avbryt</button>
@@ -562,7 +563,7 @@ button,input,select,textarea{font-family:inherit}
 <script src="../shared/subject-meta.js?v=20261020-cleanup"></script>
 <script src="../shared/subject-page-data.js?v=20261020-cleanup"></script>
 <script src="../shared/user-sidebar.js"></script>
-<script src="auth-guard.js?v=20261020-cleanup"></script>
+<script src="auth-guard.js?v=20261027-archive-1"></script>
 <script>
 (function () {
   'use strict';
@@ -1138,6 +1139,9 @@ button,input,select,textarea{font-family:inherit}
   });
 
   // ----------- File modal & Google Drive 5 TB Skylagring -----------
+  var pendingFiles = [];
+  var pendingDriveFiles = [];
+  var editingFileMeta = {};
   var pendingFile = null;
   var pendingDriveFile = null;
   var currentGoogleToken = null;
@@ -1375,12 +1379,19 @@ button,input,select,textarea{font-family:inherit}
   }
 
   function selectDriveFile(f) {
-    pendingDriveFile = f;
+    var batch = document.getElementById('fileKind').value === 'answer' && !document.getElementById('fileId').value;
+    if (batch) {
+      var existing = pendingDriveFiles.findIndex(function (file) { return file.id === f.id; });
+      if (existing === -1) pendingDriveFiles.push(f); else pendingDriveFiles.splice(existing, 1);
+    } else pendingDriveFiles = [f];
+    pendingFiles = [];
+    pendingDriveFile = pendingDriveFiles[0] || null;
     pendingFile = null;
     var banner = document.getElementById('selectedDriveBanner');
-    if (banner) banner.style.display = 'flex';
+    if (banner) banner.style.display = pendingDriveFiles.length ? 'flex' : 'none';
     var nameEl = document.getElementById('selectedDriveName');
-    if (nameEl) nameEl.textContent = f.name;
+    if (nameEl) nameEl.textContent = pendingDriveFiles.map(function (file) { return file.name; }).join(', ');
+    renderAnswerBatch();
     var sizeStr = f.size ? (f.size > 1048576 ? (f.size / 1048576).toFixed(1) + ' MB' : (f.size / 1024).toFixed(0) + ' KB') : '';
     var metaEl = document.getElementById('selectedDriveMeta');
     if (metaEl) metaEl.textContent = 'Google Drive (' + (sizeStr || 'skylagring') + ') · Sikret bak betalingsmuren';
@@ -1392,7 +1403,9 @@ button,input,select,textarea{font-family:inherit}
   }
 
   function clearSelectedDriveFile() {
+    pendingDriveFiles = [];
     pendingDriveFile = null;
+    renderAnswerBatch();
     var banner = document.getElementById('selectedDriveBanner');
     if (banner) banner.style.display = 'none';
   }
@@ -1464,6 +1477,12 @@ button,input,select,textarea{font-family:inherit}
   }
 
   function openFileModal(kind, file) {
+    pendingFiles = []; pendingDriveFiles = [];
+    editingFileMeta = file && file.meta || {};
+    document.getElementById('answerBatchFiles').innerHTML = '';
+    document.getElementById('filePicker').value = '';
+    document.getElementById('filePicker').multiple = kind === 'answer' && !file;
+    document.getElementById('fileDropLabel').textContent = 'Klikk eller dra inn dokumenter';
     pendingFile = null;
     pendingDriveFile = null;
     document.getElementById('selectedDriveBanner').style.display = 'none';
@@ -1507,7 +1526,7 @@ button,input,select,textarea{font-family:inherit}
 
     var titles = { answer: 'A-besvarelse', memo: 'Forelesningsnotat', task: 'Oppgave', attachment: 'Vedlegg' };
     document.getElementById('modalFileTitle').textContent = (file ? 'Rediger ' : 'Legg til ') + titles[kind];
-    document.getElementById('modalFileIntro').textContent = kind === 'task'
+    document.getElementById('modalFileIntro').textContent = kind === 'answer' && !file ? 'Velg ett eller flere dokumenter. Oppgavetekst, modellbesvarelse og sensorveiledning for samme termin samles i én eksamenspakke. Du kan kontrollere dokumenttypen før lagring.' : kind === 'task'
       ? 'PDF er valgfritt for oppgaver. Selve oppgaveteksten og fasit ligger som tekst under.'
       : 'PDF forblir trygt beskyttet bak betalingsmuren. Kun studenter med aktiv tilgang kan lese den.';
 
@@ -1540,20 +1559,31 @@ button,input,select,textarea{font-family:inherit}
   dropzone.addEventListener('dragleave', function () { dropzone.classList.remove('dragover'); });
   dropzone.addEventListener('drop', function (e) {
     e.preventDefault(); dropzone.classList.remove('dragover');
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) setPendingFile(e.dataTransfer.files[0]);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) setPendingFiles(e.dataTransfer.files);
   });
   picker.addEventListener('change', function () {
-    if (picker.files && picker.files[0]) setPendingFile(picker.files[0]);
+    if (picker.files && picker.files[0]) setPendingFiles(picker.files);
   });
-  function setPendingFile(file) {
-    pendingFile = file;
-    pendingDriveFile = null;
-    document.getElementById('fileDropLabel').textContent = file.name;
-    document.getElementById('fileDropSize').textContent = (file.size / 1024).toFixed(0) + ' KB · ' + (file.type || 'binær');
-    var titleInp = document.getElementById('fileTitle');
-    if (titleInp && !titleInp.value.trim()) {
-      titleInp.value = file.name.replace(/\.[^/.]+$/, '');
-    }
+  function renderAnswerBatch() {
+    var host = document.getElementById('answerBatchFiles');
+    if (document.getElementById('fileKind').value !== 'answer' || document.getElementById('fileId').value) { host.innerHTML = ''; return; }
+    var entries = pendingFiles.length ? pendingFiles : pendingDriveFiles;
+    host.innerHTML = entries.map(function (file, index) {
+      var kind = file.resource_kind || studio().guessAnswerKind(file.name);
+      return '<label style="display:grid;gap:4px"><span>' + esc(file.name) + '</span><select data-batch-kind="' + index + '">' + ['Eksamen','A-besvarelse','Sensorveiledning'].map(function (value) { return '<option' + (value === kind ? ' selected' : '') + '>' + value + '</option>'; }).join('') + '</select></label>';
+    }).join('');
+    host.querySelectorAll('[data-batch-kind]').forEach(function (select) { select.addEventListener('change', function () { entries[Number(select.dataset.batchKind)].resource_kind = select.value; }); });
+  }
+  function setPendingFiles(files) {
+    var editing = !!document.getElementById('fileId').value;
+    if ((editing || document.getElementById('fileKind').value !== 'answer') && files.length > 1) { toast('Velg én fil når du erstatter et eksisterende dokument.'); return; }
+    pendingFiles = Array.from(files);
+    pendingFile = pendingFiles[0] || null;
+    pendingDriveFile = null; pendingDriveFiles = [];
+    document.getElementById('selectedDriveBanner').style.display = 'none';
+    document.getElementById('fileDropLabel').textContent = pendingFiles.map(function (file) { return file.name; }).join(', ');
+    document.getElementById('fileDropSize').textContent = pendingFiles.length + ' dokument(er) · Maks 50 MB per fil';
+    renderAnswerBatch();
   }
 
   document.querySelectorAll('.rt-toolbar .rt-btn').forEach(function (btn) {
@@ -1595,7 +1625,7 @@ button,input,select,textarea{font-family:inherit}
       term: document.getElementById('fileTerm').value.trim(),
       grade: document.getElementById('fileGrade').value.trim(),
       external_url: document.getElementById('fileExtUrl').value.trim(),
-      meta: meta
+      meta: Object.assign({}, editingFileMeta, meta)
     };
 
     var stateEl = document.getElementById('modalFileState');
@@ -1623,6 +1653,19 @@ button,input,select,textarea{font-family:inherit}
       studio().updateFile(id, updates).then(function () {
         saveBtn.disabled = false; stateEl.textContent = '';
         closeModal('modalFile'); toast('Oppdatert');
+        selectSubject(state.activeSubjectCode);
+      }).catch(function (err) { saveBtn.disabled = false; stateEl.textContent = 'Feil: ' + (err.message || err); });
+      return;
+    }
+
+    if (kind === 'answer') {
+      var entries = pendingFiles.length ? pendingFiles.map(function (file) { return { file: file, name: file.name, resource_kind: file.resource_kind }; }) : pendingDriveFiles.map(function (file) { return { drive_id: file.id, name: file.name, resource_kind: file.resource_kind }; });
+      studio().uploadAnswerPackage({
+        subject_code: payload.subject_code, term: payload.term, title: payload.title,
+        description: payload.description, entries: entries,
+        progressCallback: function (info) { stateEl.textContent = 'Laster opp ' + (info.index + 1) + ' av ' + info.total + ' …'; }
+      }).then(function () {
+        saveBtn.disabled = false; closeModal('modalFile'); toast('Eksamenspakken er publisert i faget og arkivet');
         selectSubject(state.activeSubjectCode);
       }).catch(function (err) { saveBtn.disabled = false; stateEl.textContent = 'Feil: ' + (err.message || err); });
       return;

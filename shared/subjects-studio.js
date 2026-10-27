@@ -379,6 +379,50 @@
     });
   }
 
+  function guessAnswerKind(name) {
+    var text = String(name || '').toLowerCase();
+    if (/sensor|rettlei/.test(text)) return 'Sensorveiledning';
+    if (/modell|besvarelse|løsning|losning|solution|fasit/.test(text)) return 'A-besvarelse';
+    if (/oppgave|eksamen|exam/.test(text)) return 'Eksamen';
+    return 'A-besvarelse';
+  }
+
+  function uploadAnswerPackage(input) {
+    var entries = input && input.entries || [];
+    var kinds = ['Eksamen', 'A-besvarelse', 'Sensorveiledning'];
+    if (!entries.length || !input.subject_code || !String(input.term || '').trim()) return Promise.reject(new Error('Velg filer og oppgi eksamenstermin.'));
+    for (var i = 0; i < entries.length; i++) {
+      var entry = entries[i];
+      if (!entry.file && !entry.drive_id) return Promise.reject(new Error('Filen mangler.'));
+      if (entry.file && (!entry.file.size || entry.file.size > 50 * 1024 * 1024)) return Promise.reject(new Error('Hver fil må være mellom 1 byte og 50 MB.'));
+      if (entry.resource_kind && kinds.indexOf(entry.resource_kind) === -1) return Promise.reject(new Error('Ugyldig dokumenttype.'));
+    }
+    var saved = [];
+    return entries.reduce(function (chain, entry, index) {
+      return chain.then(function () {
+        if (input.progressCallback) input.progressCallback({ index: index, total: entries.length, name: entry.name || (entry.file && entry.file.name) });
+        return saveNewFile({
+          subject_code: input.subject_code, kind: 'answer', term: input.term,
+          title: entry.title || entry.name || (entry.file && entry.file.name) || input.title,
+          description: input.description || '', grade: entry.resource_kind || guessAnswerKind(entry.name || (entry.file && entry.file.name)),
+          file: entry.file || null, drive_id: entry.drive_id,
+          storage_bucket: entry.drive_id ? 'google_drive' : undefined,
+          sort_order: index, meta: {
+            resource_kind: entry.resource_kind || guessAnswerKind(entry.name || (entry.file && entry.file.name)),
+            package_title: input.title || '', answer_package_id: input.package_id || ''
+          }
+        }).then(function (row) { saved.push(row); });
+      });
+    }, Promise.resolve()).then(function () {
+      return showAnswerSection(saved[0]).then(function () { return saved; });
+    }).catch(function (error) {
+      return Promise.all(saved.map(function (row) { return deleteFile(row).catch(function () { return false; }); })).then(function (removed) {
+        if (removed.some(function (result) { return result === false; })) throw new Error((error.message || error) + ' Noen filer ble lagret. Kontroller faget før du prøver igjen.');
+        throw error;
+      });
+    });
+  }
+
   function uploadFile(input) {
     return saveNewFile(input).then(showAnswerSection);
   }
@@ -455,9 +499,7 @@
         upsert: true,
         contentType: file.type || undefined
       }).then(function (uploadResult) {
-        if (uploadResult && uploadResult.error) {
-          return sb.from('subject_files').delete().eq('id', fileId).then(function () { throw uploadResult.error; });
-        }
+        if (uploadResult && uploadResult.error) throw uploadResult.error;
         return sb.from('subject_files').update({
           storage_bucket: 'subject-files',
           storage_path: path,
@@ -471,6 +513,13 @@
           try { input.progressCallback({ phase: 'done', ratio: 1 }); } catch (e) {}
         }
         return normalizeFile(updateResult && updateResult.data);
+      }).catch(function (error) {
+        return sb.storage.from('subject-files').remove([path]).catch(function () {}).then(function () {
+          return sb.from('subject_files').delete().eq('id', fileId);
+        }).then(function (removed) {
+          if (removed && removed.error) throw new Error((error.message || error) + ' Dokumentoppføringen kunne ikke ryddes opp. Kontroller faget før du prøver igjen.');
+          throw error;
+        });
       });
     });
   }
@@ -571,6 +620,8 @@
     deleteBlock: deleteBlock,
     reorderBlocks: reorderBlocks,
     uploadFile: uploadFile,
+    uploadAnswerPackage: uploadAnswerPackage,
+    guessAnswerKind: guessAnswerKind,
     updateFile: updateFile,
     deleteFile: deleteFile,
     signedUrl: signedUrl,

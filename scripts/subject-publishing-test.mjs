@@ -12,6 +12,8 @@ const state = {
   files: [],
   uploads: [],
   failUpload: false,
+  failAtUpload: 0,
+  failMetadata: false,
   visibility: { notes: true, answers: false, flashcards: true, radar: false },
   next: 0,
 };
@@ -22,6 +24,7 @@ const db = {
       payload,
       filters = [];
     const execute = async (single) => {
+      if (table === 'subject_files' && action === 'update' && payload.storage_path && state.failMetadata) return { error: new Error('Metadata utilgjengelig') };
       let rows =
         table === 'subject_files'
           ? state.files
@@ -71,9 +74,10 @@ const db = {
   },
   storage: {
     from: (bucket) => ({
+      remove: async () => ({ data: [] }),
       upload: async (path, file, options) => {
         state.uploads.push({ bucket, path, file, options });
-        return state.failUpload ? { error: new Error('Lagring utilgjengelig') } : { data: { path } };
+        return (state.failUpload || state.uploads.length === state.failAtUpload) ? { error: new Error('Lagring utilgjengelig') } : { data: { path } };
       },
     }),
   },
@@ -216,7 +220,34 @@ assert.equal(await w.handleSaveAnswer(event), true);
 assert.equal(w.document.getElementById('besvarelser').style.display, 'block');
 assert.equal(w.document.getElementById('tabAnswers').style.display, 'inline-block');
 assert.ok(w.document.querySelector('#packagesList a[href*="document.html"]'));
+// A batch uses one shared term and explicit per-file types; a partial failure rolls back new rows.
+const batchFiles = ['oppgavetekst.pdf', 'modellbesvarelse.pdf', 'sensorveiledning.pdf'].map((name) => new w.File([bytes], name, { type: 'application/pdf' }));
+const entries = batchFiles.map((file) => ({ file, name: file.name }));
+const beforeBatch = state.files.length;
+state.failAtUpload = state.uploads.length + 2;
+await assert.rejects(w.SubjectsStudio.uploadAnswerPackage({ subject_code: 'RRR11', term: 'H26', entries }), /Lagring/);
+assert.equal(state.files.length, beforeBatch, 'No duplicate or partial rows remain after retryable failure');
+state.failAtUpload = 0;
+state.failMetadata = true;
+await assert.rejects(w.SubjectsStudio.uploadAnswerPackage({ subject_code: 'RRR11', term: 'H26', entries }), /Metadata/);
+assert.equal(state.files.length, beforeBatch, 'Metadata failure cleans the unfinished document too');
+state.failMetadata = false;
+const batch = await w.SubjectsStudio.uploadAnswerPackage({ subject_code: 'RRR11', term: 'H26', title: 'RRR11 H26', entries });
+assert.equal(batch.length, 3);
+assert.deepEqual(Array.from(batch, (file) => file.meta.resource_kind), ['Eksamen', 'A-besvarelse', 'Sensorveiledning']);
+assert.ok(batch.every((file) => file.term === 'H26' && file.meta.package_title === 'RRR11 H26'));
+const firstUploadCount = state.uploads.length;
+await assert.rejects(w.SubjectsStudio.uploadAnswerPackage({ subject_code: 'RRR11', term: 'H26', entries: [{ file: new w.File([], 'tom.pdf') }] }), /Hver fil/);
+assert.equal(state.uploads.length, firstUploadCount, 'Validate every file before uploading any bytes');
+// The actual inline form can publish several selected files without FileReader races.
+w.openSubjectAnswerModal();
+w.document.getElementById('ansTerm').value = 'V27';
+w.document.getElementById('ansTitle').value = 'RRR11 V27';
+w.handleAnswerFilesSelected({ files: batchFiles });
+assert.equal(w.document.querySelectorAll('#ansBatchFiles select').length, 3);
+assert.equal(await w.handleSaveAnswer(event), true);
+assert.equal(state.files.filter((file) => file.term === 'V27').length, 3);
 dom.window.close();
 console.log(
-  'Subject publishing tests passed: selected file bytes, protected links, visibility, failed uploads, existing-row repair and form feedback.',
+  'Subject publishing tests passed: selected file bytes, protected links, visibility, failed uploads, existing-row repair, typed multi-file batches, rollback and form feedback.',
 );

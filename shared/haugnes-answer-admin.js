@@ -495,8 +495,9 @@
           ? '⤴ Opplastet · ' + esc(String(resource.storagePath).split('/').pop())
           : esc(resource.url || 'Ingen lenke ennå');
         return '<div class="hf-admin-row"><div><b>' + esc(resource.kind) + ' · ' + esc(resource.title) + '</b><small>' + loc + '</small></div>'
-          + '<div class="hf-admin-actions"><button type="button" class="hf-admin-btn ghost" data-admin-action="edit-resource" data-id="' + esc(resource.id) + '">Rediger</button>'
-          + '<button type="button" class="hf-admin-btn danger" data-admin-action="delete-resource" data-id="' + esc(resource.id) + '">Slett</button></div></div>';
+          + (resource.subjectFileId ? '<div class="hf-admin-actions"><a class="hf-admin-btn ghost" href="admin.html?subject=' + encodeURIComponent(pack.subject) + '">Rediger i Fagstudio</a></div></div>'
+          : '<div class="hf-admin-actions"><button type="button" class="hf-admin-btn ghost" data-admin-action="edit-resource" data-id="' + esc(resource.id) + '">Rediger</button>'
+          + '<button type="button" class="hf-admin-btn danger" data-admin-action="delete-resource" data-id="' + esc(resource.id) + '">Slett</button></div></div>');
       }).join('') : '<div class="hf-admin-row"><div><b>Ingen PDF-er ennå</b><small>Bruk «Ny PDF» for å publisere eksamen, A-besvarelse eller sensorveiledning.</small></div></div>') + '</div>';
     } else if (state.subject) {
       var packs = packages().filter(function (p) { return p.subject === state.subject; });

@@ -614,7 +614,7 @@ body.hf-student-preview-active #btnNewTaskTopBar {
 .hf-subject-loading .hf-footer { display: none; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../shared/auth-guard.js?v=20261021-rrr11"></script>
+<script src="../shared/auth-guard.js?v=20261027-archive-1"></script>
 <script>
 AuthGuard.requireAuth();
 </script>
@@ -951,17 +951,18 @@ AuthGuard.requireAuth();
         <textarea id="ansDesc" style="min-height:75px" placeholder="Hva skiller denne besvarelsen ut, og hvilke oppgaver dekkes..."></textarea>
       </div>
       <div class="hf-form-group">
-        <label>Last opp besvarelse som PDF eller velg en Drive-lenke</label>
+        <label>Last opp dokumentene i eksamenspakken eller velg en Drive-lenke</label>
         <div class="hf-file-dropzone" onclick="document.getElementById('ansPdfInput').click()">
           <div style="font-size:24px;margin-bottom:4px">📥</div>
-          <strong style="font-size:13px;color:#fff">Klikk eller dra inn PDF-fil</strong>
-          <div style="font-size:12px;color:#8fa5ca;margin-top:4px">Last opp hele eksamenssettet eller sensorveiledningen</div>
-          <input type="file" id="ansPdfInput" accept="application/pdf" style="display:none" onchange="handleFileSelected(this, 'ansPdfInfo', 'ansPdfData', 'ansPdfName', 'ansPdfSize')">
+          <strong style="font-size:13px;color:#fff">Velg ett eller flere dokumenter</strong>
+          <div style="font-size:12px;color:#8fa5ca;margin-top:4px">Oppgavetekst, modellbesvarelse og sensorveiledning samles i samme pakke</div>
+          <input type="file" id="ansPdfInput" multiple accept="application/pdf,.pdf,.doc,.docx" style="display:none" onchange="handleAnswerFilesSelected(this)">
         </div>
         <div id="ansPdfInfo" class="hf-file-info">
           <span>✓</span> <strong id="ansPdfName"></strong> (<span id="ansPdfSize"></span>)
         </div>
         <input type="hidden" id="ansPdfData">
+        <div id="ansBatchFiles" style="display:grid;gap:8px;margin-top:10px"></div>
       </div>
       <div class="hf-form-group">
         <label for="ansExternalUrl">Eller ekstern fil-URL</label>
@@ -1145,7 +1146,7 @@ AuthGuard.requireAuth();
 <script src="../shared/learning-content.js?v=20261020-cleanup"></script>
 <script src="../shared/subject-meta.js?v=20261020-cleanup"></script>
 <script src="../shared/subject-page-data.js?v=20261020-cleanup"></script>
-<script src="../shared/subjects-studio.js?v=20261020-cleanup"></script>
+<script src="../shared/subjects-studio.js?v=20261027-archive-1"></script>
 <script src="../shared/subject-page-studio-bridge.js?v=20261019-publishing"></script>
 <script src="../shared/subject-resources.js?v=20261020-cleanup"></script>
 <script src="../shared/subject-page-renderer.js?v=20261021-rrr11"></script>
@@ -1276,6 +1277,24 @@ AuthGuard.requireAuth();
     reader.readAsDataURL(file);
   };
 
+  var answerBatch = [];
+  window.handleAnswerFilesSelected = function (input) {
+    answerBatch = Array.from(input.files || []);
+    document.getElementById('ansPdfData').value = '';
+    var kinds = ['Eksamen','A-besvarelse','Sensorveiledning'];
+    var host = document.getElementById('ansBatchFiles');
+    host.replaceChildren();
+    answerBatch.forEach(function (file) {
+      var label = document.createElement('label');
+      label.textContent = file.name + ' ';
+      var select = document.createElement('select');
+      file.resource_kind = window.SubjectsStudio.guessAnswerKind(file.name);
+      kinds.forEach(function (kind) { var option = document.createElement('option'); option.textContent = kind; option.selected = kind === file.resource_kind; select.appendChild(option); });
+      select.addEventListener('change', function () { file.resource_kind = select.value; });
+      label.appendChild(select); host.appendChild(label);
+    });
+  };
+
   // A "same-origin" URL is anything the browser can navigate to and
   // apply `download` to: absolute https, root-relative (`/api/…`),
   // in-memory blobs, or inline data. Everything else falls through to
@@ -1395,9 +1414,13 @@ AuthGuard.requireAuth();
   };
 
   window.openSubjectAnswerModal = function () {
-    document.getElementById('ansTerm').value = 'V26';
+    answerBatch = [];
+    document.getElementById('ansPdfInput').value = '';
+    document.getElementById('ansBatchFiles').replaceChildren();
+    document.getElementById('ansTerm').value = '';
     document.getElementById('ansGrade').value = 'Karakter A';
-    document.getElementById('ansTitle').value = (subjectId || '').toUpperCase() + ' Fullstendig Sensorveiledning & Modellbesvarelse';
+    document.getElementById('ansTitle').value = '';
+    document.getElementById('ansTitle').placeholder = 'F.eks. ' + (subjectId || '').toUpperCase() + ' H26';
     document.getElementById('ansDesc').value = '';
     document.getElementById('ansPdfData').value = '';
     document.getElementById('ansPdfInfo').style.display = 'none';
@@ -1516,6 +1539,21 @@ AuthGuard.requireAuth();
     var pdfSize = document.getElementById('ansPdfSize').textContent || '';
     var extUrl = document.getElementById('ansExternalUrl').value.trim();
 
+    if (answerBatch.length) {
+      if (extUrl) { showToast('Velg enten lokale dokumenter eller en Drive-lenke.', 'error'); return Promise.resolve(false); }
+      var batchSubmit = document.querySelector('#modalSubjectAnswer button[type="submit"]');
+      if (batchSubmit.disabled) return Promise.resolve(false);
+      batchSubmit.disabled = true;
+      return window.SubjectsStudio.uploadAnswerPackage({ subject_code: subjectId, term: term, title: title, description: desc,
+        entries: answerBatch.map(function (file) { return { file: file, name: file.name, resource_kind: file.resource_kind }; })
+      }).then(function () {
+        answerBatch = []; document.getElementById('ansPdfInput').value = ''; document.getElementById('ansBatchFiles').replaceChildren();
+        closeSubjectModal('modalSubjectAnswer');
+        return window.HaugnesSubjectPages.refresh(subjectId, { force: true });
+      }).then(function (saved) { renderSubjectPage(saved); broadcastPageUpdate(saved); showToast('Eksamenspakken er publisert!'); return true; })
+      .catch(function (error) { showToast('Kunne ikke publisere pakken: ' + (error.message || error), 'error'); return false; })
+      .finally(function () { batchSubmit.disabled = false; });
+    }
     if (!pdfData && !extUrl) { showToast('Velg en PDF-fil eller en Google Drive-lenke før du publiserer.', 'error'); return Promise.resolve(false); }
     var submit = document.querySelector('#modalSubjectAnswer button[type="submit"]');
     if (submit.disabled) return Promise.resolve(false);

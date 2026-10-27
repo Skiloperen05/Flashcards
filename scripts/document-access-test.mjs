@@ -13,7 +13,7 @@ const source = stripTypeScriptTypes(readFileSync(new URL('../supabase/functions/
   .replace(/^import .*;\n/gm, ''));
 
 function gateway() {
-  const state = { entitled: true, published: true, publicDrive: false, admin: false, native: false, google401: false, calls: [], writes: [] };
+  const state = { entitled: true, packageOwned: false, packagePublished: true, published: true, publicDrive: false, admin: false, native: false, google401: false, calls: [], writes: [] };
   let handler;
   const row = { id: fileId, subject_code: 'RRR11', kind: 'memo', title: 'Skatt', storage_bucket: 'google_drive', storage_path: 'private_drive_id', mime_type: 'application/msword', meta: {} };
   const fetch = async (input, init = {}) => {
@@ -30,6 +30,8 @@ function gateway() {
     if (url.pathname === '/auth/v1/user') return bearer === 'Bearer valid-user' ? json({ id: 'user-id' }) : json({}, 401);
     if (url.pathname === '/auth/v1/admin/users/user-id') return json({ id: 'user-id' });
     if (url.pathname.endsWith('/profiles')) return json([{ is_admin: state.admin, is_friend: false }]);
+    if (url.pathname.endsWith('/answer_resources')) return json(state.packagePublished ? [{ package_id: 'rrr11-h25' }] : []);
+    if (url.pathname.endsWith('/answer_package_entitlements')) return json(state.packageOwned ? [{ id: 1 }] : []);
     if (url.pathname.endsWith('/subject_entitlements')) return json(state.entitled ? [{ id: 1 }] : []);
     if (url.pathname.endsWith('/subject_pages')) return json([{ is_published: state.published }]);
     if (url.pathname.endsWith('/app_private_config')) {
@@ -41,7 +43,7 @@ function gateway() {
       if (init.method === 'POST' || init.method === 'PATCH') {
         state.writes.push(JSON.parse(init.body)); return json([JSON.parse(init.body)]);
       }
-      return json((bearer === 'Bearer server-key' || state.admin || (state.entitled && state.published)) && url.searchParams.get('id') === 'eq.' + fileId ? [row] : []);
+      return json((bearer === 'Bearer server-key' || state.admin || ((state.entitled || (state.packageOwned && state.packagePublished && row.kind === 'answer')) && state.published)) && url.searchParams.get('id') === 'eq.' + fileId ? [row] : []);
     }
     throw new Error('Unexpected network request: ' + url.pathname);
   };
@@ -49,7 +51,7 @@ function gateway() {
     Deno: { env: { get: key => ({ SUPABASE_URL: root, SUPABASE_ANON_KEY: 'anon-key', SUPABASE_SERVICE_ROLE_KEY: 'server-key', GOOGLE_CLIENT_ID: 'client', GOOGLE_CLIENT_SECRET: 'secret' })[key] }, serve: fn => { handler = fn; } },
     readDriveFile, disposition, fetch, console, crypto: webcrypto, Request, Response, URL, URLSearchParams, TextEncoder, TextDecoder, Uint8Array, btoa, atob,
   });
-  return { state, request: (query, init = {}) => handler(new Request(root + '/drive-proxy?' + query, { headers: { Authorization: 'Bearer valid-user' }, ...init })) };
+  return { state, row, request: (query, init = {}) => handler(new Request(root + '/drive-proxy?' + query, { headers: { Authorization: 'Bearer valid-user' }, ...init })) };
 }
 
 let g = gateway();
@@ -70,6 +72,23 @@ assert.equal((await g.request('action=ticket&id=' + fileId)).status, 404);
 assert.equal((await g.request('id=' + fileId, { headers: {} })).status, 401);
 assert.equal((await g.request('id=private_drive_id')).status, 400);
 assert.equal((await g.request('action=download&ticket=forged', { headers: {} })).status, 401);
+
+g = gateway();
+g.state.entitled = false;
+g.state.packageOwned = true;
+g.row.kind = 'answer';
+response = await g.request('action=ticket&id=' + fileId);
+assert.equal(response.status, 200, 'A package buyer can obtain a ticket for its linked file');
+link = new URL((await response.json()).url);
+assert.equal((await g.request(link.search.slice(1), { headers: {} })).status, 200);
+g.state.packagePublished = false;
+assert.equal((await g.request(link.search.slice(1), { headers: {} })).status, 403, 'Unpublishing a package revokes issued tickets');
+g.state.packagePublished = true;
+g.row.kind = 'memo';
+assert.equal((await g.request('action=ticket&id=' + fileId)).status, 404, 'A package cannot open lecture notes');
+g.state.packageOwned = false;
+g.row.kind = 'answer';
+assert.equal((await g.request(link.search.slice(1), { headers: {} })).status, 403, 'Revoking package access revokes issued tickets');
 
 g = gateway();
 g.state.native = true;

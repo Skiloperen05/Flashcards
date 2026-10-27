@@ -1,5 +1,5 @@
 (function (window, document) {
-  var SHARED_SCRIPT = '../shared/auth-guard.js?v=20261027-active-subjects';
+  var SHARED_SCRIPT = '../shared/auth-guard.js?v=20261027-archive-1';
   var MODEL_PAGES = {
     'butikk.html': { label: 'Butikk', icon: '⚷', subtitle: 'Lås opp fag' },
     'eksamensanalyse.html': { label: 'Eksamensanalyse', icon: '◈', subtitle: 'Åpne faktiske analyser' },
@@ -108,7 +108,7 @@
 
   function loadSubjectAccess(onload) {
     loadSubjectMeta(function () {
-      addScript('haugnes-subject-access-js', '../shared/subject-access.js?v=20261027-active-subjects', function () {
+      addScript('haugnes-subject-access-js', '../shared/subject-access.js?v=20261027-archive-1', function () {
         if (window.HaugnesSubjectAccess && typeof window.HaugnesSubjectAccess.enhanceCurrentPage === 'function') window.HaugnesSubjectAccess.enhanceCurrentPage();
         if (onload) onload();
       });
@@ -237,7 +237,7 @@
   function loadAnswerLibrary() {
     if (currentUserPage() !== 'a-besvarelser.html') return;
     loadSubjectAccess(function () {
-      addScript('haugnes-answer-library-js', '../shared/haugnes-answer-library.js?v=20261022-2');
+      addScript('haugnes-answer-library-js', '../shared/haugnes-answer-library.js?v=20261027-archive-1');
     });
   }
 

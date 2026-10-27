@@ -14,7 +14,20 @@
     { code: 'RET1A', name: 'Juridiske emner', accent: '#3b82f6', icon: '§', emblem: '../assets/emblems/RET1A.png?v=20261022-2', summary: 'H25-pakken ligger ute med A-besvarelse og sensorveiledning.' },
     { code: 'BED1', name: 'Bedriftsøkonomi', accent: '#20b97a', icon: '◆', emblem: '../assets/emblems/BED1.png?v=20261022-2', summary: 'H25-pakken ligger ute med eksamen, A-besvarelse og løsningsforslag.' }
   ];
-  var ARCHIVE_SUBJECT_CODES = SUBJECTS.map(function (s) { return s.code; });
+  function syncSubjects() {
+    var catalog = window.HaugnesSubjects && window.HaugnesSubjects.getCatalog ? window.HaugnesSubjects.getCatalog() : [];
+    catalog.concat(PACKAGES.map(function (p) { return { code: p.subject, name: p.subject }; })).forEach(function (subject) {
+      var c = code(subject.code);
+      var existing = SUBJECTS.find(function (item) { return item.code === c; });
+      if (!existing) SUBJECTS.push({ code: c, name: subject.name || c, accent: subject.accent || '#2f62ff', icon: subject.icon || 'A', summary: 'Publiserte eksamensdokumenter og besvarelser.' });
+      else if (subject.name !== c) { existing.name = subject.name || existing.name; existing.accent = subject.accent || existing.accent; }
+    });
+  }
+  function activeCodes() {
+    return window.HaugnesSubjectAccess && window.HaugnesSubjectAccess.getSelected ? window.HaugnesSubjectAccess.getSelected().map(code) : availableCodes();
+  }
+  function documentCount(pack) { return Math.max(pack.resources.length, Number(pack.resourceCount || 0)); }
+
 
   var STORAGE_BUCKET = 'answer-pdfs';
   var SIGNED_URL_TTL = 60 * 60 * 4; // 4 hours – re-signed on every page load.
@@ -133,9 +146,9 @@
   function availableCodes() {
     var owned = entitledCodes();
     if (!owned.length && /^(localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname) && new URLSearchParams(window.location.search).get('dev') === '1') {
-      return ARCHIVE_SUBJECT_CODES.slice();
+      return SUBJECTS.map(function (s) { return s.code; });
     }
-    return owned.filter(function (c) { return ARCHIVE_SUBJECT_CODES.indexOf(code(c)) !== -1; });
+    return owned.filter(function (c) { return SUBJECTS.some(function (s) { return s.code === code(c); }); });
   }
 
   function isUnlocked(c) {
@@ -170,9 +183,9 @@
   }
 
   function subjectByCode(c) { return SUBJECTS.find(function (s) { return s.code === code(c); }); }
-  function packagesForSubject(c) { return PACKAGES.filter(function (p) { return p.subject === code(c) && p.resources.length > 0; }); }
+  function packagesForSubject(c) { return PACKAGES.filter(function (p) { return p.subject === code(c) && documentCount(p) > 0; }); }
   function packageById(id) { return PACKAGES.find(function (p) { return p.id === id; }); }
-  function allResources() { return enabledPackages().reduce(function (out, p) { return out.concat(p.resources.map(function (r) { return Object.assign({ subject: p.subject, term: p.term, packageId: p.id, packageTitle: p.title }, r); })); }, []).sort(function (a, b) { return (a.subject + a.order).localeCompare(b.subject + b.order); }); }
+  function allResources() { return enabledPackages().reduce(function (out, p) { return out.concat(p.resources.map(function (r) { return Object.assign({ subject: p.subject, term: p.term, packageId: p.id, packageTitle: p.title }, r); })); }, []).sort(function (a, b) { return (activeCodes().indexOf(a.subject) === -1) - (activeCodes().indexOf(b.subject) === -1) || (a.subject + a.order).localeCompare(b.subject + b.order); }); }
   function publishedPackages() { return enabledPackages().filter(function (p) { return p.resources.length > 0; }); }
   function plannedPackages() { return enabledPackages().filter(function (p) { return p.resources.length === 0; }); }
   function answerCount() { return allResources().filter(function (r) { return r.kind === 'A-besvarelse'; }).length; }
@@ -193,8 +206,8 @@
     normalizedLocalPackages().forEach(function (p) { byId[p.id] = p; });
     (remotePackages || []).forEach(function (p) {
       var local = byId[p.id];
-      if (local && local.resources.length && !p.resources.length) return;
-      byId[p.id] = p;
+      byId[p.id] = local && local.resources.length && !p.resources.length
+        ? Object.assign({}, local, p, { resources: local.resources }) : p;
     });
     return Object.keys(byId).map(function (id) { return byId[id]; }).sort(function (a, b) {
       return (a.sortOrder || 0) - (b.sortOrder || 0) || String(a.id).localeCompare(String(b.id));
@@ -232,8 +245,8 @@
         try { sb = window.AuthGuard.getClient(); }
         catch (e) { return []; }
         return Promise.all([
-          sb.from('answer_packages').select('id,subject_code,term,title,subtitle,description,local_status,sort_order,price_nok_ore,sale_active,published').order('sort_order'),
-          sb.from('answer_resources').select('id,package_id,kind,title,subtitle,description,icon,url,download_url,order_index,storage_bucket,storage_path').order('order_index'),
+          sb.from('answer_packages').select('id,subject_code,term,title,subtitle,description,local_status,sort_order,price_nok_ore,sale_active,published,resource_count').order('sort_order'),
+          sb.from('answer_resources').select('id,package_id,kind,title,subtitle,description,icon,url,download_url,order_index,storage_bucket,storage_path,subject_file_id').order('order_index'),
           sb.from('answer_package_entitlements').select('package_id')
         ]).then(function (results) {
           var pkgRes = results[0];
@@ -255,6 +268,7 @@
                 subtitle: p.subtitle,
                 description: p.description || '',
                 localStatus: p.local_status || null,
+                resourceCount: Number(p.resource_count || 0),
                 priceOre: Number(p.price_nok_ore || 0),
                 saleActive: p.sale_active !== false,
                 published: p.published !== false,
@@ -265,6 +279,7 @@
                     var stored = r.storage_path && (r.storage_bucket || STORAGE_BUCKET);
                     return {
                       id: r.id,
+                      subjectFileId: r.subject_file_id || null,
                       order: r.order_index || 0,
                       kind: r.kind,
                       title: r.title,
@@ -273,8 +288,8 @@
                       icon: r.icon || '',
                       storagePath: r.storage_path || null,
                       storageBucket: stored ? (r.storage_bucket || STORAGE_BUCKET) : null,
-                      url: r.__signedUrl || r.url,
-                      download: r.__signedDownload || r.download_url || r.__signedUrl || r.url
+                      url: r.subject_file_id ? '../user/document.html?file=' + encodeURIComponent(r.subject_file_id) : r.__signedUrl || r.url,
+                      download: r.subject_file_id ? '../user/document.html?file=' + encodeURIComponent(r.subject_file_id) + '&download=1' : r.__signedDownload || r.download_url || r.__signedUrl || r.url
                     };
                   })
                   .sort(function (a, b) { return (a.order || 0) - (b.order || 0); })
@@ -300,6 +315,7 @@
   }
 
   function syncLegacyGlobals() {
+    syncSubjects();
     window.answers = allResources().map(function (r, index) {
       var subject = subjectByCode(r.subject) || SUBJECTS[0];
       return { course: r.subject, icon: subject.icon, color: subject.accent, term: r.term, title: r.title, subtitle: r.subtitle, type: (r.kind || '').toLowerCase(), desc: r.desc, meta: [r.kind, /\.pdf($|[?#])/i.test(r.url || r.download || '') ? 'PDF' : 'Dokument', r.term], popular: index + 1, url: r.url, download: r.download };
@@ -313,7 +329,7 @@
     style.id = 'hf-answer-library-css';
     style.textContent = [
       '.answer-grid,.toolbar,.chip-row{display:none!important}',
-      '.hf-answer-shell{display:grid;gap:16px}',
+      '.hf-answer-shell{display:grid;gap:16px}.hf-archive-group{display:grid;gap:14px}.hf-archive-group h2{color:#fff;font-size:20px;margin:8px 0 0}',
       '.hf-answer-breadcrumb{display:flex;gap:8px;align-items:center;flex-wrap:wrap;color:#9fb0cf;font-size:13px;font-weight:850;margin-bottom:2px}',
       '.hf-answer-breadcrumb button{border:0;background:transparent;color:#b8c9ff;font:900 13px Lora,Georgia,serif;cursor:pointer;padding:0}',
       '.hf-answer-toolbar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:14px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid var(--line)}',
@@ -365,7 +381,7 @@
     var stats = document.querySelectorAll('.hero-stat b');
     var labels = document.querySelectorAll('.hero-stat span');
     if (heading) heading.textContent = 'Eksamensarkiv';
-    if (intro) intro.textContent = 'Fag → eksamenspakker → PDF-er som faktisk ligger ute.';
+    if (intro) intro.textContent = 'Eksamenspakker for dine aktive fag først, deretter resten av arkivet.';
     if (heroTitle) heroTitle.innerHTML = 'Finn riktig <span>eksamenspakke</span>.';
     if (heroCopy) heroCopy.textContent = 'Fageiere får alle pakker gratis. Enkelte pakker kan også kjøpes separat.';
     if (stats[0]) stats[0].textContent = s.resources;
@@ -393,19 +409,27 @@
     var shopHref = shopUrl();
     var toolbar = '<div class="hf-answer-toolbar"><input class="hf-answer-search" id="hfAnswerSearch" type="search" placeholder="Søk i fag..." value="' + esc(state.query) + '"><span class="hf-answer-muted">' + s.subjects + ' fag med tilgang · ' + s.resources + ' dokumenter ute</span></div>';
     if (!subjects.length) return breadcrumb() + toolbar + '<div class="hf-empty-panel">Ingen fag matcher søket.</div>';
-    return breadcrumb() + toolbar + '<div class="hf-subject-grid">' + subjects.map(function (subject) {
+    function subjectTile(subject) {
       if (!isUnlocked(subject.code) && !subjectHasPackageAccess(subject.code)) {
         var offered = packagesForSubject(subject.code).find(canBuyPack);
         var lockedAction = offered
           ? '<button class="hf-primary" type="button" data-subject="' + subject.code + '">Se ' + priceLabel(offered) + '-pakke →</button>'
           : '<a class="hf-primary" href="' + esc(shopHref) + '">Lås opp i Butikk →</a>';
-        return '<div class="hf-subject-tile hf-locked" style="--accent:' + subject.accent + '"><div class="hf-tile-top"><span class="hf-tile-icon">🔒</span><span class="hf-status-pill locked">Låst</span></div><h3>' + subject.code + '<br>' + subject.name + '</h3><p>' + (offered ? 'Du kan kjøpe en eksamenspakke separat, eller låse opp hele faget i Butikken.' : 'Lås opp ' + subject.code + ' i Butikken for å få tilgang til eksamenspakker, A-besvarelser og sensorveiledninger.') + '</p><div class="hf-tile-meta">' + lockedAction + '</div></div>';
+        return '<div class="hf-subject-tile hf-locked" style="--accent:' + subject.accent + '"><div class="hf-tile-top"><span class="hf-tile-icon">🔒</span><span class="hf-status-pill locked">Låst</span></div><h3>' + subject.code + '<br>' + esc(subject.name) + '</h3><p>' + (offered ? 'Du kan kjøpe en eksamenspakke separat, eller låse opp hele faget i Butikken.' : 'Lås opp ' + subject.code + ' i Butikken for å få tilgang til eksamenspakker, A-besvarelser og sensorveiledninger.') + '</p><div class="hf-tile-meta">' + lockedAction + '</div></div>';
       }
       var packs = packagesForSubject(subject.code);
-      var count = packs.reduce(function (sum, p) { return sum + p.resources.length; }, 0);
+      var count = packs.reduce(function (sum, p) { return sum + documentCount(p); }, 0);
       var live = count > 0;
-      return '<button class="hf-subject-tile" style="--accent:' + subject.accent + '" data-subject="' + subject.code + '"><div class="hf-tile-top"><span class="hf-tile-icon">' + subject.icon + '</span><span class="hf-status-pill ' + (live ? 'live' : 'planned') + '">' + (live ? 'Publisert' : 'Klar plass') + '</span></div><h3>' + subject.code + '<br>' + subject.name + '</h3><p>' + subject.summary + '</p><div class="hf-tile-meta"><span class="hf-meta">' + packs.length + ' pakke</span><span class="hf-meta">' + count + ' dokumenter</span></div></button>';
-    }).join('') + '</div>';
+      return '<button class="hf-subject-tile" style="--accent:' + subject.accent + '" data-subject="' + subject.code + '"><div class="hf-tile-top"><span class="hf-tile-icon">' + subject.icon + '</span><span class="hf-status-pill ' + (live ? 'live' : 'planned') + '">' + (live ? 'Publisert' : 'Klar plass') + '</span></div><h3>' + subject.code + '<br>' + esc(subject.name) + '</h3><p>' + esc(subject.summary) + '</p><div class="hf-tile-meta"><span class="hf-meta">' + packs.length + (packs.length === 1 ? ' pakke' : ' pakker') + '</span><span class="hf-meta">' + count + (count === 1 ? ' dokument' : ' dokumenter') + '</span></div></button>';
+    }
+    var active = activeCodes();
+    var current = subjects.filter(function (s) { return active.indexOf(s.code) !== -1; });
+    var other = subjects.filter(function (s) { return active.indexOf(s.code) === -1; });
+    function group(title, list, id) {
+      if (!list.length) return '';
+      return '<section class="hf-archive-group" data-archive-group="' + id + '"><h2>' + title + '</h2><div class="hf-subject-grid">' + list.map(subjectTile).join('') + '</div></section>';
+    }
+    return breadcrumb() + toolbar + group('Dine aktive fag', current, 'active') + group('Flere eksamenspakker', other, 'other');
   }
 
   function renderSubject() {
@@ -413,8 +437,8 @@
     if (!subject) return renderSubjects();
     var packs = packagesForSubject(subject.code);
     if (!packs.length) return renderSubjects();
-    return breadcrumb() + '<div class="hf-answer-toolbar"><div><strong style="color:#fff">' + subject.code + ' · ' + subject.name + '</strong><div class="hf-answer-muted">Fageiere får alle pakker gratis. Enkeltpakker kan kjøpes separat.</div></div><button class="hf-secondary" type="button" data-route="home">Alle fag</button></div><div class="hf-package-list">' + packs.map(function (p) {
-      var live = p.resources.length > 0;
+    return breadcrumb() + '<div class="hf-answer-toolbar"><div><strong style="color:#fff">' + subject.code + ' · ' + esc(subject.name) + '</strong><div class="hf-answer-muted">Fageiere får alle pakker gratis. Enkeltpakker kan kjøpes separat.</div></div><button class="hf-secondary" type="button" data-route="home">Alle fag</button></div><div class="hf-package-list">' + packs.map(function (p) {
+      var live = documentCount(p) > 0;
       var answerCount = p.resources.filter(function (r) { return r.kind === 'A-besvarelse'; }).length;
       var accessible = hasPackageAccess(p);
       var action = accessible
@@ -422,7 +446,7 @@
         : canBuyPack(p)
           ? '<button class="hf-primary" type="button" data-buy-package="' + p.id + '">Kjøp pakken · ' + priceLabel(p) + '</button><a class="hf-secondary" href="' + esc(shopHref) + '">Hele faget</a>'
           : '<a class="hf-secondary" href="' + esc(shopHref) + '">Lås opp hele faget</a>';
-      return '<article class="hf-package-card" style="--accent:' + subject.accent + '"><div><div class="hf-resource-kind">' + subject.code + ' · ' + p.term + '</div><h3>' + p.title + '</h3><p>' + p.description + '</p><div class="hf-tile-meta"><span class="hf-meta">' + (accessible ? p.resources.length + ' dokumenter' : 'Enkelttilgang') + '</span><span class="hf-meta">' + (accessible ? answerCount + ' A-besvarelse' : (canBuyPack(p) ? priceLabel(p) : 'Kun fageiere')) + '</span><span class="hf-meta">' + (p.localStatus || (live ? 'Publisert' : 'Venter på filer')) + '</span></div></div><div class="hf-package-actions">' + action + '</div></article>';
+      return '<article class="hf-package-card" style="--accent:' + subject.accent + '"><div><div class="hf-resource-kind">' + subject.code + ' · ' + p.term + '</div><h3>' + esc(p.title) + '</h3><p>' + esc(p.description) + '</p><div class="hf-tile-meta"><span class="hf-meta">' + (accessible ? p.resources.length + ' dokumenter' : 'Enkelttilgang') + '</span><span class="hf-meta">' + (accessible ? answerCount + ' A-besvarelse' : (canBuyPack(p) ? priceLabel(p) : 'Kun fageiere')) + '</span><span class="hf-meta">' + (p.localStatus || (live ? 'Publisert' : 'Venter på filer')) + '</span></div></div><div class="hf-package-actions">' + action + '</div></article>';
     }).join('') + '</div>';
   }
 
@@ -435,7 +459,7 @@
     if (!pack.resources.length) return html + '<div class="hf-empty-panel"><strong>' + esc(pack.subtitle) + ' · ' + esc(pack.title) + '</strong><br>' + esc(pack.localStatus ? pack.description : 'Denne pakken er klar, men har ingen publiserte PDF-er ennå. Når eksamen, A-besvarelse eller sensorveiledning legges ut, vises filene her i samme struktur som SAM3-pakken.') + '</div>';
     return html + '<div class="hf-resource-grid">' + resources.map(function (r) {
       var isPdf = /\.pdf($|[?#])/i.test(r.url || r.download || '');
-      return '<article class="hf-resource-card" style="--accent:' + subject.accent + '"><div class="hf-tile-top"><span class="hf-tile-icon">' + esc(r.icon) + '</span><span class="hf-status-pill live">' + (isPdf ? 'PDF' : 'Dokument') + '</span></div><div class="hf-resource-kind">' + esc(r.kind) + '</div><h3>' + esc(r.title) + '</h3><p>' + esc(r.desc) + '</p><div class="hf-resource-actions"><a class="hf-primary" href="' + r.url + '" target="_blank" rel="noopener">' + (isPdf ? 'Åpne PDF' : 'Åpne dokument') + '</a><a class="hf-secondary" href="' + r.download + '">Last ned</a></div></article>';
+      return '<article class="hf-resource-card" style="--accent:' + subject.accent + '"><div class="hf-tile-top"><span class="hf-tile-icon">' + esc(r.icon) + '</span><span class="hf-status-pill live">' + (isPdf ? 'PDF' : 'Dokument') + '</span></div><div class="hf-resource-kind">' + esc(r.kind) + '</div><h3>' + esc(r.title) + '</h3><p>' + esc(r.desc) + '</p><div class="hf-resource-actions"><a class="hf-primary" href="' + esc(r.url) + '" target="_blank" rel="noopener">' + (isPdf ? 'Åpne PDF' : 'Åpne dokument') + '</a><a class="hf-secondary" href="' + esc(r.download) + '">Last ned</a></div></article>';
     }).join('') + '</div>' + (!resources.length ? '<div class="hf-empty-panel">Ingen dokumenter matcher søket.</div>' : '');
   }
 
@@ -447,10 +471,13 @@
   }
 
   function render() {
+    var focusedSearch = document.activeElement && document.activeElement.id === 'hfAnswerSearch';
+    var cursor = focusedSearch ? document.activeElement.selectionStart : null;
     syncLegacyGlobals(); updateHero();
     var host = document.querySelector('.workspace > section') || document.getElementById('answerLibraryHost'); if (!host) return;
     host.innerHTML = '<div class="hf-answer-shell">' + (state.packageId ? renderPackage() : state.subject ? renderSubject() : renderSubjects()) + '</div>';
     renderSide(); bind();
+    if (focusedSearch) { var search = document.getElementById('hfAnswerSearch'); if (search) { search.focus(); if (cursor !== null) search.setSelectionRange(cursor, cursor); } }
     try { window.dispatchEvent(new CustomEvent('haugnes:answer-library-rendered', { detail: { subject: state.subject, packageId: state.packageId } })); } catch (e) {}
   }
 
@@ -494,7 +521,7 @@
       : '../';
     var script = document.createElement('script');
     script.id = 'haugnes-answer-admin-js';
-    script.src = base + 'shared/haugnes-answer-admin.js';
+    script.src = base + 'shared/haugnes-answer-admin.js?v=20261027-archive-1';
     script.defer = true;
     document.head.appendChild(script);
   }
@@ -512,6 +539,9 @@
     // Trigger DB fetch, then re-render
     loadPackages().then(function () { route(); });
     window.addEventListener('hashchange', route);
+    window.addEventListener('haugnes:subject-catalog-changed', route);
+    window.addEventListener('haugnes:subject-studio-changed', function () { loadPackages(true).then(route); });
+    window.addEventListener('focus', function () { loadPackages(true).then(route); });
     window.addEventListener('haugnes:subject-access-changed', route);
     window.addEventListener('haugnes:entitlements-changed', function () { loadPackages(true).then(route); });
     window.setTimeout(route, 120);

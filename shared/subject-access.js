@@ -348,6 +348,7 @@
   }
 
   function filterVisibleDom() {
+    if (pageName() === 'a-besvarelser.html') return;
     injectStyles();
     var selected = getSelected();
     [

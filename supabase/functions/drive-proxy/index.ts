@@ -254,7 +254,15 @@ async function ticketStillAllowed(userId: string, row: Record<string, unknown>) 
   const profiles = await profile.json();
   if (profiles[0]?.is_admin) return true;
   const pages = await page.json();
-  return pages[0]?.is_published === true && (!!profiles[0]?.is_friend || (await entitlement.json()).length > 0);
+  if (pages[0]?.is_published !== true) return false;
+  if (profiles[0]?.is_friend || (await entitlement.json()).length > 0) return true;
+  if (row.kind !== 'answer') return false;
+  const linked = await fetch(`${SUPABASE_URL}/rest/v1/answer_resources?${new URLSearchParams({ subject_file_id: `eq.${row.id}`, select: 'package_id,answer_packages!inner(published)', 'answer_packages.published': 'eq.true' })}`, { headers: adminHeaders() });
+  if (!linked.ok) return false;
+  const packages = await linked.json();
+  if (!packages.length) return false;
+  const access = await fetch(`${SUPABASE_URL}/rest/v1/answer_package_entitlements?${new URLSearchParams({ user_id: `eq.${userId}`, package_id: `in.(${packages.map((p: { package_id: string }) => p.package_id).join(',')})`, select: 'id', limit: '1' })}`, { headers: adminHeaders() });
+  return access.ok && (await access.json()).length > 0;
 }
 function driveId(row: Record<string, unknown>) {
   if (row.storage_bucket === "google_drive" && row.storage_path) return String(row.storage_path);
