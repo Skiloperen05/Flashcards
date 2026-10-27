@@ -237,7 +237,7 @@
   function loadAnswerLibrary() {
     if (currentUserPage() !== 'a-besvarelser.html') return;
     loadSubjectAccess(function () {
-      addScript('haugnes-answer-library-js', '../shared/haugnes-answer-library.js?v=20261027-archive-1');
+      addScript('haugnes-answer-library-js', '../shared/haugnes-answer-library.js?v=20261027-archive-emblems-1');
     });
   }
 

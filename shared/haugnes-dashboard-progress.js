@@ -155,7 +155,7 @@
     if (document.getElementById('haugnes-answer-library-js')) return;
     var script = document.createElement('script');
     script.id = 'haugnes-answer-library-js';
-    script.src = rootRelative('shared/haugnes-answer-library.js');
+    script.src = rootRelative('shared/haugnes-answer-library.js?v=20261027-archive-emblems-1');
     script.defer = true;
     document.head.appendChild(script);
   }

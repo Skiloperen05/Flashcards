@@ -19,14 +19,23 @@
     catalog.concat(PACKAGES.map(function (p) { return { code: p.subject, name: p.subject }; })).forEach(function (subject) {
       var c = code(subject.code);
       var existing = SUBJECTS.find(function (item) { return item.code === c; });
-      if (!existing) SUBJECTS.push({ code: c, name: subject.name || c, accent: subject.accent || '#2f62ff', icon: subject.icon || 'A', summary: 'Publiserte eksamensdokumenter og besvarelser.' });
-      else if (subject.name !== c) { existing.name = subject.name || existing.name; existing.accent = subject.accent || existing.accent; }
+      if (!existing) SUBJECTS.push({ code: c, name: subject.name || c, accent: subject.accent || '#2f62ff', icon: subject.icon || 'A', emblem: subject.emblem || '', summary: 'Publiserte eksamensdokumenter og besvarelser.' });
+      else {
+        if (subject.name !== c) { existing.name = subject.name || existing.name; existing.accent = subject.accent || existing.accent; }
+        existing.emblem = subject.emblem || existing.emblem;
+      }
     });
   }
   function activeCodes() {
     return window.HaugnesSubjectAccess && window.HaugnesSubjectAccess.getSelected ? window.HaugnesSubjectAccess.getSelected().map(code) : availableCodes();
   }
   function documentCount(pack) { return Math.max(pack.resources.length, Number(pack.resourceCount || 0)); }
+
+  function subjectEmblem(subject) {
+    return '<span class="hf-tile-icon hf-subject-emblem" aria-hidden="true">'
+      + (subject.emblem ? '<img src="' + esc(subject.emblem) + '" alt="" onerror="this.remove()">' : '')
+      + '<span class="hf-emblem-fallback">' + esc(subject.icon || subject.code) + '</span></span>';
+  }
 
 
   var STORAGE_BUCKET = 'answer-pdfs';
@@ -341,6 +350,7 @@
       '.hf-subject-tile::before,.hf-package-card::before,.hf-resource-card::before{content:"";position:absolute;right:-60px;top:-70px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,var(--accent),transparent 68%);opacity:.22}',
       '.hf-tile-top{display:flex;justify-content:space-between;gap:12px;position:relative;z-index:1}',
       '.hf-tile-icon{width:44px;height:44px;border-radius:15px;background:var(--accent);display:grid;place-items:center;color:#fff;font-weight:950;box-shadow:0 0 28px rgba(47,98,255,.22)}',
+      '.hf-subject-emblem{position:relative;width:56px;height:56px;overflow:hidden;flex-shrink:0}.hf-subject-emblem:has(img){background:linear-gradient(180deg,#fdfefe,#eaeff5);border:1px solid rgba(255,255,255,.22)}.hf-subject-emblem img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top}.hf-subject-emblem:has(img) .hf-emblem-fallback{visibility:hidden}',
       '.hf-status-pill{height:28px;padding:0 9px;border-radius:999px;background:rgba(255,255,255,.075);border:1px solid rgba(255,255,255,.08);color:#cbd7ef;font-size:10.5px;font-weight:950;display:inline-flex;align-items:center}',
       '.hf-status-pill.live{background:rgba(32,185,122,.14);border-color:rgba(32,185,122,.24);color:#b9f6d7}.hf-status-pill.planned{background:rgba(232,188,104,.12);border-color:rgba(232,188,104,.22);color:#ffd98f}',
       '.hf-status-pill.locked{background:rgba(148,163,184,.16);border-color:rgba(148,163,184,.30);color:#dbe3f0}',
@@ -415,12 +425,12 @@
         var lockedAction = offered
           ? '<button class="hf-primary" type="button" data-subject="' + subject.code + '">Se ' + priceLabel(offered) + '-pakke →</button>'
           : '<a class="hf-primary" href="' + esc(shopHref) + '">Lås opp i Butikk →</a>';
-        return '<div class="hf-subject-tile hf-locked" style="--accent:' + subject.accent + '"><div class="hf-tile-top"><span class="hf-tile-icon">🔒</span><span class="hf-status-pill locked">Låst</span></div><h3>' + subject.code + '<br>' + esc(subject.name) + '</h3><p>' + (offered ? 'Du kan kjøpe en eksamenspakke separat, eller låse opp hele faget i Butikken.' : 'Lås opp ' + subject.code + ' i Butikken for å få tilgang til eksamenspakker, A-besvarelser og sensorveiledninger.') + '</p><div class="hf-tile-meta">' + lockedAction + '</div></div>';
+        return '<div class="hf-subject-tile hf-locked" style="--accent:' + subject.accent + '"><div class="hf-tile-top">' + subjectEmblem(subject) + '<span class="hf-status-pill locked">Låst</span></div><h3>' + subject.code + '<br>' + esc(subject.name) + '</h3><p>' + (offered ? 'Du kan kjøpe en eksamenspakke separat, eller låse opp hele faget i Butikken.' : 'Lås opp ' + subject.code + ' i Butikken for å få tilgang til eksamenspakker, A-besvarelser og sensorveiledninger.') + '</p><div class="hf-tile-meta">' + lockedAction + '</div></div>';
       }
       var packs = packagesForSubject(subject.code);
       var count = packs.reduce(function (sum, p) { return sum + documentCount(p); }, 0);
       var live = count > 0;
-      return '<button class="hf-subject-tile" style="--accent:' + subject.accent + '" data-subject="' + subject.code + '"><div class="hf-tile-top"><span class="hf-tile-icon">' + subject.icon + '</span><span class="hf-status-pill ' + (live ? 'live' : 'planned') + '">' + (live ? 'Publisert' : 'Klar plass') + '</span></div><h3>' + subject.code + '<br>' + esc(subject.name) + '</h3><p>' + esc(subject.summary) + '</p><div class="hf-tile-meta"><span class="hf-meta">' + packs.length + (packs.length === 1 ? ' pakke' : ' pakker') + '</span><span class="hf-meta">' + count + (count === 1 ? ' dokument' : ' dokumenter') + '</span></div></button>';
+      return '<button class="hf-subject-tile" style="--accent:' + subject.accent + '" data-subject="' + subject.code + '"><div class="hf-tile-top">' + subjectEmblem(subject) + '<span class="hf-status-pill ' + (live ? 'live' : 'planned') + '">' + (live ? 'Publisert' : 'Klar plass') + '</span></div><h3>' + subject.code + '<br>' + esc(subject.name) + '</h3><p>' + esc(subject.summary) + '</p><div class="hf-tile-meta"><span class="hf-meta">' + packs.length + (packs.length === 1 ? ' pakke' : ' pakker') + '</span><span class="hf-meta">' + count + (count === 1 ? ' dokument' : ' dokumenter') + '</span></div></button>';
     }
     var active = activeCodes();
     var current = subjects.filter(function (s) { return active.indexOf(s.code) !== -1; });
