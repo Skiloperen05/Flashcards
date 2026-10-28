@@ -242,7 +242,7 @@
     state.subjectPromise[key] = Promise.all([
       sb.from('subject_pages').select('*').eq('subject_code', key).maybeSingle(),
       sb.from('subject_page_blocks').select('*').eq('subject_code', key).order('section', { ascending: true }).order('sort_order', { ascending: true }),
-      sb.from('subject_files').select('*').eq('subject_code', key).order('kind', { ascending: true }).order('sort_order', { ascending: true })
+      sb.from('subject_files').select('*').eq('subject_code', key).order('kind', { ascending: true }).order('sort_order', { ascending: true }).order('uploaded_at', { ascending: true }).order('id', { ascending: true })
     ]).then(function (results) {
       var pageRow = results[0] && results[0].data;
       var blockRows = (results[1] && results[1].data) || [];
@@ -267,7 +267,7 @@
         if (file && files[file.kind]) files[file.kind].push(file);
       });
       Object.keys(files).forEach(function (kind) {
-        files[kind].sort(function (a, b) { return a.sort_order - b.sort_order; });
+        files[kind].sort(function (a, b) { return a.sort_order - b.sort_order || String(a.uploaded_at || '').localeCompare(String(b.uploaded_at || '')) || a.id.localeCompare(b.id); });
       });
       var full = Object.assign({}, page, { blocks: blocks, files: files });
       state.subjectCache[key] = full;
@@ -280,6 +280,18 @@
     });
 
     return state.subjectPromise[key];
+  }
+
+  function createSubject(patch) {
+    if (!patch || !patch.subject_code || !String(patch.name || '').trim()) return Promise.reject(new Error('Fagkode og navn mangler'));
+    var sb = client();
+    if (!sb) return Promise.reject(new Error('Ikke tilkoblet Supabase'));
+    var payload = Object.assign({}, patch, { subject_code: code(patch.subject_code), is_published: false, origin: 'custom', updated_by: userId() });
+    return sb.from('subject_pages').insert(payload).select().single().then(function (result) {
+      if (result.error) throw result.error;
+      invalidateSubject(payload.subject_code);
+      return normalizePage(result.data);
+    });
   }
 
   function upsertSubject(patch) {
@@ -361,6 +373,20 @@
     });
     return Promise.all(updates).then(function (results) {
       results.forEach(function (r) { if (r && r.error) throw r.error; });
+      invalidateSubject(key);
+      return true;
+    });
+  }
+
+  function reorderFiles(subjectCode, kind, orderedIds, expectedIds) {
+    var key = code(subjectCode);
+    if (!key || ['memo', 'answer', 'task', 'attachment'].indexOf(kind) === -1 || !Array.isArray(orderedIds) || !Array.isArray(expectedIds)
+      || orderedIds.length !== expectedIds.length || new Set(orderedIds).size !== orderedIds.length
+      || orderedIds.some(function (id) { return expectedIds.indexOf(id) === -1; })) return Promise.reject(new Error('Ugyldig dokumentrekkefølge'));
+    var sb = client();
+    if (!sb) return Promise.reject(new Error('Ikke tilkoblet'));
+    return sb.rpc('reorder_subject_files', { p_subject_code: key, p_kind: kind, p_ordered_ids: orderedIds, p_expected_ids: expectedIds }).then(function (result) {
+      if (result.error) throw result.error;
       invalidateSubject(key);
       return true;
     });
@@ -615,10 +641,12 @@
     listSubjects: listSubjects,
     getSubject: getSubject,
     upsertSubject: upsertSubject,
+    createSubject: createSubject,
     deleteSubject: deleteSubject,
     upsertBlock: upsertBlock,
     deleteBlock: deleteBlock,
     reorderBlocks: reorderBlocks,
+    reorderFiles: reorderFiles,
     uploadFile: uploadFile,
     uploadAnswerPackage: uploadAnswerPackage,
     guessAnswerKind: guessAnswerKind,

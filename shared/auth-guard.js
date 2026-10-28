@@ -258,7 +258,7 @@
   }
 
   function loadGlobalPolish() {
-    addScript('haugnes-subject-flashcards-js', rootRelative('shared/subject-flashcards.js?v=20261021-rrr11'));
+    addScript('haugnes-subject-flashcards-js', rootRelative('shared/subject-flashcards.js?v=20261028-order'));
     addStylesheet('haugnes-mobile-css', rootRelative('shared/haugnes-mobile.css'));
     addScript('haugnes-mobile-bottom-nav-js', rootRelative('shared/mobile-bottom-nav.js'));
     addScript('haugnes-user-settings-js', rootRelative('shared/user-settings.js'), function () {
@@ -293,9 +293,14 @@
   }
 
   function loadSubjectsStudio() {
-    addScript('haugnes-subjects-studio-js', rootRelative('shared/subjects-studio.js?v=20261027-archive-1'), function () {
+    addScript('haugnes-subjects-studio-js', rootRelative('shared/subjects-studio.js?v=20261028-order'), function () {
       if (window.SubjectsStudio && typeof window.SubjectsStudio.migrateLegacyIfNeeded === 'function') {
         window.SubjectsStudio.migrateLegacyIfNeeded();
+      }
+      if (/\/(met3|sam2|sam3|sol1|ret14|bed1|ret1a|met1|sam1a|kom1)\/(?:index\.html)?$/i.test(window.location.pathname)) {
+        addScript('haugnes-subject-layout-js', rootRelative('shared/subject-studio-layout.js?v=20261028-canvas'), function () {
+          addScript('haugnes-studio-live-js', rootRelative('shared/subject-studio-live.js?v=20261028-canvas'));
+        });
       }
     });
   }

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin-hub & Fagstudio — Haugnes Flashcards</title>
+<title>Fagstudio — Haugnes Flashcards</title>
 <link rel="icon" href="../assets/haugnes-logo-mark.svg">
 <link rel="apple-touch-icon" href="../assets/haugnes-logo-mark.svg">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -240,6 +240,7 @@ button,input,select,textarea{font-family:inherit}
 .selected-file-banner strong{font-size:12.5px;color:#6ee7b7;display:block}
 .selected-file-banner span{font-size:11px;color:#a7f3d0}
 </style>
+<link rel="stylesheet" href="../shared/subject-admin.css?v=20261028-canvas">
 </head>
 <body>
 <div class="app">
@@ -255,12 +256,13 @@ button,input,select,textarea{font-family:inherit}
     <header class="topline">
       <div class="hello">
         <div class="breadcrumb"><a href="index.html">Dashboard</a> › Admin-hub</div>
-        <h1>Admin-hub & <span>Fagstudio</span></h1>
-        <p>Rediger fag, seksjoner, PDF-er og tips til studentene. Alle endringer publiseres umiddelbart.</p>
+        <h1>Fagstudio</h1>
+        <p>Samle fagstoff, gjør det lett å bruke, og se det slik studentene ser det.</p>
       </div>
       <span class="status-badge" id="adminStatusBadge">✓ Administrator</span>
     </header>
 
+    <div class="studio-principle"><span class="studio-eyebrow">Godt fagstoff først</span><p>Bruk egne forklaringer og faktiske kilder. Tomme seksjoner skjules automatisk for studentene.</p><button class="action-btn secondary small" id="btnTogglePreview" type="button" aria-expanded="false">Vis forhåndsvisning</button></div>
     <div class="workspace">
       <div class="catalog-col">
         <div class="catalog-panel">
@@ -268,7 +270,10 @@ button,input,select,textarea{font-family:inherit}
             <h3>Fag-katalog</h3>
             <span class="catalog-count" id="catalogCount">0</span>
           </div>
+          <label class="sr-only" for="catalogSearch">Søk etter fag</label>
           <input type="search" id="catalogSearch" class="catalog-search" placeholder="Søk etter fag …">
+          <label class="sr-only" for="catalogFilter">Publiseringsstatus</label>
+          <select id="catalogFilter" class="catalog-search"><option value="all">Alle fag</option><option value="published">Publiserte</option><option value="draft">Utkast / skjulte</option></select>
           <button type="button" class="catalog-new" id="btnNewSubject">＋ Nytt fag</button>
           <div id="catalogList" class="catalog-list"></div>
         </div>
@@ -278,12 +283,16 @@ button,input,select,textarea{font-family:inherit}
         <div id="editorPanel" class="editor-panel">
           <div class="editor-empty">
             <h2>Velg et fag fra katalogen</h2>
-            <p>Klikk på et fag til venstre for å redigere fagoversikt, seksjonssynlighet, temaer, øvingsløp, eksamensradar, A-besvarelser, forelesningsnotater og oppgaver.<br>Eller opprett et helt nytt fag.</p>
+            <p>Begynn med det studentene trenger: notater, eksamensdokumenter og øving. Velg et fag for å se innholdet, eller opprett et tomt fag med det nye oppsettet.</p>
             <button type="button" class="action-btn" id="btnNewSubjectEmpty">＋ Opprett nytt fag</button>
           </div>
         </div>
       </div>
 
+      <section id="visualStudio" class="visual-studio" hidden>
+        <div class="visual-topbar"><label>Fag <select id="visualSubjectPicker" aria-label="Velg fag i visuell editor"></select></label><div class="visual-devices"><button type="button" data-canvas-device="desktop" aria-pressed="true">Stor skjerm</button><button type="button" data-canvas-device="mobile" aria-pressed="false">Mobil</button></div><button type="button" id="canvasTry" aria-pressed="false">Prøv siden</button></div>
+        <div class="visual-workspace"><div class="visual-page"><iframe id="canvasFrame" title="Visuell redigering av fagsiden"></iframe></div><aside id="visualInspector" class="visual-inspector" aria-label="Rediger valgt innhold"></aside></div>
+      </section>
       <div class="preview-col">
         <div class="preview-panel">
           <div class="preview-toolbar">
@@ -321,11 +330,12 @@ button,input,select,textarea{font-family:inherit}
       <div class="form-grid" style="margin-top:12px">
         <div class="form-group">
           <label for="blockWeight" id="blockWeightLabel">Vekt</label>
-          <input type="text" id="blockWeight" placeholder="F.eks. 80% eller 20 min">
+          <input type="text" id="blockWeight" placeholder="Valgfritt — bare dokumenterte tall">
         </div>
         <div class="form-group" id="blockPriorityGroup" style="display:none">
           <label for="blockPriority">Prioritet</label>
           <select id="blockPriority">
+            <option value="">Ingen prioritet angitt</option>
             <option value="Tier 1">Tier 1 · Kjerne</option>
             <option value="Tier 2">Tier 2 · Høy verdi</option>
             <option value="Tier 3">Tier 3 · Sekundært</option>
@@ -490,7 +500,7 @@ button,input,select,textarea{font-family:inherit}
 <div class="modal-backdrop" id="modalNewSubject">
   <div class="modal-card">
     <h3>Opprett nytt fag</h3>
-    <p class="intro">Definér grunndata for faget. Alt annet (temaer, øvingsløp, PDF-er) redigerer du etterpå.</p>
+    <p class="intro">Faget får det nye oppsettet automatisk og starter som et skjult utkast. Legg til eget fagstoff før du publiserer. Ingen eksempeltekster eller oppdiktede ressurser legges inn.</p>
     <form id="newSubjectForm">
       <div class="form-grid">
         <div class="form-group">
@@ -524,7 +534,7 @@ button,input,select,textarea{font-family:inherit}
       <div class="form-group" style="margin-top:12px">
         <label for="nsPrice">Fagpris (kr) *</label>
         <input type="number" id="nsPrice" min="0" step="1" value="49" required>
-        <small class="form-hint">Prisen lagres samtidig i butikken. Velg 0 for gratis fag.</small>
+        <small class="form-hint">Prisen lagres i butikken. Faget blir først synlig når du publiserer det. Velg 0 for gratis fag.</small>
       </div>
       <div class="form-group" style="margin-top:12px">
         <label>Aksentfarge</label>
@@ -557,13 +567,13 @@ button,input,select,textarea{font-family:inherit}
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="../shared/learning-content.js?v=20261020-cleanup"></script>
 <script src="../shared/subject-meta.js?v=20261020-cleanup"></script>
 <script src="../shared/subject-page-data.js?v=20261020-cleanup"></script>
 <script src="../shared/user-sidebar.js"></script>
-<script src="auth-guard.js?v=20261027-archive-1"></script>
+<script src="auth-guard.js?v=20261028-canvas"></script>
 <script>
 (function () {
   'use strict';
@@ -574,8 +584,19 @@ button,input,select,textarea{font-family:inherit}
     query: '',
     activeSubject: null,
     activeSubjectCode: null,
-    openSections: { header: true, memo: true },
-    previewMode: 'student'
+    openSections: { header: true, memo: false },
+    tab: 'content',
+    filter: 'all',
+    drafts: {},
+    saving: false,
+    fileOrdering: {},
+    visibilitySaving: {},
+    selection: 0,
+    previewMode: 'student',
+    editorView: 'visual',
+    selectedModule: 'header',
+    canvasModules: [],
+    canvasEditing: true
   };
   var DRIVE_PROXY = 'https://qnwjhheoekpqqqhevztw.supabase.co/functions/v1/drive-proxy';
 
@@ -682,17 +703,18 @@ button,input,select,textarea{font-family:inherit}
     var count = document.getElementById('catalogCount');
     var q = state.query.trim().toLowerCase();
     state.filteredCatalog = state.catalog.filter(function (s) {
+      if (state.filter === 'published' && !s.is_published || state.filter === 'draft' && s.is_published) return false;
       if (!q) return true;
       return s.subject_code.toLowerCase().indexOf(q) !== -1 || (s.name || '').toLowerCase().indexOf(q) !== -1;
     });
-    count.textContent = String(state.catalog.length);
+    count.textContent = state.filteredCatalog.length + ' / ' + state.catalog.length;
     if (!state.filteredCatalog.length) {
-      list.innerHTML = '<div class="empty-hint"><b>Ingen fag ennå</b>Klikk «＋ Nytt fag» over for å komme i gang.</div>';
+      list.innerHTML = '<div class="empty-hint"><b>Ingen treff</b>Prøv et annet søk eller en annen status.</div>';
       return;
     }
     list.innerHTML = state.filteredCatalog.map(function (s) {
-      var pill = s.origin === 'custom' ? '<span class="pill custom">EGET</span>' : '<span class="pill">Innebygd</span>';
-      if (!s.is_published) pill = '<span class="pill hidden">SKJULT</span>';
+      var pill = '<span class="pill custom">Publisert</span>';
+      if (!s.is_published) pill = '<span class="pill hidden">Utkast</span>';
       var active = state.activeSubjectCode === s.subject_code ? ' active' : '';
       return '<button type="button" class="catalog-item' + active + '" data-code="' + esc(s.subject_code) + '">'
         + '<div class="catalog-icon" style="background:' + esc(s.accent || '#2f62ff') + '20;border-color:' + esc(s.accent || '#2f62ff') + '55">' + esc(s.icon || '📚') + '</div>'
@@ -718,39 +740,134 @@ button,input,select,textarea{font-family:inherit}
   });
 
   // ----------- Selection & editor rendering -----------
+  var firstSemester = ['BED1', 'RET1A', 'MET1', 'SAM1A', 'KOM1'];
+  var dedicated = ['MET3', 'SAM2', 'SAM3', 'SOL1', 'RET14'];
+  function subjectRoute(s) {
+    var id = s.subject_code.toLowerCase();
+    return firstSemester.concat(dedicated).indexOf(s.subject_code) !== -1 ? '../' + id + '/' : '../subject/?id=' + encodeURIComponent(id);
+  }
+  function usesStudioLayout(s) { return firstSemester.concat(dedicated).indexOf(s.subject_code) === -1; }
+  function draft() { return state.drafts[state.activeSubjectCode] || {}; }
+  function updateSaveState() {
+    var fields = Object.keys(draft());
+    var el = document.getElementById('studioSaveState');
+    if (el) el.textContent = state.saving ? 'Lagrer …' : fields.length ? fields.length + ' felt med ulagrede endringer' : 'Alle endringer lagret';
+    var bar = document.querySelector('.studio-savebar');
+    if (bar) bar.classList.toggle('has-changes', !!fields.length || state.saving);
+    var btn = document.getElementById('btnSaveAll');
+    if (btn) btn.disabled = state.saving || !fields.length;
+  }
+  document.getElementById('catalogFilter').addEventListener('change', function (e) { state.filter = e.target.value; renderCatalog(); });
+  document.getElementById('btnTogglePreview').addEventListener('click', function () {
+    var open = document.querySelector('.workspace').classList.toggle('preview-open');
+    this.setAttribute('aria-expanded', String(open));
+    this.textContent = open ? 'Skjul forhåndsvisning' : 'Vis forhåndsvisning';
+  });
+  window.addEventListener('beforeunload', function (e) {
+    if (Object.keys(state.drafts).some(function (key) { return Object.keys(state.drafts[key]).length; })) { e.preventDefault(); e.returnValue = ''; }
+  });
   function selectSubject(codeStr) {
+    var selection = ++state.selection;
     state.activeSubjectCode = codeStr;
+    state.activeSubject = null;
     renderCatalog();
-    renderPreview();
+    document.getElementById('editorPanel').inert = true;
+    document.getElementById('editorPanel').setAttribute('aria-busy', 'true');
     return studio().getSubject(codeStr, { force: true }).then(function (full) {
+      if (selection !== state.selection) return;
       if (!full) {
-        document.getElementById('editorPanel').innerHTML = '<div class="editor-empty"><h2>Fant ikke faget</h2><p>Kanskje det ble slettet, eller du mangler tilgang.</p></div>';
+        document.getElementById('editorPanel').innerHTML = '<div class="editor-empty"><h2>Kunne ikke hente faget</h2><p>Velg faget på nytt for å prøve igjen.</p></div>';
         return;
       }
       state.activeSubject = full;
       renderEditor();
-    });
+      renderPreview();
+    }).catch(function (error) { if (selection !== state.selection) return; document.getElementById('editorPanel').innerHTML = '<div class="editor-empty"><h2>Kunne ikke hente faget</h2><p>Velg faget på nytt for å prøve igjen.</p></div>'; toast('Kunne ikke hente faget: ' + error.message, 'error'); })
+      .finally(function () { if (selection === state.selection) { document.getElementById('editorPanel').removeAttribute('aria-busy'); document.getElementById('editorPanel').inert = false; } });
   }
-
+  function setTab(tab) {
+    state.editorView = 'details';
+    var aliases = { answers: 'content', memos: 'content', tasks: 'content', radar: 'overview' };
+    state.tab = aliases[tab] || tab;
+    if (['content', 'overview', 'appearance', 'publish'].indexOf(state.tab) === -1) state.tab = 'content';
+    renderEditor();
+    var target = { answers: 'sec-file-answer', memos: 'sec-file-memo', tasks: 'sec-file-task', radar: 'sec-radar' }[tab];
+    if (target) {
+      var section = document.querySelector('[data-section-key="' + target + '"]');
+      if (section) { section.classList.add('open'); section.scrollIntoView({ block: 'nearest' }); }
+    }
+  }
+  function studioOverview(s) {
+    var vis = s.visibility || {};
+    var items = [['memo', 'notes', 'Forelesningsnotater'], ['answer', 'answers', 'Eksamensdokumenter'], ['task', 'tasks', 'Oppgaver']];
+    return '<div class="studio-inventory">' + items.map(function (item) {
+      var count = (s.files[item[0]] || []).length;
+      return '<button type="button" data-jump-file="' + item[0] + '"><b>' + count + '</b><span>' + item[2] + '</span><small>' + (vis[item[1]] === false ? 'Skjult seksjon' : count ? 'I Fagstudio' : 'Ikke lagt til') + '</small></button>';
+    }).join('') + '</div>';
+  }
   function renderEditor() {
     var s = state.activeSubject;
     if (!s) return;
     var vis = s.visibility || {};
     var host = document.getElementById('editorPanel');
-    host.innerHTML =
-      headerBlock(s, vis) +
-      publishBlock(s) +
-      memoBlock(s) +
-      visibilityBlock(s, vis) +
-      listSection('topics', 'Viktige temaer', '📌', 'Kjernetemaer med eksamensvekt', s.blocks.topics, 'block') +
-      listSection('plan', 'Anbefalt øvingsløp', '📅', 'Trinnvis fremgang', s.blocks.plan, 'block') +
-      listSection('radar', 'Eksamensradar', '📋', 'Sensorveiledning og fallgruver', s.blocks.radar, 'block') +
-      fileSection('answer', 'A-besvarelser & eksamensløsninger', '📝', 'PDF fra Storage — bare synlig for studenter med tilgang', s.files.answer) +
-      fileSection('memo', 'Forelesningsnotater', '📚', 'PDF + utdypende tekst / tips', s.files.memo) +
-      fileSection('task', 'Oppgavebank', '🎯', 'Oppgaver med trinnvis fasit', s.files.task) +
-      flashcardsBlock(s) +
-      dangerBlock(s);
+    var tabs = [['content','Innhold'],['overview','Fagoversikt'],['appearance','Utseende'],['publish','Publisering']];
+    var nativePage = !usesStudioLayout(s);
+    var sourceNote = nativePage ? '<div class="studio-source-note"><strong>Redigeringen vises på den aktive fagsiden.</strong><p>Notater, eksamensdokumenter og oppgaver fra Fagstudio vises sammen med fagets eksisterende materiale. Endringer i navn, ingress og utseende gjelder overskriften; eksisterende memoarer og spesialverktøy beholdes.</p><a href="' + subjectRoute(s) + '" target="_blank" rel="noopener">Åpne aktiv fagside ↗</a></div>' : '';
+    var body = '';
+    if (state.tab === 'content') body = studioOverview(s) + sourceNote
+      + '<div class="studio-section-intro"><h2>Fagstoff studentene kan bruke</h2><p>Legg inn faktiske dokumenter, egne notater og oppgaver med forklaring. Flashcards vises når faget har et publisert dekk.</p></div>'
+      + fileSection('memo', 'Forelesningsnotater', '📚', 'Dokumenter og egne forklaringer', s.files.memo)
+      + fileSection('answer', 'Eksamensdokumenter', '📝', 'Eksamen, A-besvarelse og sensorveiledning', s.files.answer)
+      + fileSection('task', 'Oppgavebank', '🎯', 'Oppgaver med trinnvis fasit', s.files.task)
+      + flashcardsBlock(s);
+    if (state.tab === 'overview') body = sourceNote + '<div class="studio-section-intro"><h2>Forklar det som er nyttig</h2><p>Valgfritt. Bruk fagspesifikke forklaringer og dokumenterte råd. Tomme felt gir ingen tomme kort på studentsiden.</p></div>'
+      + memoBlock(s)
+      + listSection('topics', 'Viktige temaer', '📌', 'Temaer med konkrete forklaringer', s.blocks.topics)
+      + listSection('plan', 'Anbefalt øvingsløp', '📅', 'Bare dersom du har et faglig begrunnet løp', s.blocks.plan)
+      + listSection('radar', 'Eksamensradar', '📋', 'Oppgi eksamensår og kilde i forklaringen', s.blocks.radar);
+    if (state.tab === 'appearance') body = sourceNote + headerBlock(s, vis) + '<div class="studio-source-note"><strong>Felles oppsett for nye fag</strong><p>Notater, eksamensdokumenter og øving samles i en rolig leseflate. Bare seksjoner med innhold vises til studentene. Ingen maltekster legges inn.</p></div>';
+    if (state.tab === 'publish') body = sourceNote + publishBlock(s) + visibilityBlock(s, vis) + dangerBlock(s);
+    document.body.classList.toggle('hf-visual-studio-active',state.editorView === 'visual');
+    document.getElementById('visualStudio').hidden = state.editorView !== 'visual';
+    document.querySelector('.workspace').classList.toggle('is-visual', state.editorView === 'visual');
+    document.getElementById('btnTogglePreview').hidden = state.editorView === 'visual';
+    var viewSwitch = '<nav class="studio-view-switch" aria-label="Arbeidsflate"><button type="button" data-editor-view="visual" aria-pressed="' + (state.editorView === 'visual') + '">Rediger på siden</button><button type="button" data-editor-view="details" aria-pressed="' + (state.editorView === 'details') + '">Detaljer og filer</button></nav>';
+    host.innerHTML = '<div class="editor-head"><div class="editor-title"><div class="editor-icon">' + esc(s.icon || '📚') + '</div><div class="editor-title-text"><strong>' + esc(s.subject_code) + ' · ' + esc(s.name) + '</strong><span>' + (s.is_published ? 'Publisert' : 'Utkast · skjult for studentene') + '</span></div></div><a class="action-btn secondary small" href="' + subjectRoute(s) + '" target="_blank" rel="noopener">Åpne fagsiden ↗</a></div>'
+      + viewSwitch
+      + (state.editorView === 'details' ? '<nav class="studio-tabs" aria-label="Rediger faget">' + tabs.map(function (tab) { return '<button type="button" data-studio-tab="' + tab[0] + '" aria-pressed="' + (state.tab === tab[0]) + '">' + tab[1] + '</button>'; }).join('') + '</nav>' + body : '<p class="visual-instruction">Klikk på tekst eller en seksjon for å redigere. Dra seksjonenes håndtak for å endre oppsettet. Endringene vises her før du lagrer.</p>')
+      + '<div class="studio-savebar"><span id="studioSaveState" role="status"></span><button class="action-btn small" type="button" id="btnSaveAll">Lagre endringer</button></div>';
+    host.querySelectorAll('[data-editor-view]').forEach(function (button) { button.addEventListener('click', function () { state.editorView = button.dataset.editorView; renderEditor(); renderPreview(); }); });
+    if (state.editorView === 'visual') { renderVisualInspector(); renderCanvas(); }
+    host.querySelectorAll('[data-studio-tab]').forEach(function (btn) { btn.addEventListener('click', function () { setTab(btn.dataset.studioTab); }); });
+    host.querySelectorAll('[data-jump-file]').forEach(function (btn) { btn.addEventListener('click', function () {
+      var section = host.querySelector('[data-section-key="sec-file-' + btn.dataset.jumpFile + '"]');
+      section.classList.add('open'); section.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }); });
+    host.querySelectorAll('[data-header]').forEach(function (input) {
+      var field = input.dataset.header;
+      if (Object.prototype.hasOwnProperty.call(draft(), field)) input.value = draft()[field];
+      if (!input.id) input.id = 'studio-field-' + field;
+      var label = input.closest('.form-group')?.querySelector('label');
+      if (label) label.htmlFor = input.id;
+      input.addEventListener('input', function () {
+        var edits = state.drafts[state.activeSubjectCode] || (state.drafts[state.activeSubjectCode] = {});
+        if (input.value === String(state.activeSubject[field] || '')) delete edits[field];
+        else edits[field] = input.value;
+        updateSaveState();
+        postCanvasDraft();
+      });
+    });
+    document.getElementById('btnSaveAll').addEventListener('click', function () { saveHeaderFields(Object.keys(draft())); });
     bindEditor();
+    host.querySelectorAll('[data-vis]').forEach(function (input) { input.disabled = !!state.visibilitySaving[state.activeSubjectCode]; });
+    updateSaveState();
+    // Existing accordions now support keyboard navigation as well.
+    host.querySelectorAll('.section-head[data-toggle]').forEach(function (head) {
+      head.setAttribute('role', 'button'); head.tabIndex = 0;
+      head.setAttribute('aria-expanded', String(head.closest('.section').classList.contains('open')));
+      head.addEventListener('click', function () { head.setAttribute('aria-expanded', String(head.closest('.section').classList.contains('open'))); });
+      head.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); head.click(); } });
+    });
   }
 
   function sectionOpenClass(key, defaultOpen) {
@@ -770,15 +887,9 @@ button,input,select,textarea{font-family:inherit}
   }
 
   function headerBlock(s, vis) {
-    return '<div class="editor-head">'
-      + '<div class="editor-title"><div class="editor-icon" style="background:' + esc(s.accent) + '30;border:1px solid ' + esc(s.accent) + '77">' + esc(s.icon) + '</div>'
-      + '<div class="editor-title-text"><strong>' + esc(s.subject_code) + ' · ' + esc(s.name) + '</strong><span>' + esc(s.kicker || 'Ingen kicker angitt') + ' · ' + (s.is_published ? 'Publisert' : 'Skjult') + '</span></div></div>'
-      + '<div class="editor-toolbar">'
-      + '<a class="action-btn secondary small" href="../subject/?id=' + encodeURIComponent(s.subject_code.toLowerCase()) + '&admin=1" target="_blank">👑 Rediger live på fagsiden ↗</a>'
-      + '</div>'
-      + '</div>'
+    return ''
       + '<div class="section' + sectionOpenClass('header', true) + '" data-section-key="header">'
-      + '<div class="section-head" data-toggle="header"><div class="section-title">🏷️ Fag-header <small>navn, kicker, farge, ikon, semester</small></div>' + chevronSvg() + '</div>'
+      + '<div class="section-head" data-toggle="header"><div class="section-title">🏷️ Fagets identitet <small>navn, farge og semester</small></div>' + chevronSvg() + '</div>'
       + '<div class="section-body"><div class="section-body-inner">'
       + '<div class="form-grid">'
       + '<div class="form-group"><label>Fagkode</label><input type="text" value="' + esc(s.subject_code) + '" disabled></div>'
@@ -808,27 +919,27 @@ button,input,select,textarea{font-family:inherit}
       + '</div></div></div>'
       + '<div class="form-group" style="margin-top:12px"><label>Ingress / fagoversikt</label><textarea class="tall" data-header="lead">' + esc(s.lead) + '</textarea></div>'
       + '<div class="form-group" style="margin-top:12px"><label>Anbefalt neste steg</label><input type="text" data-header="next_step" value="' + esc(s.next_step) + '" placeholder="F.eks. Gå gjennom formelark før eksamensdrill"></div>'
-      + '<div style="margin-top:12px;display:flex;gap:8px"><button type="button" class="action-btn small" id="btnSaveHeader">💾 Lagre header</button></div>'
+      + '<div style="margin-top:12px;display:flex;gap:8px"><button type="button" class="action-btn small" id="btnSaveHeader">💾 Lagre fagopplysninger</button></div>'
       + '</div></div>'
       + '</div>';
   }
 
   function publishBlock(s) {
-    return '<div class="section' + sectionOpenClass('publish', false) + '" data-section-key="publish">'
+    return '<div class="section' + sectionOpenClass('publish', true) + '" data-section-key="publish">'
       + '<div class="section-head" data-toggle="publish"><div class="section-title">📢 Publisering</div>'
       + '<div class="section-meta"><span class="section-vis-pill' + (s.is_published ? '' : ' off') + '">' + (s.is_published ? 'Publisert' : 'Skjult') + '</span>' + chevronSvg() + '</div></div>'
       + '<div class="section-body"><div class="section-body-inner">'
-      + '<div class="vis-row"><div class="vis-row-label">Publisert i katalogen<small>Skjulte fag vises kun for administratorer.</small></div>'
+      + '<div class="vis-row"><div class="vis-row-label">Publisert i katalogen<small>Skjulte fag vises kun for administratorer. Lagret innhold i publiserte fag blir synlig med én gang.</small></div>'
       + '<label class="switch"><input type="checkbox" id="togglePublished"' + (s.is_published ? ' checked' : '') + '><span class="slider"></span></label></div>'
       + '</div></div></div>';
   }
 
   function memoBlock(s) {
     return '<div class="section' + sectionOpenClass('memo', true) + '" data-section-key="memo">'
-      + '<div class="section-head" data-toggle="memo"><div class="section-title">📝 Memo & studietips <small>tre korte kort som vises på fagsiden</small></div>' + chevronSvg() + '</div>'
+      + '<div class="section-head" data-toggle="memo"><div class="section-title">📝 Egne forklaringer <small>vises bare når du fyller dem ut</small></div>' + chevronSvg() + '</div>'
       + '<div class="section-body"><div class="section-body-inner">'
       + '<div class="form-group"><label>Kort intro (memo)</label><textarea data-header="memo_intro" placeholder="Hva handler faget om og hva bør studenten kunne …">' + esc(s.memo_intro) + '</textarea></div>'
-      + '<div class="form-group" style="margin-top:12px"><label>Eksamen</label><textarea data-header="memo_exam" placeholder="Hva ser sensor etter, typiske fallgruver …">' + esc(s.memo_exam) + '</textarea></div>'
+      + '<div class="form-group" style="margin-top:12px"><label>Eksamen</label><textarea data-header="memo_exam" placeholder="Dokumenterte eksamenskrav. Oppgi kilde eller eksamensår …">' + esc(s.memo_exam) + '</textarea></div>'
       + '<div class="form-group" style="margin-top:12px"><label>Slik bruker du siden</label><textarea data-header="memo_study_advice" placeholder="Hvordan komme i gang, rekkefølge på verktøy …">' + esc(s.memo_study_advice) + '</textarea></div>'
       + '<div style="margin-top:12px;display:flex;gap:8px"><button type="button" class="action-btn small" id="btnSaveMemo">💾 Lagre memo</button></div>'
       + '</div></div></div>';
@@ -843,10 +954,10 @@ button,input,select,textarea{font-family:inherit}
       ['notes', '📚 Forelesningsnotater'],
       ['tasks', '🎯 Oppgavebank'],
       ['flashcards', '⚡ Flashcards'],
-      ['overview', '📖 Ingress & memo']
+      ['overview', '📖 Egne forklaringer og neste steg']
     ];
     return '<div class="section' + sectionOpenClass('visibility', false) + '" data-section-key="visibility">'
-      + '<div class="section-head" data-toggle="visibility"><div class="section-title">👁️ Seksjonssynlighet <small>skjul/vis moduler for studentene</small></div>' + chevronSvg() + '</div>'
+      + '<div class="section-head" data-toggle="visibility"><div class="section-title">👁️ Seksjonssynlighet <small>vis eller skjul innhold fra Fagstudio</small></div>' + chevronSvg() + '</div>'
       + '<div class="section-body"><div class="section-body-inner">'
       + rows.map(function (r) {
         var on = vis[r[0]] !== false;
@@ -861,7 +972,7 @@ button,input,select,textarea{font-family:inherit}
     var body = rows.length
       ? '<div class="row-list">' + rows.map(function (r) { return blockRowHtml(section, r); }).join('') + '</div>'
       : '<div class="empty-hint"><b>Ingen ' + esc(title.toLowerCase()) + ' ennå</b>Klikk «Legg til» for å lage første rad.</div>';
-    return '<div class="section' + sectionOpenClass('sec-' + section, true) + '" data-section-key="sec-' + section + '">'
+    return '<div class="section' + sectionOpenClass('sec-' + section, false) + '" data-section-key="sec-' + section + '">'
       + '<div class="section-head" data-toggle="sec-' + section + '"><div class="section-title">' + icon + ' ' + esc(title) + ' <small>' + esc(sub) + '</small></div>'
       + count + chevronSvg() + '</div>'
       + '<div class="section-body"><div class="section-body-inner">'
@@ -890,18 +1001,21 @@ button,input,select,textarea{font-family:inherit}
   function fileSection(kind, title, icon, sub, files) {
     var count = files.length ? '<span class="section-meta">' + files.length + ' filer</span>' : '';
     var body = files.length
-      ? files.map(function (f) { return fileCardHtml(kind, f); }).join('')
-      : '<div class="empty-hint"><b>Ingen ' + esc(title.toLowerCase()) + ' ennå</b>Klikk «Legg til» for å laste opp PDF eller lime inn en lenke.</div>';
-    return '<div class="section' + sectionOpenClass('sec-file-' + kind, true) + '" data-section-key="sec-file-' + kind + '">'
+      ? files.map(function (f, index) { return fileCardHtml(kind, f, index, files.length); }).join('')
+      : '<div class="empty-hint"><b>Ingen ' + esc(title.toLowerCase()) + ' ennå</b>Klikk «Legg til» for å laste opp dokumenter eller skrive eget fagstoff.</div>';
+    return '<div class="section' + sectionOpenClass('sec-file-' + kind, kind === 'memo') + '" data-section-key="sec-file-' + kind + '">'
       + '<div class="section-head" data-toggle="sec-file-' + kind + '"><div class="section-title">' + icon + ' ' + esc(title) + ' <small>' + esc(sub) + '</small></div>'
       + count + chevronSvg() + '</div>'
       + '<div class="section-body"><div class="section-body-inner">'
+      + '<p class="file-order-hint">Bruk pilene eller velg plassering. Rekkefølgen lagres med én gang og brukes på studentsiden.</p>'
       + '<div style="display:flex;justify-content:flex-end;margin-bottom:6px"><button type="button" class="action-btn small" data-add-file="' + kind + '">＋ Legg til</button></div>'
       + '<div style="display:flex;flex-direction:column;gap:8px">' + body + '</div>'
       + '</div></div></div>';
   }
 
-  function fileCardHtml(kind, file) {
+  function fileCardHtml(kind, file, index, total) {
+    var busy = !!state.fileOrdering[state.activeSubjectCode + ':' + kind];
+    var label = esc(file.title || 'dokumentet');
     var isDrive = file.storage_bucket === 'google_drive' || (file.meta && file.meta.source === 'google_drive');
     var badge = isDrive ? '☁️ Google Drive (5 TB)' : (file.storage_path ? '📄 PDF (Supabase)' : (file.external_url ? '🔗 Lenke' : '📝 Tekst'));
     var meta = [];
@@ -911,13 +1025,16 @@ button,input,select,textarea{font-family:inherit}
     if ((file.meta || {}).topic) meta.push('Tema: ' + file.meta.topic);
     if ((file.meta || {}).source) meta.push('Kilde: ' + file.meta.source);
     if ((file.meta || {}).date) meta.push(file.meta.date);
-    return '<div class="file-card" data-file-id="' + esc(file.id) + '">'
+    return '<div class="file-card" tabindex="-1" data-file-id="' + esc(file.id) + '">'
       + '<div class="file-icon ' + esc(kind) + '">' + (kind === 'memo' ? '📚' : (kind === 'task' ? '🎯' : '📝')) + '</div>'
       + '<div class="file-body"><strong>' + esc(file.title || '(uten tittel)') + '</strong>'
       + (file.description ? '<span>' + esc(file.description) + '</span>' : '')
       + (meta.length ? '<div class="meta">' + esc(meta.join(' · ')) + '</div>' : '')
       + '<span style="font-size:10.5px;color:#8fa5ca;margin-top:2px">' + badge + '</span></div>'
       + '<div class="row-actions">'
+      + '<label class="file-position"><span class="sr-only">Plassering for ' + label + '</span><select data-file-position="' + esc(kind) + '" data-id="' + esc(file.id) + '"' + (busy ? ' disabled' : '') + '>' + Array.from({ length: total }, function (_, pos) { return '<option value="' + pos + '"' + (pos === index ? ' selected' : '') + '>' + (pos + 1) + ' av ' + total + '</option>'; }).join('') + '</select></label>'
+      + '<button type="button" class="row-mini" aria-label="Flytt ' + label + ' opp" title="Flytt opp" data-move-file="up" data-kind="' + kind + '" data-id="' + esc(file.id) + '"' + (busy || index === 0 ? ' disabled' : '') + '>↑</button>'
+      + '<button type="button" class="row-mini" aria-label="Flytt ' + label + ' ned" title="Flytt ned" data-move-file="down" data-kind="' + kind + '" data-id="' + esc(file.id) + '"' + (busy || index === total - 1 ? ' disabled' : '') + '>↓</button>'
       + '<button type="button" class="row-mini" title="Forhåndsvis fil" onclick="window.previewDriveFile(\'' + esc(file.id) + '\')">👁️</button>'
       + '<button type="button" class="row-mini" title="Rediger" data-edit-file="' + esc(kind) + '" data-id="' + esc(file.id) + '">✏️</button>'
       + '<button type="button" class="row-mini danger" title="Slett" data-delete-file="' + esc(file.id) + '">🗑️</button>'
@@ -925,12 +1042,13 @@ button,input,select,textarea{font-family:inherit}
   }
 
   function flashcardsBlock(s) {
-    var url = s.flashcards_url || ('../flashcards/?subject=' + s.subject_code.toLowerCase());
+    var url = subjectRoute(s) + '#flashcards';
+    if (['KOM1', 'SAM1A'].indexOf(s.subject_code) !== -1) return '<div class="studio-source-note"><strong>Flashcards</strong><p>Dette fagets aktive side har ingen flashcardmodul. Det er derfor ingen flashcardinnstillinger å redigere her.</p></div>';
     return '<div class="section' + sectionOpenClass('flashcards', false) + '" data-section-key="flashcards">'
       + '<div class="section-head" data-toggle="flashcards"><div class="section-title">⚡ Flashcards</div>' + chevronSvg() + '</div>'
       + '<div class="section-body"><div class="section-body-inner">'
       + '<div class="form-group"><label>Kicker på flashcard-seksjonen</label><input type="text" data-header="flashcards_kicker" value="' + esc(s.flashcards_kicker) + '" placeholder="F.eks. Kjernebegreper til eksamen"></div>'
-      + '<div class="form-group" style="margin-top:12px"><label>Egendefinert flashcard-lenke (valgfritt)</label><input type="text" data-header="flashcards_url" value="' + esc(s.flashcards_url) + '" placeholder="' + esc(url) + '"></div>'
+      + '<p class="file-order-hint">Undertittelen vises over øvingsmodulen på fagsiden. Øvingen bruker fagets publiserte dekk.</p>'
       + '<div style="margin-top:12px;display:flex;gap:8px"><button type="button" class="action-btn small" id="btnSaveFlashcards">💾 Lagre flashcard-innstillinger</button>'
       + '<a class="action-btn small secondary" href="' + esc(url) + '" target="_blank">Åpne flashcards ↗</a></div>'
       + '</div></div></div>';
@@ -961,7 +1079,7 @@ button,input,select,textarea{font-family:inherit}
       sw.addEventListener('click', function () {
         var color = sw.getAttribute('data-preset');
         var input = document.querySelector('[data-header="accent"]');
-        if (input) input.value = color;
+        if (input) { input.value = color; input.dispatchEvent(new Event('input')); }
         document.querySelectorAll('[data-preset]').forEach(function (s) { s.classList.remove('selected'); });
         sw.classList.add('selected');
       });
@@ -974,32 +1092,54 @@ button,input,select,textarea{font-family:inherit}
     if (saveMemoBtn) saveMemoBtn.addEventListener('click', function () { saveHeaderFields(['memo_intro', 'memo_exam', 'memo_study_advice']); });
 
     var saveFcBtn = document.getElementById('btnSaveFlashcards');
-    if (saveFcBtn) saveFcBtn.addEventListener('click', function () { saveHeaderFields(['flashcards_url', 'flashcards_kicker']); });
+    if (saveFcBtn) saveFcBtn.addEventListener('click', function () { saveHeaderFields(['flashcards_kicker']); });
 
     var togglePub = document.getElementById('togglePublished');
     if (togglePub) togglePub.addEventListener('change', function () {
-      studio().upsertSubject({ subject_code: state.activeSubject.subject_code, is_published: togglePub.checked }).then(function () {
-        toast(togglePub.checked ? 'Faget er publisert' : 'Faget er skjult');
+      var subjectCode = state.activeSubjectCode;
+      var published = togglePub.checked;
+      togglePub.disabled = true;
+      var previous = state.activeSubject.is_published;
+      var sb = window.AuthGuard && window.AuthGuard.getClient ? window.AuthGuard.getClient() : null;
+      function catalogPublished(value) {
+        if (!sb) return Promise.reject(new Error('Kunne ikke oppdatere butikkatalogen'));
+        return sb.from('app_subjects').update({ published: value }).eq('code', subjectCode).then(function (result) { if (result.error) throw result.error; });
+      }
+      catalogPublished(published).then(function () {
+        return studio().upsertSubject({ subject_code: subjectCode, is_published: published }).catch(function (error) {
+          return catalogPublished(previous).then(function () { throw error; });
+        });
+      }).then(function () {
+        toast(published ? 'Faget er publisert' : 'Faget er skjult');
         loadCatalog(true);
-        selectSubject(state.activeSubjectCode);
-      });
+        if (state.activeSubjectCode === subjectCode) selectSubject(subjectCode);
+      }).catch(function (error) {
+        togglePub.checked = previous;
+        toast('Publiseringen ble ikke fullført: ' + error.message + '. Prøv igjen.', 'error');
+      }).finally(function () { togglePub.disabled = false; });
     });
 
     document.querySelectorAll('[data-vis]').forEach(function (input) {
       input.addEventListener('change', function () {
-        var vis = Object.assign({}, state.activeSubject.visibility || {});
+        var subject = state.activeSubject;
+        var subjectCode = subject.subject_code;
+        if (state.visibilitySaving[subjectCode]) return;
+        state.visibilitySaving[subjectCode] = true;
+        var vis = Object.assign({}, subject.visibility || {});
+        document.querySelectorAll('[data-vis]').forEach(function (control) { control.disabled = true; });
         vis[input.getAttribute('data-vis')] = input.checked;
-        studio().upsertSubject({ subject_code: state.activeSubject.subject_code, visibility: vis }).then(function () {
-          state.activeSubject.visibility = vis;
+        studio().upsertSubject({ subject_code: subject.subject_code, visibility: vis }).then(function () {
+          subject.visibility = vis;
           notifyPreview();
           toast('Seksjonssynlighet oppdatert');
-        });
+        }).catch(function (error) { input.checked = !input.checked; toast('Kunne ikke lagre synlighet: ' + error.message, 'error'); }).finally(function () { delete state.visibilitySaving[subjectCode]; if (state.activeSubjectCode === subjectCode) document.querySelectorAll('[data-vis]').forEach(function (control) { control.disabled = false; }); });
       });
     });
 
     document.getElementById('btnDeleteSubject') && document.getElementById('btnDeleteSubject').addEventListener('click', function () {
       if (!window.confirm('Slette ' + state.activeSubject.subject_code + ' ' + state.activeSubject.name + '?\nDette fjerner alt innhold og alle filer permanent.')) return;
       studio().deleteSubject(state.activeSubject.subject_code).then(function () {
+        delete state.drafts[state.activeSubjectCode];
         toast('Fag slettet');
         state.activeSubject = null;
         state.activeSubjectCode = null;
@@ -1044,6 +1184,18 @@ button,input,select,textarea{font-family:inherit}
       });
     });
 
+    document.querySelectorAll('[data-move-file]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var kind = btn.dataset.kind;
+        var rows = state.activeSubject.files[kind];
+        var index = rows.findIndex(function (row) { return row.id === btn.dataset.id; });
+        moveFile(kind, btn.dataset.id, index + (btn.dataset.moveFile === 'up' ? -1 : 1));
+      });
+    });
+    document.querySelectorAll('[data-file-position]').forEach(function (select) {
+      select.addEventListener('change', function () { moveFile(select.dataset.filePosition, select.dataset.id, Number(select.value)); });
+    });
+
     document.querySelectorAll('[data-add-file]').forEach(function (btn) {
       btn.addEventListener('click', function () { openFileModal(btn.getAttribute('data-add-file'), null); });
     });
@@ -1072,20 +1224,64 @@ button,input,select,textarea{font-family:inherit}
     });
   }
 
+  function moveFile(kind, fileId, position) {
+    if (!state.activeSubject) return;
+    var subjectCode = state.activeSubjectCode;
+    var busyKey = subjectCode + ':' + kind;
+    if (state.fileOrdering[busyKey]) return;
+    var rows = state.activeSubject.files[kind] || [];
+    var ids = rows.map(function (row) { return row.id; });
+    var from = ids.indexOf(fileId);
+    if (from < 0 || position < 0 || position >= ids.length || from === position) return;
+    var ordered = ids.slice(); ordered.splice(from, 1); ordered.splice(position, 0, fileId);
+    state.fileOrdering[busyKey] = true;
+    state.openSections['sec-file-' + kind] = true;
+    document.querySelectorAll('[data-move-file],[data-file-position]').forEach(function (control) { control.disabled = true; });
+    studio().reorderFiles(subjectCode, kind, ordered, ids).then(function () {
+      toast('Rekkefølgen er lagret');
+      notifyPreview();
+    }).catch(function (error) {
+      toast('Kunne ikke lagre rekkefølgen: ' + (error.message || error), 'error');
+    }).finally(function () {
+      delete state.fileOrdering[busyKey];
+      if (state.activeSubjectCode === subjectCode) selectSubject(subjectCode).then(function () {
+        var card = Array.from(document.querySelectorAll('[data-file-id]')).find(function (el) { return el.dataset.fileId === fileId; });
+        if (card) card.focus({ preventScroll: true });
+      });
+    });
+  }
+
   function saveHeaderFields(fields) {
-    var patch = { subject_code: state.activeSubject.subject_code };
+    if (state.saving || !state.activeSubject || !fields.length) return;
+    var subjectCode = state.activeSubjectCode;
+    var subject = state.activeSubject;
+    var edits = state.drafts[subjectCode] || {};
+    var patch = { subject_code: subjectCode };
     fields.forEach(function (f) {
       var el = document.querySelector('[data-header="' + f + '"]');
-      if (!el) return;
-      if (el.type === 'number') patch[f] = Number(el.value) || 0;
-      else patch[f] = el.value;
+      if (Object.prototype.hasOwnProperty.call(edits, f)) patch[f] = edits[f];
+      else if (el) patch[f] = el.value;
     });
-    studio().upsertSubject(patch).then(function () {
-      Object.assign(state.activeSubject, patch);
-      toast('Lagret');
+    if (Object.prototype.hasOwnProperty.call(patch, 'name') && !patch.name.trim()) { toast('Fagnavnet kan ikke være tomt.', 'error'); return; }
+    if (!usesStudioLayout(subject) && fields.some(function (field) { return ['name', 'kicker', 'icon', 'accent', 'lead', 'status_text'].indexOf(field) !== -1; })) {
+      patch.visibility = Object.assign({}, subject.visibility || {}, patch.visibility || {}, { studio_header: true });
+    }
+    state.saving = true; updateSaveState();
+    return studio().upsertSubject(patch).then(function () {
+      var metaPatch = {};
+      [['name', 'name'], ['lead', 'description'], ['accent', 'accent'], ['icon', 'icon'], ['category_id', 'category_id']].forEach(function (pair) { if (Object.prototype.hasOwnProperty.call(patch, pair[0])) metaPatch[pair[1]] = patch[pair[0]]; });
+      if (!Object.keys(metaPatch).length) return;
+      var sb = window.AuthGuard && window.AuthGuard.getClient ? window.AuthGuard.getClient() : null;
+      if (!sb) throw new Error('Fagsiden er lagret, men fagkatalogen kunne ikke oppdateres. Prøv å lagre igjen.');
+      return sb.from('app_subjects').update(metaPatch).eq('code', subjectCode).then(function (result) { if (result.error) throw new Error('Fagsiden er lagret, men fagkatalogen kunne ikke oppdateres: ' + result.error.message); });
+    }).then(function () {
+      Object.assign(subject, patch);
+      fields.forEach(function (f) { if (edits[f] === patch[f]) delete edits[f]; });
+      toast('Endringene er lagret');
       loadCatalog(true);
-      notifyPreview();
-    }).catch(function (e) { toast('Kunne ikke lagre: ' + (e.message || e), 'error'); });
+      if (state.activeSubjectCode === subjectCode) { notifyPreview(); selectSubject(subjectCode); }
+    }).catch(function (e) { toast('Kunne ikke lagre: ' + (e.message || e), 'error'); })
+      .finally(function () { state.saving = false; updateSaveState(); });
   }
 
   // ----------- Block modal -----------
@@ -1094,12 +1290,12 @@ button,input,select,textarea{font-family:inherit}
     document.getElementById('blockSection').value = section;
     document.getElementById('blockTitle').value = block ? block.title : '';
     document.getElementById('blockBody').value = block ? block.body : '';
-    document.getElementById('blockWeight').value = block ? block.weight : (section === 'plan' ? '30 min' : '80%');
+    document.getElementById('blockWeight').value = block ? block.weight : '';
     var priorityGroup = document.getElementById('blockPriorityGroup');
     var priorityInput = document.getElementById('blockPriority');
     if (section === 'radar') {
       priorityGroup.style.display = '';
-      priorityInput.value = (block && block.priority) || 'Tier 1';
+      priorityInput.value = (block && block.priority) || '';
     } else {
       priorityGroup.style.display = 'none';
     }
@@ -1108,7 +1304,7 @@ button,input,select,textarea{font-family:inherit}
 
     var titles = { topics: 'Viktig tema', plan: 'Steg i øvingsløpet', radar: 'Eksamensradar-tema' };
     document.getElementById('modalBlockTitle').textContent = (block ? 'Rediger ' : 'Legg til ') + (titles[section] || section);
-    document.getElementById('modalBlockIntro').textContent = 'Endringer publiseres umiddelbart til alle med tilgang til faget.';
+    document.getElementById('modalBlockIntro').textContent = state.activeSubject.is_published ? 'Lagrede endringer vises umiddelbart til studenter med tilgang.' : 'Faget er et utkast. Innholdet vises til studentene når du publiserer faget.';
     openModal('modalBlock');
     setTimeout(function () { document.getElementById('blockTitle').focus(); }, 30);
   }
@@ -1711,6 +1907,7 @@ button,input,select,textarea{font-family:inherit}
   });
 
   function openNewSubjectModal() {
+    delete document.getElementById('newSubjectForm').dataset.createdCode;
     document.getElementById('nsCode').value = '';
     document.getElementById('nsName').value = '';
     document.getElementById('nsIcon').value = '📚';
@@ -1728,6 +1925,8 @@ button,input,select,textarea{font-family:inherit}
     var codeVal = document.getElementById('nsCode').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
     var name = document.getElementById('nsName').value.trim();
     if (!codeVal || !name) return;
+    var retryCreated = e.target.dataset.createdCode === codeVal;
+    if (!retryCreated && state.catalog.some(function (s) { return s.subject_code === codeVal; })) { document.getElementById('modalNewState').textContent = 'Fagkoden finnes allerede. Velg faget i katalogen.'; return; }
     var patch = {
       subject_code: codeVal,
       name: name,
@@ -1736,39 +1935,181 @@ button,input,select,textarea{font-family:inherit}
       accent: document.getElementById('nsAccent').value,
       category_id: document.getElementById('nsCategory').value,
       lead: document.getElementById('nsLead').value.trim(),
-      is_published: true,
+      is_published: false,
+      visibility: { overview: true, topics: true, plan: true, radar: true, answers: true, notes: true, tasks: true, flashcards: true },
       origin: 'custom'
     };
     var stateEl = document.getElementById('modalNewState');
+    var submit = e.target.querySelector('[type="submit"]');
+    if (submit.disabled) return;
+    submit.disabled = true;
     stateEl.textContent = 'Oppretter …';
     var priceOre = priceInOre(document.getElementById('nsPrice').value);
-    studio().upsertSubject(patch).then(function () {
+    var form = e.target;
+    var create = retryCreated ? studio().upsertSubject(patch) : studio().createSubject(patch);
+    create.then(function () {
+      form.dataset.createdCode = codeVal;
       return addSubjectToStorefront(patch, priceOre);
     }).then(function () {
       stateEl.textContent = '';
       closeModal('modalNewSubject');
-      toast('Faget er opprettet og lagt i butikken.');
+      toast('Utkastet er opprettet. Legg til fagstoff før du publiserer.');
+      state.tab = 'content';
       return loadCatalog(true).then(function () { selectSubject(codeVal); });
-    }).catch(function (err) { stateEl.textContent = 'Feil: ' + (err.message || err); });
+    }).catch(function (err) { stateEl.textContent = (form.dataset.createdCode === codeVal ? 'Utkastet er lagret, men butikkoppsettet feilet. Trykk Opprett fag for å prøve butikkoppsettet igjen. ' : 'Feil: ') + (err.message || err); }).finally(function () { submit.disabled = false; });
+  });
+
+  function canvasMessage(message) {
+    var frame = document.getElementById('canvasFrame');
+    if (frame.contentWindow) frame.contentWindow.postMessage(message, window.location.origin);
+  }
+  function canvasSubject() {
+    if (!state.activeSubject) return null;
+    var subject = JSON.parse(JSON.stringify(state.activeSubject));
+    Object.assign(subject, draft());
+    subject.visibility = Object.assign({}, state.activeSubject.visibility || {}, draft().visibility || {});
+    if (['name','lead','kicker','icon','accent','status_text'].some(function (key) { return Object.prototype.hasOwnProperty.call(draft(),key); })) subject.visibility.studio_header = true;
+    return subject;
+  }
+  function postCanvasDraft() {
+    var subject = canvasSubject();
+    if (subject) canvasMessage({ type:'HF_STUDIO_DRAFT', subject:subject });
+  }
+  function renderCanvas() {
+    if (!state.activeSubject) return;
+    var picker = document.getElementById('visualSubjectPicker');
+    picker.innerHTML = state.catalog.map(function (s) { return '<option value="' + esc(s.subject_code) + '"' + (s.subject_code === state.activeSubjectCode ? ' selected' : '') + '>' + esc(s.subject_code + ' · ' + s.name) + '</option>'; }).join('');
+    var frame = document.getElementById('canvasFrame');
+    if (frame.dataset.subjectCode !== state.activeSubjectCode) {
+      state.canvasModules = [];
+      frame.dataset.subjectCode = state.activeSubjectCode;
+      var route = subjectRoute(state.activeSubject);
+      frame.src = route + (route.includes('?') ? '&' : '?') + 'preview=1&mode=student&studio=1';
+    } else postCanvasDraft();
+  }
+  function visualFields(fields) {
+    var s = canvasSubject();
+    return fields.map(function (entry) {
+      var tag = entry[2] ? 'textarea' : 'input';
+      return '<div class="form-group"><label for="canvas-field-' + entry[0] + '">' + entry[1] + '</label>' + (tag === 'textarea' ? '<textarea id="canvas-field-' + entry[0] + '" data-canvas-field="' + entry[0] + '">' + esc(s[entry[0]] || '') + '</textarea>' : '<input id="canvas-field-' + entry[0] + '" data-canvas-field="' + entry[0] + '" value="' + esc(s[entry[0]] || '') + '">') + '</div>';
+    }).join('');
+  }
+  function stageOrder(order) {
+    state.canvasModules.forEach(function(item){if(!order.includes(item.key))order.push(item.key);});
+    var edits = state.drafts[state.activeSubjectCode] || (state.drafts[state.activeSubjectCode] = {});
+    edits.visibility = Object.assign({}, canvasSubject().visibility, { section_order:order });
+    updateSaveState(); postCanvasDraft();
+  }
+  function renderVisualInspector() {
+    if (!state.activeSubject) return;
+    var host = document.getElementById('visualInspector');
+    var focused = host.contains(document.activeElement) ? document.activeElement : null;
+    var focusId = focused?.id, focusStart = focused?.selectionStart, focusEnd = focused?.selectionEnd;
+    var key = state.selectedModule;
+    var module = state.canvasModules.find(function (item) { return item.key === key; });
+    var html = '<span class="studio-eyebrow">Valgt på siden</span><h2>' + esc(key === 'header' ? 'Overskrift og ingress' : module?.label || ({ intro:'Egne forklaringer',notes:'Forelesningsnotater',answers:'Eksamensdokumenter',tasks:'Oppgavebank',study:'Flashcards og quiz' }[key]) || 'Sidens oppsett') + '</h2>';
+    if (key === 'reading') html += '<p>Dette er fagets opprinnelige memoar. Du kan flytte seksjonen og legge til egne forklaringer eller dokumenter.</p>';
+    if (key === 'supplements') html += '<p>Velg Forelesningsnotater, Eksamensdokumenter, Oppgaver eller Egne forklaringer under «Legg til innhold» for å redigere innholdet her.</p>';
+    if (key === 'header') html += visualFields([['name','Fagnavn'],['kicker','Undertittel'],['lead','Ingress',true],['next_step','Neste steg',true]]);
+    if (key === 'intro') html += visualFields([['memo_intro','Kort intro',true],['memo_exam','Om eksamen',true],['memo_study_advice','Slik bruker du siden',true]]);
+    if (key === 'study') html += visualFields([['flashcards_kicker','Undertittel for øving']]);
+    var kind = { notes:'memo', answers:'answer', tasks:'task' }[key];
+    if (kind) {
+      html += '<p>Velg en fil for å redigere tekst eller dokument. Rekkefølgen lagres på studentsiden.</p>';
+      html += (state.activeSubject.files[kind] || []).map(function (file,index,all) { return '<div class="visual-file-row"><button type="button" class="visual-file" data-canvas-file="' + esc(file.id) + '" data-kind="' + kind + '">' + esc(file.title) + '</button><button type="button" data-canvas-file-move="-1" data-kind="' + kind + '" data-id="' + esc(file.id) + '" aria-label="Flytt dokument opp"' + (!index ? ' disabled' : '') + '>↑</button><button type="button" data-canvas-file-move="1" data-kind="' + kind + '" data-id="' + esc(file.id) + '" aria-label="Flytt dokument ned"' + (index===all.length-1 ? ' disabled' : '') + '>↓</button></div>'; }).join('');
+      html += '<button type="button" class="action-btn small" data-canvas-add="' + kind + '">＋ Legg til</button>';
+    }
+    if (key === 'overview' || key === 'radar') {
+      (key === 'radar' ? ['radar'] : ['topics','plan']).forEach(function (section) {
+        html += '<h3>' + ({topics:'Temaer',plan:'Øvingsløp',radar:'Eksamensradar'}[section]) + '</h3>';
+        html += (state.activeSubject.blocks[section] || []).map(function (block) { return '<button type="button" class="visual-file" data-canvas-block="' + section + '" data-id="' + esc(block.id) + '">' + esc(block.title) + ' →</button>'; }).join('');
+        html += '<button type="button" class="action-btn small" data-canvas-add-block="' + section + '">＋ Legg til</button>';
+      });
+    }
+    var visibilityKey = {intro:'overview',notes:'notes',answers:'answers',tasks:'tasks',study:'flashcards',radar:'radar'}[key];
+    if (visibilityKey) html += '<label class="visual-visibility"><input type="checkbox" id="canvasSectionVisible"' + (canvasSubject().visibility[visibilityKey] !== false ? ' checked' : '') + '> Vis til studentene når seksjonen har innhold</label>';
+    html += '<div class="visual-outline"><h3>Seksjoner på siden</h3><p>Dra håndtakene på siden, eller bruk pilene her.</p>' + state.canvasModules.filter(function(item){return !item.empty || item.key === key;}).map(function (item,index,all) {
+      return '<div><button type="button" data-canvas-select="' + item.key + '" aria-pressed="' + (key === item.key) + '">' + esc(item.label) + '</button><button type="button" data-canvas-move="-1" data-key="' + item.key + '" aria-label="Flytt ' + esc(item.label) + ' opp"' + (!index ? ' disabled' : '') + '>↑</button><button type="button" data-canvas-move="1" data-key="' + item.key + '" aria-label="Flytt ' + esc(item.label) + ' ned"' + (index === all.length-1 ? ' disabled' : '') + '>↓</button></div>';
+    }).join('') + '</div><button type="button" class="action-btn secondary small" id="canvasDiscard">Forkast ulagrede sideendringer</button>';
+    html += '<div class="visual-add-sections"><h3>Legg til innhold</h3><button type="button" data-canvas-select="intro">Egne forklaringer</button><button type="button" data-canvas-select="notes">Forelesningsnotater</button><button type="button" data-canvas-select="answers">Eksamensdokumenter</button><button type="button" data-canvas-select="tasks">Oppgaver</button></div>';
+    host.innerHTML = html;
+    host.querySelectorAll('[data-canvas-field]').forEach(function (input) {
+      input.addEventListener('input', function () {
+        var edits = state.drafts[state.activeSubjectCode] || (state.drafts[state.activeSubjectCode] = {});
+        edits[input.dataset.canvasField] = input.value;
+        updateSaveState(); postCanvasDraft();
+      });
+    });
+    host.querySelectorAll('[data-canvas-select]').forEach(function (button) { button.onclick = function () { state.selectedModule = button.dataset.canvasSelect; renderVisualInspector(); canvasMessage({type:'HF_STUDIO_HIGHLIGHT',key:state.selectedModule}); }; });
+    host.querySelectorAll('[data-canvas-move]').forEach(function (button) { button.onclick = function () {
+      var order = state.canvasModules.map(function (item) { return item.key; });
+      var shown=state.canvasModules.filter(function(item){return !item.empty || item.key===state.selectedModule;}).map(function(item){return item.key;});
+      var target=shown[shown.indexOf(button.dataset.key)+Number(button.dataset.canvasMove)];
+      var from = order.indexOf(button.dataset.key), to = order.indexOf(target);
+      var moved = order.splice(from,1)[0]; order.splice(to,0,moved); stageOrder(order);
+    }; });
+    host.querySelectorAll('[data-canvas-file]').forEach(function (button) { button.onclick = function () { var kind=button.dataset.kind; openFileModal(kind,state.activeSubject.files[kind].find(function (file) { return file.id === button.dataset.canvasFile; })); }; });
+    host.querySelectorAll('[data-canvas-add]').forEach(function (button) { button.onclick = function () { openFileModal(button.dataset.canvasAdd,null); }; });
+    host.querySelectorAll('[data-canvas-detail]').forEach(function (button) { button.onclick = function () { setTab(button.dataset.canvasDetail); }; });
+    host.querySelectorAll('[data-canvas-file-move]').forEach(function (button) { button.onclick = function () { var rows=state.activeSubject.files[button.dataset.kind];var index=rows.findIndex(function(file){return file.id===button.dataset.id;});moveFile(button.dataset.kind,button.dataset.id,index+Number(button.dataset.canvasFileMove)); }; });
+    host.querySelectorAll('[data-canvas-block]').forEach(function (button) { button.onclick = function () { var section=button.dataset.canvasBlock;openBlockModal(section,state.activeSubject.blocks[section].find(function(block){return block.id===button.dataset.id;})); }; });
+    host.querySelectorAll('[data-canvas-add-block]').forEach(function (button) { button.onclick = function () { openBlockModal(button.dataset.canvasAddBlock,null); }; });
+    var visible = document.getElementById('canvasSectionVisible');
+    if (visible) visible.onchange = function () { var edits=state.drafts[state.activeSubjectCode]||(state.drafts[state.activeSubjectCode]={});edits.visibility=Object.assign({},canvasSubject().visibility);edits.visibility[visibilityKey]=visible.checked;updateSaveState();postCanvasDraft(); };
+    if (focusId) { var restored=document.getElementById(focusId);if(restored){restored.focus({preventScroll:true});if(focusStart!=null)restored.setSelectionRange(focusStart,focusEnd);} }
+    document.getElementById('canvasDiscard').onclick = function () { delete state.drafts[state.activeSubjectCode]; updateSaveState(); renderVisualInspector(); postCanvasDraft(); };
+  }
+  document.getElementById('visualSubjectPicker').onchange = function () { selectSubject(this.value); };
+  document.querySelectorAll('[data-canvas-device]').forEach(function (button) { button.onclick = function () {
+    document.querySelector('.visual-page').classList.toggle('is-mobile',button.dataset.canvasDevice==='mobile');
+    document.querySelectorAll('[data-canvas-device]').forEach(function (item) { item.setAttribute('aria-pressed',String(item===button)); });
+  }; });
+  document.getElementById('canvasTry').onclick = function () {
+    state.canvasEditing = !state.canvasEditing;
+    this.textContent = state.canvasEditing ? 'Prøv siden' : 'Tilbake til redigering';
+    this.setAttribute('aria-pressed',String(!state.canvasEditing));
+    canvasMessage({type:'HF_STUDIO_EDITING',enabled:state.canvasEditing});
+  };
+  window.addEventListener('message', function (event) {
+    if (event.origin !== window.location.origin || event.source !== document.getElementById('canvasFrame').contentWindow || !state.activeSubject) return;
+    var message = event.data || {};
+    if (message.subject_code && message.subject_code !== state.activeSubjectCode) return;
+    var allowed=['header','intro','notes','answers','tasks','study','overview','radar','resources','learning','tools','reading','supplements'];
+    if (message.type === 'HF_STUDIO_MODULES') { if (!Array.isArray(message.modules)) return; message.modules=message.modules.filter(function(item){return item && allowed.includes(item.key);}).slice(0,allowed.length); }
+    if (message.type === 'HF_STUDIO_SELECT' && !allowed.includes(message.key)) return;
+    if (message.type === 'HF_STUDIO_ORDER') { if (!Array.isArray(message.order)) return; message.order=message.order.filter(function(key,index,all){return allowed.includes(key) && all.indexOf(key)===index;}); }
+    if (message.type === 'HF_STUDIO_READY') { postCanvasDraft(); canvasMessage({type:'HF_STUDIO_EDITING',enabled:state.canvasEditing}); }
+    if (message.type === 'HF_STUDIO_MODULES') {
+      var changed = JSON.stringify(state.canvasModules) !== JSON.stringify(message.modules);
+      state.canvasModules = message.modules;
+      if (changed) renderVisualInspector();
+    }
+    if (message.type === 'HF_STUDIO_SELECT') { state.selectedModule = message.key; renderVisualInspector(); }
+    if (message.type === 'HF_STUDIO_ORDER') stageOrder(message.order);
   });
 
   // ----------- Preview -----------
   function renderPreview() {
+    if (state.editorView === 'visual') return;
     if (!state.activeSubjectCode) return;
     var iframe = document.getElementById('previewFrame');
     var openLink = document.getElementById('previewOpen');
     var label = document.getElementById('previewLabel');
-    var target = '../subject/?id=' + encodeURIComponent(state.activeSubjectCode.toLowerCase()) + '&preview=1&mode=' + state.previewMode;
-    if (iframe.src.indexOf('id=' + state.activeSubjectCode.toLowerCase()) === -1) {
+    var route = subjectRoute(state.activeSubject);
+    var target = route + (route.indexOf('?') === -1 ? '?' : '&') + 'preview=1&mode=' + state.previewMode;
+    if (iframe.dataset.subjectCode !== state.activeSubjectCode) {
       iframe.src = target;
+      iframe.dataset.subjectCode = state.activeSubjectCode;
     } else {
       notifyPreview();
     }
-    openLink.href = '../subject/?id=' + encodeURIComponent(state.activeSubjectCode.toLowerCase());
-    label.textContent = state.activeSubjectCode + ' · live';
+    openLink.href = route;
+    label.textContent = state.activeSubjectCode + ' · lagret side';
+    document.querySelector('.preview-mode-switch').hidden = !usesStudioLayout(state.activeSubject);
   }
 
   function notifyPreview() {
+    if (state.editorView === 'visual') { postCanvasDraft(); return; }
     var iframe = document.getElementById('previewFrame');
     try {
       iframe.contentWindow.postMessage({ type: 'HAUGNES_STUDIO_REFRESH', subject_code: state.activeSubjectCode }, '*');
@@ -1797,7 +2138,11 @@ button,input,select,textarea{font-family:inherit}
     loadCatalog(true).then(function () {
       var sp = new URLSearchParams(window.location.search);
       var preselect = (sp.get('subject') || sp.get('code') || '').toUpperCase();
-      if (preselect) selectSubject(preselect);
+      var initialTab = sp.get('tab') || 'content';
+      var aliases = { answers: 'content', memos: 'content', tasks: 'content', radar: 'overview' };
+      state.tab = aliases[initialTab] || initialTab;
+      if (['content', 'overview', 'appearance', 'publish'].indexOf(state.tab) === -1) state.tab = 'content';
+      if (preselect) selectSubject(preselect).then(function () { if (sp.has('tab')) setTab(initialTab); });
     });
     if (typeof s.subscribeChanges === 'function') {
       s.subscribeChanges(function (detail) {

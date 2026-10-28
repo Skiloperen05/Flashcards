@@ -465,8 +465,9 @@ assert.equal(
 );
 subjectDom.window.close();
 for (const route of ['ret14', 'sol1', 'sam2', 'sam3', 'met2', 'mat10', 'sam1a', 'bed1', 'kom1']) {
-  const page = new JSDOM(read(route + '/index.html'), {
-    url: 'http://localhost/' + route + '/?dev=1',
+  const sharedRoom = ['mat10', 'met2'].includes(route);
+  const page = new JSDOM(read(sharedRoom ? 'subject/index.html' : route + '/index.html'), {
+    url: sharedRoom ? 'http://localhost/subject/?id=' + route + '&dev=1' : 'http://localhost/' + route + '/?dev=1',
     runScripts: 'outside-only',
     pretendToBeVisual: true,
   });
@@ -774,8 +775,8 @@ for (const deck of newRrr11Decks) {
   assert.equal(cr.dataset.sfcActive, 'end');
 }
 cosoDom.window.close();
-const genericWorkspace = new JSDOM(read('met2/index.html'), {
-  url: 'https://example.test/met2/',
+const genericWorkspace = new JSDOM(read('subject/index.html'), {
+  url: 'https://example.test/subject/?id=met2',
   runScripts: 'outside-only',
 });
 genericWorkspace.window.eval(read('shared/learning-content.js'));

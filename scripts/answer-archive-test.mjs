@@ -56,6 +56,7 @@ a.AuthGuard = { getSession: () => ({ user: { id: 'admin' }, access_token: 'fake'
 a.fetch = async (url) => { const id = new URL(url).searchParams.get('drive_id'); return { ok: true, json: async () => ({ file: { id, name: id + '.pdf' } }) }; };
 for (const script of a.document.querySelectorAll('script:not([src])')) a.eval(script.textContent);
 await new Promise((resolve) => setTimeout(resolve, 20));
+a.document.querySelector('[data-editor-view="details"]').click();
 a.document.querySelector('[data-add-file="answer"]').click();
 const picker = a.document.getElementById('filePicker');
 assert.equal(picker.multiple, true);

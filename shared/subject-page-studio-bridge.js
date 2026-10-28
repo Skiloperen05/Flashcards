@@ -4,6 +4,7 @@
   if (window.__subjectPageStudioBridgeInstalled) return;
   window.__subjectPageStudioBridgeInstalled = true;
 
+  var catalogGet = null;
   var cache = {};        // subject_code -> converted page in legacy format
   var pending = {};      // subject_code -> Promise
   var listeners = [];    // fired after every refresh with (subjectId, page)
@@ -17,7 +18,7 @@
   }
 
   function toRadarRow(block) {
-    return { theme: block.title || '', weight: block.weight || '', notes: block.body || '', priority: block.priority || 'Tier 1' };
+    return { theme: block.title || '', weight: block.weight || '', notes: block.body || '', priority: block.priority || '' };
   }
 
   function toFileForKind(file) {
@@ -52,10 +53,13 @@
   function convertToLegacy(full) {
     if (!full) return null;
     var subjectId = full.subject_code.toLowerCase();
-    var page = {
+    var base = catalogGet ? catalogGet(subjectId) : null;
+    var page = Object.assign({}, base || {}, {
       id: subjectId,
       code: full.subject_code,
       name: full.name,
+      icon: full.icon,
+      statusText: full.status_text,
       kicker: full.kicker,
       accent: full.accent,
       lead: full.lead,
@@ -82,7 +86,7 @@
       }),
       __studio: true,
       __rawStudio: full
-    };
+    });
     return resolveSignedUrls(page).then(function () { return page; });
   }
 
@@ -230,8 +234,7 @@
         term: row.term || '',
         grade: row.grade || '',
         external_url: existing ? existing.external_url || '' : row.pdfUrl || row.url || row.external_url || '',
-        meta: meta,
-        sort_order: index
+        meta: meta
       };
       var file = selectedFile(row);
       if (file) {
@@ -334,6 +337,7 @@
     api.__studioInstalled = true;
 
     var originalGet = api.get.bind(api);
+    catalogGet = typeof api.getSourcePage === 'function' ? api.getSourcePage.bind(api) : originalGet;
     api.get = function (subjectId) {
       var mine = get(subjectId);
       if (mine) return mine;
@@ -394,7 +398,20 @@
     }
   });
 
+  var previewGeneration = 0;
+  function preview(full) {
+    var version = ++previewGeneration;
+    return convertToLegacy(full).then(function (page) {
+      if (!page || version !== previewGeneration) return;
+      cache[code(full.subject_code)] = page;
+      cache[String(full.subject_code).toLowerCase()] = page;
+      broadcast(full.subject_code, page);
+      return page;
+    });
+  }
+
   window.SubjectPageStudioBridge = {
+    preview: preview,
     refresh: refresh,
     onRefresh: onRefresh,
     get: get

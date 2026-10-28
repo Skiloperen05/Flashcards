@@ -1,0 +1,14 @@
+.studio-layout-handle{display:none}
+.hf-studio-canvas-editing [data-studio-layout-key]{position:relative;outline:1px dashed #759fd35c;outline-offset:4px;scroll-margin-top:50px;cursor:pointer;margin-block:22px}
+.hf-studio-canvas-editing .studio-layout-handle{display:flex;align-items:center;gap:9px;min-height:32px;padding:7px 10px;margin-bottom:14px;border-radius:6px;background:#17375a;color:#e4efff;font:600 11px system-ui;cursor:grab;user-select:none}
+.studio-layout-handle small{margin-left:auto;font-weight:400;color:#a7c4e7}
+.hf-studio-canvas-editing .studio-layout-selected{outline:2px solid #77afff}
+.hf-studio-canvas-editing .studio-layout-drop{outline:3px solid #6fe4b0;background:#173e53!important}
+.hf-studio-canvas-editing .studio-layout-empty{min-height:65px;padding:14px;border:1px dashed #759fd35c;border-radius:10px}
+.hf-studio-canvas-editing .studio-layout-empty>:not(.studio-layout-handle){display:none!important}
+.hf-studio-canvas-editing .hf-admin-subject-bar,.hf-studio-canvas-editing #adminSubjectTopBar,.hf-studio-canvas-editing #subjectAdminModeBar,.hf-studio-canvas-editing #subjectLivePreviewBanner,.hf-studio-canvas-editing #hf-admin-preview-toggle{display:none!important}
+.hf-studio-canvas-editing #subjectTitle,.hf-studio-canvas-editing #subjectLead,.hf-studio-canvas-editing .semester-heading h1,.hf-studio-canvas-editing .hf-hero h1{cursor:text}
+.hf-studio-canvas-editing #subjectTitle:hover,.hf-studio-canvas-editing #subjectLead:hover,.hf-studio-canvas-editing .semester-heading h1:hover,.hf-studio-canvas-editing .hf-hero h1:hover{outline:1px dashed #77afff;outline-offset:6px}
+.studio-layout-handle{grid-column:1/-1}
+
+.hf-studio-canvas .hf-admin-subject-bar,.hf-studio-canvas #adminSubjectTopBar,.hf-studio-canvas #subjectAdminModeBar,.hf-studio-canvas #subjectLivePreviewBanner,.hf-studio-canvas #hfAdminPreviewToggle{display:none!important}

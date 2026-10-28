@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared/haugnes-theme.css">
-<link rel="stylesheet" href="../shared/haugnes-subject.css?v=20261018-workspace">
+<link rel="stylesheet" href="../shared/haugnes-subject.css?v=20261028-canvas">
 <style>
 .hf-section-box {
   margin: 36px 0;
@@ -614,7 +614,7 @@ body.hf-student-preview-active #btnNewTaskTopBar {
 .hf-subject-loading .hf-footer { display: none; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../shared/auth-guard.js?v=20261027-archive-1"></script>
+<script src="../shared/auth-guard.js?v=20261028-canvas"></script>
 <script>
 AuthGuard.requireAuth();
 </script>
@@ -1145,11 +1145,12 @@ AuthGuard.requireAuth();
 
 <script src="../shared/learning-content.js?v=20261020-cleanup"></script>
 <script src="../shared/subject-meta.js?v=20261020-cleanup"></script>
-<script src="../shared/subject-page-data.js?v=20261020-cleanup"></script>
-<script src="../shared/subjects-studio.js?v=20261027-archive-1"></script>
-<script src="../shared/subject-page-studio-bridge.js?v=20261019-publishing"></script>
+<script src="../shared/subject-page-data.js?v=20261027-studio"></script>
+<script src="../shared/subjects-studio.js?v=20261028-order"></script>
+<script src="../shared/subject-page-studio-bridge.js?v=20261028-canvas"></script>
 <script src="../shared/subject-resources.js?v=20261020-cleanup"></script>
-<script src="../shared/subject-page-renderer.js?v=20261021-rrr11"></script>
+<script src="../shared/subject-studio-layout.js?v=20261028-canvas"></script>
+<script src="../shared/subject-page-renderer.js?v=20261028-canvas"></script>
 <script>
 (function () {
   function getSubjectCode() {
@@ -1746,7 +1747,7 @@ AuthGuard.requireAuth();
     tbody.innerHTML = plan.map(function (item, idx) {
       var step = Array.isArray(item) ? item[0] : (item.step || item.title || '');
       var desc = Array.isArray(item) ? item[1] : (item.desc || '');
-      var time = Array.isArray(item) ? item[2] : (item.time || item.duration || '30 min');
+      var time = Array.isArray(item) ? item[2] : (item.time || item.duration || '');
       return '<tr>'
         + '<td style="font-weight:800;color:#fff">' + esc(step) + '</td>'
         + '<td style="font-weight:800;color:#ffd98f">' + esc(time) + '</td>'
@@ -1783,7 +1784,7 @@ AuthGuard.requireAuth();
     if (!item) return;
     var step = Array.isArray(item) ? item[0] : (item.step || item.title || '');
     var desc = Array.isArray(item) ? item[1] : (item.desc || '');
-    var time = Array.isArray(item) ? item[2] : (item.time || item.duration || '30 min');
+    var time = Array.isArray(item) ? item[2] : (item.time || item.duration || '');
 
     document.getElementById('planEditIndex').value = String(idx);
     document.getElementById('modalPlanTitle').textContent = 'Rediger steg i øvingsløpet';
@@ -2097,7 +2098,7 @@ AuthGuard.requireAuth();
         var planHtml = plan.map(function (item, idx) {
           var step = Array.isArray(item) ? item[0] : (item.step || item.title || '');
           var desc = Array.isArray(item) ? item[1] : (item.desc || '');
-          var time = Array.isArray(item) ? item[2] : (item.time || item.duration || '30 min');
+          var time = Array.isArray(item) ? item[2] : (item.time || item.duration || '');
           return '<div class="hf-priority">'
             + '<div style="flex:1;min-width:0">'
             + '<b style="display:block;color:#fff">' + esc(step) + '</b>'
@@ -2137,7 +2138,7 @@ AuthGuard.requireAuth();
             + '<td style="font-weight:800;color:#fff">' + (row.theme || row[0] || '') + '</td>'
             + '<td style="font-weight:800;color:#ffd98f">' + (row.weight || row[1] || '') + '</td>'
             + '<td style="color:#b8c9df;line-height:1.5">' + (row.notes || row[2] || '') + '</td>'
-            + '<td><span class="' + pClass + '">' + (row.priority || row[3] || 'Tier 1') + '</span></td>'
+            + '<td><span class="' + pClass + '">' + (row.priority || row[3] || '') + '</span></td>'
             + '</tr>';
         });
         rHtml += '</tbody></table>';

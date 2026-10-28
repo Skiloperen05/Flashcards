@@ -20,7 +20,7 @@
     "check:semester": "node scripts/generate-first-semester.mjs --check",
     "coso:generate": "node scripts/generate-coso-study.mjs",
     "rrr11:generate": "node scripts/generate-rrr11-study.mjs",
-    "check:content": "node scripts/content-cleanup-test.mjs",
+    "check:content": "node scripts/content-cleanup-test.mjs && node scripts/subject-studio-test.mjs && node scripts/subject-ordering-test.mjs && node scripts/subject-canvas-test.mjs",
     "check:subjects": "node scripts/active-subjects-test.mjs",
     "check:archive": "node scripts/answer-archive-test.mjs"
   },

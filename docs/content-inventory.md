@@ -31,10 +31,14 @@ De 17 lokale eksamensfilene ligger i seks pakker for SOL1, SAM3, BED1 og RET1A. 
 
 ## Videre vedlikehold
 
-Nye fag starter uten eksempelinnhold. Studentene ser bare fylte seksjoner; administratorer kan fortsatt legge inn innhold i Fagstudio. Ved publisering skal nye dokumenter bli synlige umiddelbart, med de eksisterende tilgangsreglene.
+Nye fag starter som skjulte utkast uten eksempelinnhold. Det felles fagrommet gir dem samme leseflate og dokument-/øvingsmoduler som eksisterende Studio-fag. MAT10 og MET2 bruker også dette oppsettet; deres konkrete kontrollspørsmål og metodeinnhold er beholdt. Studentene ser bare fylte seksjoner; administratorer kan fortsatt legge inn innhold i Fagstudio. Ved publisering skal nye dokumenter bli synlige umiddelbart, med de eksisterende tilgangsreglene.
 
 Den automatiske importen fra gamle nettlesermaler er avviklet, slik at den ikke gjenoppretter demoer eller overskriver nyere publiseringer. Eksisterende lokale data er ikke slettet. Generering av læringskatalogen krever ikke lenger fylltekst i tomme felt.
 
 Dataryddingen er gjentakbar i `data/remove-placeholder-content.sql`; konkrete radverdier/tidsstempler beskytter senere endringer. Databasesnapshot før ryddingen er lagret lokalt under `/Users/birkhaugnes/.codex/backups/bhflashcards-20261020/`, utenfor det offentlige repoet.
 
 Eksisterende fagstoff, eksamensradarer og oppgaveprioriteringer er beholdt som materiale. Oppryddingen er ikke en ny faglig kvalitetssikring av alle deres påstander. Ved videre utbygging bør eksamensvekter knyttes til konkrete oppgaver, år og kilder.
+
+Fagstudio er delt i innhold, fagoversikt, utseende og publisering. Filantallene gjelder dokumenter i Studio og er ikke en faglig kvalitetsvurdering. Nye temaer og radarrader har ingen forhåndsutfylt eksamensandel eller prioritet. Fag med egne kildefiler er tydelig merket i editoren; det felles oppsettet erstatter ikke deres faglige innhold eller spesialverktøy.
+
+Den visuelle redigeringen bruker selve fagsiden som forhåndsvisning. Tekst og seksjonsrekkefølge kan prøves uten publisering og lagres eksplisitt. Tomme seksjoner skjules i studentvisningen; editoren bruker tomme rammer ved valg av en seksjon, ikke oppdiktet eksempelinnhold. Flytting av notater/dokumenter lagrer den faktiske listen, og nye opplastinger legges bakerst.

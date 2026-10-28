@@ -49,8 +49,20 @@
     });
   }
   function pageVisible() {
+    var live = window.HaugnesStudioLive?.getCurrent();
+    if (live) return live.visibility?.flashcards !== false;
     var page = window.HaugnesSubjectPages && window.HaugnesSubjectPages.get(subject);
     return !(page && page.visibility && page.visibility.flashcards === false);
+  }
+  function syncPresentation() {
+    if (!root) return;
+    var live = window.HaugnesStudioLive?.getCurrent();
+    var page = window.HaugnesSubjectPages?.get(subject);
+    var kicker = live ? live.flashcards_kicker : page?.flashcardsKicker;
+    var eyebrow = root.querySelector('.sfc-eyebrow');
+    if (!eyebrow.dataset.originalKicker) eyebrow.dataset.originalKicker = eyebrow.textContent;
+    eyebrow.textContent = String(kicker || '').trim() || eyebrow.dataset.originalKicker;
+    root.hidden = !pageVisible();
   }
   function persistSummary(summary) {
     var all;
@@ -448,6 +460,8 @@
     if (!main || document.getElementById('flashcards')) return;
     if (!decks.length) {
       document.querySelectorAll('a[data-subject-study],#heroPrimaryAction,#flashcardsTabLink,#ctaAction').forEach(function (link) { link.style.display = 'none'; });
+      var emptyPage = window.HaugnesSubjectPages?.get(subject);
+      if (emptyPage && window.HaugnesSubjectRenderer?.decorateWorkspace) window.HaugnesSubjectRenderer.decorateWorkspace(emptyPage);
       return;
     }
     var meta = window.HaugnesSubjects && window.HaugnesSubjects.findById(subject);
@@ -614,15 +628,20 @@
       root.querySelector('[data-sfc-sync]').textContent = event.detail;
     });
     window.addEventListener('haugnes:subject-studio-changed', function () {
-      root.hidden = !pageVisible();
+      syncPresentation();
       patchLinks();
     });
     window.addEventListener('haugnes:subject-access-changed', patchLinks);
+    window.addEventListener('haugnes:page-updated', syncPresentation);
     updateSummary();
     updateSelection();
     view('intro');
-    root.hidden = !pageVisible();
+    syncPresentation();
     patchLinks();
+    if (window.HaugnesSubjectRenderer?.decorateWorkspace) {
+      var page = window.HaugnesSubjectPages?.get(subject);
+      if (page) window.HaugnesSubjectRenderer.decorateWorkspace(page);
+    }
     // Renderers can update tool links after remote subject metadata arrives.
     var observer = new MutationObserver(function () {
       patchLinks();
@@ -690,5 +709,5 @@
     .catch(function (error) {
       console.warn('Kunne ikke laste flashcards i faget:', error);
     });
-  window.HaugnesSubjectFlashcards = { open: open };
+  window.HaugnesSubjectFlashcards = { open: open, syncPresentation: syncPresentation };
 })(window, document);

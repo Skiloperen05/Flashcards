@@ -274,6 +274,16 @@
   }
 
   window.HaugnesSubjectPages = {
+    // Source-controlled material only. Studio must not inherit old browser templates.
+    getSourcePage: function (id) {
+      var key = pageKey(id);
+      if (pages[key]) return pages[key];
+      var learning = learningContent();
+      var generated = learning && typeof learning.pageFor === 'function' ? learning.pageFor(id) : null;
+      if (generated) return generated;
+      var subject = window.HaugnesSubjects && typeof window.HaugnesSubjects.findById === 'function' ? window.HaugnesSubjects.findById(id) : null;
+      return subject ? synthesizeDefaultPage(subject) : null;
+    },
     get: function (id) {
       var key = pageKey(id);
       var custom = loadCustomPagesLocal();

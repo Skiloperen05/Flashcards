@@ -22,7 +22,7 @@
   function planHtml(item) {
     var step = Array.isArray(item) ? item[0] : (item.step || item.title || '');
     var desc = Array.isArray(item) ? item[1] : (item.desc || '');
-    var time = Array.isArray(item) ? item[2] : (item.time || item.duration || '30 min');
+    var time = Array.isArray(item) ? item[2] : (item.time || item.duration || '');
     return '<div class="hf-priority"><div><b>' + esc(step) + '</b><span>' + esc(desc) + '</span></div><span>' + esc(time) + '</span></div>';
   }
 
@@ -128,7 +128,7 @@
       ['ressurser', 'Ressurser'], ['formelark', 'Formelark'], ['materiale', 'Materiale'],
       ['hurtigkort', 'Hurtigkort'], ['sjekkliste', 'Sjekkliste']].forEach(function (entry) {
       var target = document.getElementById(entry[0]);
-      if (target && !tabbar.querySelector('a[href="#' + entry[0] + '"]')) {
+      if (target && target.style.display !== 'none' && !tabbar.querySelector('a[href="#' + entry[0] + '"]')) {
         tabbar.insertAdjacentHTML('beforeend', '<a data-learning-tab href="#' + entry[0] + '">' + entry[1] + '</a>');
       }
     });
@@ -192,18 +192,21 @@
   // RRR11 has two real learning surfaces; the generic template's tool cards,
   // exam advice and percentage display do not describe this course.
   function decorateWorkspace(page) {
-    if (!page || !isRrrWorkspace(page)) return;
+    if (!page) return;
+    applyStudioPresentation(page);
+    if (window.HaugnesSubjectLayout) window.requestAnimationFrame(function () { window.HaugnesSubjectLayout.apply(page); });
+    if (!isRrrWorkspace(page)) { decorateStandardWorkspace(page); return; }
     document.body.dataset.subjectLayout = 'rrr11';
     var vis = page.visibility || {};
     var toolGrid = document.getElementById('toolGrid');
     if (toolGrid) toolGrid.replaceChildren();
-    ['memo', 'learningSuite', 'sourceCard'].forEach(function (id) {
+    ['learningSuite', 'sourceCard'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) el.remove();
     });
-    document.querySelectorAll('#subjectTabBar a[href="#memo"],#subjectTabBar a[href="#oversikt"]').forEach(function (link) { link.remove(); });
+    document.querySelectorAll('#subjectTabBar a[href="#oversikt"]').forEach(function (link) { link.remove(); });
     var lead = document.getElementById('subjectLead');
-    if (lead) lead.textContent = vis.answers !== false && (page.answers || []).length ? 'Forelesningsnotater, A-besvarelser, flashcards og quiz, samlet her i faget.' : 'Les forelesningsnotatene, og øv videre på regnskapssystemer, rutiner og intern kontroll med flashcards og quiz.';
+    if (lead) lead.textContent = String(page.lead || '').trim() || (vis.answers !== false && (page.answers || []).length ? 'Forelesningsnotater, A-besvarelser, flashcards og quiz, samlet her i faget.' : 'Les forelesningsnotatene, og øv videre på regnskapssystemer, rutiner og intern kontroll med flashcards og quiz.');
     var primary = document.getElementById('heroPrimaryAction');
     if (primary) {
       primary.href = vis.notes !== false ? '#notater' : '#flashcards';
@@ -259,13 +262,104 @@
     }
   }
 
+  function decorateStandardWorkspace(page) {
+    // Only the universal shell uses this layout. Dedicated subject tools keep their own layouts.
+    var tabs = document.getElementById('subjectTabBar');
+    if (!tabs) return;
+    document.body.dataset.subjectLayout = 'workspace';
+    var vis = page.visibility || {};
+    var room = document.getElementById('flashcards');
+    var hasStudy = room && !room.hidden && vis.flashcards !== false;
+    var notes = document.getElementById('notater');
+    var hasNotes = vis.notes !== false && (page.notes || []).length > 0;
+    var flashTab = document.getElementById('flashcardsTabLink');
+    if (flashTab) { flashTab.href = '#flashcards'; flashTab.dataset.subjectStudy = '1'; flashTab.style.display = hasStudy ? '' : 'none'; }
+    var overview = tabs.querySelector('a[href="#oversikt"],a[data-workspace-overview]');
+    var grid = document.getElementById('topicsAndPlanGrid');
+    if (overview) {
+      overview.dataset.workspaceOverview = '1'; overview.href = '#topicsAndPlanGrid';
+      overview.style.display = grid && grid.style.display !== 'none' ? '' : 'none';
+    }
+    // Put reading material first, followed by native practice. Reuse nodes to retain an active session.
+    var toolGrid = document.getElementById('toolGrid');
+    if (notes && toolGrid && hasNotes) toolGrid.before(notes);
+    if (room && notes && hasNotes && room.previousElementSibling !== notes) notes.after(room);
+    var candidates = [
+      ['notater', 'Les forelesningsnotatene ↓', hasNotes],
+      ['ressurser', 'Åpne fagressursene ↓', pageResources(page).length > 0],
+      ['besvarelser', 'Se eksamensdokumentene ↓', vis.answers !== false && (page.answers || []).length > 0],
+      ['flashcards', 'Øv med flashcards →', hasStudy],
+      ['oppgaver', 'Gå til oppgavene ↓', vis.tasks !== false && (page.tasks || []).length > 0],
+      ['hurtigkort', 'Prøv kontrollspørsmålene ↓', !!page.practice?.cards?.length]
+    ];
+    var target = candidates.find(function (entry) { return entry[2] && document.getElementById(entry[0]); });
+    var action = document.getElementById('heroPrimaryAction');
+    if (action) {
+      action.style.display = target ? '' : 'none';
+      if (target) { action.href = '#' + target[0]; action.textContent = target[1]; }
+      if (target && target[0] === 'flashcards') action.dataset.subjectStudy = '1';
+      else delete action.dataset.subjectStudy;
+    }
+    var empty = document.getElementById('subjectEmptyState');
+    var hasMaterial = target || (page.tools || []).some(function (tool) { return tool[4] && tool[4] !== '#'; })
+      || vis.topics !== false && (page.topics || []).length || vis.plan !== false && (page.plan || []).length || vis.radar !== false && (Array.isArray(page.examRadar) ? page.examRadar.length : page.examRadar?.rows?.length)
+      || vis.overview !== false && [page.memo?.intro, page.memo?.exam, page.memo?.studyAdvice].some(function (text) { return String(text || '').trim(); });
+    if (!empty && toolGrid) {
+      toolGrid.insertAdjacentHTML('beforebegin', '<section id="subjectEmptyState" class="hf-workspace-empty"><span>Fagrom</span><h2>Ingen fagressurser publisert ennå</h2><p>Dokumenter og øving blir samlet her når de er lagt til.</p></section>');
+      empty = document.getElementById('subjectEmptyState');
+    }
+    if (empty) empty.hidden = !!hasMaterial || isAdminUser() && !document.body.classList.contains('hf-student-preview-active');
+    if (!tabs.dataset.standardWorkspaceBound) {
+      tabs.dataset.standardWorkspaceBound = '1';
+      window.addEventListener('hashchange', function () {
+        tabs.querySelectorAll('a').forEach(function (link) {
+          var active = link.style.display !== 'none' && link.hash === window.location.hash;
+          link.classList.toggle('active', active);
+          if (active) link.setAttribute('aria-current', 'location'); else link.removeAttribute('aria-current');
+        });
+      });
+    }
+    // Active anchor follows only sections which are actually available.
+    tabs.querySelectorAll('a').forEach(function (link) {
+      var active = link.style.display !== 'none' && link.hash === window.location.hash;
+      link.classList.toggle('active', active);
+      if (active) link.setAttribute('aria-current', 'location'); else link.removeAttribute('aria-current');
+    });
+  }
+
+  function applyStudioPresentation(page) {
+    if (!page.__studio || !document.getElementById('subjectTabBar')) return;
+    document.body.classList.add('hf-studio-header-edited');
+    var kicker = document.getElementById('subjectKicker');
+    if (kicker) {
+      kicker.textContent = [page.icon, page.kicker, page.code].filter(function (value, index, all) { return value && all.indexOf(value) === index; }).join(' · ');
+    }
+    var status = document.getElementById('studioHeaderStatus');
+    if (!status && kicker) { status = document.createElement('span'); status.id = 'studioHeaderStatus'; status.className = 'hf-studio-status'; kicker.after(status); }
+    if (status) { status.textContent = page.statusText || ''; status.hidden = !page.statusText; }
+    var memo = document.getElementById('memo');
+    if (memo) memo.remove();
+    var grid = document.getElementById('topicsAndPlanGrid');
+    if (grid) grid.insertAdjacentHTML('beforebegin', memoHtml(page.memo));
+    var savedMemo = document.getElementById('memo');
+    if (savedMemo) savedMemo.style.display = page.visibility?.overview === false ? 'none' : '';
+    var next = document.getElementById('studioNextStep');
+    if (!next) {
+      next = document.createElement('p'); next.id = 'studioNextStep'; next.className = 'hf-studio-next';
+      document.querySelector('.hf-hero-actions')?.after(next);
+    }
+    next.textContent = page.next || '';
+    next.hidden = !String(page.next || '').trim() || page.visibility?.overview === false;
+    window.HaugnesSubjectFlashcards?.syncPresentation?.();
+  }
+
   function render(page) {
     if (!page) return;
     document.title = page.code + ' ' + page.name + ' — Haugnes Flashcards';
     document.body.style.setProperty('--subject-accent', page.accent);
     document.body.style.setProperty('--subject-progress', page.progress);
     var kicker = document.getElementById('subjectKicker');
-    if (kicker) kicker.textContent = page.kicker + ' · ' + page.code;
+    if (kicker) kicker.textContent = [page.kicker, page.code].filter(function (value, index, all) { return value && all.indexOf(value) === index; }).join(' · ');
     var title = document.getElementById('subjectTitle');
     if (title) title.innerHTML = esc(page.code) + ' <span>' + esc(page.name) + '</span>';
     var lead = document.getElementById('subjectLead');
@@ -339,6 +433,8 @@
 
     var notesSec = document.getElementById('notater') || document.getElementById('memo');
     if (notesSec) notesSec.style.display = vis.notes !== false ? '' : 'none';
+    var memo = document.getElementById('memo');
+    if (memo) memo.style.display = vis.overview !== false ? '' : 'none';
     var notesTab = document.getElementById('tabNotes');
     if (notesTab) notesTab.style.display = vis.notes !== false ? '' : 'none';
 
@@ -360,8 +456,8 @@
     if (adminHost && !document.querySelector('.hf-admin-subject-bar')) {
       adminHost.insertAdjacentHTML('beforebegin', adminBarHtml(page));
     }
-    decorateWorkspace(page);
     applyContentVisibility(page);
+    decorateWorkspace(page);
     addLearningTabs(page);
   }
 
@@ -389,6 +485,8 @@
     if (planCard) planCard.style.display = visibility.plan !== false && (admin || (page.plan || []).length) ? '' : 'none';
     var grid = document.getElementById('topicsAndPlanGrid') || topicCard?.closest('.hf-wide-grid');
     if (grid) grid.style.display = [topicCard, planCard].some(function (card) { return card && card.style.display !== 'none'; }) ? '' : 'none';
+    var overviewMemo = document.getElementById('memo');
+    if (overviewMemo) overviewMemo.style.display = visibility.overview === false ? 'none' : '';
     var stats = document.getElementById('subjectStats');
     if (stats) { var panel = stats.closest('aside'); if (panel) panel.style.display = stats.children.length ? '' : 'none'; }
     var tools = document.getElementById('toolGrid');
