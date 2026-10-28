@@ -1,0 +1,298 @@
+[
+  {
+    "id": "rrr11-kvalitetskrav-fordypning",
+    "title": "Kvalitetskrav i regnskapet",
+    "description": "32 krevende flashcards med korte forsider: begreper, skiller og anvendelse. Basert på brukernotater, med faglige rettelser.",
+    "difficulty": "avansert",
+    "cards": [
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-1",
+        "q": "Hva er de ulike kvalitetskravene?",
+        "a": "Fullstendighet; gyldighet; riktig periodisering; eksistens og tilhørighet; riktig verdsettelse; korrekt klassifisering; nøyaktighet.",
+        "explanation": "Dette er inndelingen fra notatene dine. Den svarer i hovedsak til regnskapspåstander i revisjon. ISA 315 skiller også ut presentasjon.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-2",
+        "q": "Fullstendighet",
+        "a": "Alt som skal med i regnskapet, er registrert og opplyst om.",
+        "explanation": "Omfatter relevante transaksjoner, hendelser, eiendeler, gjeld, egenkapital og noteopplysninger. Kravet gjelder både resultat og balanse.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-3",
+        "q": "Gyldighet",
+        "a": "Registrerte transaksjoner og hendelser har faktisk skjedd og vedrører foretaket.",
+        "explanation": "Gjelder både inntekter og kostnader. En virkelig transaksjon kan likevel være ugyldig i foretakets regnskap dersom den gjelder en annen enhet.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-4",
+        "q": "Riktig periodisering",
+        "a": "Transaksjoner og hendelser er ført i riktig regnskapsperiode.",
+        "explanation": "For resultatposter er opptjening og sammenstilling sentralt. Betalingsdato og fakturadato avgjør ikke alene perioden.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-5",
+        "q": "Eksistens og tilhørighet",
+        "a": "Balansepostene finnes; foretaket har rettighetene til eiendelene og ansvaret for forpliktelsene.",
+        "explanation": "Eksistens gjelder eiendeler, gjeld og egenkapital på balansedagen. Tilhørighet gjelder rettigheter og forpliktelser, ikke bare hvor noe fysisk befinner seg.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-6",
+        "q": "Riktig verdsettelse",
+        "a": "Postene er målt til riktige beløp etter gjeldende regnskapsregler.",
+        "explanation": "Riktig verdi er ikke alltid markedsverdi. For balanseposter kan avskrivninger, nedskrivninger og andre estimater være nødvendige.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-7",
+        "q": "Korrekt klassifisering",
+        "a": "Postene er ført på riktige kontoer og i riktige regnskapskategorier.",
+        "explanation": "Gjelder både resultat og balanse, for eksempel kostnadsart, omløpsmiddel eller anleggsmiddel og kortsiktig eller langsiktig gjeld.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-8",
+        "q": "Nøyaktighet",
+        "a": "Beløp og øvrige opplysninger er beregnet og registrert korrekt.",
+        "explanation": "For eksempel riktig antall, pris og summering. «Formålstjenlig registrering» alene sier for lite om korrektheten.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-9",
+        "q": "Fullstendighet eller gyldighet?",
+        "a": "Fullstendighet: Er alt som skal med, tatt med? Gyldighet: Har det registrerte skjedd og vedrører det foretaket?",
+        "explanation": "Skill mellom utelatte og uberettiget registrerte transaksjoner. Det samme regnskapet kan ha begge feiltypene.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-10",
+        "q": "Gyldighet eller eksistens?",
+        "a": "Gyldighet gjelder transaksjoner og hendelser i perioden; eksistens gjelder balanseposter på balansedagen.",
+        "explanation": "En faktisk gjennomført transaksjon kan gi opphav til en balansepost som senere er opphørt.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-11",
+        "q": "Eksistens eller tilhørighet?",
+        "a": "Eksistens: Finnes posten? Tilhørighet: Har foretaket rettigheten eller forpliktelsen?",
+        "explanation": "En fysisk opptalt vare kan tilhøre en annen virksomhet.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-12",
+        "q": "Nøyaktighet eller verdsettelse?",
+        "a": "Nøyaktighet gjelder korrekt beregning og registrering; verdsettelse gjelder riktig regnskapsmessig måling.",
+        "explanation": "Et beløp kan være korrekt overført fra fakturaen, men likevel kreve nedskrivning.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-13",
+        "q": "Periodisering eller klassifisering?",
+        "a": "Periodisering gjelder hvilken periode posten føres i; klassifisering gjelder hvilken konto eller kategori den føres på.",
+        "explanation": "Et kjøp kan være ført i riktig periode, men på feil konto.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-14",
+        "q": "Fullstendighet: resultat og balanse?",
+        "a": "Gjelder begge, blant annet inntekter og gjeld.",
+        "explanation": "Utelatte salg svekker fullstendigheten i inntektene. Utelatte forpliktelser svekker fullstendigheten i gjelden. Dette er eksempler, ikke en avgrensning.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-15",
+        "q": "Gyldighet: bare kostnader?",
+        "a": "Nei. Kravet gjelder både inntekter og kostnader.",
+        "explanation": "Fiktive salg er et eksempel på manglende gyldighet på inntektssiden.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-16",
+        "q": "Eksistens: hvilke balanseposter?",
+        "a": "Eiendeler, gjeld og egenkapital.",
+        "explanation": "Egenkapital uttrykker residualen etter fradrag for gjeld. Den er ingen egen beholdning av penger på bankkontoen.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-17",
+        "q": "Periodisering: sentrale resultatprinsipper?",
+        "a": "Opptjeningsprinsippet og sammenstillingsprinsippet.",
+        "explanation": "Inntekt resultatføres når den er opptjent. Utgifter kostnadsføres i samme periode som tilhørende inntekt. Transaksjonsprinsippet er også grunnleggende, men erstatter ikke disse periodiseringsprinsippene.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-18",
+        "q": "Transaksjonsprinsippet",
+        "a": "Transaksjoner regnskapsføres til verdien av vederlaget på transaksjonstidspunktet.",
+        "explanation": "Prinsippet knytter registrering og måling til transaksjonen. Det betyr ikke at all resultatføring følger betalingsdatoen.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-19",
+        "q": "Egenkapital = bankinnskudd?",
+        "a": "Nei. Egenkapital er eiendeler minus gjeld.",
+        "explanation": "Bankinnskudd er én type eiendel. Foretaket kan ha egenkapital bundet i varer, fordringer og driftsmidler.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-20",
+        "q": "Laveste verdis prinsipp: hvilke eiendeler?",
+        "a": "Hovedregelen gjelder omløpsmidler: laveste av anskaffelseskost og virkelig verdi.",
+        "explanation": "Regnskapsloven § 5-2. Det finnes særregler, blant annet for enkelte finansielle eiendeler. Anleggsmidler følger andre hovedregler.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-21",
+        "q": "Anleggsmidler: hovedregel for verdsettelse?",
+        "a": "Anskaffelseskost, med avskrivning ved begrenset økonomisk levetid og nedskrivning ved ikke-forbigående verdifall.",
+        "explanation": "Regnskapsloven § 5-3. En fornuftig avskrivningsplan og vurdering av nedskrivningsbehov inngår i riktig verdsettelse.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-22",
+        "q": "Varelageret er telt. Er tilhørighet bevist?",
+        "a": "Nei. Foretakets rettigheter til varene må også avklares.",
+        "explanation": "Fysisk tilstedeværelse alene avgjør ikke om foretaket har rett til å balanseføre varene.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-23",
+        "q": "Kan en post oppfylle ett krav og bryte et annet?",
+        "a": "Ja. Kravene prøver forskjellige sider ved samme post.",
+        "explanation": "En kundefordring kan eksistere og tilhøre foretaket, men være overvurdert fordi forventet tap ikke er hensyntatt.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-24",
+        "q": "Et gjennomført salg er helt utelatt. Hvilket krav brytes?",
+        "a": "Fullstendighet.",
+        "explanation": "En transaksjon som skulle vært med, mangler. Caset gjelder utelatelse, ikke om salget er reelt.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-25",
+        "q": "En oppdiktet konsulenttjeneste er kostnadsført. Hvilket krav brytes?",
+        "a": "Gyldighet.",
+        "explanation": "Den registrerte transaksjonen har ikke skjedd.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-26",
+        "q": "En privat feriereise er ført som foretakets reisekostnad. Hvilket krav brytes?",
+        "a": "Gyldighet.",
+        "explanation": "Reisen kan være reell, men vedrører ikke foretakets virksomhet. Caset forutsetter at den heller ikke er en avtalt ansattfordel.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-27",
+        "q": "Et opptjent desembersalg resultatføres i januar. Hvilket krav brytes?",
+        "a": "Riktig periodisering.",
+        "explanation": "Inntekten skal tilordnes desember når den er opptjent da. Caset forutsetter at desember og januar tilhører ulike regnskapsår.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-28",
+        "q": "En maskin står i balansen, men har aldri eksistert. Hvilket krav brytes?",
+        "a": "Eksistens.",
+        "explanation": "Den registrerte eiendelen finnes ikke. Verdsettelse av en reell maskin er en annen vurdering.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-29",
+        "q": "Andres varer på eget lager er balanseført uten at foretaket har rettighetene. Hvilket krav brytes?",
+        "a": "Tilhørighet.",
+        "explanation": "Varene finnes fysisk, men foretaket har ikke rettighetene som kreves for å balanseføre dem.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-30",
+        "q": "En fordring er korrekt registrert, men nødvendig tapsnedskrivning mangler. Hvilket krav brytes?",
+        "a": "Riktig verdsettelse.",
+        "explanation": "Fordringen kan være reell og opprinnelig korrekt bokført, samtidig som balanseført beløp er for høyt.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-31",
+        "q": "Et kortsiktig lån står som langsiktig gjeld. Hvilket krav brytes?",
+        "a": "Korrekt klassifisering.",
+        "explanation": "Forpliktelsen er plassert i feil balansegruppe. Caset forutsetter at lånet etter de aktuelle reglene skal klassifiseres som kortsiktig.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      },
+      {
+        "id": "rrr11-kvalitetskrav-fordypning-32",
+        "q": "En faktura på 54 000 er registrert med 45 000. Hvilket krav brytes?",
+        "a": "Nøyaktighet.",
+        "explanation": "Caset gjelder en feilregistrering av beløpet, med korrekt periode og konto forutsatt.",
+        "topic": "kvalitetskrav",
+        "difficulty": "avansert",
+        "source": "Brukernotater; ISA 315 (revidert 2019), A189–A190; regnskapsloven §§ 4-1, 5-2 og 5-3. Kontrollert 28.10.2026."
+      }
+    ]
+  }
+]

@@ -166,12 +166,15 @@ for (const file of ['shared/haugnes-flashcards-structure.js', 'shared/haugnes-fl
 w.HaugnesFlashcardSession.install();
 assert.equal(w.getQuizDecksForSubject('rrr11')[0].questions.length, 30);
 assert.equal(w.getDecksForSubject('rrr11')[0].cards.length, 30);
-const newRrr11Decks = JSON.parse(read('data/rrr11-nye-flashcards.json'));
+const newRrr11Decks = [
+  ...JSON.parse(read('data/rrr11-nye-flashcards.json')),
+  ...JSON.parse(read('data/rrr11-kvalitetskrav-flashcards.json')),
+];
 const rrr11Decks = w.getDecksForSubject('rrr11');
-assert.equal(rrr11Decks.length, 8);
+assert.equal(rrr11Decks.length, 9);
 assert.equal(
   rrr11Decks.reduce((sum, deck) => sum + deck.cards.length, 0),
-  110,
+  142,
 );
 assert.equal(
   JSON.stringify(rrr11Decks.slice(1)),
@@ -285,7 +288,7 @@ assert.ok(
 );
 w.currentSubjectId = 'rrr11';
 w.showView('decks');
-assert.equal(w.document.querySelectorAll('[data-study-deck]').length, 8, 'Register every RRR11 deck in the library');
+assert.equal(w.document.querySelectorAll('[data-study-deck]').length, 9, 'Register every RRR11 deck in the library');
 w.renderQuizDecks();
 assert.equal(w.document.querySelectorAll('[data-quiz-id]').length, 8);
 for (const deck of newRrr11Decks) {
@@ -295,6 +298,7 @@ for (const deck of newRrr11Decks) {
   assert.equal(w.document.getElementById('cardSourceLabel').textContent, card.source);
   w.flipCard();
   assert.ok(w.document.getElementById('cardBack').textContent.includes(card.a));
+  if (!card.quiz) continue;
   w.currentQuizDeck = w.getQuizDecksForSubject('rrr11').find((candidate) => candidate.id === deck.id + '-quiz');
   w.startQuiz();
   const q = w.quizShuffledQ[0];
@@ -644,8 +648,8 @@ const changeCoso = (name, value) => {
   el.value = value;
   el.dispatchEvent(new cw.Event('change', { bubbles: true }));
 };
-assert.equal(cr.querySelectorAll('[data-sfc-deck]').length, 8);
-assert.equal(cr.querySelector('[data-sfc-deck-count]').textContent, '8 av 8 valgt');
+assert.equal(cr.querySelectorAll('[data-sfc-deck]').length, 9);
+assert.equal(cr.querySelector('[data-sfc-deck-count]').textContent, '9 av 9 valgt');
 cw.HaugnesSubjectFlashcards.open('rrr11-coso');
 changeCoso('sfc-mode', 'quiz');
 changeCoso('sfc-limit', '0');
@@ -734,27 +738,32 @@ for (const deck of newRrr11Decks) {
   cw.HaugnesSubjectFlashcards.open(deck.id);
   assert.equal(cr.querySelectorAll('[data-sfc-deck]:checked').length, 1);
   assert.equal(cr.querySelector('[data-sfc-deck]:checked').dataset.sfcDeck, deck.id);
-  changeCoso('sfc-mode', 'quiz');
-  changeCoso('sfc-filter', 'all');
-  changeCoso('sfc-limit', '0');
-  cr.querySelector('[data-sfc-start]').click();
-  const seen = new Set();
-  for (let i = 0; i < deck.cards.length; i++) {
-    const q = cr.querySelector('[data-sfc-question]').textContent;
-    const card = deck.cards.find((candidate) => candidate.quiz.q === q);
-    assert.ok(card, 'The native quiz shows a question from the selected deck');
-    seen.add(card.id);
-    const choices = Array.from(cr.querySelectorAll('[data-sfc-choice]'));
-    assert.deepEqual(choices.map((button) => button.children[1].textContent).sort(), card.quiz.options.slice().sort());
-    choices.find((button) => button.children[1].textContent === card.a).click();
-    assert.equal(cr.querySelector('.sfc-correct').children[1].textContent, card.a);
-    assert.equal(cr.querySelector('[data-sfc-answer]').textContent, card.a);
-    assert.equal(cr.querySelector('[data-sfc-explanation]').textContent, card.explanation);
-    assert.equal(cr.querySelector('[data-sfc-source]').textContent, card.source);
-    cr.querySelector('[data-sfc-quiz-next]').click();
+  if (deck.cards.some((card) => card.quiz)) {
+    changeCoso('sfc-mode', 'quiz');
+    changeCoso('sfc-filter', 'all');
+    changeCoso('sfc-limit', '0');
+    cr.querySelector('[data-sfc-start]').click();
+    const seen = new Set();
+    for (let i = 0; i < deck.cards.length; i++) {
+      const q = cr.querySelector('[data-sfc-question]').textContent;
+      const card = deck.cards.find((candidate) => candidate.quiz.q === q);
+      assert.ok(card, 'The native quiz shows a question from the selected deck');
+      seen.add(card.id);
+      const choices = Array.from(cr.querySelectorAll('[data-sfc-choice]'));
+      assert.deepEqual(
+        choices.map((button) => button.children[1].textContent).sort(),
+        card.quiz.options.slice().sort(),
+      );
+      choices.find((button) => button.children[1].textContent === card.a).click();
+      assert.equal(cr.querySelector('.sfc-correct').children[1].textContent, card.a);
+      assert.equal(cr.querySelector('[data-sfc-answer]').textContent, card.a);
+      assert.equal(cr.querySelector('[data-sfc-explanation]').textContent, card.explanation);
+      assert.equal(cr.querySelector('[data-sfc-source]').textContent, card.source);
+      cr.querySelector('[data-sfc-quiz-next]').click();
+    }
+    assert.equal(seen.size, deck.cards.length, 'Every supplied question is reachable exactly once');
+    assert.equal(cr.dataset.sfcActive, 'end');
   }
-  assert.equal(seen.size, deck.cards.length, 'Every supplied question is reachable exactly once');
-  assert.equal(cr.dataset.sfcActive, 'end');
   cw.HaugnesSubjectFlashcards.open(deck.id);
   changeCoso('sfc-mode', 'flashcards');
   changeCoso('sfc-filter', 'all');

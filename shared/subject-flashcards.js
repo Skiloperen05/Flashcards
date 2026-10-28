@@ -42,7 +42,7 @@
     if (window[global]) return Promise.resolve();
     return new Promise(function (resolve, reject) {
       var script = document.createElement('script');
-      script.src = asset('shared/' + file + '.js?v=20261021-rrr11');
+      script.src = asset('shared/' + file + '.js?v=20261028-kvalitetskrav');
       script.onload = resolve;
       script.onerror = reject;
       document.head.appendChild(script);
