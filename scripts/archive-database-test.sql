@@ -22,6 +22,18 @@ end $$;
 set local role authenticated;
 insert into public.subject_files(id,subject_code,kind,term,title,storage_bucket,storage_path)
 values('00000000-0000-4000-8000-00000000f115','ARCHIVETEST','answer','H26','Admin upload','subject-files','test/admin.pdf');
+-- Add an exam text later through the same metadata used by Fagstudio's add action.
+-- Existing pricing/publication and the original answer must survive the append.
+update public.answer_packages set price_nok_ore=9900,sale_active=true where id='archivetest-h26';
+insert into public.subject_files(id,subject_code,kind,term,title,storage_bucket,storage_path,meta)
+values('00000000-0000-4000-8000-00000000f116','ARCHIVETEST','answer','H2026','Exam text added later','subject-files','test/appended-exam.pdf',
+  '{"answer_package_id":"archivetest-h26","package_title":"Different file label","resource_kind":"Eksamen"}');
+do $$ begin
+  assert (select resource_count=2 and price_nok_ore=9900 and sale_active from public.answer_packages where id='archivetest-h26'), 'Appending keeps the same package and sale settings';
+  assert (select count(*)=1 from public.answer_packages where subject_code='ARCHIVETEST' and term='H26'), 'Appending does not create another normalized package';
+  assert (select storage_path='test/admin.pdf' and title='Admin upload' from public.subject_files where id='00000000-0000-4000-8000-00000000f115'), 'Appending preserves the existing answer';
+  assert (select kind='Eksamen' and package_id='archivetest-h26' from public.answer_resources where subject_file_id='00000000-0000-4000-8000-00000000f116'), 'Exam text appears beside the answer in the archive';
+end $$;
 reset role;
 do $$ begin perform set_config('request.jwt.claims',current_setting('bh_archive.student_claims'),true); end $$;
 insert into public.answer_package_entitlements(user_id,package_id,source) values((auth.jwt()->>'sub')::uuid,'archivetest-h25','stripe_package');

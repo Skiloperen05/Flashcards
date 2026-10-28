@@ -98,6 +98,7 @@ button,input,select,textarea{font-family:inherit}
 .action-btn.danger:hover{background:rgba(239,68,68,.22);color:#fff}
 .action-btn.gold{background:linear-gradient(135deg,#f6b43c,#f09a25);color:#061735;box-shadow:0 8px 18px rgba(240,154,37,.28)}
 .action-btn:disabled{opacity:.55;cursor:not-allowed}
+.action-btn[hidden]{display:none}
 
 /* Accordion sections */
 .section{border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.025);overflow:hidden}
@@ -360,6 +361,12 @@ button,input,select,textarea{font-family:inherit}
   <div class="modal-card">
     <h3 id="modalFileTitle">Last opp</h3>
     <p class="intro" id="modalFileIntro"></p>
+    <section id="existingAnswerPackage" hidden style="margin-bottom:16px;padding:12px;border:1px solid var(--line);border-radius:12px">
+      <strong id="existingAnswerPackageTitle"></strong>
+      <ul id="existingAnswerPackageFiles" style="padding-left:20px;margin:8px 0"></ul>
+      <button type="button" class="action-btn secondary" id="btnAppendAnswerDocuments">Legg til dokumenter i pakken</button>
+      <button type="button" class="action-btn secondary" id="btnBackToAnswerDocument" hidden>Tilbake til dokumentet</button>
+    </section>
     <form id="modalFileForm">
       <input type="hidden" id="fileId" value="">
       <input type="hidden" id="fileKind" value="">
@@ -420,7 +427,7 @@ button,input,select,textarea{font-family:inherit}
         <textarea id="fileTaskSolution" class="tall" placeholder="Trinn 1: Still opp forutsetningene …&#10;Trinn 2: Utregning …&#10;Trinn 3: Konklusjon …"></textarea>
       </div>
       <div class="form-group" style="margin-top:14px">
-        <label>Fillagring & kilde (PDF / dokument)</label>
+        <label id="fileStorageLabel">Fillagring & kilde (PDF / dokument)</label>
         <div class="storage-tabs" id="fileStorageTabs">
           <button type="button" class="storage-tab-btn active" data-storage-tab="drive">Google Drive (5 TB)</button>
           <button type="button" class="storage-tab-btn" data-storage-tab="local">💾 Lokal PDF</button>
@@ -573,7 +580,7 @@ button,input,select,textarea{font-family:inherit}
 <script src="../shared/subject-meta.js?v=20261020-cleanup"></script>
 <script src="../shared/subject-page-data.js?v=20261020-cleanup"></script>
 <script src="../shared/user-sidebar.js"></script>
-<script src="auth-guard.js?v=20261028-canvas"></script>
+<script src="auth-guard.js?v=20261028-package-add"></script>
 <script>
 (function () {
   'use strict';
@@ -1338,6 +1345,7 @@ button,input,select,textarea{font-family:inherit}
   var pendingFiles = [];
   var pendingDriveFiles = [];
   var editingFileMeta = {};
+  var answerPackageSource = null;
   var pendingFile = null;
   var pendingDriveFile = null;
   var currentGoogleToken = null;
@@ -1672,7 +1680,8 @@ button,input,select,textarea{font-family:inherit}
     });
   }
 
-  function openFileModal(kind, file) {
+  function openFileModal(kind, file, appendSource) {
+    answerPackageSource = appendSource || null;
     pendingFiles = []; pendingDriveFiles = [];
     editingFileMeta = file && file.meta || {};
     document.getElementById('answerBatchFiles').innerHTML = '';
@@ -1687,10 +1696,12 @@ button,input,select,textarea{font-family:inherit}
     document.getElementById('fileId').value = file ? file.id : '';
     document.getElementById('fileKind').value = kind;
     document.getElementById('fileTitle').value = file ? file.title : '';
+    document.getElementById('fileTitle').readOnly = !!appendSource;
     document.getElementById('fileDesc').value = file ? file.description : '';
     document.getElementById('fileBody').value = file ? file.body : '';
     document.getElementById('fileExtUrl').value = file ? file.external_url : '';
     document.getElementById('fileTerm').value = file ? file.term : '';
+    document.getElementById('fileTerm').readOnly = !!appendSource;
     document.getElementById('fileGrade').value = file ? file.grade : '';
     document.getElementById('fileTopic').value = file && file.meta ? (file.meta.topic || '') : '';
     document.getElementById('fileDifficulty').value = file && file.meta ? (file.meta.difficulty || 'Middels') : 'Middels';
@@ -1710,7 +1721,7 @@ button,input,select,textarea{font-family:inherit}
     var taskG = document.getElementById('fileTaskGroup');
 
     termG.style.display = kind === 'answer' ? '' : 'none';
-    gradeG.style.display = kind === 'answer' ? '' : 'none';
+    gradeG.style.display = kind === 'answer' && !appendSource ? '' : 'none';
     topicG.style.display = kind === 'task' ? '' : 'none';
     diffG.style.display = kind === 'task' ? '' : 'none';
     sourceG.style.display = kind === 'memo' ? '' : 'none';
@@ -1725,6 +1736,31 @@ button,input,select,textarea{font-family:inherit}
     document.getElementById('modalFileIntro').textContent = kind === 'answer' && !file ? 'Velg ett eller flere dokumenter. Oppgavetekst, modellbesvarelse og sensorveiledning for samme termin samles i én eksamenspakke. Du kan kontrollere dokumenttypen før lagring.' : kind === 'task'
       ? 'PDF er valgfritt for oppgaver. Selve oppgaveteksten og fasit ligger som tekst under.'
       : 'PDF forblir trygt beskyttet bak betalingsmuren. Kun studenter med aktiv tilgang kan lese den.';
+
+    var packageSource = appendSource || (kind === 'answer' && file);
+    document.getElementById('existingAnswerPackage').hidden = !packageSource;
+    document.getElementById('modalFileState').textContent = '';
+    document.getElementById('modalFileSaveBtn').disabled = false;
+    document.getElementById('modalFileSaveBtn').textContent = appendSource ? 'Legg til i pakken' : 'Lagre';
+    document.getElementById('fileStorageLabel').textContent = file ? 'Erstatt dette dokumentet (valgfritt)' : 'Velg dokumenter som skal legges til';
+    if (packageSource) {
+      var packageInfo = studio().answerPackageInfo(packageSource);
+      var packageFiles = (state.activeSubject.files.answer || []).filter(function (row) { return studio().answerPackageInfo(row).id === packageInfo.id; });
+      document.getElementById('existingAnswerPackageTitle').textContent = packageInfo.title + ' · ' + packageFiles.length + (packageFiles.length === 1 ? ' dokument' : ' dokumenter');
+      document.getElementById('existingAnswerPackageFiles').innerHTML = packageFiles.map(function (row) { return '<li>' + esc(row.title) + ' <small>(' + esc(row.meta && row.meta.resource_kind || row.grade || 'A-besvarelse') + ')</small></li>'; }).join('');
+      var appendBtn = document.getElementById('btnAppendAnswerDocuments');
+      appendBtn.hidden = !!appendSource;
+      appendBtn.onclick = function () { openFileModal('answer', null, packageSource); };
+      var backBtn = document.getElementById('btnBackToAnswerDocument');
+      backBtn.hidden = !appendSource;
+      backBtn.onclick = function () { openFileModal('answer', packageSource); };
+      if (appendSource) {
+        document.getElementById('fileTitle').value = packageInfo.title;
+        document.getElementById('fileTerm').value = packageInfo.term;
+        document.getElementById('modalFileTitle').textContent = 'Legg til dokumenter i eksamenspakken';
+        document.getElementById('modalFileIntro').textContent = 'Velg oppgavetekst, besvarelse eller sensorveiledning. De nye dokumentene legges til sammen med dokumentene nedenfor. Eksisterende dokumenter beholdes.';
+      }
+    }
 
     // Set initial tab based on file state
     if (file && (file.storage_bucket === 'google_drive' || (file.meta && file.meta.source === 'google_drive'))) {
@@ -1766,14 +1802,25 @@ button,input,select,textarea{font-family:inherit}
     var entries = pendingFiles.length ? pendingFiles : pendingDriveFiles;
     host.innerHTML = entries.map(function (file, index) {
       var kind = file.resource_kind || studio().guessAnswerKind(file.name);
-      return '<label style="display:grid;gap:4px"><span>' + esc(file.name) + '</span><select data-batch-kind="' + index + '">' + ['Eksamen','A-besvarelse','Sensorveiledning'].map(function (value) { return '<option' + (value === kind ? ' selected' : '') + '>' + value + '</option>'; }).join('') + '</select></label>';
+      return '<div class="form-group" style="display:grid;gap:4px"><label style="display:grid;gap:4px;text-transform:none"><span>' + esc(file.name) + '</span><select data-batch-kind="' + index + '">' + ['Eksamen','A-besvarelse','Sensorveiledning'].map(function (value) { return '<option' + (value === kind ? ' selected' : '') + '>' + value + '</option>'; }).join('') + '</select></label><button type="button" class="action-btn small secondary" data-remove-batch="' + index + '" aria-label="Fjern ' + esc(file.name) + '">Fjern fra utvalget</button></div>';
     }).join('');
     host.querySelectorAll('[data-batch-kind]').forEach(function (select) { select.addEventListener('change', function () { entries[Number(select.dataset.batchKind)].resource_kind = select.value; }); });
+    host.querySelectorAll('[data-remove-batch]').forEach(function (button) { button.onclick = function () {
+      entries.splice(Number(button.dataset.removeBatch), 1);
+      pendingFile = pendingFiles[0] || null; pendingDriveFile = pendingDriveFiles[0] || null;
+      document.getElementById('selectedDriveName').textContent = pendingDriveFiles.map(function (file) { return file.name; }).join(', ');
+      document.getElementById('selectedDriveBanner').style.display = pendingDriveFiles.length ? 'flex' : 'none';
+      document.getElementById('fileDropLabel').textContent = pendingFiles.length ? pendingFiles.map(function (file) { return file.name; }).join(', ') : 'Klikk eller dra inn dokumenter';
+      renderAnswerBatch();
+    }; });
   }
   function setPendingFiles(files) {
     var editing = !!document.getElementById('fileId').value;
     if ((editing || document.getElementById('fileKind').value !== 'answer') && files.length > 1) { toast('Velg én fil når du erstatter et eksisterende dokument.'); return; }
-    pendingFiles = Array.from(files);
+    if (!editing && document.getElementById('fileKind').value === 'answer') {
+      Array.from(files).forEach(function (file) { if (!pendingFiles.some(function (selected) { return selected.name === file.name && selected.size === file.size && selected.lastModified === file.lastModified; })) pendingFiles.push(file); });
+    } else pendingFiles = Array.from(files);
+    picker.value = '';
     pendingFile = pendingFiles[0] || null;
     pendingDriveFile = null; pendingDriveFiles = [];
     document.getElementById('selectedDriveBanner').style.display = 'none';
@@ -1826,6 +1873,7 @@ button,input,select,textarea{font-family:inherit}
 
     var stateEl = document.getElementById('modalFileState');
     var saveBtn = document.getElementById('modalFileSaveBtn');
+    if (saveBtn.disabled) return;
     saveBtn.disabled = true;
     stateEl.textContent = pendingDriveFile ? 'Kontrollerer fil og deling i Drive …' : pendingFile ? 'Laster opp fil …' : 'Lagrer …';
 
@@ -1858,6 +1906,7 @@ button,input,select,textarea{font-family:inherit}
       var entries = pendingFiles.length ? pendingFiles.map(function (file) { return { file: file, name: file.name, resource_kind: file.resource_kind }; }) : pendingDriveFiles.map(function (file) { return { drive_id: file.id, name: file.name, resource_kind: file.resource_kind }; });
       studio().uploadAnswerPackage({
         subject_code: payload.subject_code, term: payload.term, title: payload.title,
+        source_file_id: answerPackageSource ? answerPackageSource.id : undefined,
         description: payload.description, entries: entries,
         progressCallback: function (info) { stateEl.textContent = 'Laster opp ' + (info.index + 1) + ' av ' + info.total + ' …'; }
       }).then(function () {

@@ -293,7 +293,7 @@
   }
 
   function loadSubjectsStudio() {
-    addScript('haugnes-subjects-studio-js', rootRelative('shared/subjects-studio.js?v=20261028-order'), function () {
+    addScript('haugnes-subjects-studio-js', rootRelative('shared/subjects-studio.js?v=20261028-package-add'), function () {
       if (window.SubjectsStudio && typeof window.SubjectsStudio.migrateLegacyIfNeeded === 'function') {
         window.SubjectsStudio.migrateLegacyIfNeeded();
       }

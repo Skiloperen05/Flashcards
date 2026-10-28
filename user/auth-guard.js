@@ -1,5 +1,5 @@
 (function (window, document) {
-  var SHARED_SCRIPT = '../shared/auth-guard.js?v=20261028-canvas';
+  var SHARED_SCRIPT = '../shared/auth-guard.js?v=20261028-package-add';
   var MODEL_PAGES = {
     'butikk.html': { label: 'Butikk', icon: '⚷', subtitle: 'Lås opp fag' },
     'eksamensanalyse.html': { label: 'Eksamensanalyse', icon: '◈', subtitle: 'Åpne faktiske analyser' },

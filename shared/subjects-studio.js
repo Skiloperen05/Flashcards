@@ -413,10 +413,35 @@
     return 'A-besvarelse';
   }
 
+  function answerPackageInfo(file) {
+    var term = String(file.term || '').toUpperCase().replace(/\s+/g, '').replace(/^([VH])20([0-9]{2})$/, '$1$2');
+    var subjectCode = code(file.subject_code);
+    return {
+      id: file.meta && file.meta.answer_package_id || subjectCode.toLowerCase() + '-' + (term.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'besvarelser'),
+      title: file.meta && file.meta.package_title || subjectCode + (term ? ' ' + term : ' · Besvarelser'),
+      term: file.term || ''
+    };
+  }
+
   function uploadAnswerPackage(input) {
+    if (!input || !input.source_file_id) return saveAnswerPackage(input, false);
+    var sb = client();
+    if (!sb) return Promise.reject(new Error('Ikke tilkoblet'));
+    // Read the saved document again: an open editor may contain an old term or
+    // package. Appending never edits or replaces any existing document.
+    return sb.from('subject_files').select('*').eq('id', input.source_file_id).maybeSingle().then(function (result) {
+      if (result.error) throw result.error;
+      var source = result.data;
+      if (!source || source.kind !== 'answer' || code(source.subject_code) !== code(input.subject_code)) throw new Error('Eksamensbesvarelsen finnes ikke lenger i dette faget. Åpne pakken på nytt.');
+      var info = answerPackageInfo(source);
+      return saveAnswerPackage(Object.assign({}, input, { subject_code: source.subject_code, term: source.term, title: info.title, package_id: info.id }), true);
+    });
+  }
+
+  function saveAnswerPackage(input, existingPackage) {
     var entries = input && input.entries || [];
     var kinds = ['Eksamen', 'A-besvarelse', 'Sensorveiledning'];
-    if (!entries.length || !input.subject_code || !String(input.term || '').trim()) return Promise.reject(new Error('Velg filer og oppgi eksamenstermin.'));
+    if (!entries.length || !input.subject_code || (!existingPackage && !String(input.term || '').trim())) return Promise.reject(new Error('Velg filer og oppgi eksamenstermin.'));
     for (var i = 0; i < entries.length; i++) {
       var entry = entries[i];
       if (!entry.file && !entry.drive_id) return Promise.reject(new Error('Filen mangler.'));
@@ -649,6 +674,7 @@
     reorderFiles: reorderFiles,
     uploadFile: uploadFile,
     uploadAnswerPackage: uploadAnswerPackage,
+    answerPackageInfo: answerPackageInfo,
     guessAnswerKind: guessAnswerKind,
     updateFile: updateFile,
     deleteFile: deleteFile,
