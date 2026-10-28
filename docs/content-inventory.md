@@ -1,10 +1,10 @@
 # Innhold etter oppryddingen
 
-Kontrollert 20. oktober 2026, RRR11 oppdatert 21. oktober. Oversikten gjelder bhflashcards.no, ikke Kompass. Korttallene er standardbiblioteket uten brukeropprettede dekk. Små begrepsdekk er øvingsmateriale, ikke komplette fagpakker.
+Kontrollert 20. oktober 2026, RRR11 oppdatert 28. oktober 2026. Oversikten gjelder bhflashcards.no, ikke Kompass. Korttallene er standardbiblioteket uten brukeropprettede dekk. Små begrepsdekk er øvingsmateriale, ikke komplette fagpakker.
 
 | Fag | Beholdt innhold |
 | --- | --- |
-| RRR11 | 110 flashcards med quiz i åtte dekk: COSO separat (30 kort) og sju samlinger fra Aleksander Moe (80 kort) om regnskapssystemer, kvalitetskrav, ansvar/styring, risiko/kontroll, salg/innkjøp, lager/lønn/driftsmidler og ERP/data/AI. Forklaringer og kildehenvisninger følger hvert kort. Fire opplastede forelesningsnotater og én modellbesvarelse i Fagstudio. |
+| RRR11 | 178 flashcards i ti dekk: COSO separat (30 kort), sju samlinger fra Aleksander Moe (80 kort), Kvalitetskrav i regnskapet (32 åpne kort) og Regnskapsrutiner (36 åpne kort). De opprinnelige åtte dekkene har quiz om regnskapssystemer, kvalitetskrav, ansvar/styring, risiko/kontroll, salg/innkjøp, lager/lønn/driftsmidler og ERP/data/AI. Forklaringer og kildehenvisninger følger hvert kort. Opplastede forelesningsnotater og eksamensdokumenter forvaltes i Fagstudio. |
 | MET3 | 146 kildebaserte Excel-kort i 13 dekk, metodeoversikt og kildehenvisning. |
 | RET14 | 427 kort i 15 dekk, quiz, pensumoversikt og eksisterende eksamensradar. Ingen publisert A-besvarelse i arkivet. |
 | SOL1 | 533 kort i 13 dekk i fellesbiblioteket, egne teori- og skriveverktøy, seks eksamensdokumenter fra V25/V26. |

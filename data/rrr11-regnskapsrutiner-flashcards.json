@@ -1,0 +1,334 @@
+[
+  {
+    "id": "rrr11-regnskapsrutiner",
+    "title": "Regnskapsrutiner",
+    "description": "36 åpne flashcards om kvalitetskrav og rekkefølgen i salgs-, kjøps-, lager-, lønns- og driftsmiddelrutinene. Basert på brukernotater.",
+    "difficulty": "middels",
+    "cards": [
+      {
+        "id": "rrr11-regnskapsrutiner-1",
+        "q": "Hvilke fem regnskapsrutiner deles området inn i?",
+        "a": "Salg av varer og tjenester; kjøp av varer og tjenester; varelager; lønn og lønnsrelaterte poster; investering og avhending av varige driftsmidler.",
+        "explanation": "Dette er inndelingen i notatene. For varige driftsmidler skilles det mellom anskaffelse og salg.",
+        "topic": "inndeling",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-2",
+        "q": "Salg: sentrale kvalitetskrav?",
+        "a": "Fullstendighet og riktig periodisering.",
+        "explanation": "Dette er kravene som fremheves for salgsrutinen i notatene, ikke en uttømmende liste over alle krav som kan være relevante.",
+        "topic": "salg",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-3",
+        "q": "Salg: rutinen fra ordre til oppgjør?",
+        "a": "1. Ordremottak og kredittvurdering.\n2. Ordreregistrering og utstedelse av ordrebekreftelse.\n3. Vareleveranse og registrering av leveransen i logistikksystemet.\n4. Utstedelse av salgsdokument (fakturering).\n5. Bokføring: kontoene i regnskapet oppdateres.\n6. Innbetaling, med eventuell purring ved manglende betaling.\n7. Bokføring av innbetalingen.",
+        "explanation": "Skill mellom bokføring av salget og bokføring av innbetalingen. De er to trinn i rutinen.",
+        "topic": "salg",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-4",
+        "q": "Salg: hva skjer før ordreregistreringen?",
+        "a": "Ordremottak og kredittvurdering.",
+        "explanation": "Ordreregistrering og utstedelse av ordrebekreftelse følger etter dette i rutinen.",
+        "topic": "salg",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-5",
+        "q": "Salg: hva må følge vareleveransen i systemet?",
+        "a": "Leveransen registreres i logistikksystemet.",
+        "explanation": "Notatene kobler den fysiske leveransen til en registrering før faktureringen.",
+        "topic": "salg",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-6",
+        "q": "Salg: hva følger etter faktureringen?",
+        "a": "Bokføring av salget, slik at kontoene i regnskapet oppdateres.",
+        "explanation": "Utstedelse av salgsdokument og bokføring er egne trinn i rutineoversikten.",
+        "topic": "salg",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-7",
+        "q": "Salg: hvilke trinn gjenstår etter bokføring av salget?",
+        "a": "Innbetaling, eventuell purring ved manglende betaling, og bokføring av innbetalingen.",
+        "explanation": "Rutinen er ikke ferdig når salget er bokført. Også oppgjøret skal følges opp og registreres.",
+        "topic": "salg",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-8",
+        "q": "Kjøp: sentralt kvalitetskrav?",
+        "a": "Gyldighet.",
+        "explanation": "Gyldighet er kvalitetskravet som fremheves for kjøpsrutinen i notatene.",
+        "topic": "kjop",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-9",
+        "q": "Kjøp: rutinen fra bestilling til oppgjør?",
+        "a": "1. Bestilling, eventuelt avtale for tjenester.\n2. Mottak av ordrebekreftelse.\n3. Vare- eller tjenestemottak; varemottak registreres i logistikksystemet.\n4. Mottak av salgsdokument (inngående faktura).\n5. Bokføring: kontoene i regnskapet oppdateres.\n6. Betaling og bokføring av betalingen.",
+        "explanation": "Hold mottak av faktura, bokføring og betaling fra hverandre som trinn i rutinen.",
+        "topic": "kjop",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-10",
+        "q": "Kjøp: hva starter rutinen, og hva følger deretter?",
+        "a": "Bestilling, eventuelt avtale for tjenester, etterfulgt av mottak av ordrebekreftelse.",
+        "explanation": "Ved tjenester kan en avtale fylle rollen som er beskrevet ved bestilling av varer.",
+        "topic": "kjop",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-11",
+        "q": "Kjøp: hva skjer ved vare- eller tjenestemottak?",
+        "a": "Varen eller tjenesten mottas. Varemottak registreres i logistikksystemet.",
+        "explanation": "Notatene spesifiserer registrering i logistikksystemet for varemottaket.",
+        "topic": "kjop",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-12",
+        "q": "Kjøp: hvilke trinn følger etter mottak av inngående faktura?",
+        "a": "Bokføring, deretter betaling og bokføring av betalingen.",
+        "explanation": "Registrering av kjøpet og registrering av oppgjøret er forskjellige deler av rutinen.",
+        "topic": "kjop",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-13",
+        "q": "Varelager: sentrale kvalitetskrav?",
+        "a": "Eksistens, tilhørighet og riktig verdsettelse.",
+        "explanation": "De tre kravene fremheves samlet for varelageret i notatene.",
+        "topic": "varelager",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-14",
+        "q": "Varelager: rutinen fra rekvirering til registrert uttak?",
+        "a": "1. Bestillingspunktet er nådd: varer rekvireres.\n2. Varene mottas og kontrolleres fysisk mot pakkseddel eller annen dokumentasjon.\n3. Varemottaket registreres i logistikksystemet.\n4. Forvaltning: fysisk sikring av varer og sikring av tilgang til logistikksystemet.\n5. Varer tas ut og kontrolleres fysisk mot plukkseddel eller uttaksseddel.\n6. Uttaket registreres i logistikksystemet.",
+        "explanation": "Rutinen omfatter både varebevegelsene, registreringene og sikringen under lagring.",
+        "topic": "varelager",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-15",
+        "q": "Varelager: hva kontrolleres mottaket mot?",
+        "a": "Pakkseddel eller annen dokumentasjon.",
+        "explanation": "Den fysiske kontrollen ved mottak kommer før registrering av varemottaket i logistikksystemet.",
+        "topic": "varelager",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-16",
+        "q": "Varelager: hva omfatter forvaltningen?",
+        "a": "Fysisk sikring av varene på lager og sikring av tilgangen til logistikksystemet.",
+        "explanation": "Notatene inkluderer både de fysiske varene og tilgangen til systemet som registrerer lageret.",
+        "topic": "varelager",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-17",
+        "q": "Varelager: kontroll og registrering ved uttak?",
+        "a": "Fysisk kontroll mot plukkseddel eller uttaksseddel, deretter registrering av uttaket i logistikksystemet.",
+        "explanation": "Kontrollen av selve uttaket og registreringen av det er to trinn.",
+        "topic": "varelager",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-18",
+        "q": "Varelager: hva utløser rekvirering av varer?",
+        "a": "At bestillingspunktet er nådd.",
+        "explanation": "Rekvirering er første trinn i lageroversikten og kommer før mottak og registrering.",
+        "topic": "varelager",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-19",
+        "q": "Lønn: hvilke kvalitetskrav fremheves, og hvor?",
+        "a": "Gyldighet på kostnadssiden; fullstendighet på gjeldssiden; nøyaktighet.",
+        "explanation": "Behold skillet mellom kostnads- og gjeldssiden når du gjengir kravene fra notatene.",
+        "topic": "lonn",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-20",
+        "q": "Lønn: rutinen fra grunndata til offentlige oppgaver?",
+        "a": "1. Registrering av faste opplysninger i lønnssystemet: personalia, lønnssats og trekkprosent.\n2. Registrering av variable opplysninger, typisk timer.\n3. Beregning og utbetaling av lønn.\n4. Bokføring av lønn og lønnsrelaterte poster.\n5. Betaling av skattetrekk og arbeidsgiveravgift.\n6. Utarbeidelse av offentlige oppgaver.",
+        "explanation": "Dette er rutineoversikten i notatene. Kortet angir ingen betalings- eller rapporteringsfrister.",
+        "topic": "lonn",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-21",
+        "q": "Lønn: eksempler på faste opplysninger?",
+        "a": "Personalia, lønnssats og trekkprosent.",
+        "explanation": "Disse opplysningene registreres som faste opplysninger i lønnssystemet.",
+        "topic": "lonn",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-22",
+        "q": "Lønn: eksempel på variable opplysninger?",
+        "a": "Timer.",
+        "explanation": "Variable opplysninger registreres etter de faste opplysningene og før beregning og utbetaling av lønn i oversikten.",
+        "topic": "lonn",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-23",
+        "q": "Lønn: hva følger etter beregning og utbetaling?",
+        "a": "Bokføring av lønn og lønnsrelaterte poster.",
+        "explanation": "Etter bokføringen følger betaling av skattetrekk og arbeidsgiveravgift i rutineoversikten.",
+        "topic": "lonn",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-24",
+        "q": "Lønn: hvilke to trinn avslutter rutineoversikten?",
+        "a": "Betaling av skattetrekk og arbeidsgiveravgift, deretter utarbeidelse av offentlige oppgaver.",
+        "explanation": "Rutinen omfatter mer enn lønnsutbetalingen til den ansatte. Notatene tar også med betalingene og de offentlige oppgavene.",
+        "topic": "lonn",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-25",
+        "q": "Varige driftsmidler: kvalitetskrav i balansen?",
+        "a": "Eksistens, tilhørighet og korrekt verdsettelse.",
+        "explanation": "Dette er kravene notatene knytter til driftsmidlene i balansen.",
+        "topic": "driftsmidler",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-26",
+        "q": "Varige driftsmidler: kvalitetskrav for kostnadene?",
+        "a": "Gyldighet og riktig periodisering.",
+        "explanation": "Notatene skiller mellom kvalitetskravene til balansepostene og kvalitetskravene til kostnadene.",
+        "topic": "driftsmidler",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-27",
+        "q": "Varige driftsmidler: hvilket krav fremheves ved salg?",
+        "a": "Fullstendighet.",
+        "explanation": "Fullstendighet fremheves særskilt ved salg av varige driftsmidler i notatene.",
+        "topic": "driftsmidler",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-28",
+        "q": "Driftsmidler: anskaffelsesrutinen i rekkefølge?",
+        "a": "1. Vedtak om investering.\n2. Anbudsinnbydelse dersom driftsmidlets art eller beløpets størrelse tilsier det.\n3. Inngåelse av kontrakt.\n4. Mottak og fysisk kontroll av driftsmidlet.\n5. Mottak og kontroll av faktura.\n6. Bokføring og betaling.",
+        "explanation": "Anbudsinnbydelsen er betinget i notatene. Den er ikke oppgitt som et ubetinget trinn ved alle investeringer.",
+        "topic": "driftsmidler",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-29",
+        "q": "Driftsmidler: når inngår anbudsinnbydelse i anskaffelsen?",
+        "a": "Når driftsmidlets art og/eller beløpets størrelse tilsier det.",
+        "explanation": "I rutineoversikten ligger en eventuell anbudsinnbydelse etter investeringsvedtaket og før kontraktsinngåelsen.",
+        "topic": "driftsmidler",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-30",
+        "q": "Driftsmidler: hva følger etter kontraktsinngåelsen ved anskaffelse?",
+        "a": "Mottak og fysisk kontroll av driftsmidlet.",
+        "explanation": "Deretter følger mottak og kontroll av faktura. Kontrollen av driftsmidlet og kontrollen av fakturaen er egne trinn.",
+        "topic": "driftsmidler",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-31",
+        "q": "Driftsmidler: hvilke trinn avslutter anskaffelsesrutinen?",
+        "a": "Mottak og kontroll av faktura, deretter bokføring og betaling.",
+        "explanation": "Fakturakontrollen kommer etter mottak og fysisk kontroll av driftsmidlet i oversikten.",
+        "topic": "driftsmidler",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-32",
+        "q": "Driftsmidler: salgsrutinen i rekkefølge?",
+        "a": "1. Vedtak om salg eller utrangering og fastsettelse av eventuell salgspris.\n2. Inngåelse av kontrakt eller avtale.\n3. Levering av driftsmidlet.\n4. Utstedelse av salgsdokument.\n5. Bokføring og beregning av gevinst eller tap.\n6. Innbetaling.",
+        "explanation": "Dette er salgsforløpet i notatene. Første trinn omfatter også beslutningen om eventuell utrangering.",
+        "topic": "driftsmidler",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-33",
+        "q": "Driftsmidler: hva avklares før salgsavtalen inngås?",
+        "a": "Vedtak om salg eller utrangering og fastsettelse av eventuell salgspris.",
+        "explanation": "Beslutningen og en eventuell pris kommer før kontrakt eller avtale i salgsoversikten.",
+        "topic": "driftsmidler",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-34",
+        "q": "Driftsmidler: hva følger mellom salgsavtale og salgsdokument?",
+        "a": "Levering av driftsmidlet.",
+        "explanation": "Salgsrutinen angir kontrakt eller avtale, deretter levering og så utstedelse av salgsdokument.",
+        "topic": "driftsmidler",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-35",
+        "q": "Driftsmidler: hva følger etter utstedelse av salgsdokument?",
+        "a": "Bokføring og beregning av gevinst eller tap, deretter innbetaling.",
+        "explanation": "Gevinst- eller tapsberegningen inngår i bokføringstrinnet før innbetalingen i notatene.",
+        "topic": "driftsmidler",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      },
+      {
+        "id": "rrr11-regnskapsrutiner-36",
+        "q": "Salgsdokument: forskjellen mellom salgs- og kjøpsrutinen?",
+        "a": "I salgsrutinen utsteder foretaket salgsdokumentet. I kjøpsrutinen mottar foretaket salgsdokumentet som inngående faktura.",
+        "explanation": "Samme type dokument inngår fra hver sin side av transaksjonen.",
+        "topic": "sammenligning",
+        "difficulty": "middels",
+        "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      }
+    ]
+  }
+]

@@ -9,7 +9,13 @@ const qualityDecks = JSON.parse(readFileSync(new URL('data/rrr11-kvalitetskrav-f
 assert.equal(qualityDecks.length, 1);
 assert.equal(qualityDecks[0].id, 'rrr11-kvalitetskrav-fordypning');
 assert.equal(qualityDecks[0].cards.length, 32);
-const decks = [...suppliedDecks, ...qualityDecks];
+const routineDecks = JSON.parse(readFileSync(new URL('data/rrr11-regnskapsrutiner-flashcards.json', root), 'utf8'));
+assert.equal(routineDecks.length, 1);
+assert.equal(routineDecks[0].id, 'rrr11-regnskapsrutiner');
+assert.equal(routineDecks[0].cards.length, 36);
+const openAnswerDecks = [...qualityDecks, ...routineDecks];
+for (const deck of openAnswerDecks) assert.ok(deck.cards.every((card) => !card.quiz), `${deck.id}: keep open answers without multiple-choice hints`);
+const decks = [...suppliedDecks, ...openAnswerDecks];
 const ids = new Set(['rrr11-coso']);
 const cardIds = new Set(Array.from({ length: 30 }, (_, i) => `rrr11-coso-${i + 1}`));
 for (const deck of decks) {
@@ -25,7 +31,7 @@ for (const deck of decks) {
       assert.ok(card[field]?.trim(), `${card.id}: ${field}`);
     }
     if (!card.quiz) {
-      assert.ok(qualityDecks.includes(deck), `${card.id}: supplied quiz is required`);
+      assert.ok(openAnswerDecks.includes(deck), `${card.id}: supplied quiz is required`);
       continue;
     }
     assert.ok(card.quiz.q?.trim());
@@ -37,11 +43,11 @@ for (const deck of decks) {
   }
 }
 const output =
-  '// Generated from data/rrr11-nye-flashcards.json and data/rrr11-kvalitetskrav-flashcards.json by scripts/generate-rrr11-study.mjs.\n' +
+  '// Generated from data/rrr11-nye-flashcards.json, data/rrr11-kvalitetskrav-flashcards.json and data/rrr11-regnskapsrutiner-flashcards.json by scripts/generate-rrr11-study.mjs.\n' +
   'window.HaugnesRrr11Study = ' +
   JSON.stringify(decks, null, 2) +
   ';\n';
 const target = new URL('shared/rrr11-study.js', root);
 if (process.argv.includes('--check')) assert.equal(readFileSync(target, 'utf8'), output, 'Run npm run rrr11:generate');
 else writeFileSync(target, output);
-console.log('RRR11: 8 decks, 112 flashcards, 80 quiz questions (COSO remains separate).');
+console.log('RRR11: 9 decks, 148 flashcards, 80 quiz questions (COSO remains separate).');

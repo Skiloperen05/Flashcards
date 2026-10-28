@@ -169,12 +169,13 @@ assert.equal(w.getDecksForSubject('rrr11')[0].cards.length, 30);
 const newRrr11Decks = [
   ...JSON.parse(read('data/rrr11-nye-flashcards.json')),
   ...JSON.parse(read('data/rrr11-kvalitetskrav-flashcards.json')),
+  ...JSON.parse(read('data/rrr11-regnskapsrutiner-flashcards.json')),
 ];
 const rrr11Decks = w.getDecksForSubject('rrr11');
-assert.equal(rrr11Decks.length, 9);
+assert.equal(rrr11Decks.length, 10);
 assert.equal(
   rrr11Decks.reduce((sum, deck) => sum + deck.cards.length, 0),
-  142,
+  178,
 );
 assert.equal(
   JSON.stringify(rrr11Decks.slice(1)),
@@ -288,7 +289,7 @@ assert.ok(
 );
 w.currentSubjectId = 'rrr11';
 w.showView('decks');
-assert.equal(w.document.querySelectorAll('[data-study-deck]').length, 9, 'Register every RRR11 deck in the library');
+assert.equal(w.document.querySelectorAll('[data-study-deck]').length, 10, 'Register every RRR11 deck in the library');
 w.renderQuizDecks();
 assert.equal(w.document.querySelectorAll('[data-quiz-id]').length, 8);
 for (const deck of newRrr11Decks) {
@@ -648,8 +649,8 @@ const changeCoso = (name, value) => {
   el.value = value;
   el.dispatchEvent(new cw.Event('change', { bubbles: true }));
 };
-assert.equal(cr.querySelectorAll('[data-sfc-deck]').length, 9);
-assert.equal(cr.querySelector('[data-sfc-deck-count]').textContent, '9 av 9 valgt');
+assert.equal(cr.querySelectorAll('[data-sfc-deck]').length, 10);
+assert.equal(cr.querySelector('[data-sfc-deck-count]').textContent, '10 av 10 valgt');
 cw.HaugnesSubjectFlashcards.open('rrr11-coso');
 changeCoso('sfc-mode', 'quiz');
 changeCoso('sfc-limit', '0');

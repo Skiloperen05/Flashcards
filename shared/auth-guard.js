@@ -258,7 +258,7 @@
   }
 
   function loadGlobalPolish() {
-    addScript('haugnes-subject-flashcards-js', rootRelative('shared/subject-flashcards.js?v=20261028-kvalitetskrav'));
+    addScript('haugnes-subject-flashcards-js', rootRelative('shared/subject-flashcards.js?v=20261028-rutiner'));
     addStylesheet('haugnes-mobile-css', rootRelative('shared/haugnes-mobile.css'));
     addScript('haugnes-mobile-bottom-nav-js', rootRelative('shared/mobile-bottom-nav.js'));
     addScript('haugnes-user-settings-js', rootRelative('shared/user-settings.js'), function () {
