@@ -13,7 +13,11 @@ const routineDecks = JSON.parse(readFileSync(new URL('data/rrr11-regnskapsrutine
 assert.equal(routineDecks.length, 1);
 assert.equal(routineDecks[0].id, 'rrr11-regnskapsrutiner');
 assert.equal(routineDecks[0].cards.length, 36);
-const openAnswerDecks = [...qualityDecks, ...routineDecks];
+const cosoAdvancedDecks = JSON.parse(readFileSync(new URL('data/rrr11-coso-fordypning-flashcards.json', root), 'utf8'));
+assert.equal(cosoAdvancedDecks.length, 1);
+assert.equal(cosoAdvancedDecks[0].id, 'rrr11-coso-fordypning');
+assert.equal(cosoAdvancedDecks[0].cards.length, 60);
+const openAnswerDecks = [...qualityDecks, ...routineDecks, ...cosoAdvancedDecks];
 for (const deck of openAnswerDecks) assert.ok(deck.cards.every((card) => !card.quiz), `${deck.id}: keep open answers without multiple-choice hints`);
 const decks = [...suppliedDecks, ...openAnswerDecks];
 const ids = new Set(['rrr11-coso']);
@@ -43,11 +47,11 @@ for (const deck of decks) {
   }
 }
 const output =
-  '// Generated from data/rrr11-nye-flashcards.json, data/rrr11-kvalitetskrav-flashcards.json and data/rrr11-regnskapsrutiner-flashcards.json by scripts/generate-rrr11-study.mjs.\n' +
+  '// Generated from data/rrr11-nye-flashcards.json, data/rrr11-kvalitetskrav-flashcards.json, data/rrr11-regnskapsrutiner-flashcards.json and data/rrr11-coso-fordypning-flashcards.json by scripts/generate-rrr11-study.mjs.\n' +
   'window.HaugnesRrr11Study = ' +
   JSON.stringify(decks, null, 2) +
   ';\n';
 const target = new URL('shared/rrr11-study.js', root);
 if (process.argv.includes('--check')) assert.equal(readFileSync(target, 'utf8'), output, 'Run npm run rrr11:generate');
 else writeFileSync(target, output);
-console.log('RRR11: 9 decks, 148 flashcards, 80 quiz questions (COSO remains separate).');
+console.log(`RRR11: ${decks.length} decks, ${decks.flatMap((deck) => deck.cards).length} flashcards, 80 quiz questions (original COSO remains separate).`);

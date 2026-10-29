@@ -1,4 +1,4 @@
-// Generated from data/rrr11-nye-flashcards.json, data/rrr11-kvalitetskrav-flashcards.json and data/rrr11-regnskapsrutiner-flashcards.json by scripts/generate-rrr11-study.mjs.
+// Generated from data/rrr11-nye-flashcards.json, data/rrr11-kvalitetskrav-flashcards.json, data/rrr11-regnskapsrutiner-flashcards.json and data/rrr11-coso-fordypning-flashcards.json by scripts/generate-rrr11-study.mjs.
 window.HaugnesRrr11Study = [
   {
     "id": "rrr11-systemlandskap",
@@ -2114,6 +2114,554 @@ window.HaugnesRrr11Study = [
         "topic": "sammenligning",
         "difficulty": "middels",
         "source": "Brukerens notater om regnskapsrutiner, 28.10.2026."
+      }
+    ]
+  },
+  {
+    "id": "rrr11-coso-fordypning",
+    "title": "COSO fordypning",
+    "description": "60 åpne flashcards om COSOs målsettinger, innholdet i de fem komponentene og samspillet mellom dem. Inkluderer 10 case- og anvendelseskort. Basert på COSO.pdf.",
+    "difficulty": "avansert",
+    "cards": [
+      {
+        "id": "rrr11-coso-fordypning-1",
+        "q": "Hva skal internkontrollen bidra til, og hvor stor sikkerhet gir den?",
+        "a": "Gi rimelig, men ikke absolutt sikkerhet for at målsettinger om drift, rapportering og etterlevelse nås.",
+        "explanation": "Kontrollene reduserer risikoen for at målene ikke nås. De gir ingen garanti for måloppnåelse.",
+        "topic": "malsettinger",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1."
+      },
+      {
+        "id": "rrr11-coso-fordypning-2",
+        "q": "Hvilke tre målsettingskategorier har COSO?",
+        "a": "1. Effektiv og hensiktsmessig drift.\n2. Pålitelig rapportering.\n3. Etterlevelse av gjeldende lover og regler.",
+        "explanation": "Drift gjelder hvordan virksomheten presterer og bruker ressurser, rapportering gjelder informasjonen, og etterlevelse gjelder kravene virksomheten er underlagt.",
+        "topic": "malsettinger",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1."
+      },
+      {
+        "id": "rrr11-coso-fordypning-3",
+        "q": "Hva omfatter driftsmålsettingene?",
+        "a": "Effektiv og hensiktsmessig drift, driftsmessige og økonomiske prestasjonsmål og sikring av eiendeler mot tap.",
+        "explanation": "Resultater, kvalitet, lønnsomhet og ressursbruk står sentralt. Sikring av eiendeler er også en del av driftsmålene.",
+        "topic": "malsettinger",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1."
+      },
+      {
+        "id": "rrr11-coso-fordypning-4",
+        "q": "Hvilke forutsetninger for god drift fremheves i PDF-en?",
+        "a": "Tilstrekkelig kompetanse, et hensiktsmessig produksjonssystem, løpende kvalitetskontroll og rapportering.",
+        "explanation": "Virksomheten må bruke ressursene effektivt, nå fastsatte mål og holde seg innenfor rammebetingelsene. Rapportering gir grunnlag for å styre driften.",
+        "topic": "malsettinger",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1."
+      },
+      {
+        "id": "rrr11-coso-fordypning-5",
+        "q": "Hvilke typer rapportering omfatter rapporteringsmålsettingen?",
+        "a": "Både intern og ekstern rapportering, og både finansiell og ikke-finansiell rapportering.",
+        "explanation": "Årsregnskap, interne kostnadsrapporter og rapporter om produksjonskvalitet er egenlagde eksempler på rapportering som kan omfattes.",
+        "topic": "malsettinger",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1."
+      },
+      {
+        "id": "rrr11-coso-fordypning-6",
+        "q": "Hvilke egenskaper må rapporteringen ha for å støtte gode beslutninger?",
+        "a": "Den må være relevant, pålitelig, tilstrekkelig nøyaktig og tilgjengelig til rett tid. Åpenhet og aktuelle rapporteringskrav må også ivaretas.",
+        "explanation": "Informasjonen må ha en kvalitet som gjør den egnet til formålet. En presis rapport som kommer for sent, kan være lite nyttig.",
+        "topic": "malsettinger",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1."
+      },
+      {
+        "id": "rrr11-coso-fordypning-7",
+        "q": "Hva kjennetegner god intern rapportering sammenlignet med ekstern rapportering?",
+        "a": "Intern rapportering må dekke ledelsens informasjonsbehov og gi egnet beslutningsgrunnlag. Ekstern rapportering må oppfylle de aktuelle kravene, standardene og formålene for rapporten.",
+        "explanation": "Begge trenger pålitelig innhold. At en rapport er utarbeidet med sikte på å følge regler, er ikke i seg selv bevis for at den er feilfri.",
+        "topic": "malsettinger",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1."
+      },
+      {
+        "id": "rrr11-coso-fordypning-8",
+        "q": "Hva omfatter etterlevelsesmålsettingen?",
+        "a": "At virksomheten følger gjeldende lover og regler som den er omfattet av, og kontrollerer at kravene faktisk etterleves.",
+        "explanation": "PDF-en nevner blant annet regnskap, bokføring, skatt, avgift, miljø og HMS. Brudd kan føre til bøter og andre sanksjoner. Kortet angir ingen konkrete lovkrav eller frister.",
+        "topic": "malsettinger",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1–2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-9",
+        "q": "Kan samme hendelse true flere målsettinger? Gi et eksempel.",
+        "a": "Ja. Tyveri fra lageret kan gi tap og true driften. Hvis lagerverdien ikke korrigeres, kan rapporteringen også bli feil.",
+        "explanation": "Egenlaget eksempel. Målsettingskategoriene fremhever ulike sider av samme virksomhet og kan overlappe. Eventuelle regelbrudd må vurderes særskilt.",
+        "topic": "malsettinger",
+        "difficulty": "avansert",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1–2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-10",
+        "q": "Hvilke fem komponenter består COSO av?",
+        "a": "1. Internt kontrollmiljø.\n2. Risikovurdering.\n3. Kontrollaktiviteter.\n4. Informasjon og kommunikasjon.\n5. Oppfølging.",
+        "explanation": "Komponentene beskriver hva internkontrollen består av. De skal brukes sammen for å støtte målsettingene.",
+        "topic": "samspill",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1."
+      },
+      {
+        "id": "rrr11-coso-fordypning-11",
+        "q": "Hvordan henger målsettingene og komponentene sammen?",
+        "a": "Målsettingene angir hva virksomheten skal oppnå. De fem komponentene skal sammen håndtere risikoene som kan hindre måloppnåelsen.",
+        "explanation": "Det er ikke én bestemt komponent per målsetting. Alle fem kan være relevante for drift, rapportering og etterlevelse.",
+        "topic": "samspill",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1."
+      },
+      {
+        "id": "rrr11-coso-fordypning-12",
+        "q": "Hva er internt kontrollmiljø?",
+        "a": "Kulturen, holdningene og de organisatoriske rammene som styring og kontroll utføres innenfor. Det danner grunnlaget for de øvrige komponentene.",
+        "explanation": "Det omfatter blant annet etikk, ledelsens atferd, organisering, ansvar og kompetanse. Gode skriftlige rutiner hjelper lite hvis kulturen støtter at de omgås.",
+        "topic": "kontrollmiljo",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1."
+      },
+      {
+        "id": "rrr11-coso-fordypning-13",
+        "q": "Hvilke seks forhold påvirker kontrollmiljøet i PDF-en?",
+        "a": "Integritet og etiske verdier; organisasjonsstruktur; fordeling av ansvar og myndighet; et effektivt og engasjert styre; ledelsesfilosofi og lederstil; personal- og rekrutteringspolitikk.",
+        "explanation": "Dette er forhold som former hvordan ansatte faktisk utfører og prioriterer kontrolloppgavene.",
+        "topic": "kontrollmiljo",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1."
+      },
+      {
+        "id": "rrr11-coso-fordypning-14",
+        "q": "Hvordan påvirker styret og ledelsen kontrollmiljøet?",
+        "a": "Gjennom egen atferd, etiske forventninger, oppmerksomhet på kontroll og oppfølging av ansvar. Styret fører tilsyn med ledelsens internkontrollarbeid.",
+        "explanation": "Ansatte ser hva ledelsen aksepterer i praksis. En ledelse som tolererer omgåelse av rutiner, svekker kontrollmiljøet.",
+        "topic": "kontrollmiljo",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1."
+      },
+      {
+        "id": "rrr11-coso-fordypning-15",
+        "q": "Hvorfor er tydelig ansvar og myndighet viktig for kontrollmiljøet?",
+        "a": "Det må være klart hvem som skal gjøre hva, hvem som kan beslutte eller godkjenne, og hvem som følger opp at oppgavene utføres.",
+        "explanation": "Uklare roller kan gi både overlappende fullmakter og kontrolloppgaver som ingen tar ansvar for. Rapporteringslinjer gjør det tydelig hvem avvik skal meldes til.",
+        "topic": "kontrollmiljo",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1."
+      },
+      {
+        "id": "rrr11-coso-fordypning-16",
+        "q": "Hvordan inngår kompetanse i kontrollmiljøet?",
+        "a": "Virksomheten må rekruttere, utvikle og beholde medarbeidere med kompetanse til oppgavene og holde dem ansvarlige for tildelte kontrolloppgaver.",
+        "explanation": "Opplæring og oppfølging er nødvendig også når arbeidsoppgaver eller systemer endres. Kompetanse påvirker om rutiner blir forstått og gjennomført.",
+        "topic": "kontrollmiljo",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1."
+      },
+      {
+        "id": "rrr11-coso-fordypning-17",
+        "q": "Hvordan kan kontrollmiljøet være annerledes i små og mellomstore foretak?",
+        "a": "Færre ledernivåer, nær kontakt mellom leder og ansatte og mer muntlig og uformell kommunikasjon. Formaliseringen kan være mindre omfattende.",
+        "explanation": "Kontrollene må likevel fungere. Virksomhetens størrelse tilpasser utformingen, men fjerner ikke behovet for de fem komponentene.",
+        "topic": "kontrollmiljo",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1."
+      },
+      {
+        "id": "rrr11-coso-fordypning-18",
+        "q": "Hva innebærer risikovurdering i COSO?",
+        "a": "Å identifisere og analysere forhold som kan hindre måloppnåelsen, og bruke vurderingen til å avgjøre hvordan risikoene skal håndteres.",
+        "explanation": "Vurderingen gjelder hvilke risikoer virksomheten er utsatt for, hvilke den vil ta, og hvordan uønsket risiko kan reduseres. Risikovurdering må oppdateres ved endringer.",
+        "topic": "risikovurdering",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1."
+      },
+      {
+        "id": "rrr11-coso-fordypning-19",
+        "q": "Hvorfor må målsettingene være tydelige før risiko vurderes?",
+        "a": "Man må vite hva som skal oppnås for å kunne identifisere hva som kan hindre det, og vurdere hvor alvorlige risikoene er.",
+        "explanation": "For eksempel blir det lettere å identifisere forsinkelsesrisiko når det er klart når en rapport skal være tilgjengelig. Eksemplet er egenlaget.",
+        "topic": "risikovurdering",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1."
+      },
+      {
+        "id": "rrr11-coso-fordypning-20",
+        "q": "Hvilke tre spørsmål inngår i risikovurderingsprosessen i PDF-en?",
+        "a": "1. Hvor sannsynlig er det at risikoen inntreffer?\n2. Hva blir konsekvensene?\n3. Hvordan skal risikoen håndteres?",
+        "explanation": "Risikoene må først identifiseres. Sannsynlighet og konsekvens gir grunnlag for å prioritere håndteringen. Punktlisten fortsetter fra side 1 til side 2.",
+        "topic": "risikovurdering",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1–2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-21",
+        "q": "Hvor i virksomheten og blant hvilke faktorer skal risiko identifiseres?",
+        "a": "I hele organisasjonen, alle relevante enheter og forretningsprosesser, på relevant ledelsesnivå. Både interne og eksterne risikofaktorer skal vurderes.",
+        "explanation": "Analysen må også vurdere konsekvensene av vesentlige risikoer og om etablerte kontrolltiltak faktisk er egnet til å håndtere dem.",
+        "topic": "risikovurdering",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1."
+      },
+      {
+        "id": "rrr11-coso-fordypning-22",
+        "q": "Gi eksempler på risikofaktorer knyttet til driften fra PDF-en.",
+        "a": "Dårlig ressursutnyttelse; utilgjengelig eller dårlig vedlikeholdt utstyr; ugunstige innkjøpspriser; ukurans eller manglende sikring av lager; svak produktkvalitet eller priskontroll.",
+        "explanation": "Produksjonsplaner, forsikring, sikring og kvalitetskontroll er forhold PDF-en ber virksomheten undersøke for å vurdere driftsrisiko.",
+        "topic": "risikovurdering",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-23",
+        "q": "Gi eksempler på risikoer knyttet til regnskapsrapporteringen fra PDF-en.",
+        "a": "Ugyldige transaksjoner bokføres; leverte varer blir ikke fakturert; ikke-eksisterende eiendeler står i balansen; mangelfulle rapporteringsrutiner eller utilstrekkelig regnskapskompetanse.",
+        "explanation": "Eksemplene viser hvordan feil i transaksjonsbehandling, verdier eller kompetanse kan svekke pålitelig rapportering. Manglende fakturering kan også gi økonomisk tap.",
+        "topic": "risikovurdering",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-24",
+        "q": "Hva undersøkes ved risiko for manglende etterlevelse?",
+        "a": "Om virksomheten kan bryte krav den er underlagt, for eksempel innen miljø, HMS, skatt, avgift, bokføring, regnskap eller selskapsforhold.",
+        "explanation": "Man må identifisere hvilke krav som gjelder og hvor det er fare for brudd. Dette er risikoområdene fra PDF-en, ikke en uttømmende oversikt over lovkrav.",
+        "topic": "risikovurdering",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-25",
+        "q": "Hvorfor må muligheten for misligheter vurderes særskilt?",
+        "a": "Fordi bevisste handlinger kan true måloppnåelsen og omgå ordinære rutiner. Vurderingen må omfatte muligheter for feilrapportering, misbruk av data eller eiendeler og korrupsjon.",
+        "explanation": "PDF-en fremhever både ulike former for misligheter og mulighetene for at de kan gjennomføres. En rutine som fanger tilfeldige feil, stanser ikke nødvendigvis bevisst omgåelse.",
+        "topic": "risikovurdering",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1–2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-26",
+        "q": "Hvorfor må risikovurderingen oppdateres når virksomheten endres?",
+        "a": "Endringer kan gi nye risikoer eller gjøre eksisterende kontroller mindre egnet, slik at internkontrollen må tilpasses.",
+        "explanation": "Egenlagde eksempler er et nytt IT-system, nye produkter, endret organisering eller endrede eksterne krav.",
+        "topic": "risikovurdering",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1."
+      },
+      {
+        "id": "rrr11-coso-fordypning-27",
+        "q": "Hvordan bør virksomheten forholde seg til interne og eksterne risikofaktorer?",
+        "a": "Interne forhold kan virksomheten ofte påvirke direkte. For eksterne forhold må den også forberede seg og ha rutiner for å håndtere konsekvensene.",
+        "explanation": "Risikostyring handler om et samlet risikobilde og prioritering av tiltak som støtter måloppnåelsen. Det innebærer ikke at all risiko kan eller bør fjernes.",
+        "topic": "risikovurdering",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-28",
+        "q": "Hva er kontrollaktiviteter?",
+        "a": "Konkrete tiltak og prosedyrer som håndterer identifiserte risikoer og bidrar til at retningslinjer følges og målsettinger nås.",
+        "explanation": "Valg av tiltak skal bygge på risikovurderingen. Kontroller må være innarbeidet i de aktuelle arbeids- og forretningsprosessene.",
+        "topic": "kontrollaktiviteter",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1–2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-29",
+        "q": "Hva bør avgjøre hvilke kontrollaktiviteter som velges?",
+        "a": "Identifiserte og vesentlige risikoer, ønsket risikonivå, kostnad og nytte, relevant organisasjonsnivå og hvordan tiltakene virker sammen.",
+        "explanation": "Tiltakene vurderes samlet. En blanding av kontroller kan være nødvendig for å redusere risiko til et akseptabelt nivå.",
+        "topic": "kontrollaktiviteter",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-30",
+        "q": "Hva er forskjellen mellom forebyggende, oppdagende og korrigerende kontroller?",
+        "a": "Forebyggende kontroller skal hindre feil før de skjer. Oppdagende kontroller skal avdekke feil som har skjedd. Korrigerende prosedyrer skal rette feil og håndtere avvik.",
+        "explanation": "Egenlagde eksempler: godkjenning før betaling, avstemming etter betaling og retting av en feilføring etter avstemmingen. Dette er kontrolltyper, ikke en rangering av kvalitet.",
+        "topic": "kontrollaktiviteter",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-31",
+        "q": "Hvilke seks hovedgrupper av kontrollaktiviteter listes i PDF-en?",
+        "a": "1. Autorisering og godkjenning.\n2. Arbeidsdeling.\n3. Fysisk sikring og kontroll.\n4. Forhåndsdefinerte formularer, koder og registre.\n5. Etterkontroll.\n6. Kontroll med informasjonsbehandlingen.",
+        "explanation": "Dette er PDF-ens praktiske inndeling av kontrollaktiviteter. Den skal ikke forveksles med COSOs fem komponenter.",
+        "topic": "kontrollaktiviteter",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-32",
+        "q": "Hva innebærer autorisering og godkjenning?",
+        "a": "At bestemte personer får avgrenset myndighet til å initiere transaksjoner og foreta disposisjoner på foretakets vegne, og at disposisjoner godkjennes av rette person.",
+        "explanation": "Fullmaktene kan gjelde å disponere eiendeler eller pådra foretaket forpliktelser. En fullmakt og en konkret godkjenning må praktiseres i samsvar med rutinene.",
+        "topic": "kontrollaktiviteter",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-33",
+        "q": "Hva er formålet med arbeidsdeling?",
+        "a": "Å fordele uforenlige oppgaver slik at én person vanskeligere kan gjøre feil eller begå misligheter og samtidig skjule dem.",
+        "explanation": "Særlig bør kontrollen med en transaksjon fordeles slik at samme person ikke kontrollerer hele kjeden alene. Arbeidsdeling reduserer risikoen, men garanterer ikke at feil oppdages.",
+        "topic": "kontrollaktiviteter",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-34",
+        "q": "Hvilke fem funksjoner bør vurderes atskilt ved arbeidsdeling?",
+        "a": "Godkjenne transaksjoner; bokføre transaksjoner; gjennomføre transaksjoner; oppbevare eller forvalte eiendeler; avstemme fysisk eksisterende eiendeler mot registrerte eiendeler.",
+        "explanation": "Poenget i PDF-en er å skille ansvar mellom personer der oppgaver er uforenlige. Listen betyr ikke at én person ideelt skal ha alle fem funksjonene.",
+        "topic": "kontrollaktiviteter",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-35",
+        "q": "Hvorfor gir arbeidsdeling likevel ikke full sikkerhet?",
+        "a": "Samarbeid om misligheter, ledelsens overstyring eller feil hos dem som utfører kontrollene kan svekke effekten.",
+        "explanation": "Presisering av PDF-en: Arbeidsdeling gjør omgåelse vanskeligere, men utelukker ikke misligheter. Andre kontroller kan fortsatt være nødvendige.",
+        "topic": "kontrollaktiviteter",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 2. Faglig presisering: COSO (2013), Executive Summary, s. 9: https://www.coso.org/_files/ugd/3059fc_1df7d5dd38074006bce8fdf621a942cf.pdf"
+      },
+      {
+        "id": "rrr11-coso-fordypning-36",
+        "q": "Hva kan et lite foretak gjøre når full arbeidsdeling er vanskelig?",
+        "a": "Vurdere alternative kontroller, for eksempel at en uavhengig person kontrollerer betalinger og avstemminger.",
+        "explanation": "Egenlaget eksempel på tilpasning. Alternativet må håndtere risikoen som oppstår når oppgaver samles hos én person.",
+        "topic": "kontrollaktiviteter",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1–2. Supplerende presisering: COSO (2013), Executive Summary, s. 4: https://www.coso.org/_files/ugd/3059fc_1df7d5dd38074006bce8fdf621a942cf.pdf"
+      },
+      {
+        "id": "rrr11-coso-fordypning-37",
+        "q": "Hva omfatter fysisk sikring og kontroll?",
+        "a": "Å beskytte eiendeler mot skade, tyveri og ødeleggelse, begrense tilgangen og kontrollere hvem som har hatt tilgang.",
+        "explanation": "PDF-en fremhever tilgangskontroll med logg. Låser og adgangskort er egenlagde eksempler på tiltak.",
+        "topic": "kontrollaktiviteter",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-38",
+        "q": "Hvordan støtter formularer, koder og registre internkontrollen?",
+        "a": "De legger til rette for nøyaktig og fullstendig registrering, effektiv behandling og mulighet til å etterprøve hva som er gjort.",
+        "explanation": "PDF-en nevner dokumenter, registre, kontoplan og andre koder. Hensiktsmessig utforming skal både redusere feil og gjøre transaksjonsbehandlingen sporbar.",
+        "topic": "kontrollaktiviteter",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-39",
+        "q": "Hva undersøkes ved etterkontroll?",
+        "a": "Om rutiner er fulgt, om registrerte beholdninger stemmer med faktiske beholdninger, og om avvik er fulgt opp og rettet.",
+        "explanation": "Etterkontroll utføres etter handlingen eller hendelsen. Den kan avdekke feil som tidligere kontrolltrinn ikke hindret.",
+        "topic": "kontrollaktiviteter",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-40",
+        "q": "Hva kan kontroll med informasjonsbehandlingen innebære?",
+        "a": "Kontroller som skal sikre at data registreres, behandles og overføres korrekt og fullstendig, og at bare personer med riktig myndighet får endre dem.",
+        "explanation": "Egenlagde eksempler: validering av inndata, kontrollsummer og tilgangsstyring. PDF-en lister denne kontrollgruppen og omtaler også generelle teknologikontroller.",
+        "topic": "kontrollaktiviteter",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1–2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-41",
+        "q": "Hva er forskjellen mellom en retningslinje og en prosedyre?",
+        "a": "Retningslinjen sier hva som forventes. Prosedyren beskriver hvordan forventningen skal gjennomføres i praksis.",
+        "explanation": "Egenlaget eksempel: Retningslinjen krever godkjenning av innkjøp. Prosedyren angir hvem som godkjenner, når og hvordan godkjenningen dokumenteres.",
+        "topic": "kontrollaktiviteter",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1."
+      },
+      {
+        "id": "rrr11-coso-fordypning-42",
+        "q": "Hva omfatter informasjon og kommunikasjon?",
+        "a": "Å identifisere, registrere, bearbeide og formidle nødvendig informasjon slik at ledelsen og ansatte kan utføre oppgavene og internkontrollen.",
+        "explanation": "Informasjon må både ha egnet innhold og nå dem som trenger den. Kommunikasjon innebærer å innhente, dele og formidle informasjon løpende.",
+        "topic": "informasjon-kommunikasjon",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1–2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-43",
+        "q": "Hvilken informasjon må informasjonssystemet kunne levere ifølge PDF-en?",
+        "a": "Relevante og oppdaterte rapporter om blant annet produksjon, salg, kostnadsutvikling og markeder.",
+        "explanation": "Informasjonen brukes både til styring og kontroll. Utdaterte eller upålitelige rapporter kan føre til feil prioriteringer og manglende oppfølging.",
+        "topic": "informasjon-kommunikasjon",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-44",
+        "q": "Hva må kommuniseres internt for at internkontrollen skal fungere?",
+        "a": "Målsettinger, kontrollansvar, nødvendige rutiner og informasjon som gjør at ansatte og ledere kan gjennomføre og følge opp kontrolloppgavene.",
+        "explanation": "Det hjelper ikke at en rutine er godt utformet hvis den som skal bruke den, ikke kjenner innholdet eller ansvaret sitt.",
+        "topic": "informasjon-kommunikasjon",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-45",
+        "q": "Hva omfatter ekstern kommunikasjon i internkontrollen?",
+        "a": "Kontakt med eksterne aktører om forhold som har betydning for internkontrollen, både ved å innhente og formidle relevant informasjon.",
+        "explanation": "Egenlagde eksempler: kundeinformasjon om feil leveranser og kommunikasjon med leverandører om avvik. Ekstern kommunikasjon er bredere enn publisering av årsregnskap.",
+        "topic": "informasjon-kommunikasjon",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-46",
+        "q": "Hva er formålet med komponenten oppfølging?",
+        "a": "Å vurdere om internkontrollen er hensiktsmessig, av tilfredsstillende kvalitet og fungerer som forutsatt, og sørge for at mangler blir håndtert.",
+        "explanation": "Oppfølging retter blikket mot kontrollsystemets funksjon. Resultatene brukes til forbedring og korrigering.",
+        "topic": "oppfolging",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1–2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-47",
+        "q": "Hvilke to hovedspørsmål skal oppfølging besvare i PDF-en?",
+        "a": "1. Fungerer internkontrollen slik at den støtter drift, rapportering og etterlevelse?\n2. Er den god nok til å avdekke nye områder der risiko kan oppstå?",
+        "explanation": "Oppfølging skal både vurdere dagens kontroller og om systemet fortsatt er egnet når risikobildet endres.",
+        "topic": "oppfolging",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-48",
+        "q": "Hvordan kan oppfølging gjennomføres?",
+        "a": "Gjennom løpende evalueringer, frittstående evalueringer eller en kombinasjon av disse.",
+        "explanation": "Egenlagde eksempler: løpende vurdering av om kontroller faktisk utføres, og en periodisk gjennomgang av en hel rutine. Begge skal gi grunnlag for å vurdere om internkontrollen fungerer.",
+        "topic": "oppfolging",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-49",
+        "q": "Hva skal skje når oppfølging avdekker avvik eller mangler?",
+        "a": "De må vurderes og kommuniseres i tide til dem som skal iverksette korrigerende tiltak, inkludert toppledelsen og styret når det er relevant.",
+        "explanation": "Det er ikke tilstrekkelig å registrere mangelen. Ansvarlige må få informasjon og sørge for nødvendig korrigering og videre oppfølging.",
+        "topic": "oppfolging",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-50",
+        "q": "Hva skiller en kontrollaktivitet fra oppfølging?",
+        "a": "En kontrollaktivitet håndterer en konkret risiko i arbeidet. Oppfølging vurderer om kontrollsystemet og kontrollene er til stede, fungerer og trenger forbedring.",
+        "explanation": "Egenlaget eksempel: En avstemming avdekker feilføringer. En gjennomgang av om avstemmingene faktisk utføres og virker, er oppfølging. Formålet med handlingen avgjør skillet.",
+        "topic": "samspill",
+        "difficulty": "middels",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1–2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-51",
+        "q": "Case: Varer leveres, men noen leveranser blir ikke fakturert. Koble målsettinger, risiko og tiltak.",
+        "a": "Rapportering trues av manglende inntekter og fordringer; drift trues av tapt oppgjør. Risikovurdering identifiserer bruddet mellom levering og fakturering. En kontrollaktivitet kan være avstemming av leveranser mot fakturaer.",
+        "explanation": "Egenlaget case: Informasjon og kommunikasjon må sikre at leveringsdata når faktureringen. Oppfølging undersøker om avstemmingen utføres og avvik rettes. Tydelig ansvar hører til kontrollmiljøet.",
+        "topic": "samspill-case",
+        "difficulty": "avansert",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1–2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-52",
+        "q": "Case: En ansatt kan opprette leverandører, bokføre fakturaer og betale alene. Hva er risikoen, og hvordan kobles komponentene?",
+        "a": "Risikoen er blant annet fiktive leverandører og betalinger. Drift og rapportering kan rammes. Risikovurderingen bør inkludere misligheter; kontrollaktiviteter kan være arbeidsdeling og uavhengig godkjenning.",
+        "explanation": "Egenlaget case: Kontrollmiljøet avklarer fullmakter og ansvar. Relevant betalingsinformasjon må nå kontrolløren. Oppfølging vurderer om godkjenningene fungerer i praksis.",
+        "topic": "samspill-case",
+        "difficulty": "avansert",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1–2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-53",
+        "q": "Case: Varelageret inneholder ukurante varer, men regnskapsverdien er ikke vurdert. Hvilke målsettinger og komponenter berøres?",
+        "a": "Drift berøres av varer som vanskelig kan selges; rapportering av mulig for høy lagerverdi. Risikovurderingen må omfatte ukurans. Kontrollaktiviteter kan være gjennomgang av gamle varer og vurdering av lagerverdien.",
+        "explanation": "Egenlaget case: Salgs- og lagerdata må nå dem som vurderer verdiene. Kontrollmiljøet avklarer ansvar og kompetanse. Oppfølging undersøker om vurderingene faktisk blir gjort og avvik håndtert.",
+        "topic": "samspill-case",
+        "difficulty": "avansert",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1–2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-54",
+        "q": "Case: Ledelsen har skrevet gode rutiner, men belønner ansatte som hopper over kontrollene. Hvor svikter det først, og hva kan følge?",
+        "a": "Kontrollmiljøet svekkes fordi ledelsens praktiske signaler undergraver rutinene. Kontrollaktiviteter kan bli omgått, slik at risiko for feil og misligheter øker.",
+        "explanation": "Egenlaget case: Hvilken målsetting som rammes, avhenger av rutinen som omgås. Oppfølging må fange opp svikten, og ledelsen må endre atferd, forventninger og ansvarsoppfølging.",
+        "topic": "samspill-case",
+        "difficulty": "avansert",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1–2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-55",
+        "q": "Case: Et nytt regnskapssystem tas i bruk. Hvordan bør de fem komponentene kobles sammen?",
+        "a": "Kontrollmiljø: avklar ansvar og opplæring.\nRisikovurdering: vurder nye feil- og mislighetsrisikoer.\nKontrollaktiviteter: kontroller tilganger, dataoverføring og behandling.\nInformasjon og kommunikasjon: formidle nye rutiner og sikre gode rapporter.\nOppfølging: vurder om kontrollene virker etter innføringen.",
+        "explanation": "Egenlaget case: Pålitelig rapportering er sentralt, og driften kan påvirkes av driftsstans eller dårlig informasjon. Etterlevelse berøres dersom systemet ikke støtter krav virksomheten er underlagt.",
+        "topic": "samspill-case",
+        "difficulty": "avansert",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1–2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-56",
+        "q": "Case: HMS-avvik blir registrert, men ingen følger dem opp. Koble målsetting og komponenter.",
+        "a": "Etterlevelse står sentralt, og drift kan også rammes. Informasjon er registrert, men kommunikasjon og oppfølging svikter hvis ingen ansvarlig mottar, vurderer og håndterer avvikene.",
+        "explanation": "Egenlaget case: Kontrollmiljøet må plassere ansvar. Risikovurderingen prioriterer farene, og kontrollaktiviteter gjennomfører tiltakene. Det konkrete regelbruddet kan ikke avgjøres uten flere opplysninger.",
+        "topic": "samspill-case",
+        "difficulty": "avansert",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1–2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-57",
+        "q": "Case: Interne kostnadsrapporter kommer så sent at ledelsen ikke rekker å reagere. Hvilke målsettinger og komponenter kobles her?",
+        "a": "Rapporteringsmålsettingen trues fordi informasjonen ikke er rettidig. Driftsmålsettingene kan rammes fordi ledelsen får dårligere grunnlag for ressursstyring. Informasjon og kommunikasjon står sentralt.",
+        "explanation": "Egenlaget case: Risikovurderingen kartlegger årsaken og konsekvensene. Kontrollaktiviteter kan sikre frister og kontroll av rapportgrunnlag. Oppfølging undersøker om leveransene blir bedre.",
+        "topic": "samspill-case",
+        "difficulty": "avansert",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1–2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-58",
+        "q": "Case: Lageret er godt låst, men ingen kontrollerer om lagerlisten er riktig. Er drifts- og rapporteringsmålene tilstrekkelig ivaretatt?",
+        "a": "Nei. Fysisk sikring beskytter varer mot tap, men sikrer ikke alene at registreringene er riktige. Det trengs også relevante kontroller av beholdning og registreringer.",
+        "explanation": "Egenlaget case: Avstemming av fysisk beholdning mot lagerlisten er en mulig kontrollaktivitet. Informasjonen må oppdateres, og oppfølging må vurdere om kontrollene virker. Flere kontroller må ses i sammenheng.",
+        "topic": "samspill-case",
+        "difficulty": "avansert",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1–2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-59",
+        "q": "Case: En kontroll avslører stadig feil, men de samme feilene fortsetter. Hvilke deler av internkontrollen bør undersøkes?",
+        "a": "Om feil blir rettet, årsaker vurdert, nødvendige tiltak gjennomført og virkningen fulgt opp. Undersøk også om ansvar, kompetanse og kommunikasjon er tilstrekkelig.",
+        "explanation": "Egenlaget case: Den oppdagende kontrollen kan fungere selv om oppfølgingen er svak. Nye kontrolltiltak bør bygge på en oppdatert risikovurdering. Berørt målsetting avhenger av hvilke feil som gjentas.",
+        "topic": "samspill-case",
+        "difficulty": "avansert",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1–2."
+      },
+      {
+        "id": "rrr11-coso-fordypning-60",
+        "q": "Hvordan kan du bruke COSO til å analysere en ukjent case om internkontroll?",
+        "a": "1. Identifiser målsettingene som står i fare.\n2. Beskriv risiko og mulige konsekvenser.\n3. Vurder kontrollmiljøet.\n4. Foreslå relevante kontrollaktiviteter.\n5. Forklar hvilken informasjon som må nå hvem.\n6. Beskriv hvordan kontrollene og avvikene skal følges opp.",
+        "explanation": "Egenlaget fremgangsmåte som kobler PDF-ens målsettinger og fem komponenter. Begrunn tiltakene med den konkrete risikoen; en oppramsing av komponentnavn alene viser ikke hvordan de virker sammen.",
+        "topic": "samspill-case",
+        "difficulty": "avansert",
+        "source": "Brukerens COSO.pdf, 29.10.2026, s. 1–2."
       }
     ]
   }

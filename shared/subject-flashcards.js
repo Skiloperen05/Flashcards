@@ -42,7 +42,7 @@
     if (window[global]) return Promise.resolve();
     return new Promise(function (resolve, reject) {
       var script = document.createElement('script');
-      script.src = asset('shared/' + file + '.js?v=20261028-rutiner');
+      script.src = asset('shared/' + file + '.js?v=20261029-coso-fordypning');
       script.onload = resolve;
       script.onerror = reject;
       document.head.appendChild(script);
